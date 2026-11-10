@@ -57,3 +57,50 @@ jest.mock('expo-audio', () => {
   const size = { width: 390, height: 844, scale: 3, fontScale: 1 };
   Dimensions.set({ window: size, screen: size });
 }
+
+// Maps are native views; in tests they render as plain views with their children.
+jest.mock('react-native-maps', () => {
+  const { View } = jest.requireActual<typeof import('react-native')>('react-native');
+  const MapView = (props: object) => require('react').createElement(View, props);
+  const Shape = () => null;
+  return { __esModule: true, default: MapView, Polyline: Shape, Circle: Shape, Marker: Shape };
+});
+
+jest.mock('expo-keep-awake', () => ({
+  useKeepAwake: jest.fn(),
+  activateKeepAwakeAsync: jest.fn(() => Promise.resolve()),
+  deactivateKeepAwake: jest.fn(),
+}));
+
+// Local notifications: record what gets scheduled so tests can check it.
+jest.mock('expo-notifications', () => {
+  const scheduled = new Map<string, unknown>();
+  return {
+    __scheduled: scheduled,
+    SchedulableTriggerInputTypes: {
+      DAILY: 'daily',
+      WEEKLY: 'weekly',
+      DATE: 'date',
+      TIME_INTERVAL: 'timeInterval',
+    },
+    AndroidImportance: { HIGH: 4 },
+    setNotificationHandler: jest.fn(),
+    setNotificationChannelAsync: jest.fn(() => Promise.resolve()),
+    setNotificationCategoryAsync: jest.fn(() => Promise.resolve()),
+    getPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true, canAskAgain: true })),
+    requestPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+    getAllScheduledNotificationsAsync: jest.fn(() =>
+      Promise.resolve([...scheduled.keys()].map((identifier) => ({ identifier }))),
+    ),
+    scheduleNotificationAsync: jest.fn((req: { identifier?: string }) => {
+      const id = req.identifier ?? `n${scheduled.size + 1}`;
+      scheduled.set(id, req);
+      return Promise.resolve(id);
+    }),
+    cancelScheduledNotificationAsync: jest.fn((id: string) => {
+      scheduled.delete(id);
+      return Promise.resolve();
+    }),
+    addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  };
+});

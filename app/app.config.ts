@@ -97,6 +97,12 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     ],
     ['expo-contacts', { contactsPermission: PERMISSION_TEXT.contacts }],
     ['expo-sensors', { motionPermission: PERMISSION_TEXT.motion }],
+    // Maps in our own Android build need a Google Maps key (Expo Go brings its own).
+    // Set GOOGLE_MAPS_ANDROID_API_KEY as an EAS secret; never commit it.
+    [
+      'react-native-maps',
+      { androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY ?? '' },
+    ],
     'expo-notifications',
   ],
   experiments: {

@@ -34,3 +34,8 @@ export { PeopleRow } from './PeopleRow';
 export { QueryState } from './QueryState';
 export { TextField, type TextFieldProps } from './TextField';
 export { UndoHost } from './UndoHost';
+export { BigStatsList, BigStatsRow, type BigStat } from './BigStats';
+export { ButtonRow } from './ButtonRow';
+export { RouteMap } from './RouteMap';
+export { SplitBars, type Split } from './SplitBars';
+export { TimeAdjuster } from './TimeAdjuster';

@@ -16,9 +16,9 @@ const press = (testID: string) => fireEvent.press(screen.getByTestId(testID));
 
 let openURL: jest.SpyInstance;
 
-beforeEach(() => {
+beforeEach(async () => {
   jest.clearAllMocks();
-  resetAppState();
+  await resetAppState();
   openURL = jest.spyOn(Linking, 'openURL').mockResolvedValue(undefined);
 });
 
@@ -30,7 +30,7 @@ describe('Home', () => {
     await renderApp('/home');
     expect(await screen.findByText('Did you move yesterday?')).toBeTruthy();
     expect(screen.getByText('Coming up')).toBeTruthy();
-    expect(screen.getByText(/Take medicine/)).toBeTruthy();
+    expect(screen.getByText(/Take medicine|Blood pressure tablet/)).toBeTruthy();
     expect(screen.getByText('What would you like to do?')).toBeTruthy();
   });
 
@@ -45,7 +45,7 @@ describe('Home', () => {
 
   it('check-in Yes thanks them; the question goes away', async () => {
     await renderApp('/home');
-    await fireEvent.press(await screen.findByTestId('home-checkin-yes'));
+    await fireEvent.press(await screen.findByTestId('checkin-yes'));
     expect(await screen.findByText(/Well done\. That's 6 days in a row\./)).toBeTruthy();
     await settle();
     expect(screen.queryByText('Did you move yesterday?')).toBeNull();
@@ -53,18 +53,21 @@ describe('Home', () => {
 
   it('check-in No offers a walk with company, joinable in one more tap', async () => {
     await renderApp('/home');
-    await fireEvent.press(await screen.findByTestId('home-checkin-no'));
-    const suggestion = await screen.findByTestId('home-checkin-suggestion');
+    await fireEvent.press(await screen.findByTestId('checkin-no'));
+    const suggestion = await screen.findByTestId('checkin-suggestion');
     expect(within(suggestion).getByText(/Want some company today/)).toBeTruthy();
     await fireEvent.press(within(suggestion).getByText("I'm going"));
     expect(await screen.findByText("You're going.")).toBeTruthy();
   });
 
-  it('reminder Done says well done and removes it', async () => {
+  it('reminder Done says well done, then shows the next one', async () => {
     await renderApp('/home');
-    await fireEvent.press(await screen.findByTestId('home-reminder-done'));
+    const card = await screen.findByTestId('next-reminder');
+    const first = within(card).getByText(/Take medicine|Blood pressure tablet/).props
+      .children as string;
+    await fireEvent.press(screen.getByTestId('next-reminder-done'));
     expect(await screen.findByText('Done. Well done.')).toBeTruthy();
-    expect(screen.queryByTestId('home-reminder')).toBeNull();
+    await waitFor(() => expect(screen.queryByText(first)).toBeNull());
   });
 
   it('reads out the greeting, today and the choices', async () => {
@@ -74,7 +77,7 @@ describe('Home', () => {
     const spoken = (Speech.speak as jest.Mock).mock.calls[0][0] as string;
     expect(spoken).toMatch(/^Good (morning|afternoon|evening), Raj\./);
     expect(spoken).toContain('did you move yesterday?');
-    expect(spoken).toContain('Reminder at 8 am: Take medicine.');
+    expect(spoken).toMatch(/Reminder at (8 am: Take medicine|8 pm: Blood pressure tablet)\./);
     expect(spoken).toContain('Kampung: join activities near you.');
   });
 });

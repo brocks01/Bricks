@@ -1,18 +1,24 @@
 import { renderRouter, screen, waitFor } from 'expo-router/testing-library';
 import path from 'path';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { resetMockDb } from '@/api/mock';
+import { useActiveWalk } from '@/features/walk/activeWalk';
 import { useSettings } from '@/state/settings';
 import { useUndo } from '@/state/undo';
 
 /** The real app directory, so tests exercise actual layouts, tabs and providers. */
 const APP_DIR = path.resolve(__dirname, '../app');
 
-/** Fresh data, English, no pending undo. Call in beforeEach. */
-export function resetAppState(): void {
+/** Fresh data, English, no pending undo, no walk in progress. Call in beforeEach. */
+export async function resetAppState(): Promise<void> {
   resetMockDb();
   useUndo.getState().clear();
   useSettings.setState({ language: 'en' });
+  await useActiveWalk.getState().discard();
+  useActiveWalk.getState().setSimulationSpeed(1);
+  await AsyncStorage.clear();
 }
 
 let current: Awaited<ReturnType<typeof renderRouter>> | null = null;

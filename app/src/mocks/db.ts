@@ -8,9 +8,15 @@ import type {
   EventFilter,
   EventSummary,
   NewEvent,
+  NewReminder,
   PersonSummary,
+  SosAlert,
   Today,
+  WalkSummary,
 } from '@/api/types';
+import type { WalkUpload } from '@/features/walk/engine';
+
+import { createThriveDb } from './thriveDb';
 
 /**
  * In-memory stand-in for the backend during Phase 1 (docs/03 §9 seed):
@@ -75,9 +81,6 @@ interface State {
   now: () => Date;
   events: Map<string, EventRow>;
   circles: Map<string, CircleRow>;
-  checkinPending: boolean;
-  streak: number;
-  reminder: { id: string; text: string; time: string; done: boolean };
   nextId: number;
 }
 
@@ -279,11 +282,17 @@ export function createMockDb(now: () => Date = () => new Date()) {
   const state: State = {
     now,
     ...seed(now()),
-    checkinPending: true,
-    streak: 5,
-    reminder: { id: 'r_medicine', text: 'Take medicine', time: '08:00', done: false },
     nextId: 1,
   };
+
+  const thrive = createThriveDb({
+    now,
+    person,
+    attendees: (eventId) => {
+      const e = state.events.get(eventId);
+      return e ? [...e.going].filter((id) => id !== ME_ID).map(person) : [];
+    },
+  });
 
   const goingCount = (e: EventRow) => e.going.size + e.extraGoing;
 
@@ -413,28 +422,45 @@ export function createMockDb(now: () => Date = () => new Date()) {
         list.find((e) => !e.going.has(ME_ID) && e.category === 'walk') ??
         list.find((e) => e.going.has(ME_ID)) ??
         null;
+      const reminder = thrive.nextReminder();
       return {
-        checkin: { pending: state.checkinPending, question_key: 'moved_yesterday' },
+        checkin: { pending: thrive.checkinPending(), question_key: 'moved_yesterday' },
         next_event: next ? toSummary(next) : null,
-        next_reminder: state.reminder.done
-          ? null
-          : { id: state.reminder.id, text: state.reminder.text, time: state.reminder.time },
+        next_reminder: reminder
+          ? { id: reminder.id, text: reminder.text, time: reminder.time, kind: reminder.kind }
+          : null,
       };
     },
 
     answerCheckin(answer: 'yes' | 'no'): CheckinResult {
-      state.checkinPending = false;
-      if (answer === 'yes') state.streak += 1;
+      const streak = thrive.answerCheckin(answer);
       const suggestion =
         answer === 'no'
           ? (upcoming().find((e) => e.category === 'walk' && !e.going.has(ME_ID)) ?? null)
           : null;
-      return { answer, streak: state.streak, suggestion: suggestion && toSummary(suggestion) };
+      return { answer, streak, suggestion: suggestion && toSummary(suggestion) };
     },
 
-    completeReminder(id: string): void {
-      if (state.reminder.id === id) state.reminder.done = true;
+    // Thrive + Safety (check-in week, reminders, walks, SOS).
+    checkinWeek: () => thrive.checkinWeek(),
+    listReminders: () => thrive.listReminders(),
+    createReminder: (input: NewReminder) => thrive.createReminder(input),
+    deleteReminder: (id: string) => thrive.deleteReminder(id),
+    completeReminder: (id: string) => thrive.completeReminder(id),
+    uploadWalk: (upload: WalkUpload) => thrive.uploadWalk(upload),
+    getWalk(id: string): WalkSummary {
+      const walk = thrive.getWalk(id);
+      if (!walk) throw new MockNotFound(`walk ${id}`);
+      return walk;
     },
+    walkStats: () => thrive.walkStats(),
+    triggerSos: () => thrive.triggerSos(),
+    getSos(id: string): SosAlert {
+      const alert = thrive.getSos(id);
+      if (!alert) throw new MockNotFound(`sos ${id}`);
+      return alert;
+    },
+    resolveSos: (id: string) => thrive.resolveSos(id),
 
     listCircles(): CircleList {
       const all = [...state.circles.values()].map(toCircleSummary);

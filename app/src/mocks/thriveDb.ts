@@ -1,0 +1,285 @@
+import type {
+  CheckinWeek,
+  NewReminder,
+  PersonSummary,
+  Reminder,
+  SosAlert,
+  WalkListItem,
+  WalkStats,
+  WalkSummary,
+} from '@/api/types';
+import { bishanParkLoop } from '@/features/walk/simulatedTrack';
+import type { WalkUpload } from '@/features/walk/engine';
+import type { LatLng, TrackPoint } from '@/lib/geo';
+
+import { processWalk } from './walkProcessing';
+
+/**
+ * Thrive and Safety part of the mock backend: check-ins, reminders, walks
+ * (three weeks of history for Raj, two of them group walks) and SOS fan-out.
+ */
+
+/** Raj's home: Block 123, Bishan Street 12. Used for the walk privacy zone. */
+export const RAJ_HOME: LatLng = { lat: 1.3489, lng: 103.8512 };
+const AREA = 'Bishan';
+
+const isoDate = (d: Date) =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+const addDays = (d: Date, n: number) => {
+  const x = new Date(d);
+  x.setDate(x.getDate() + n);
+  return x;
+};
+
+/** Monday of the week containing `d`, at midnight. */
+function weekStart(d: Date): Date {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+  return x;
+}
+
+/** The demo loop, cut to `fraction` of its length and replayed from `start`. */
+function loopWalk(start: Date, fraction: number): TrackPoint[] {
+  const loop = bishanParkLoop();
+  const count = Math.max(2, Math.round(loop.length * fraction));
+  return loop.slice(0, count).map(({ offset_s, point }) => ({
+    ...point,
+    t: start.getTime() + offset_s * 1000,
+    accuracy: 5,
+  }));
+}
+
+export interface ThriveDeps {
+  now: () => Date;
+  person: (id: string) => PersonSummary;
+  /** People going to an event, for "Walked with" (excluding the walker). */
+  attendees: (eventId: string) => PersonSummary[];
+}
+
+export function createThriveDb({ now, person, attendees }: ThriveDeps) {
+  let nextId = 1;
+  const today = () => isoDate(now());
+
+  /* ---------- Check-ins ---------- */
+  const checkins = new Map<string, 'yes' | 'no'>();
+  // A 5-day streak up to yesterday.
+  for (let i = 1; i <= 5; i++) checkins.set(isoDate(addDays(now(), -i)), 'yes');
+
+  function streak(): number {
+    let n = 0;
+    // Today counts only once answered; the streak runs back from there.
+    let day = checkins.has(today()) ? now() : addDays(now(), -1);
+    while (checkins.get(isoDate(day)) === 'yes') {
+      n += 1;
+      day = addDays(day, -1);
+    }
+    return n;
+  }
+
+  /* ---------- Reminders ---------- */
+  const reminders = new Map<string, Reminder & { doneOn: string | null }>();
+  const addReminder = (r: NewReminder, created_by: Reminder['created_by'] = 'self') => {
+    const id = `r_${nextId++}`;
+    reminders.set(id, { ...r, id, done_today: false, created_by, doneOn: null });
+    return id;
+  };
+  addReminder({
+    kind: 'medicine',
+    text: 'Take medicine',
+    time: '08:00',
+    repeat: 'daily',
+    date: null,
+  });
+  addReminder({
+    kind: 'medicine',
+    text: 'Blood pressure tablet',
+    time: '20:00',
+    repeat: 'daily',
+    date: null,
+  });
+
+  const toReminder = (r: Reminder & { doneOn: string | null }): Reminder => {
+    const { doneOn, ...rest } = r;
+    return { ...rest, done_today: doneOn === today() };
+  };
+  const isToday = (r: Reminder) => {
+    const d = now();
+    if (r.repeat === 'once') return r.date === today();
+    if (r.repeat === 'weekdays') return d.getDay() >= 1 && d.getDay() <= 5;
+    return true;
+  };
+
+  /* ---------- Walks ---------- */
+  const walks: WalkSummary[] = [];
+  // Three weeks of morning walks; two of them were group walks with Lim and Ahmad.
+  const SEED: { daysAgo: number; fraction: number; group?: boolean }[] = [
+    { daysAgo: 20, fraction: 0.6 },
+    { daysAgo: 18, fraction: 0.75 },
+    { daysAgo: 16, fraction: 0.7, group: true },
+    { daysAgo: 13, fraction: 0.8 },
+    { daysAgo: 11, fraction: 0.65 },
+    { daysAgo: 9, fraction: 0.85, group: true },
+    { daysAgo: 6, fraction: 0.7 },
+    { daysAgo: 4, fraction: 0.9 },
+    { daysAgo: 2, fraction: 0.75 },
+    { daysAgo: 1, fraction: 1 },
+  ];
+  for (const s of SEED) {
+    const start = addDays(now(), -s.daysAgo);
+    start.setHours(7, 5, 0, 0);
+    const points = loopWalk(start, s.fraction);
+    const end = new Date(points[points.length - 1]!.t);
+    const history = walks.slice().reverse();
+    walks.push(
+      processWalk([points], {
+        id: `w_${nextId++}`,
+        home: RAJ_HOME,
+        areaName: AREA,
+        steps: Math.round((2400 * s.fraction) / 0.72),
+        startedAt: start,
+        endedAt: end,
+        walkedWith: s.group ? [person('u_lim'), person('u_ahmad')] : [],
+        history,
+      }),
+    );
+  }
+
+  const listItem = (w: WalkSummary): WalkListItem => ({
+    id: w.id,
+    time_of_day: w.time_of_day,
+    start_place_name: w.start_place_name,
+    started_at: w.started_at,
+    distance_m: w.distance_m,
+    moving_s: w.moving_s,
+    steps: w.steps,
+  });
+
+  /* ---------- SOS ---------- */
+  const alerts = new Map<string, { created: number; resolved: boolean }>();
+  // Safe Circle: family first, then neighbours by distance (docs/03 §7).
+  const SAFE_CIRCLE = [
+    { id: 'u_priya', is_family: true, distance_m: null, comesAfterMs: 3000 },
+    { id: 'u_ahmad', is_family: false, distance_m: 300, comesAfterMs: 6000 },
+    { id: 'u_lim', is_family: false, distance_m: 650, comesAfterMs: null },
+  ];
+
+  return {
+    /* Check-ins */
+    checkinPending: () => !checkins.has(today()),
+    answerCheckin(answer: 'yes' | 'no') {
+      checkins.set(today(), answer);
+      return streak();
+    },
+    checkinWeek(): CheckinWeek {
+      const monday = weekStart(now());
+      return {
+        streak: streak(),
+        days: Array.from({ length: 7 }, (_, i) => {
+          const date = isoDate(addDays(monday, i));
+          return { date, answer: checkins.get(date) ?? 'none' };
+        }),
+      };
+    },
+
+    /* Reminders */
+    listReminders(): Reminder[] {
+      return [...reminders.values()]
+        .filter((r) => r.repeat !== 'once' || (r.date ?? '') >= today())
+        .sort((a, b) => a.time.localeCompare(b.time))
+        .map(toReminder);
+    },
+    createReminder(input: NewReminder): Reminder {
+      const id = addReminder(input);
+      return toReminder(reminders.get(id)!);
+    },
+    deleteReminder(id: string): void {
+      reminders.delete(id);
+    },
+    completeReminder(id: string): void {
+      const r = reminders.get(id);
+      if (r) r.doneOn = today();
+    },
+    /** For Today: the next reminder not yet done, upcoming first. */
+    nextReminder(): Reminder | null {
+      const nowHm = `${String(now().getHours()).padStart(2, '0')}:${String(now().getMinutes()).padStart(2, '0')}`;
+      const due = this.listReminders().filter((r) => isToday(r) && !r.done_today);
+      return due.find((r) => r.time >= nowHm) ?? due[0] ?? null;
+    },
+
+    /* Walks */
+    uploadWalk(upload: WalkUpload): WalkSummary {
+      const summary = processWalk(upload.segments, {
+        id: `w_${nextId++}`,
+        home: RAJ_HOME,
+        areaName: AREA,
+        steps: upload.steps,
+        startedAt: new Date(upload.started_at),
+        endedAt: new Date(upload.ended_at),
+        walkedWith: upload.event_id ? attendees(upload.event_id) : [],
+        history: walks.slice().reverse(),
+      });
+      walks.push(summary);
+      return summary;
+    },
+    getWalk(id: string): WalkSummary | null {
+      return walks.find((w) => w.id === id) ?? null;
+    },
+    walkStats(): WalkStats {
+      const monday = weekStart(now());
+      const thisWeek = walks.filter((w) => new Date(w.started_at) >= monday);
+      const last = walks[walks.length - 1];
+      return {
+        distance_m: thisWeek.reduce((sum, w) => sum + w.distance_m, 0),
+        walks: thisWeek.length,
+        moving_s: thisWeek.reduce((sum, w) => sum + w.moving_s, 0),
+        days: Array.from({ length: 7 }, (_, i) => {
+          const date = isoDate(addDays(monday, i));
+          return {
+            date,
+            distance_m: thisWeek
+              .filter((w) => isoDate(new Date(w.started_at)) === date)
+              .reduce((sum, w) => sum + w.distance_m, 0),
+          };
+        }),
+        last_walk: last ? listItem(last) : null,
+      };
+    },
+
+    /* SOS */
+    triggerSos(): SosAlert {
+      const id = `s_${nextId++}`;
+      alerts.set(id, { created: now().getTime(), resolved: false });
+      return this.getSos(id)!;
+    },
+    getSos(id: string): SosAlert | null {
+      const alert = alerts.get(id);
+      if (!alert) return null;
+      const elapsed = now().getTime() - alert.created;
+      const helpers = SAFE_CIRCLE.map((h) => ({
+        id: h.id,
+        name: person(h.id).name,
+        is_family: h.is_family,
+        distance_m: h.distance_m,
+        status:
+          h.comesAfterMs !== null && elapsed >= h.comesAfterMs
+            ? ('on_way' as const)
+            : ('notified' as const),
+      }));
+      return {
+        id,
+        status: alert.resolved
+          ? 'resolved'
+          : helpers.some((h) => h.status === 'on_way')
+            ? 'helper_coming'
+            : 'open',
+        created_at: new Date(alert.created).toISOString(),
+        helpers,
+      };
+    },
+    resolveSos(id: string): void {
+      const alert = alerts.get(id);
+      if (alert) alert.resolved = true;
+    },
+  };
+}

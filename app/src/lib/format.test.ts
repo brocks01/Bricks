@@ -78,3 +78,37 @@ describe('weekdayLabels', () => {
     expect(labels[6]).toBe('Sun');
   });
 });
+
+describe('walk formats', () => {
+  const { formatDistance, formatCount, formatClock, formatMinutes, formatPace } =
+    jest.requireActual<typeof import('./format')>('./format');
+
+  it.each([
+    [0, '0 m'],
+    [854, '850 m'],
+    [2412, '2.4 km'],
+    [10_050, '10.1 km'],
+  ])('distance %s m → %s', (m, expected) => {
+    expect(formatDistance(m, 'en')).toBe(expected);
+  });
+
+  it('counts with separators', () => {
+    expect(formatCount(3210.4, 'en')).toBe('3,210');
+  });
+
+  it.each([
+    [0, '0:00'],
+    [245, '4:05'],
+    [1450, '24:10'],
+    [3750, '1:02:30'],
+  ])('clock %s s → %s', (s, expected) => {
+    expect(formatClock(s)).toBe(expected);
+  });
+
+  it('durations and pace in words', () => {
+    expect(formatMinutes(32 * 60 + 10, en)).toBe('32 min');
+    expect(formatMinutes(65 * 60, en)).toBe('1 h 5 min');
+    expect(formatMinutes(120 * 60, en)).toBe('2 h');
+    expect(formatPace(800, en)).toBe('13 min 20 s per km');
+  });
+});

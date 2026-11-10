@@ -100,16 +100,45 @@
   },
   "thrive": {
     "title": "Sihat",
-    "comingSoon": "Di sini anda akan menjawab soalan pagi, merekod jalan kaki dan menetapkan peringatan.",
-    "readout": "Sihat. Di sini anda akan menjawab soalan pagi, merekod jalan kaki dan menetapkan peringatan."
+    "startWalk": "Mula jalan kaki",
+    "thisWeek": "Minggu ini",
+    "kmWalked": "km berjalan",
+    "walks_other": "{{count}} kali berjalan",
+    "streak_other": "{{count}} hari berturut-turut",
+    "lastWalk": "Jalan kaki terakhir",
+    "lastWalkLine": "{{place}} · {{distance}} · {{time}}",
+    "noWalks": "Belum ada jalan kaki. Sedia untuk yang pertama?",
+    "reminders": "Peringatan",
+    "noReminders": "Tiada lagi peringatan hari ini.",
+    "seeReminders": "Lihat dan tambah peringatan",
+    "unfinished": "Anda mula berjalan tadi tetapi belum selesai.",
+    "saveWalk": "Simpan jalan kaki itu",
+    "discardWalk": "Jangan simpan",
+    "readout": "Sihat. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
+    "readoutWeek": "Minggu ini anda berjalan {{distance}}: {{walks}}. {{streak}}.",
+    "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
+    "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
   },
   "sos": {
     "title": "Mendapatkan bantuan",
     "call": "Hubungi {{number}} sekarang",
     "callHint": "Ini akan menghubungi nombor kecemasan.",
-    "safeCircleSoon": "Memberitahu Bulatan Selamat anda akan ditambah di sini tidak lama lagi.",
-    "goBack": "Saya OK, kembali",
-    "readout": "Mendapatkan bantuan. Ketik Hubungi {{number}} sekarang untuk memanggil ambulans, atau ketik Saya OK untuk kembali."
+    "countdown_other": "Memberitahu Bulatan Selamat anda dalam {{count}} saat…",
+    "cancel": "Batal, saya OK",
+    "sending": "Memberitahu Bulatan Selamat anda…",
+    "sent": "Bulatan Selamat anda telah diberitahu.",
+    "helper": {
+      "on_way": "{{name}} sedang datang",
+      "notified": "{{name}} telah diberitahu",
+      "arrived": "{{name}} sudah sampai"
+    },
+    "away": "{{name}} ({{distance}} dari sini)",
+    "safeNow": "Saya selamat sekarang",
+    "safeConfirm": "Beritahu semua orang anda selamat sekarang?",
+    "resolved": "Terima kasih. Kami telah memberitahu semua orang anda selamat.",
+    "failed": "Kami tidak dapat menghubungi Bulatan Selamat anda. Sila hubungi {{number}}.",
+    "readout": "Mendapatkan bantuan. Ketik Hubungi {{number}} sekarang, atau Batal jika anda OK. Memberitahu Bulatan Selamat anda dalam {{count}} saat.",
+    "readoutSent": "Mendapatkan bantuan. {{statuses}} Ketik Saya selamat sekarang apabila anda OK."
   },
   "notFound": {
     "title": "Kami tidak menemui halaman itu",
@@ -269,5 +298,104 @@
     "noUpcoming": "Belum ada apa-apa dirancang. Anda boleh memulakan sesuatu.",
     "notFound": "Kami tidak menemui Bulatan ini.",
     "readout": "{{name}}. {{members}}. Kapten {{captain}}. {{next}}"
+  },
+  "units": {
+    "minutes_other": "{{count}} min",
+    "hours_other": "{{count}} j",
+    "hoursMinutes": "{{hours}} j {{minutes}} min",
+    "pace": "{{minutes}} min {{seconds}} s setiap km"
+  },
+  "checkin": {
+    "title": "Soalan pagi",
+    "maybeLater": "Mungkin nanti",
+    "readout": "Soalan pagi. {{question}} Ketik Ya atau Tidak.",
+    "alreadyAnswered": "Anda sudah menjawab hari ini. Terima kasih."
+  },
+  "walk": {
+    "recording": "Sedang berjalan",
+    "time": "Masa",
+    "distance": "Jarak",
+    "steps": "Langkah",
+    "pause": "Jeda",
+    "resume": "Teruskan",
+    "finish": "Selesai",
+    "paused": "Dijeda. Ketik Teruskan apabila anda bersedia.",
+    "autoPaused": "Anda telah berhenti. Masa akan diteruskan apabila anda berjalan semula.",
+    "keepOpen": "Biarkan skrin ini terbuka semasa anda berjalan.",
+    "finishConfirm": "Selesaikan jalan kaki anda?",
+    "saving": "Menyimpan jalan kaki anda…",
+    "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Sihat.",
+    "readout": "Sedang berjalan. {{time}}, {{distance}}, {{steps}} langkah.",
+    "readoutPaused": "Dijeda. {{time}}, {{distance}}, {{steps}} langkah.",
+    "title": {
+      "morning": "Jalan pagi",
+      "afternoon": "Jalan petang",
+      "evening": "Jalan malam"
+    },
+    "titleAt": "{{title}} · {{place}}",
+    "avgPace": "Purata kelajuan",
+    "splits": "Setiap kilometer",
+    "splitKm": "{{km}} km",
+    "walkedWith": "Berjalan bersama",
+    "praise": {
+      "first_walk": "Syabas atas jalan kaki pertama anda, {{name}}!",
+      "longest_month": "Syabas, {{name}}. Itu jalan kaki terpanjang anda bulan ini.",
+      "more_than_last": "Syabas, {{name}}. Itu {{extra}} lebih jauh daripada kali lepas.",
+      "steady": "Syabas, {{name}}. Perlahan dan stabil."
+    },
+    "notFound": "Kami tidak menemui jalan kaki ini.",
+    "summaryReadout": "{{title}}. {{distance}} dalam {{time}}, {{steps}} langkah. {{praise}}"
+  },
+  "reminders": {
+    "title": "Peringatan",
+    "add": "Tambah peringatan",
+    "empty": "Belum ada peringatan.",
+    "remove": "Buang",
+    "removed": "Peringatan dibuang.",
+    "added": "Peringatan ditetapkan pada {{time}}.",
+    "doneToday": "Selesai hari ini",
+    "byFamily": "Ditetapkan oleh keluarga anda",
+    "repeat": {
+      "once": "Sekali",
+      "daily": "Setiap hari",
+      "weekdays": "Hari bekerja (Isnin hingga Jumaat)"
+    },
+    "notifyOff": "Telefon anda tidak akan berbunyi kerana pemberitahuan dimatikan. Peringatan anda masih ditunjukkan di sini.",
+    "readout": "Peringatan. {{list}} Ketik Tambah peringatan untuk menetapkan yang baharu.",
+    "readoutItem": "{{time}}, {{text}}, {{repeat}}.",
+    "readoutNone": "Anda tiada peringatan.",
+    "new": {
+      "title": "Tambah peringatan",
+      "what": "Untuk apa?",
+      "kind": {
+        "medicine": "Ubat",
+        "doctor": "Temu janji doktor",
+        "event": "Aktiviti",
+        "other": "Lain-lain"
+      },
+      "defaultText": {
+        "medicine": "Makan ubat",
+        "doctor": "Temu janji doktor",
+        "event": "Aktiviti",
+        "other": "Peringatan"
+      },
+      "textLabel": "Apa yang patut ditulis?",
+      "when": "Pukul berapa?",
+      "anotherTime": "Masa lain",
+      "earlier": "Lebih awal",
+      "later": "Lebih lewat",
+      "hourLabel": "Jam",
+      "minuteLabel": "Minit",
+      "repeatTitle": "Berapa kerap?",
+      "summary": "{{repeat}} pada {{time}}: {{text}}",
+      "save": "Simpan peringatan",
+      "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}} Ketik pilihan, kemudian Seterusnya."
+    }
+  },
+  "notifications": {
+    "channel": "Peringatan",
+    "reminderTitle": "Peringatan: {{text}}",
+    "reminderBody": "Ketik Selesai apabila sudah.",
+    "snooze": "Tunda {{count}} min"
   }
 }

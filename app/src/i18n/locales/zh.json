@@ -100,16 +100,45 @@
   },
   "thrive": {
     "title": "健康",
-    "comingSoon": "在这里，您可以回答每天早上的问候、记录步行和设置提醒。",
-    "readout": "健康。在这里，您可以回答每天早上的问候、记录步行和设置提醒。"
+    "startWalk": "开始步行",
+    "thisWeek": "本周",
+    "kmWalked": "公里",
+    "walks_other": "走了 {{count}} 次",
+    "streak_other": "连续 {{count}} 天",
+    "lastWalk": "上一次步行",
+    "lastWalkLine": "{{place}} · {{distance}} · {{time}}",
+    "noWalks": "还没有步行记录。准备好第一次了吗？",
+    "reminders": "提醒",
+    "noReminders": "今天没有其他提醒了。",
+    "seeReminders": "查看和添加提醒",
+    "unfinished": "您之前开始了一次步行，但还没有结束。",
+    "saveWalk": "保存那次步行",
+    "discardWalk": "不保存",
+    "readout": "健康。{{week}}{{last}}{{reminder}}点开始步行就可以去走走。",
+    "readoutWeek": "本周您走了 {{distance}}，{{walks}}。{{streak}}。",
+    "readoutLast": "上一次步行：{{place}}，{{distance}}，{{time}}。",
+    "readoutReminder": "下一个提醒在 {{time}}：{{text}}。"
   },
   "sos": {
     "title": "正在求助",
     "call": "立即拨打 {{number}}",
     "callHint": "这会拨打紧急电话。",
-    "safeCircleSoon": "通知您的安全圈的功能很快会加在这里。",
-    "goBack": "我没事，返回",
-    "readout": "正在求助。点立即拨打 {{number}} 叫救护车，或者点我没事返回。"
+    "countdown_other": "{{count}} 秒后通知您的安全圈…",
+    "cancel": "取消，我没事",
+    "sending": "正在通知您的安全圈…",
+    "sent": "已经通知您的安全圈。",
+    "helper": {
+      "on_way": "{{name}} 正在赶来",
+      "notified": "已通知 {{name}}",
+      "arrived": "{{name}} 已经到了"
+    },
+    "away": "{{name}}（离您 {{distance}}）",
+    "safeNow": "我现在安全了",
+    "safeConfirm": "告诉大家您现在安全了吗？",
+    "resolved": "谢谢。我们已经告诉大家您安全了。",
+    "failed": "联系不上您的安全圈。请拨打 {{number}}。",
+    "readout": "正在求助。点立即拨打 {{number}}，或者如果您没事就点取消。{{count}} 秒后通知您的安全圈。",
+    "readoutSent": "正在求助。{{statuses}}您没事了就点我现在安全了。"
   },
   "notFound": {
     "title": "找不到这个页面",
@@ -269,5 +298,104 @@
     "noUpcoming": "还没有安排活动。您可以发起一个。",
     "notFound": "找不到这个圈子。",
     "readout": "{{name}}。{{members}}。队长 {{captain}}。{{next}}"
+  },
+  "units": {
+    "minutes_other": "{{count}} 分钟",
+    "hours_other": "{{count}} 小时",
+    "hoursMinutes": "{{hours}} 小时 {{minutes}} 分钟",
+    "pace": "每公里 {{minutes}} 分 {{seconds}} 秒"
+  },
+  "checkin": {
+    "title": "早上问候",
+    "maybeLater": "以后再说",
+    "readout": "早上问候。{{question}}请点是或不是。",
+    "alreadyAnswered": "您今天已经回答过了。谢谢。"
+  },
+  "walk": {
+    "recording": "正在步行",
+    "time": "时间",
+    "distance": "距离",
+    "steps": "步数",
+    "pause": "暂停",
+    "resume": "继续",
+    "finish": "结束",
+    "paused": "已暂停。准备好了就点继续。",
+    "autoPaused": "您停下来了。再走的时候时间会继续。",
+    "keepOpen": "步行时请保持这个画面打开。",
+    "finishConfirm": "结束这次步行吗？",
+    "saving": "正在保存您的步行…",
+    "saveFailed": "暂时无法保存您的步行。记录已留在手机里，我们会在健康页面再试。",
+    "readout": "正在步行。{{time}}，{{distance}}，{{steps}} 步。",
+    "readoutPaused": "已暂停。{{time}}，{{distance}}，{{steps}} 步。",
+    "title": {
+      "morning": "早上步行",
+      "afternoon": "下午步行",
+      "evening": "傍晚步行"
+    },
+    "titleAt": "{{title}} · {{place}}",
+    "avgPace": "平均配速",
+    "splits": "每一公里",
+    "splitKm": "第 {{km}} 公里",
+    "walkedWith": "一起步行的有",
+    "praise": {
+      "first_walk": "{{name}}，第一次步行，做得好！",
+      "longest_month": "做得好，{{name}}。这是您这个月走得最远的一次。",
+      "more_than_last": "做得好，{{name}}。比上次多走了 {{extra}}。",
+      "steady": "做得好，{{name}}。稳稳当当。"
+    },
+    "notFound": "找不到这次步行。",
+    "summaryReadout": "{{title}}。{{time}} 走了 {{distance}}，{{steps}} 步。{{praise}}"
+  },
+  "reminders": {
+    "title": "提醒",
+    "add": "添加提醒",
+    "empty": "还没有提醒。",
+    "remove": "删除",
+    "removed": "提醒已删除。",
+    "added": "已设好 {{time}} 的提醒。",
+    "doneToday": "今天已完成",
+    "byFamily": "家人帮您设的",
+    "repeat": {
+      "once": "一次",
+      "daily": "每天",
+      "weekdays": "工作日（星期一到星期五）"
+    },
+    "notifyOff": "通知已关闭，手机不会响铃提醒。提醒仍然会显示在这里。",
+    "readout": "提醒。{{list}}点添加提醒就可以设新的提醒。",
+    "readoutItem": "{{time}}，{{text}}，{{repeat}}。",
+    "readoutNone": "您没有提醒。",
+    "new": {
+      "title": "添加提醒",
+      "what": "这是关于什么的？",
+      "kind": {
+        "medicine": "吃药",
+        "doctor": "看医生",
+        "event": "活动",
+        "other": "其他"
+      },
+      "defaultText": {
+        "medicine": "吃药",
+        "doctor": "看医生",
+        "event": "活动",
+        "other": "提醒"
+      },
+      "textLabel": "提醒要写什么？",
+      "when": "几点？",
+      "anotherTime": "其他时间",
+      "earlier": "早一点",
+      "later": "晚一点",
+      "hourLabel": "小时",
+      "minuteLabel": "分钟",
+      "repeatTitle": "多久一次？",
+      "summary": "{{repeat}} {{time}}：{{text}}",
+      "save": "保存提醒",
+      "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}点一个选项，再点下一步。"
+    }
+  },
+  "notifications": {
+    "channel": "提醒",
+    "reminderTitle": "提醒：{{text}}",
+    "reminderBody": "做好了就点完成。",
+    "snooze": "{{count}} 分钟后再提醒"
   }
 }

@@ -102,16 +102,48 @@
   },
   "thrive": {
     "title": "Thrive",
-    "comingSoon": "Here you will answer your morning check-in, record walks and set reminders.",
-    "readout": "Thrive. Here you will answer your morning check-in, record walks and set reminders."
+    "startWalk": "Start walk",
+    "thisWeek": "This week",
+    "kmWalked": "km walked",
+    "walks_one": "{{count}} walk",
+    "walks_other": "{{count}} walks",
+    "streak_one": "{{count}} day in a row",
+    "streak_other": "{{count}} days in a row",
+    "lastWalk": "Last walk",
+    "lastWalkLine": "{{place}} · {{distance}} · {{time}}",
+    "noWalks": "No walks yet. Ready for your first?",
+    "reminders": "Reminders",
+    "noReminders": "No more reminders today.",
+    "seeReminders": "See and add reminders",
+    "unfinished": "You started a walk earlier and didn't finish it.",
+    "saveWalk": "Save that walk",
+    "discardWalk": "Don't save it",
+    "readout": "Thrive. {{week}} {{last}} {{reminder}} Tap Start walk to go for a walk.",
+    "readoutWeek": "This week you walked {{distance}}: {{walks}}. {{streak}}.",
+    "readoutLast": "Your last walk: {{place}}, {{distance}}, {{time}}.",
+    "readoutReminder": "Next reminder at {{time}}: {{text}}."
   },
   "sos": {
     "title": "Getting help",
     "call": "Call {{number}} now",
     "callHint": "This calls the emergency number.",
-    "safeCircleSoon": "Telling your Safe Circle will be added here soon.",
-    "goBack": "I'm OK, go back",
-    "readout": "Getting help. Tap Call {{number}} now to call for an ambulance, or tap I'm OK to go back."
+    "countdown_one": "Telling your Safe Circle in {{count}} second…",
+    "countdown_other": "Telling your Safe Circle in {{count}} seconds…",
+    "cancel": "Cancel, I'm OK",
+    "sending": "Telling your Safe Circle…",
+    "sent": "Your Safe Circle has been told.",
+    "helper": {
+      "on_way": "{{name}} is on the way",
+      "notified": "{{name}} has been told",
+      "arrived": "{{name}} is here"
+    },
+    "away": "{{name}} ({{distance}} away)",
+    "safeNow": "I'm safe now",
+    "safeConfirm": "Tell everyone you're safe now?",
+    "resolved": "Thank you. We've told everyone you're safe.",
+    "failed": "We couldn't reach your Safe Circle. Please call {{number}}.",
+    "readout": "Getting help. Tap Call {{number}} now, or Cancel if you're okay. Telling your Safe Circle in {{count}} seconds.",
+    "readoutSent": "Getting help. {{statuses}} Tap I'm safe now when you're okay."
   },
   "notFound": {
     "title": "We couldn't find that page",
@@ -273,5 +305,106 @@
     "noUpcoming": "Nothing planned yet. You could start something.",
     "notFound": "We couldn't find this Circle.",
     "readout": "{{name}}. {{members}}. Captain {{captain}}. {{next}}"
+  },
+  "units": {
+    "minutes_one": "{{count}} min",
+    "minutes_other": "{{count}} min",
+    "hours_one": "{{count}} h",
+    "hours_other": "{{count}} h",
+    "hoursMinutes": "{{hours}} h {{minutes}} min",
+    "pace": "{{minutes}} min {{seconds}} s per km"
+  },
+  "checkin": {
+    "title": "Morning check-in",
+    "maybeLater": "Maybe later",
+    "readout": "Morning check-in. {{question}} Tap Yes or No.",
+    "alreadyAnswered": "You've already answered today. Thank you."
+  },
+  "walk": {
+    "recording": "Walking",
+    "time": "Time",
+    "distance": "Distance",
+    "steps": "Steps",
+    "pause": "Pause",
+    "resume": "Carry on",
+    "finish": "Finish",
+    "paused": "Paused. Tap Carry on when you're ready.",
+    "autoPaused": "You've stopped. The time carries on when you walk again.",
+    "keepOpen": "Keep this screen open while you walk.",
+    "finishConfirm": "Finish your walk?",
+    "saving": "Saving your walk…",
+    "saveFailed": "We couldn't save your walk yet. It's kept on your phone; we'll try again from Thrive.",
+    "readout": "Walking. {{time}}, {{distance}}, {{steps}} steps.",
+    "readoutPaused": "Paused. {{time}}, {{distance}}, {{steps}} steps.",
+    "title": {
+      "morning": "Morning walk",
+      "afternoon": "Afternoon walk",
+      "evening": "Evening walk"
+    },
+    "titleAt": "{{title}} · {{place}}",
+    "avgPace": "Average pace",
+    "splits": "Each kilometre",
+    "splitKm": "{{km}} km",
+    "walkedWith": "Walked with",
+    "praise": {
+      "first_walk": "Well done on your first walk, {{name}}!",
+      "longest_month": "Well done, {{name}}. That's your longest walk this month.",
+      "more_than_last": "Well done, {{name}}. That's {{extra}} more than last time.",
+      "steady": "Well done, {{name}}. Nice and steady."
+    },
+    "notFound": "We couldn't find this walk.",
+    "summaryReadout": "{{title}}. {{distance}} in {{time}}, {{steps}} steps. {{praise}}"
+  },
+  "reminders": {
+    "title": "Reminders",
+    "add": "Add a reminder",
+    "empty": "No reminders yet.",
+    "remove": "Remove",
+    "removed": "Reminder removed.",
+    "added": "Reminder set for {{time}}.",
+    "doneToday": "Done today",
+    "byFamily": "Set by your family",
+    "repeat": {
+      "once": "Once",
+      "daily": "Every day",
+      "weekdays": "Weekdays (Monday to Friday)"
+    },
+    "notifyOff": "Your phone won't sound an alert because notifications are turned off. Your reminders still show here.",
+    "readout": "Reminders. {{list}} Tap Add a reminder to set a new one.",
+    "readoutItem": "{{time}}, {{text}}, {{repeat}}.",
+    "readoutNone": "You have no reminders.",
+    "new": {
+      "title": "Add a reminder",
+      "what": "What is it for?",
+      "kind": {
+        "medicine": "Medicine",
+        "doctor": "Doctor's appointment",
+        "event": "An activity",
+        "other": "Something else"
+      },
+      "defaultText": {
+        "medicine": "Take medicine",
+        "doctor": "Doctor's appointment",
+        "event": "Activity",
+        "other": "Reminder"
+      },
+      "textLabel": "What should it say?",
+      "when": "What time?",
+      "anotherTime": "Another time",
+      "earlier": "Earlier",
+      "later": "Later",
+      "hourLabel": "Hour",
+      "minuteLabel": "Minutes",
+      "repeatTitle": "How often?",
+      "summary": "{{repeat}} at {{time}}: {{text}}",
+      "save": "Save reminder",
+      "readoutStep": "Step {{step}} of {{total}}. {{question}} Tap a choice, then Next."
+    }
+  },
+  "notifications": {
+    "channel": "Reminders",
+    "reminderTitle": "Reminder: {{text}}",
+    "reminderBody": "Tap Done when you have.",
+    "snooze": "Snooze {{count}} min"
   }
 }

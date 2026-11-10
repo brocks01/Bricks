@@ -80,6 +80,8 @@ export default function TabsLayout() {
 
   return (
     <Tabs
+      // Android Back from any tab returns to Home (the anchor), never out of the app.
+      backBehavior="initialRoute"
       screenListeners={{ tabPress: () => tapFeedback() }}
       screenOptions={{
         headerShown: false,

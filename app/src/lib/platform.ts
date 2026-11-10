@@ -26,6 +26,12 @@ export const platform = {
   canRecordInBackground: isAndroid && !isExpoGo,
   /** Phone dialler links (tel:). */
   canCallPhone: isNative,
+  /** Android groups notifications into channels that must be created first. */
+  usesNotificationChannels: isAndroid,
+  /** Apple Maps' calm, low-detail style (iPhone); Android uses our own map style. */
+  hasMutedMapStyle: Platform.OS === 'ios',
+  /** Local notifications (reminders) work on both phones, including Expo Go. */
+  canScheduleNotifications: isNative,
 } as const;
 
 export type PlatformFlags = typeof platform;

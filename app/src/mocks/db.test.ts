@@ -77,7 +77,8 @@ describe('mock backend', () => {
     const today = fresh().getToday();
     expect(today.checkin.pending).toBe(true);
     expect(today.next_event).toMatchObject({ category: 'walk', my_rsvp: null });
-    expect(today.next_reminder).toMatchObject({ text: 'Take medicine', time: '08:00' });
+    // At 9 am the next one still to come is the 8 pm tablet.
+    expect(today.next_reminder).toMatchObject({ kind: 'medicine', time: '20:00' });
   });
 
   it('check-in "no" suggests a walk; "yes" grows the streak; both clear the card', () => {
@@ -90,9 +91,13 @@ describe('mock backend', () => {
     expect(fresh().answerCheckin('yes')).toMatchObject({ streak: 6, suggestion: null });
   });
 
-  it('completing the reminder removes it from Today', () => {
+  it('completing reminders removes them from Today, one by one', () => {
     const db = fresh();
-    db.completeReminder('r_medicine');
+    const first = db.getToday().next_reminder!;
+    db.completeReminder(first.id);
+    const second = db.getToday().next_reminder!;
+    expect(second.id).not.toBe(first.id);
+    db.completeReminder(second.id);
     expect(db.getToday().next_reminder).toBeNull();
   });
 

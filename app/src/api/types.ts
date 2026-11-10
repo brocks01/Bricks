@@ -97,7 +97,7 @@ export interface Today {
   checkin: { pending: boolean; question_key: 'moved_yesterday' };
   /** The next thing worth joining, or the member's next RSVP. */
   next_event: EventSummary | null;
-  next_reminder: { id: string; text: string; time: string } | null;
+  next_reminder: Pick<Reminder, 'id' | 'text' | 'time' | 'kind'> | null;
 }
 
 /** POST /checkins response. */
@@ -130,4 +130,92 @@ export interface NewEvent {
   end_at: string | null;
   place_name: string;
   whatsapp_link: string | null;
+}
+
+/* ---------- Thrive (iteration 1.2). Proposed shapes; confirm with backend. ---------- */
+
+export type ReminderKind = 'medicine' | 'doctor' | 'event' | 'other';
+export type ReminderRepeat = 'once' | 'daily' | 'weekdays';
+
+/** GET /reminders items. `time` is local "HH:MM". */
+export interface Reminder {
+  id: string;
+  kind: ReminderKind;
+  text: string;
+  time: string;
+  repeat: ReminderRepeat;
+  /** For "once": the date it's for (YYYY-MM-DD). */
+  date: string | null;
+  done_today: boolean;
+  created_by: 'self' | 'family' | 'call' | 'whatsapp';
+}
+
+/** POST /reminders body. */
+export type NewReminder = Pick<Reminder, 'kind' | 'text' | 'time' | 'repeat' | 'date'>;
+
+/** GET /checkins/week. Days are Monday-first, this week. */
+export interface CheckinWeek {
+  streak: number;
+  days: { date: string; answer: 'yes' | 'no' | 'none' }[];
+}
+
+/** Why the server thinks this walk is worth celebrating (translated by the app). */
+export type WalkPraise =
+  | { kind: 'first_walk' }
+  | { kind: 'longest_month' }
+  | { kind: 'more_than_last'; extra_m: number }
+  | { kind: 'steady' };
+
+/** GET /walks list items and the header of a walk summary. */
+export interface WalkListItem {
+  id: string;
+  /** e.g. "Morning walk". The place is separate so it can be translated around. */
+  time_of_day: 'morning' | 'afternoon' | 'evening';
+  start_place_name: string;
+  started_at: string;
+  distance_m: number;
+  moving_s: number;
+  steps: number;
+}
+
+/** GET /walks/{id}, and the response to POST /walks. */
+export interface WalkSummary extends WalkListItem {
+  ended_at: string;
+  duration_s: number;
+  avg_pace_s_per_km: number;
+  /** One entry per full km, plus the last part-km. */
+  splits: { km: number; distance_m: number; pace_s: number }[];
+  /** Full route: only ever returned to the walker. */
+  route_polyline: string | null;
+  /** Route with ~200 m around home removed: safe to share (WK-6). */
+  route_public_polyline: string;
+  walked_with: PersonSummary[];
+  praise: WalkPraise;
+}
+
+/** GET /walks/stats?period=week. */
+export interface WalkStats {
+  distance_m: number;
+  walks: number;
+  moving_s: number;
+  /** Monday-first, this week: metres walked each day. */
+  days: { date: string; distance_m: number }[];
+  last_walk: WalkListItem | null;
+}
+
+export type SosHelperStatus = 'notified' | 'on_way' | 'arrived';
+
+/** GET /sos/{id}. */
+export interface SosAlert {
+  id: string;
+  status: 'open' | 'helper_coming' | 'resolved' | 'cancelled';
+  created_at: string;
+  helpers: {
+    id: string;
+    name: string;
+    is_family: boolean;
+    /** Straight-line distance from the member; null for family far away. */
+    distance_m: number | null;
+    status: SosHelperStatus;
+  }[];
 }

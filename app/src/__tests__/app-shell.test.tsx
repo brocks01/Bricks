@@ -8,9 +8,9 @@ import { renderApp, resetAppState } from '@/test-utils/renderApp';
 jest.setTimeout(30_000);
 
 describe('app shell', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    resetAppState();
+    await resetAppState();
   });
 
   it('opens on Home with skills, community and health sections in that order', async () => {

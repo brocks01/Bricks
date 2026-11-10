@@ -1,7 +1,7 @@
 import { createMockDb, MockNotFound, type MockDb } from '@/mocks/db';
 import meFixture from '@/mocks/me.json';
 
-import type { KampungApi } from './client';
+import type { BricksApi } from './client';
 import { ApiError } from './errors';
 import type { Me } from './types';
 
@@ -29,7 +29,7 @@ function respond<T>(operation: () => T, path: string): Promise<T> {
   });
 }
 
-export const mockApi: KampungApi = {
+export const mockApi: BricksApi = {
   getMe: () => respond(() => meFixture as Me, '/me'),
   getToday: () => respond(() => db.getToday(), '/home/today'),
   getEvents: (filter) => respond(() => db.listEvents(filter), '/events'),
@@ -43,4 +43,14 @@ export const mockApi: KampungApi = {
   getCircle: (id) => respond(() => db.getCircle(id), `/circles/${id}`),
   joinCircle: (id) => respond(() => db.joinCircle(id), `/circles/${id}/join`),
   leaveCircle: (id) => respond(() => db.leaveCircle(id), `/circles/${id}/join`),
+  getCheckinWeek: () => respond(() => db.checkinWeek(), '/checkins/week'),
+  getReminders: () => respond(() => db.listReminders(), '/reminders'),
+  createReminder: (input) => respond(() => db.createReminder(input), '/reminders'),
+  deleteReminder: (id) => respond(() => db.deleteReminder(id), `/reminders/${id}`),
+  uploadWalk: (upload) => respond(() => db.uploadWalk(upload), '/walks'),
+  getWalk: (id) => respond(() => db.getWalk(id), `/walks/${id}`),
+  getWalkStats: () => respond(() => db.walkStats(), '/walks/stats'),
+  triggerSos: () => respond(() => db.triggerSos(), '/sos'),
+  getSos: (id) => respond(() => db.getSos(id), `/sos/${id}`),
+  resolveSos: (id) => respond(() => db.resolveSos(id), `/sos/${id}`),
 };

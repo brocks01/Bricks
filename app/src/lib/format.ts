@@ -61,3 +61,45 @@ export function weekdayLabels(language: Language): string[] {
   // 2026-11-09 is a Monday.
   return Array.from({ length: 7 }, (_, i) => format.format(new Date(2026, 10, 9 + i)));
 }
+
+/** "850 m" under 1 km, otherwise "2.4 km" (one decimal), in the member's number style. */
+export function formatDistance(metres: number, language: Language): string {
+  const locale = LANGUAGE_INFO[language].intlLocale;
+  if (metres < 1000) {
+    return `${new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Math.round(metres / 10) * 10)} m`;
+  }
+  return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(metres / 1000)} km`;
+}
+
+/** Whole numbers with separators: "3,210". */
+export function formatCount(value: number, language: Language): string {
+  return new Intl.NumberFormat(LANGUAGE_INFO[language].intlLocale, {
+    maximumFractionDigits: 0,
+  }).format(Math.round(value));
+}
+
+/** A running clock: "4:05", "24:10", "1:02:30". */
+export function formatClock(totalSeconds: number): string {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const h = Math.floor(safe / 3600);
+  const m = Math.floor((safe % 3600) / 60);
+  const s = safe % 60;
+  const mm = h > 0 ? m.toString().padStart(2, '0') : m.toString();
+  return `${h > 0 ? `${h}:` : ''}${mm}:${s.toString().padStart(2, '0')}`;
+}
+
+/** "32 min", "1 h 5 min": durations in words, rounded to the minute. */
+export function formatMinutes(totalSeconds: number, t: TFunction): string {
+  const minutes = Math.max(0, Math.round(totalSeconds / 60));
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return t('units.minutes', { count: m });
+  if (m === 0) return t('units.hours', { count: h });
+  return t('units.hoursMinutes', { hours: h, minutes: m });
+}
+
+/** Average pace in words: "13 min 20 s per km". */
+export function formatPace(secondsPerKm: number, t: TFunction): string {
+  const safe = Math.max(0, Math.round(secondsPerKm));
+  return t('units.pace', { minutes: Math.floor(safe / 60), seconds: safe % 60 });
+}

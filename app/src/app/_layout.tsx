@@ -10,6 +10,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { BigButton, Text } from '@/components';
 import { ReadOutProvider } from '@/features/readout/ReadOutProvider';
+import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
 // Importing @/i18n also initialises i18next before any screen renders.
 import { setLanguage } from '@/i18n';
 import type { Language } from '@/i18n/languages';
@@ -74,6 +75,7 @@ export default function RootLayout() {
   return (
     <AppProviders language={language} fontsLoaded={fontsLoaded}>
       <StatusBar style="dark" />
+      <ReminderAlarms />
       <Stack
         screenOptions={{
           headerShown: false,
