@@ -19,7 +19,7 @@ Version 2.0 · 10 Nov 2026 · Owner: **Person C (Voice & WhatsApp)** · Account/
 | Priority | Capability | How |
 |---|---|---|
 | P0 | **Onboard** | Message "Hi" (or scan QR / tap link from family/admin) → language buttons → name → area → interests (list) → "You're in!" |
-| P0 | **Accept family/admin invite** | Template: "Priya set up Kampung Connect for you. Join?" [Yes] [No] |
+| P0 | **Accept family/admin invite** | Template: "Priya set up Bricks for you. Join?" [Yes] [No] |
 | P0 | **Good Morning Check-in** | Template with [Yes] [No]; No → walk suggestion [Join walk] [Maybe later] |
 | P0 | **Join events** | Invite template [I'm going] [Not this time] → confirmation + **group invite link** |
 | P0 | **Reminders** | Template text + voice note; [Done] [Snooze 10 min] |
@@ -38,7 +38,7 @@ Version 2.0 · 10 Nov 2026 · Owner: **Person C (Voice & WhatsApp)** · Account/
 ### 3.1 First contact / onboarding
 ```
 Member: "Hi"
-Bot: "Welcome to Kampung Connect! Which language?"
+Bot: "Welcome to Bricks! Which language?"
      [English] [Bahasa Melayu] [More…] → list: 中文 · தமிழ்
 Bot: "Lovely! What should we call you? You can type or send a voice note (mic icon)"
 Member: (mic icon) "Lim Ah Kow, call me Uncle Lim"
@@ -85,7 +85,7 @@ Bot to member: "Priya is on her way . Ahmad (300 m) is on his way."
 ```
 
 ### 3.6 Family flows
-- `family_invite_status`: "Dad joined Kampung Connect "
+- `family_invite_status`: "Dad joined Bricks "
 - `weekly_joy_report` (Sunday): "This week Dad joined 3 walks, taught chess once and got 4 thank-yous " [See more in app]
 - `family_missed_checkin`: "Dad hasn't checked in today. [Call Dad] [I'll check]"
 

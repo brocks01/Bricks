@@ -49,7 +49,7 @@ Version 2.1 · 10 Nov 2026 · Owner: Person B (Backend & Platform)
 | Layer | Choice | Why |
 |---|---|---|
 | Mobile app | **React Native + Expo** (TypeScript) — **decided** | One codebase. **Android:** our own EAS build (APK) including the posture module. **iPhone:** runs in **Expo Go** (free App Store app) — no Mac, no Apple Developer account, no iOS build needed. Lock the project to the exact Expo SDK version that the App Store's Expo Go supports on the day we create it |
-| App libraries | expo-router, i18next + react-i18next, expo-speech (on-device TTS for Read It Out), expo-av (record voice), expo-notifications, expo-location, expo-sensors (pedometer/fall), expo-task-manager + react-native-maps (walk recording), phosphor-react-native (icons) | **Only libraries included in Expo Go**, so the same JS runs on iPhone. Sign-in uses Supabase's web OAuth flow (no native Google SDK) |
+| App libraries | expo-router, i18next + react-i18next, expo-speech (on-device TTS for Read It Out), expo-audio (record voice), expo-notifications, expo-location, expo-sensors (pedometer/fall), expo-task-manager + react-native-maps (walk recording), phosphor-react-native (icons) | **Only libraries included in Expo Go**, so the same JS runs on iPhone. Sign-in uses Supabase's web OAuth flow (no native Google SDK) |
 | Posture (Move Along) | **Local Expo module `modules/posture`, Android only** — Kotlin, wrapping RightPosture's engine, camera and pose code | See §2.1 |
 | Backend | **Python FastAPI** | Most logic is AI/voice; team knows Python |
 | Database/Auth/Storage | **Supabase** (Postgres + PostGIS, Auth, Storage) | Fast to set up; Google OAuth built in; row-level security |
@@ -297,7 +297,7 @@ SOS fan-out: family helpers (all) + 2 nearest non-family helpers by PostGIS dist
 ## 9. Environments & repo
 
 ```
-kampung-connect/
+bricks/
   app/          Expo app (Person A)
   backend/      FastAPI: api/, services/, agent/, scheduler/, db/ (Person B)
   channels/     whatsapp/, voice/ handlers + prompts (Person C) — imported by backend

@@ -1,4 +1,4 @@
-# Kampung Connect — Project Docs (working name)
+# Bricks — Project Docs
 
 Singapore–India Hackathon 2026 · raiSE track: Social Innovation & Inclusive Development
 Team: SIH-SOC Group 1 · Docs version 2.1 · 10 Nov 2026
@@ -30,8 +30,10 @@ Team: SIH-SOC Group 1 · Docs version 2.1 · 10 Nov 2026
 
 ## Decisions already made
 
+- **Name: Bricks** (decided 11 Nov 2026). "Kampung" stays as the name of the community pillar / tab inside the app.
 - Target: **pre-retirees ~50–60** first, so they carry the app into old age; older seniors (75+) use WhatsApp + calls.
-- Three tabs: **Pass It On · Kampung (centre) · Thrive**. Build Kampung first.
+- Four tabs: **Home · Pass It On · Kampung · Thrive**. **Home** is the default: a greeting, then the three pillars as large plainly-described cards in that order (skills, community, health), with the Today card added above them in 1.1. The tab bar always offers Home, so it is one tap from anywhere. Build Kampung first.
+- Header on every screen: Read It Out top-left, Help top-right; "‹ Back" on its own row beneath them, above the title (see `02_DESIGN_PRINCIPLES.md` rule 4).
 - Community chat lives in **WhatsApp groups** (we link out), not in-app.
 - Daily **yes/no Good Morning Check-in** is our differentiator.
 - **Four languages:** English, Malay, Mandarin, Tamil. **Read It Out** on every screen.
@@ -40,6 +42,8 @@ Team: SIH-SOC Group 1 · Docs version 2.1 · 10 Nov 2026
 - Don't brand it as "AI" — it's "an app you can use with your voice". **No ads.** No medical claims.
 - Login: Singpass (mocked) + Google fallback; family or community admin can onboard seniors, who always confirm.
 - **Stack decided: React Native + Expo.** Android runs our own build (APK); **iPhone runs in Expo Go** — no Mac or Apple Developer account needed.
+- **Expo SDK 58 is pinned** (React Native 0.88). App Store Expo Go moved to SDK 58 on 11 Nov 2026 and runs *only* that SDK: check Expo Go → Settings before each iPhone test, and never run `npm audit fix --force` (it rewrites Expo versions and breaks the project). `expo-audio` replaces `expo-av`, which is no longer in Expo Go. Mandarin uses the phone's system CJK font (Noto Sans SC would add ~96 MB).
+- **Database: Supabase** (Postgres + PostGIS for nearest helpers and events). Relationships (family links, circles, Safe Circle) are relational tables; no separate graph database.
 - **Posture (Move Along) is Android-only**, using Sayan's RightPosture engine as a local Expo module (`modules/posture`). iPhone shows "Available on Android". Posture on iPhone is roadmap (Kotlin Multiplatform).
 
 ## Still open
@@ -49,4 +53,3 @@ Team: SIH-SOC Group 1 · Docs version 2.1 · 10 Nov 2026
 | WhatsApp Business / Cloud API access | Ankit + Santusht | Iteration 0.1 |
 | Should seniors earn money? (built as an optional toggle) | Survey → Santusht/Ken | Iteration 2.1 |
 | Business model emphasis (family tier vs employer vs centres) | Santusht + Ken | Iteration 2.2 |
-| Final product name | Everyone | Iteration 2.3 |

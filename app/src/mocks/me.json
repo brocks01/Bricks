@@ -1,0 +1,13 @@
+{
+  "id": "u_raj",
+  "name": "Raj Kumar",
+  "preferred_name": "Raj",
+  "phone": "+6590000001",
+  "language": "en",
+  "channel_pref": "app",
+  "area_name": "Bishan",
+  "singpass_verified": true,
+  "simple_mode": false,
+  "onboarded_by": "self",
+  "status": "active"
+}

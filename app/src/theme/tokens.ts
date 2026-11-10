@@ -1,0 +1,123 @@
+/**
+ * Design tokens: the ONLY place in the app with raw colours, sizes and timings.
+ * Source of truth: docs/02_DESIGN_PRINCIPLES.md §5. Change both together.
+ *
+ * Seniors first: "minimal" means fewer things on screen, never small or grey text.
+ */
+
+export const color = {
+  bg: '#FFFFFF',
+  bgSubtle: '#F7F8FA',
+  border: '#E6E8EC',
+  /** Stronger border for controls (outline buttons, inputs) so their edges are easy to see. */
+  borderStrong: '#5F6368',
+  text: '#111111',
+  /** Never use anything lighter than this for text. */
+  textSecondary: '#3C4043',
+  textOnColor: '#FFFFFF',
+  /** The single accent: buttons, links, active tab, routes, charts. */
+  primary: '#1557B0',
+  primaryPressed: '#0F428A',
+  primarySubtle: '#E8F0FB',
+  /** Only for "done" / "going" / completed days. */
+  success: '#1E7B34',
+  successPressed: '#165C27',
+  /** Only for the Help button and emergency screens. */
+  sos: '#C62828',
+  sosPressed: '#9E1F1F',
+  noticeText: '#8A5A00',
+  noticeBg: '#FFF4DC',
+  /** Missed days and inactive states: neutral, never red. */
+  neutral: '#D5D8DD',
+  /** Tint behind "done" / "going" status messages. */
+  successSubtle: '#E6F2E9',
+  /** Dims the screen behind bottom sheets so the sheet is the only thing in focus. */
+  scrim: 'rgba(17, 17, 17, 0.6)',
+  /** The undo bar: dark so it stands apart from the white screen without a shadow. */
+  snackbar: '#111111',
+} as const;
+
+export type ColorToken = keyof typeof color;
+
+export type FontWeightToken = 'regular' | 'semibold' | 'bold';
+
+export interface TypeStyle {
+  readonly size: number;
+  readonly weight: FontWeightToken;
+}
+
+/** Type scale (pt). Body text is never below 20. */
+export const typeScale = {
+  stat: { size: 40, weight: 'bold' },
+  display: { size: 34, weight: 'bold' },
+  title: { size: 28, weight: 'bold' },
+  heading: { size: 24, weight: 'semibold' },
+  button: { size: 22, weight: 'semibold' },
+  body: { size: 20, weight: 'regular' },
+  bodyStrong: { size: 20, weight: 'semibold' },
+  /** Absolute minimum, rare (timestamps, tab labels). */
+  caption: { size: 18, weight: 'regular' },
+} as const satisfies Record<string, TypeStyle>;
+
+export type TypeVariant = keyof typeof typeScale;
+
+/** Line height multiplier. ≥ 1.4 per the design system; Tamil needs the room. */
+export const lineHeightRatio = 1.4;
+
+export const radius = {
+  card: 16,
+  button: 14,
+  avatar: 999,
+} as const;
+
+/** Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. */
+export const space = {
+  xxs: 4,
+  xs: 8,
+  sm: 16,
+  md: 20,
+  lg: 24,
+  xl: 32,
+  xxl: 48,
+} as const;
+
+export const screenPadding = space.md;
+
+export const touch = {
+  /** Minimum size of anything tappable. */
+  min: 64,
+  /** Primary / walk controls. */
+  large: 72,
+  /** Emergency call button. */
+  sos: 80,
+  /** Minimum gap between tappable things. */
+  gap: 16,
+} as const;
+
+export const borderWidth = {
+  hairline: 1,
+  control: 2,
+} as const;
+
+export const iconSize = {
+  inline: 28,
+  button: 32,
+  hero: 40,
+  /** The single big tick on success screens. */
+  celebrate: 96,
+} as const;
+
+/** 150–200 ms fades and slides only. No bounce, no confetti. */
+export const motion = {
+  fast: 150,
+  base: 200,
+} as const;
+
+/**
+ * Text may grow with the system font setting up to this multiple.
+ * We design and test at 200%; beyond that layouts are not guaranteed.
+ */
+export const maxFontScale = 2;
+
+/** Fixed controls (top bar, tab bar) grow less so they never push content off screen. */
+export const maxChromeFontScale = 1.4;

@@ -13,7 +13,7 @@ Both use the **Conversation Orchestrator** and **Agent Tool Registry** in `03_AR
 ## 1. Shared behaviour rules (system prompt essentials)
 
 ```
-You are Buddy, a friendly helper in Kampung Connect for members aged 50+.
+You are Buddy, a friendly helper in Bricks for members aged 50+.
 - Speak in the member's language: {language}. Use simple everyday words.
 - Reply in at most 2 short sentences. Speak warmly; use their name.
 - You can ONLY act through the provided tools. Never invent events or data.
@@ -83,13 +83,13 @@ Response contract:
 
 ## 3. Phone calling agent
 
-### 3.1 Inbound — member calls the Kampung number
+### 3.1 Inbound — member calls the Bricks number
 
 ```
 Ring → caller ID lookup
-  ├─ Known member → "Hi Mr Lim! It's Buddy from Kampung. What would you like to do?
+  ├─ Known member → "Hi Mr Lim! It's Buddy from Bricks. What would you like to do?
   │                  You can say: what's on today, join a walk, set a reminder, or get help."
-  └─ Unknown → "Welcome to Kampung Connect. Which language? English press 1, Melayu 2, 中文 3, தமிழ் 4."
+  └─ Unknown → "Welcome to Bricks. Which language? English press 1, Melayu 2, 中文 3, தமிழ் 4."
                → short onboarding: name → area → interests → "A family member can also set you up."
                → creates user (status active, onboarded_by=self via call), sends SMS/WhatsApp welcome
 
@@ -115,7 +115,7 @@ DTMF fallback at any prompt: "Say yes, or press 1."
 | **Reminder** | reminder `next_at` | "Hi Mdm Tan, a reminder: take your medicine. Say 'done' when you have." |
 | **Event reminder** | 1 h before | "Your walk starts at 6 pm at Block 45 park. See you there!" |
 | **Are you OK?** | Check-in +3 h unanswered (all users) | "Hi Raj, we haven't heard from you today. Are you okay? Say yes, or say help." → no answer after 2 tries → family alert |
-| **SOS helper call** | SOS fan-out | "This is Kampung Connect. Raj pressed Help near Block 123. Say 'coming' if you can go, or press 1." → `sos_responses` |
+| **SOS helper call** | SOS fan-out | "This is Bricks. Raj pressed Help near Block 123. Say 'coming' if you can go, or press 1." → `sos_responses` |
 | **Family alert** | Missed check-in +4 h | "Hi Priya, your dad hasn't checked in today. Say 'call him' to connect now." |
 
 Retry policy: unanswered → retry once after 10 min; voicemail → leave short message + WhatsApp text.

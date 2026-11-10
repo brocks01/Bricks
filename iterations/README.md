@@ -1,4 +1,4 @@
-# Iteration Docs — Kampung Connect
+# Iteration Docs — Bricks
 
 Version 2.0 · 10 Nov 2026 · Built from `docs/00`–`docs/07` (v2.1)
 

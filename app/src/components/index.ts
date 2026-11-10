@@ -1,0 +1,36 @@
+// Layout and primitives
+export { BackButton } from './layout/BackButton';
+export { Screen, type ScreenProps } from './layout/Screen';
+export { TopBar } from './layout/TopBar';
+export { Text, type TextProps } from './primitives/Text';
+export * from './primitives/icons';
+
+// Building blocks (docs/02 §6)
+export { Avatar, initials } from './Avatar';
+export { BigButton, type BigButtonProps, type BigButtonVariant } from './BigButton';
+export { BottomSheet } from './BottomSheet';
+export { Card } from './Card';
+export { ClubCard, type ClubCardProps } from './ClubCard';
+export { ComingSoon } from './ComingSoon';
+export { ConfirmSheet, type ConfirmSheetProps } from './ConfirmSheet';
+export { EmptyState, type EmptyStateProps } from './EmptyState';
+export { EventCard, type EventCardProps } from './EventCard';
+export { InfoRow } from './InfoRow';
+export { ListeningSheet, type ListeningSheetProps } from './ListeningSheet';
+export { PhotoHeader } from './PhotoHeader';
+export { PromptCard, type PromptCardProps } from './PromptCard';
+export { SectionCard, type SectionCardProps } from './SectionCard';
+export { StatCard, type StatBar, type StatCardProps } from './StatCard';
+export { StatusBanner, type StatusTone } from './StatusBanner';
+export { StepProgress } from './StepProgress';
+export { TellMeButton } from './TellMeButton';
+export { Tile, TileGrid, type TileProps } from './Tile';
+export { UNDO_DURATION_MS, UndoBar, type UndoBarProps } from './UndoBar';
+export { VoiceNoteBubble, type VoiceNoteBubbleProps } from './VoiceNoteBubble';
+export { VoicePlayer } from './VoicePlayer';
+export { YES_NO_STACK_SCALE, YesNo, type YesNoProps } from './YesNo';
+export { Chip, ChipGroup, type ChipProps } from './Chip';
+export { PeopleRow } from './PeopleRow';
+export { QueryState } from './QueryState';
+export { TextField, type TextFieldProps } from './TextField';
+export { UndoHost } from './UndoHost';

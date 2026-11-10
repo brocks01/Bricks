@@ -172,7 +172,7 @@ India teammates land ~6 am on 14 Nov; Iteration 2.3 must close before they fly o
 ## 8. Way of working
 
 ### Git
-- Monorepo `kampung-connect/` (`app/`, `backend/`, `channels/`, `shared/`, `docs/`). `main` protected and always demo-able.
+- Monorepo `bricks/` (`app/`, `backend/`, `channels/`, `shared/`, `docs/`). `main` protected and always demo-able.
 - Branches: `feat/<lane>-<iteration>-<thing>` e.g. `feat/app-1.2-walk-summary`, `feat/be-2.2-sos-fanout`, `feat/wa-2.1-checkin`.
 - Small PRs (< 400 lines), one reviewer from another lane. PR template:
   - [ ] Iteration ID and screen IDs listed

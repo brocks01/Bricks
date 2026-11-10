@@ -1,0 +1,273 @@
+{
+  "common": {
+    "appName": "Bricks",
+    "back": "Kembali",
+    "readOut": "Bacakan",
+    "stopReading": "Berhenti membaca",
+    "help": "Bantuan",
+    "tellMe": "Beritahu saya",
+    "tryAgain": "Cuba lagi",
+    "loading": "Sedang bersedia…",
+    "error": "Itu tidak berjaya. Mari cuba lagi.",
+    "yes": "Ya",
+    "no": "Tidak",
+    "undo": "Batal",
+    "done": "Selesai",
+    "play": "Main",
+    "pause": "Jeda",
+    "stop": "Berhenti",
+    "next": "Seterusnya",
+    "couldNotOpen": "Kami tidak dapat membukanya. Sila cuba lagi."
+  },
+  "tabs": {
+    "home": "Utama",
+    "passItOn": "Kongsi Ilmu",
+    "kampung": "Kampung",
+    "thrive": "Sihat"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Selamat pagi, {{name}}",
+      "afternoon": "Selamat petang, {{name}}",
+      "evening": "Selamat malam, {{name}}"
+    },
+    "greetingNoName": {
+      "morning": "Selamat pagi",
+      "afternoon": "Selamat petang",
+      "evening": "Selamat malam"
+    },
+    "section": {
+      "passItOn": {
+        "title": "Kongsi Ilmu",
+        "description": "Kongsi apa yang anda tahu dan bantu orang lain."
+      },
+      "kampung": {
+        "title": "Kampung",
+        "description": "Sertai jalan kaki, kelas dan pertemuan berdekatan."
+      },
+      "thrive": {
+        "title": "Sihat",
+        "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
+      }
+    },
+    "readout": "{{greeting}}. {{today}}Kongsi Ilmu: kongsi apa yang anda tahu. Kampung: sertai aktiviti berdekatan. Sihat: kekal aktif dan selamat. Ketik satu untuk membukanya.",
+    "today": "Hari ini",
+    "comingUp": "Akan datang",
+    "explore": "Apa yang anda mahu buat?",
+    "readoutCheckin": "Ada soalan untuk anda: adakah anda bergerak semalam? ",
+    "readoutEvent": "Akan datang: {{title}}, {{when}}. ",
+    "readoutReminder": "Peringatan pada {{time}}: {{text}}. ",
+    "checkin": {
+      "question": "Adakah anda bergerak semalam?",
+      "thanks": "Syabas. Sudah {{count}} hari berturut-turut.",
+      "company": "Tidak mengapa. Mahu berteman hari ini? Ini jalan kaki berdekatan.",
+      "rest": "Tidak mengapa. Berehatlah, kami akan bertanya lagi esok."
+    },
+    "reminder": {
+      "line": "{{time}} · {{text}}",
+      "done": "Selesai",
+      "doneThanks": "Selesai. Syabas."
+    }
+  },
+  "passItOn": {
+    "title": "Kongsi Ilmu",
+    "comingSoon": "Di sini anda akan berkongsi kemahiran dan melihat ucapan terima kasih yang anda terima.",
+    "readout": "Kongsi Ilmu. Di sini anda akan berkongsi kemahiran dan melihat ucapan terima kasih yang anda terima."
+  },
+  "kampung": {
+    "title": "Kampung",
+    "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
+    "readout": "Kampung. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
+    "happenings": "Aktiviti",
+    "myCircles": {
+      "title": "Bulatan Saya",
+      "count_other": "Anda dalam {{count}} Bulatan",
+      "none": "Cari kumpulan berdekatan"
+    },
+    "filter": {
+      "today": "Hari ini",
+      "week": "Minggu ini",
+      "walk": "Jalan kaki",
+      "class": "Kelas",
+      "kids": "Kanak-kanak"
+    },
+    "startSomething": "Mulakan sesuatu",
+    "empty": "Belum ada aktiviti berdekatan. Mahu mulakan satu?",
+    "emptyFiltered": "Tiada apa-apa untuk pilihan ini.",
+    "showEverything": "Tunjukkan semua",
+    "readoutSummary_other": "Ada {{count}} aktiviti. Yang pertama: {{first}}.",
+    "readoutNone": "Belum ada aktiviti."
+  },
+  "thrive": {
+    "title": "Sihat",
+    "comingSoon": "Di sini anda akan menjawab soalan pagi, merekod jalan kaki dan menetapkan peringatan.",
+    "readout": "Sihat. Di sini anda akan menjawab soalan pagi, merekod jalan kaki dan menetapkan peringatan."
+  },
+  "sos": {
+    "title": "Mendapatkan bantuan",
+    "call": "Hubungi {{number}} sekarang",
+    "callHint": "Ini akan menghubungi nombor kecemasan.",
+    "safeCircleSoon": "Memberitahu Bulatan Selamat anda akan ditambah di sini tidak lama lagi.",
+    "goBack": "Saya OK, kembali",
+    "readout": "Mendapatkan bantuan. Ketik Hubungi {{number}} sekarang untuk memanggil ambulans, atau ketik Saya OK untuk kembali."
+  },
+  "notFound": {
+    "title": "Kami tidak menemui halaman itu",
+    "body": "Mari kembali ke permulaan.",
+    "action": "Pergi ke Utama"
+  },
+  "time": {
+    "today": "Hari ini",
+    "tomorrow": "Esok",
+    "dayAndTime": "{{day}}, {{time}}"
+  },
+  "event": {
+    "going_other": "{{count}} akan pergi",
+    "imGoing": "Saya pergi",
+    "youreGoing": "Anda akan pergi",
+    "joinWhatsApp": "Sertai kumpulan WhatsApp",
+    "openHint": "Buka butiran"
+  },
+  "circle": {
+    "members_other": "{{count}} ahli",
+    "next": "Seterusnya: {{title}}, {{when}}",
+    "noNext": "Belum ada aktiviti dirancang",
+    "seeEvents": "Lihat aktiviti",
+    "join": "Sertai Bulatan ini"
+  },
+  "voice": {
+    "playFrom": "Main mesej suara daripada {{name}}",
+    "length": "{{duration}} panjang",
+    "forSkill": "Untuk {{skill}}"
+  },
+  "prompt": {
+    "record": "Rakam jawapan anda",
+    "recordAgain": "Rakam semula",
+    "noAnswer": "Belum ada jawapan."
+  },
+  "step": {
+    "progress": "Langkah {{step}} daripada {{total}}"
+  },
+  "listening": {
+    "title": "Sedang mendengar…",
+    "hint": "Bercakap sekarang. Ketik Berhenti apabila selesai."
+  },
+  "stat": {
+    "daysActive": "{{done}} daripada {{total}} hari aktif"
+  },
+  "tellMe": {
+    "hint": "Ketik dan sebut apa yang anda mahu buat"
+  },
+  "eventDetail": {
+    "timeRange": "{{day}}, {{start}} hingga {{end}}",
+    "openMaps": "Buka dalam Peta",
+    "hostedBy": "Dianjurkan oleh {{name}}",
+    "youHost": "Anda penganjurnya",
+    "about": "Tentang",
+    "cantGo": "Saya tidak dapat pergi lagi",
+    "cancelConfirm": "Lepaskan tempat anda di {{title}}?",
+    "cancelled": "Anda tidak lagi akan pergi.",
+    "published": "Sudah diterbitkan. Orang lain kini boleh melihat dan menyertainya.",
+    "notFound": "Kami tidak menemui aktiviti ini. Mungkin sudah dibatalkan.",
+    "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
+    "readoutJoin": "Ketik Saya pergi untuk menyertai.",
+    "readoutGoing": "Anda akan pergi."
+  },
+  "going": {
+    "title": "Anda akan pergi.",
+    "remind": "Kami akan mengingatkan anda pada {{time}}.",
+    "whatsappHint": "Ucap helo kepada kumpulan sebelum anda pergi.",
+    "undo": "Anda menyertai {{title}}.",
+    "readout": "Anda akan pergi ke {{title}}, {{when}}. Kami akan mengingatkan anda pada {{time}}. Anda boleh menyertai kumpulan WhatsApp, atau ketik Selesai."
+  },
+  "create": {
+    "title": "Mulakan sesuatu",
+    "what": "Apa yang anda mahu buat?",
+    "day": "Hari apa?",
+    "time": "Pukul berapa?",
+    "where": "Di mana?",
+    "placeOther": "Atau taip tempatnya",
+    "link": "Tambah pautan kumpulan WhatsApp?",
+    "linkHint": "Tampal pautan jemputan kumpulan supaya orang boleh menegur. Anda boleh langkau.",
+    "linkLabel": "Pautan kumpulan WhatsApp",
+    "linkInvalid": "Itu bukan pautan kumpulan WhatsApp. Ia patut bermula dengan https://chat.whatsapp.com/",
+    "linkSkip": "Langkau, saya tiada pautan",
+    "preview": "Semak dan terbitkan",
+    "previewHint": "Beginilah orang lain akan melihatnya.",
+    "nameLabel": "Nama aktiviti anda",
+    "publish": "Terbitkan",
+    "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}} Ketik pilihan, kemudian Seterusnya.",
+    "readoutPreview": "Semak dan terbitkan. {{title}}, {{when}}, {{place}}. Ketik Terbitkan untuk berkongsi.",
+    "place": {
+      "cc": "Kelab Komuniti {{area}}",
+      "park": "Taman {{area}}",
+      "voidDeck": "Kolong blok berdekatan rumah saya",
+      "hawker": "Pusat penjaja {{area}}"
+    },
+    "placeGeneric": {
+      "cc": "Kelab komuniti",
+      "park": "Taman",
+      "voidDeck": "Kolong blok berdekatan rumah saya",
+      "hawker": "Pusat penjaja"
+    }
+  },
+  "category": {
+    "walk": {
+      "name": "Jalan kaki",
+      "title": "Jalan kaki bersama"
+    },
+    "exercise": {
+      "name": "Tai chi atau senaman",
+      "title": "Tai chi bersama"
+    },
+    "games": {
+      "name": "Catur atau permainan",
+      "title": "Catur dan permainan papan"
+    },
+    "music": {
+      "name": "Muzik atau nyanyian",
+      "title": "Nyanyi bersama"
+    },
+    "cooking": {
+      "name": "Memasak",
+      "title": "Memasak bersama"
+    },
+    "gardening": {
+      "name": "Berkebun",
+      "title": "Berkebun bersama"
+    },
+    "class": {
+      "name": "Kelas atau ceramah",
+      "title": "Belajar bersama"
+    },
+    "meetup": {
+      "name": "Kopi dan berbual",
+      "title": "Kopi dan berbual"
+    },
+    "kids": {
+      "name": "Bersama kanak-kanak",
+      "title": "Masa bercerita bersama kanak-kanak"
+    },
+    "other": {
+      "name": "Lain-lain",
+      "title": "Berkumpul bersama"
+    }
+  },
+  "circles": {
+    "title": "Bulatan Saya",
+    "yours": "Bulatan anda",
+    "near": "Bulatan berdekatan",
+    "noneYours": "Anda belum menyertai mana-mana Bulatan. Ini beberapa yang berdekatan.",
+    "noneNear": "Anda sudah dalam semua Bulatan berdekatan.",
+    "joined": "Anda menyertai {{name}}.",
+    "readout": "Bulatan Saya. Anda dalam {{mine}}. {{near}} lagi berdekatan. Ketik satu Bulatan untuk melihatnya."
+  },
+  "circlePage": {
+    "captain": "Kapten: {{name}}",
+    "comingUp": "Akan datang",
+    "members": "Ahli",
+    "noUpcoming": "Belum ada apa-apa dirancang. Anda boleh memulakan sesuatu.",
+    "notFound": "Kami tidak menemui Bulatan ini.",
+    "readout": "{{name}}. {{members}}. Kapten {{captain}}. {{next}}"
+  }
+}

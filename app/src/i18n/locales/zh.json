@@ -1,0 +1,273 @@
+{
+  "common": {
+    "appName": "Bricks",
+    "back": "返回",
+    "readOut": "朗读",
+    "stopReading": "停止朗读",
+    "help": "求助",
+    "tellMe": "跟我说",
+    "tryAgain": "再试一次",
+    "loading": "正在准备…",
+    "error": "没有成功。我们再试一次。",
+    "yes": "是",
+    "no": "不是",
+    "undo": "撤销",
+    "done": "完成",
+    "play": "播放",
+    "pause": "暂停",
+    "stop": "停止",
+    "next": "下一步",
+    "couldNotOpen": "打不开。请再试一次。"
+  },
+  "tabs": {
+    "home": "首页",
+    "passItOn": "传承分享",
+    "kampung": "甘榜",
+    "thrive": "健康"
+  },
+  "home": {
+    "greeting": {
+      "morning": "早上好，{{name}}",
+      "afternoon": "下午好，{{name}}",
+      "evening": "晚上好，{{name}}"
+    },
+    "greetingNoName": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "section": {
+      "passItOn": {
+        "title": "传承分享",
+        "description": "分享您的所长，帮助他人。"
+      },
+      "kampung": {
+        "title": "甘榜",
+        "description": "参加附近的步行、课程和聚会。"
+      },
+      "thrive": {
+        "title": "健康",
+        "description": "保持活跃，设置提醒，注意安全。"
+      }
+    },
+    "readout": "{{greeting}}。{{today}}传承分享：分享您的所长。甘榜：参加附近的活动。健康：保持活跃和安全。点一下就能打开。",
+    "today": "今天",
+    "comingUp": "即将举行",
+    "explore": "您想做什么？",
+    "readoutCheckin": "有一个问题要您回答：您昨天有活动身体吗？",
+    "readoutEvent": "即将举行：{{title}}，{{when}}。",
+    "readoutReminder": "{{time}} 的提醒：{{text}}。",
+    "checkin": {
+      "question": "您昨天有活动身体吗？",
+      "thanks": "做得好。已经连续 {{count}} 天了。",
+      "company": "没关系。今天想找人一起吗？附近有一个步行活动。",
+      "rest": "没关系。好好休息，我们明天再问您。"
+    },
+    "reminder": {
+      "line": "{{time}} · {{text}}",
+      "done": "完成",
+      "doneThanks": "完成了。做得好。"
+    }
+  },
+  "passItOn": {
+    "title": "传承分享",
+    "comingSoon": "在这里，您可以分享您的技能，并看到别人对您的感谢。",
+    "readout": "传承分享。在这里，您可以分享您的技能，并看到别人对您的感谢。"
+  },
+  "kampung": {
+    "title": "甘榜",
+    "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
+    "readout": "甘榜。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
+    "happenings": "活动",
+    "myCircles": {
+      "title": "我的圈子",
+      "count_other": "您加入了 {{count}} 个圈子",
+      "none": "找一个附近的小组"
+    },
+    "filter": {
+      "today": "今天",
+      "week": "本周",
+      "walk": "步行",
+      "class": "课程",
+      "kids": "儿童"
+    },
+    "startSomething": "发起活动",
+    "empty": "附近还没有活动。要发起一个吗？",
+    "emptyFiltered": "这个选项下没有活动。",
+    "showEverything": "显示全部",
+    "readoutSummary_other": "共有 {{count}} 个活动。第一个：{{first}}。",
+    "readoutNone": "还没有活动。"
+  },
+  "thrive": {
+    "title": "健康",
+    "comingSoon": "在这里，您可以回答每天早上的问候、记录步行和设置提醒。",
+    "readout": "健康。在这里，您可以回答每天早上的问候、记录步行和设置提醒。"
+  },
+  "sos": {
+    "title": "正在求助",
+    "call": "立即拨打 {{number}}",
+    "callHint": "这会拨打紧急电话。",
+    "safeCircleSoon": "通知您的安全圈的功能很快会加在这里。",
+    "goBack": "我没事，返回",
+    "readout": "正在求助。点立即拨打 {{number}} 叫救护车，或者点我没事返回。"
+  },
+  "notFound": {
+    "title": "找不到这个页面",
+    "body": "我们回到开始的地方吧。",
+    "action": "回到首页"
+  },
+  "time": {
+    "today": "今天",
+    "tomorrow": "明天",
+    "dayAndTime": "{{day}} {{time}}"
+  },
+  "event": {
+    "going_other": "{{count}} 人参加",
+    "imGoing": "我要参加",
+    "youreGoing": "您已报名参加",
+    "joinWhatsApp": "加入 WhatsApp 群组",
+    "openHint": "打开详情"
+  },
+  "circle": {
+    "members_other": "{{count}} 位成员",
+    "next": "下一个：{{title}}，{{when}}",
+    "noNext": "还没有安排活动",
+    "seeEvents": "查看活动",
+    "join": "加入这个圈子"
+  },
+  "voice": {
+    "playFrom": "播放 {{name}} 的语音留言",
+    "length": "长 {{duration}}",
+    "forSkill": "关于{{skill}}"
+  },
+  "prompt": {
+    "record": "录下您的回答",
+    "recordAgain": "重新录音",
+    "noAnswer": "还没有回答。"
+  },
+  "step": {
+    "progress": "第 {{step}} 步，共 {{total}} 步"
+  },
+  "listening": {
+    "title": "正在听…",
+    "hint": "请说话。说完后点停止。"
+  },
+  "stat": {
+    "daysActive": "{{total}} 天中有 {{done}} 天活动"
+  },
+  "tellMe": {
+    "hint": "点一下，说出您想做什么"
+  },
+  "eventDetail": {
+    "timeRange": "{{day}}，{{start}} 到 {{end}}",
+    "openMaps": "在地图中打开",
+    "hostedBy": "主办人：{{name}}",
+    "youHost": "这是您主办的活动",
+    "about": "简介",
+    "cantGo": "我不能去了",
+    "cancelConfirm": "要放弃 {{title}} 的名额吗？",
+    "cancelled": "您已不再参加。",
+    "published": "已发布。大家现在可以看到并参加了。",
+    "notFound": "找不到这个活动。它可能已经取消了。",
+    "readout": "{{title}}。{{when}}，{{place}}。{{host}}。{{going}}。{{action}}",
+    "readoutJoin": "点我要参加就能加入。",
+    "readoutGoing": "您已报名参加。"
+  },
+  "going": {
+    "title": "您已报名参加。",
+    "remind": "我们会在 {{time}} 提醒您。",
+    "whatsappHint": "去之前先在群里打个招呼吧。",
+    "undo": "您已报名 {{title}}。",
+    "readout": "您已报名参加 {{title}}，{{when}}。我们会在 {{time}} 提醒您。您可以加入 WhatsApp 群组，或者点完成。"
+  },
+  "create": {
+    "title": "发起活动",
+    "what": "您想做什么？",
+    "day": "哪一天？",
+    "time": "几点？",
+    "where": "在哪里？",
+    "placeOther": "或者输入地点",
+    "link": "要加上 WhatsApp 群组链接吗？",
+    "linkHint": "贴上群组的邀请链接，大家就可以打招呼。也可以跳过。",
+    "linkLabel": "WhatsApp 群组链接",
+    "linkInvalid": "这看起来不是 WhatsApp 群组链接。它应该以 https://chat.whatsapp.com/ 开头",
+    "linkSkip": "跳过，我没有链接",
+    "preview": "检查并发布",
+    "previewHint": "大家会看到这样的活动。",
+    "nameLabel": "活动名称",
+    "publish": "发布",
+    "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}点一个选项，再点下一步。",
+    "readoutPreview": "检查并发布。{{title}}，{{when}}，{{place}}。点发布就能分享。",
+    "place": {
+      "cc": "{{area}}民众俱乐部",
+      "park": "{{area}}公园",
+      "voidDeck": "我家附近的组屋楼下",
+      "hawker": "{{area}}小贩中心"
+    },
+    "placeGeneric": {
+      "cc": "民众俱乐部",
+      "park": "公园",
+      "voidDeck": "我家附近的组屋楼下",
+      "hawker": "小贩中心"
+    }
+  },
+  "category": {
+    "walk": {
+      "name": "步行",
+      "title": "一起步行"
+    },
+    "exercise": {
+      "name": "太极或运动",
+      "title": "一起打太极"
+    },
+    "games": {
+      "name": "下棋或游戏",
+      "title": "下棋和桌游"
+    },
+    "music": {
+      "name": "音乐或唱歌",
+      "title": "一起唱歌"
+    },
+    "cooking": {
+      "name": "烹饪",
+      "title": "一起做饭"
+    },
+    "gardening": {
+      "name": "园艺",
+      "title": "一起种菜"
+    },
+    "class": {
+      "name": "课程或讲座",
+      "title": "一起学习"
+    },
+    "meetup": {
+      "name": "喝咖啡聊天",
+      "title": "喝咖啡聊天"
+    },
+    "kids": {
+      "name": "和孩子们一起",
+      "title": "和孩子们讲故事"
+    },
+    "other": {
+      "name": "其他",
+      "title": "聚会"
+    }
+  },
+  "circles": {
+    "title": "我的圈子",
+    "yours": "您的圈子",
+    "near": "附近的圈子",
+    "noneYours": "您还没有加入圈子。这里有一些附近的圈子。",
+    "noneNear": "附近的圈子您都加入了。",
+    "joined": "您加入了 {{name}}。",
+    "readout": "我的圈子。您加入了 {{mine}}。附近还有 {{near}} 个。点一个圈子就能查看。"
+  },
+  "circlePage": {
+    "captain": "队长：{{name}}",
+    "comingUp": "即将举行",
+    "members": "成员",
+    "noUpcoming": "还没有安排活动。您可以发起一个。",
+    "notFound": "找不到这个圈子。",
+    "readout": "{{name}}。{{members}}。队长 {{captain}}。{{next}}"
+  }
+}

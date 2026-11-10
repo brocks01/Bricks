@@ -27,7 +27,7 @@ Our anchor is **Luma**: lots of white space, one photo, one title, one clear but
 1. **One screen, one job.** Each screen asks for one decision. Max **3 primary actions** visible.
 2. **Big everything.** Body text ≥ 20pt, buttons ≥ 64dp tall, full width where possible.
 3. **Icon + word, always.** Never an icon alone.
-4. **Fixed places.** Read It Out (speaker icon) top-left, Help (alert icon) top-right, Tell me (mic icon) bottom-centre, tabs at the bottom. They never move.
+4. **Fixed places.** Read It Out (speaker icon) top-left and Help (alert icon) top-right on **every** screen; Tell me (mic icon) bottom-centre; tabs at the bottom. They never move. **Back** gets its own row under them, as a labelled "‹ Back" link above the title (the GOV.UK / SGDS back-link pattern), and only appears off a tab's first screen. Putting Back in the top-left corner would push Read It Out around from screen to screen.
 5. **Speak or tap — always both.** Typing is never required.
 6. **No hidden gestures.** No swipe-to-delete, long-press, pinch, hamburger menus or tiny X buttons.
 7. **Forgive mistakes.** Big Undo after actions; confirm anything public or hard to reverse; every screen has Back and Home.
@@ -49,7 +49,7 @@ Our anchor is **Luma**: lots of white space, one photo, one title, one clear but
 
 **Do instead**
 - **One icon set, used consistently.** Phosphor (Regular or Bold weight) or Material Symbols Rounded (weight 500+). Avoid very thin line icons — seniors can't read them.
-- **One typeface family.** Noto Sans covers all four languages. Hierarchy comes from **size and weight, not colour**.
+- **One typeface family.** Noto Sans covers all four languages (Mandarin uses the phone's built-in Noto Sans CJK / PingFang, to avoid a ~96 MB font download). Hierarchy comes from **size and weight, not colour**.
 - **Neutral base plus one accent.** White or off-white backgrounds, near-black text, deep blue for actions. Green only for "done" or "going". Red only for SOS.
 - **Real photos of local places and seniors** — the park, the community centre, the void deck — not illustrations. This makes it look built for Singapore.
 - **Same corner radius and spacing everywhere.** Consistency is most of what makes an app look "designed".
@@ -121,6 +121,11 @@ Kavya owns the board; Person A builds from it.
 | `success` | `#1E7B34` | "Going", "Done", completed days |
 | `sos` | `#C62828` | **Only** Help button and emergency screens |
 | `notice` | `#8A5A00` on `#FFF4DC` | Gentle notices (amber) |
+| `primary-subtle` | `#E8F0FB` | Selected tab, pressed outline buttons, icon wells |
+| `border-strong` | `#5F6368` | Edges of controls (3:1 against white) |
+| `neutral` | `#D5D8DD` | Missed days and inactive states (never red) |
+
+Pressed shades: `success-pressed` `#165C27`, `sos-pressed` `#9E1F1F`. Every pair is contrast-tested in `app/src/theme/tokens.test.ts`.
 
 - Text contrast ≥ **7:1** (WCAG AAA); never below 4.5:1.
 - Red only for SOS. Never colour alone to carry meaning.
@@ -147,13 +152,13 @@ Kavya owns the board; Person A builds from it.
 |---|---|---|
 | **BigButton** | Full width, 64–72dp, icon left + label; primary / success / outline / sos | Be My Eyes |
 | **YesNo** | Two side-by-side BigButtons: Yes (success) / No (outline, never red) | Monzo confirmations |
-| **EventCard** | 16:9 photo, title (24pt), "Tomorrow, 7 am · Bishan Park", going count, one button | Luma |
+| **EventCard** | 16:9 photo (category icon if none), title (24pt), then one fact per line with an icon: "Tomorrow, 7 am" / "Bishan Park" / "12 going", one button ("You're going" once joined). Card body and button are separate touch targets | Luma |
 | **StatCard** | One big number (40pt) + plain label + optional 7-bar chart | Apple Health |
 | **Tile** | Large square tile, icon + label, 2 per row | Grab |
 | **PromptCard** | Prompt text + voice answer player + transcript | Hinge |
 | **ClubCard** | Circle photo, name, members count, next activity, Join | Strava Clubs |
 | **VoiceNoteBubble** | Play button, waveform, duration, name, transcript under | WhatsApp |
-| **ScreenHeader** | Read It Out · Title · Help; Back + "Back" label off tab roots | SGDS |
+| **Screen** (header frame) | Row 1: Read It Out (left) · Help (right), on every screen. Row 2: "‹ Back" link, only off a tab's first screen. Then the title. Optional fixed footer for the one primary action | SGDS / GOV.UK back link |
 | **TellMeButton** | Floating mic button bottom-centre, 72dp, label "Tell me" | Be My Eyes |
 | **ListeningSheet** | "Listening…", live transcript in large text, Stop | Be My Eyes |
 | **ConfirmSheet** | "You said: Join the 6 pm walk. Is that right?" + YesNo | Monzo |

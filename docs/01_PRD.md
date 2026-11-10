@@ -1,4 +1,4 @@
-# PRD — Kampung Connect (working name)
+# PRD — Bricks
 
 Version 2.1 · 10 Nov 2026 · Owner: Product (whole team) · Status: Draft for hackathon build
 
@@ -6,7 +6,7 @@ Version 2.1 · 10 Nov 2026 · Owner: Product (whole team) · Status: Draft for h
 
 ## 1. Summary
 
-Kampung Connect helps people aged 50+ in Singapore (and later India) age well by **contributing, staying active and staying connected**. It works through three channels that share one backend:
+Bricks helps people aged 50+ in Singapore (and later India) age well by **contributing, staying active and staying connected**. It works through three channels that share one backend:
 
 1. **Mobile app** — for the 50–70 group who are comfortable with smartphones.
 2. **WhatsApp** — for anyone who already chats on WhatsApp but won't download a new app.
@@ -86,8 +86,8 @@ Priority: **P0** = must work in demo · **P1** = built if time allows, at least 
 
 | ID | Feature | Pri | Description |
 |---|---|---|---|
-| HM-1 | Greeting + Today card | P0 | "Good morning, Raj" + check-in / next event / next reminder |
-| HM-2 | Persistent controls | P0 | (speaker icon) Read It Out (top), (alert icon) Help (top-right, red), (mic icon) Tell me (bottom-centre), 3 tabs |
+| HM-1 | Greeting + Today card + three pillars | P0 | "Good morning, Raj" + check-in / next event / next reminder, then Pass It On, Kampung and Thrive as three large cards with one plain line each |
+| HM-2 | Persistent controls | P0 | (speaker icon) Read It Out (top), (alert icon) Help (top-right, red), (mic icon) Tell me (bottom-centre), 4 tabs (Home · Pass It On · Kampung · Thrive); Back on its own row under the top bar |
 | HM-3 | Simple Mode | P1 | One toggle (family can set): app shrinks to 3 buttons — **Today · Talk · Help** |
 
 ### 7.3 Kampung (community) — centre tab, build first

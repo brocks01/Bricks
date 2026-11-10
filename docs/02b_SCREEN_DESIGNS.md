@@ -11,6 +11,8 @@ Each screen lists:
 
 Icons are written as *(icon: name)* and refer to Phosphor icons. There are no emojis anywhere in the product.
 
+**Header convention (applies to every layout below, even where a sketch shows Back on the top line):** row 1 is always Read it out (left) and Help (right); row 2 is "‹ Back" (only off a tab's first screen); then the title. See `02_DESIGN_PRINCIPLES.md` rule 4.
+
 ---
 
 ## Screen map
@@ -117,7 +119,7 @@ Icons are written as *(icon: name)* and refer to Phosphor icons. There are no em
 
 ### S12 · Home
 - **Inspired by:** **Grab home** (few large tiles, familiar to Singapore seniors) + Luma (one next-event card)
-- **Borrow:** greeting, a "today" area, large tiles. **Adapt:** max 3 cards, then 4 tiles. **Avoid:** Grab's promo banners, ads, dense icon grid.
+- **Borrow:** greeting, a "today" area, large tiles. **Adapt:** the Today card, then the three pillars (Pass It On, Kampung, Thrive) as full-width cards, one per row, each with a large icon, its name and one plain sentence. One per row so long Tamil text never gets squeezed. Home is the first tab and the default screen. **Avoid:** Grab's promo banners, ads, dense icon grid.
 - **Layout:**
 ```
  Read it out                                         Help (red)

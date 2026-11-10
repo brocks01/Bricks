@@ -1,0 +1,277 @@
+{
+  "common": {
+    "appName": "Bricks",
+    "back": "Back",
+    "readOut": "Read it out",
+    "stopReading": "Stop reading",
+    "help": "Help",
+    "tellMe": "Tell me",
+    "tryAgain": "Try again",
+    "loading": "Getting things ready…",
+    "error": "That didn't work. Let's try again.",
+    "yes": "Yes",
+    "no": "No",
+    "undo": "Undo",
+    "done": "Done",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "next": "Next",
+    "couldNotOpen": "We couldn't open that. Please try again."
+  },
+  "tabs": {
+    "home": "Home",
+    "passItOn": "Pass It On",
+    "kampung": "Kampung",
+    "thrive": "Thrive"
+  },
+  "home": {
+    "greeting": {
+      "morning": "Good morning, {{name}}",
+      "afternoon": "Good afternoon, {{name}}",
+      "evening": "Good evening, {{name}}"
+    },
+    "greetingNoName": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "section": {
+      "passItOn": {
+        "title": "Pass It On",
+        "description": "Share what you know and help others."
+      },
+      "kampung": {
+        "title": "Kampung",
+        "description": "Join walks, classes and meet-ups near you."
+      },
+      "thrive": {
+        "title": "Thrive",
+        "description": "Stay active, set reminders and stay safe."
+      }
+    },
+    "readout": "{{greeting}}. {{today}}Pass It On: share what you know. Kampung: join activities near you. Thrive: stay active and safe. Tap one to open it.",
+    "today": "Today",
+    "comingUp": "Coming up",
+    "explore": "What would you like to do?",
+    "readoutCheckin": "You have a question to answer: did you move yesterday? ",
+    "readoutEvent": "Coming up: {{title}}, {{when}}. ",
+    "readoutReminder": "Reminder at {{time}}: {{text}}. ",
+    "checkin": {
+      "question": "Did you move yesterday?",
+      "thanks": "Well done. That's {{count}} days in a row.",
+      "company": "That's okay. Want some company today? Here's a walk near you.",
+      "rest": "That's okay. Rest well, and we'll ask again tomorrow."
+    },
+    "reminder": {
+      "line": "{{time}} · {{text}}",
+      "done": "Done",
+      "doneThanks": "Done. Well done."
+    }
+  },
+  "passItOn": {
+    "title": "Pass It On",
+    "comingSoon": "Here you will share your skills and see the thank-yous you receive.",
+    "readout": "Pass It On. Here you will share your skills and see the thank-yous you receive."
+  },
+  "kampung": {
+    "title": "Kampung",
+    "comingSoon": "Here you will find walks, classes and meet-ups near you.",
+    "readout": "Kampung. {{summary}} Tap I'm going to join, or Start something to create your own.",
+    "happenings": "Happenings",
+    "myCircles": {
+      "title": "My Circles",
+      "count_one": "You're in {{count}} Circle",
+      "count_other": "You're in {{count}} Circles",
+      "none": "Find a group near you"
+    },
+    "filter": {
+      "today": "Today",
+      "week": "This week",
+      "walk": "Walking",
+      "class": "Classes",
+      "kids": "Kids"
+    },
+    "startSomething": "Start something",
+    "empty": "No happenings near you yet. Start one?",
+    "emptyFiltered": "Nothing here for this choice.",
+    "showEverything": "Show everything",
+    "readoutSummary_one": "There is {{count}} happening. First: {{first}}.",
+    "readoutSummary_other": "There are {{count}} happenings. First: {{first}}.",
+    "readoutNone": "There are no happenings yet."
+  },
+  "thrive": {
+    "title": "Thrive",
+    "comingSoon": "Here you will answer your morning check-in, record walks and set reminders.",
+    "readout": "Thrive. Here you will answer your morning check-in, record walks and set reminders."
+  },
+  "sos": {
+    "title": "Getting help",
+    "call": "Call {{number}} now",
+    "callHint": "This calls the emergency number.",
+    "safeCircleSoon": "Telling your Safe Circle will be added here soon.",
+    "goBack": "I'm OK, go back",
+    "readout": "Getting help. Tap Call {{number}} now to call for an ambulance, or tap I'm OK to go back."
+  },
+  "notFound": {
+    "title": "We couldn't find that page",
+    "body": "Let's go back to the start.",
+    "action": "Go to Home"
+  },
+  "time": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "dayAndTime": "{{day}}, {{time}}"
+  },
+  "event": {
+    "going_one": "{{count}} going",
+    "going_other": "{{count}} going",
+    "imGoing": "I'm going",
+    "youreGoing": "You're going",
+    "joinWhatsApp": "Join WhatsApp group",
+    "openHint": "Opens the details"
+  },
+  "circle": {
+    "members_one": "{{count}} member",
+    "members_other": "{{count}} members",
+    "next": "Next: {{title}}, {{when}}",
+    "noNext": "No activities planned yet",
+    "seeEvents": "See events",
+    "join": "Join this Circle"
+  },
+  "voice": {
+    "playFrom": "Play the voice message from {{name}}",
+    "length": "{{duration}} long",
+    "forSkill": "For {{skill}}"
+  },
+  "prompt": {
+    "record": "Record your answer",
+    "recordAgain": "Record again",
+    "noAnswer": "No answer yet."
+  },
+  "step": {
+    "progress": "Step {{step}} of {{total}}"
+  },
+  "listening": {
+    "title": "Listening…",
+    "hint": "Speak now. Tap Stop when you have finished."
+  },
+  "stat": {
+    "daysActive": "{{done}} of {{total}} days active"
+  },
+  "tellMe": {
+    "hint": "Tap and say what you want to do"
+  },
+  "eventDetail": {
+    "timeRange": "{{day}}, {{start}} to {{end}}",
+    "openMaps": "Open in Maps",
+    "hostedBy": "Hosted by {{name}}",
+    "youHost": "You're hosting this",
+    "about": "About",
+    "cantGo": "I can't go any more",
+    "cancelConfirm": "Give up your place at {{title}}?",
+    "cancelled": "You're no longer going.",
+    "published": "Published. People can now see it and join.",
+    "notFound": "We couldn't find this event. It may have been cancelled.",
+    "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
+    "readoutJoin": "Tap I'm going to join.",
+    "readoutGoing": "You're going."
+  },
+  "going": {
+    "title": "You're going.",
+    "remind": "We'll remind you at {{time}}.",
+    "whatsappHint": "Say hello to the group before you go.",
+    "undo": "You joined {{title}}.",
+    "readout": "You're going to {{title}}, {{when}}. We'll remind you at {{time}}. You can join the WhatsApp group, or tap Done."
+  },
+  "create": {
+    "title": "Start something",
+    "what": "What would you like to do?",
+    "day": "Which day?",
+    "time": "What time?",
+    "where": "Where?",
+    "placeOther": "Or type the place",
+    "link": "Add a WhatsApp group link?",
+    "linkHint": "Paste the group's invite link so people can say hello. You can skip this.",
+    "linkLabel": "WhatsApp group link",
+    "linkInvalid": "That doesn't look like a WhatsApp group link. It should start with https://chat.whatsapp.com/",
+    "linkSkip": "Skip, I don't have one",
+    "preview": "Check and publish",
+    "previewHint": "This is how people will see it.",
+    "nameLabel": "Name of your event",
+    "publish": "Publish",
+    "readoutStep": "Step {{step}} of {{total}}. {{question}} Tap a choice, then Next.",
+    "readoutPreview": "Check and publish. {{title}}, {{when}}, {{place}}. Tap Publish to share it.",
+    "place": {
+      "cc": "{{area}} Community Club",
+      "park": "{{area}} Park",
+      "voidDeck": "Void deck near my block",
+      "hawker": "{{area}} hawker centre"
+    },
+    "placeGeneric": {
+      "cc": "Community club",
+      "park": "Park",
+      "voidDeck": "Void deck near my block",
+      "hawker": "Hawker centre"
+    }
+  },
+  "category": {
+    "walk": {
+      "name": "Walk",
+      "title": "Group walk"
+    },
+    "exercise": {
+      "name": "Tai chi or exercise",
+      "title": "Tai chi together"
+    },
+    "games": {
+      "name": "Chess or games",
+      "title": "Chess and board games"
+    },
+    "music": {
+      "name": "Music or singing",
+      "title": "Sing-along"
+    },
+    "cooking": {
+      "name": "Cooking",
+      "title": "Cooking together"
+    },
+    "gardening": {
+      "name": "Gardening",
+      "title": "Gardening together"
+    },
+    "class": {
+      "name": "Class or talk",
+      "title": "Learn together"
+    },
+    "meetup": {
+      "name": "Coffee and chat",
+      "title": "Coffee and chat"
+    },
+    "kids": {
+      "name": "With children",
+      "title": "Storytime with children"
+    },
+    "other": {
+      "name": "Something else",
+      "title": "Get-together"
+    }
+  },
+  "circles": {
+    "title": "My Circles",
+    "yours": "Your Circles",
+    "near": "Circles near you",
+    "noneYours": "You haven't joined a Circle yet. Here are some near you.",
+    "noneNear": "You're in every Circle near you.",
+    "joined": "You joined {{name}}.",
+    "readout": "My Circles. You're in {{mine}}. {{near}} more near you. Tap a Circle to see it."
+  },
+  "circlePage": {
+    "captain": "Captain: {{name}}",
+    "comingUp": "Coming up",
+    "members": "Members",
+    "noUpcoming": "Nothing planned yet. You could start something.",
+    "notFound": "We couldn't find this Circle.",
+    "readout": "{{name}}. {{members}}. Captain {{captain}}. {{next}}"
+  }
+}

@@ -13,7 +13,7 @@ Read first: `02_DESIGN_PRINCIPLES.md`, `02b_SCREEN_DESIGNS.md` (screen IDs S1–
 ```
 npx create-expo-app app -t expo-template-blank-typescript
 cd app
-npx expo install expo-router expo-speech expo-av expo-notifications expo-location \
+npx expo install expo-router expo-speech expo-audio expo-notifications expo-location \
   expo-sensors expo-haptics expo-localization expo-font expo-secure-store \
   expo-task-manager expo-keep-awake expo-contacts react-native-maps react-native-svg
 npm i i18next react-i18next zustand @tanstack/react-query phosphor-react-native \
@@ -44,7 +44,7 @@ app/
   app/
     (onboarding)/language, who, signin, name, area, interests, voice-intro,
                  safe-circle, channel, done, family-add, family-status
-    (tabs)/_layout            # Pass It On | Kampung (default) | Thrive
+    (tabs)/_layout            # Home (default) | Pass It On | Kampung | Thrive
     (tabs)/kampung/index, event/[id], going/[id], create, circles, circle/[id]
     (tabs)/thrive/index, checkin, reminders, walk/record, walk/[id], walks, move
     (tabs)/pass-it-on/index, share-skill, stories
@@ -68,7 +68,7 @@ app/
 - Highlights `targetRef` while speaking; Pause / Repeat / Slower bar (S37); auto-read setting.
 
 ### 2.2 Voice helper (`lib/voice.ts`)
-- Tell me → record (expo-av, max 15 s, stop on 1.5 s silence) → `POST /assistant/turn` with screen name + read-out script → execute `ui_actions` (navigate, highlight, confirm) → speak reply.
+- Tell me → record (expo-audio, max 15 s, stop on 1.5 s silence) → `POST /assistant/turn` with screen name + read-out script → execute `ui_actions` (navigate, highlight, confirm) → speak reply.
 - Mock mode (Phase 1): keyword intents per language — today, join, check in yes/no, remind me, start/stop walk, help, open profile.
 
 ### 2.3 Walk tracking (`lib/walk.ts`)
