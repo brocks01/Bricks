@@ -26,7 +26,7 @@ export function AgentSheet({ surface, onMove, onRelease }: { surface: Surface | 
   const { typing } = useStore(surfaceStore);
   const [text, setText] = useState('');
   const hearing = ui.phase !== 'idle' && ui.mic;
-  const empty = ui.lines.filter((l) => l.role !== 'tool').length === 0 && !surface;
+  const empty = ui.lines.filter((l) => l.role !== 'tool' && l.text.trim()).length === 0 && !surface;
   const send = () => {
     const v = text.trim();
     if (!v) return;
@@ -69,7 +69,7 @@ function Chat({ surface }: { surface: Surface | null }) {
   const ui = useStore(agentUi);
   const { seq } = useStore(surfaceStore);
   const scroll = useRef<{ scrollToEnd: (o?: { animated?: boolean }) => void } | null>(null);
-  const lines = ui.lines.filter((l) => l.role !== 'tool'); // what the agent did inside the app is not part of the chat
+  const lines = ui.lines.filter((l) => l.role !== 'tool' && l.text.trim()); // what the agent did inside the app, and any empty line, is not part of the chat
   useEffect(() => {
     const h = setTimeout(() => scroll.current?.scrollToEnd({ animated: true }), 60);
     return () => clearTimeout(h);
