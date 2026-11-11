@@ -23,3 +23,9 @@ Short, dated records. Newest last.
 - **Decided (owner): exactly two tabs, Connect and Grow.** No separate Home tab; Connect is the landing view. Profile and settings open from the avatar.
 - The agent can show **smart UI** (questions, visual explanations, generated pages in the person's language) in a surface over the app. Decision to build the tool is recorded in `../10-handoff/PROGRESS.md`.
 
+
+## 2026-11-11 (evening): Agent Canvas
+- The agent's smart-UI capability is named **Bricks Agent Canvas** (spec: `../06-technical/agent-canvas-spec.md`, sample `07-agent-canvas.webp`). It is a **declarative component renderer** controlled by the agent, shared by Connect and Grow, **not** an AI-to-HTML generator. The sandboxed HTML in the current `show` tool stays only as an optional advanced block.
+- Stack for it is ours (Expo, FastAPI, PostgreSQL), not the Next.js/Node/Mongo stack in the original proposal.
+- A canvas is temporary and never authoritative data; real records are created only through authorised backend calls, with confirmation for sensitive actions.
+- First slice to build (when the owner agrees): canvas label and close, selection tiles, step dots and Next, on top of `show`. The full event-creation MVP waits for the activity and community backend.

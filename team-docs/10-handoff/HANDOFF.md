@@ -23,7 +23,7 @@ Built for the **Singapore-India Hackathon 2026** (raiSE Social Innovation track;
 Two domains: **Connect** (what people do together: communities, activities, governance, sponsors, earnings, jobs and referrals) and **Grow** (personal goals, health, learning).
 **Thrive was removed**; tagline "Connect. Grow. Participate."; a flexible activity system instead of one module per activity type; profile and settings open from the avatar;
 the Bricks Agent bar is global. Full page: `team-docs/02-product/product-architecture.md`; samples `team-docs/05-design/ui-samples/` (03 to 05 pre-date the Thrive removal).
-**The app now has exactly two tabs, Connect and Grow (decided by the owner), both "Coming soon"; profile and settings open from the avatar (`/me`, "My profile").** Next UI tasks: the new onboarding (language, interests, four-path start), then real content in Connect.
+**The app now has exactly two tabs, Connect and Grow (decided by the owner), both "Coming soon"; profile and settings open from the avatar (`/me`, "My profile").** **The approved visual target is sample 06 and the screen-by-screen build instructions are in `team-docs/06-technical/ui-build-spec.md`: read it before building any screen.** Next UI tasks (in that order): onboarding Language, Interests and Start screens, then Connect landing with create/join/discover community, the Connect hub, Grow.
 
 ## 3. Repository map
 ```
@@ -100,6 +100,7 @@ Everything below was tested unless marked.
   The HTML runs in an iframe with `sandbox=""` (no scripts, no forms, no navigation, no access to the app) and a Content-Security-Policy that blocks every network request;
   on phones (no web view in Expo Go) only the title, message, steps and options show. The agent writes everything in the person's language (system prompt in
   `backend/app/modules/agent/declarations.py`). Tested in the browser: a visual page with a card, steps and two choices; tapping a choice returned the answer to the agent.
+- **Agent Canvas (planned evolution of the surface):** spec `team-docs/06-technical/agent-canvas-spec.md` and sample 07. Today only `show`/`hide` exist (see above); the spec lists the gaps (AI label, tiles, steps, forms, live state). Build it as native components with a validated JSON component tree, never as free HTML. Discuss with the owner before building.
 - **Phone agent:** `backend/app/modules/voice` places a real Twilio call to an allow-listed number; Gemini Live speaks; tools web search, read page, end call,
   extend call; transcript kept in memory. One real call tested (35 s, Hindi/English). Twilio is a **trial** account (callee must be verified and press a key).
 - **Web hosting:** the backend serves `app/dist`; the owner's ngrok tunnel (his static domain `shale-overgrown-buggy.ngrok-free.dev`) points at port 8093

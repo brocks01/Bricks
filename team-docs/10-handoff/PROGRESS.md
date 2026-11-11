@@ -41,3 +41,15 @@ Did: replaced the five placeholder tabs with exactly two, **Connect** and **Grow
 Tested: type-check and self-test pass (new checks: two tabs in order, profile not a tab); in the browser the two tabs show and the avatar opens /me.
 Not done / not tested: the public ngrok copy of the website was not rebuilt (run `npx expo export --platform web --output-dir dist` in `app`); not committed until the owner says so.
 Next: the new onboarding (language, interests, four-path start), then real content in Connect (community create/join/discover).
+
+## 2026-11-11 (Claude Code, Sonnet 5.5): final UI direction and build spec
+Did: stored the final UI image as sample 06 (the visual target; wins over 03 to 05); wrote `06-technical/ui-build-spec.md` (every onboarding, Connect, Connect hub and Grow screen with page keys, routes, elements, data sources, empty states, backend needs and a build order) so another agent can build directly; updated the product architecture, the samples README and HANDOFF.
+Tested: docs only (no code change in this entry).
+Not done: none of the new screens is built yet (Language onboarding, Interests, Start, Connect landing content, hub, Grow content); Phone OTP, photo upload, Apple sign-in are not built.
+Next: follow the build order in `ui-build-spec.md` section E.
+
+## 2026-11-11 (Claude Code, Sonnet 5.5): Agent Canvas spec stored
+Did: stored sample 07 (Agent Canvas) and wrote `06-technical/agent-canvas-spec.md` from the owner's proposal, adapted to our stack (the proposal's Next.js/Node/Mongo stack is replaced by Expo/FastAPI/PostgreSQL); decisions, samples README and HANDOFF updated.
+Tested: docs only (no code change in this entry).
+Not done: Canvas is not built beyond the existing `show`/`hide` surface; the event-creation MVP depends on the activity and community backend.
+Next: owner agrees the first slice (canvas label and close, selection tiles, step dots and Next), then build it.
