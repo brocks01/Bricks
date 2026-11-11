@@ -10,6 +10,7 @@ import { glowStore } from '../kit/glow';
 import { pageDataOf, publishPageData } from '../kit/pageData';
 import { answerSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
 import { toolSpecs } from '../agent/tools';
+import { IDLE_MS } from '../agent/live';
 import { sessionStore } from '../session/store';
 import { allModules, allPages, defineModule, pageForPath, search, tabPages } from './registry';
 import { resolvePage } from './resolve';
@@ -209,6 +210,12 @@ const agent = createAgentTools({
   check('canvas: the answer is the labels the person chose', answered.answer === 'One' && answered.how === 'option', JSON.stringify(answered));
   check('canvas: answering closes the panel', surfaceStore.get().open === false);
   check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 20000);
+  // the talk ends by itself: the agent can hang up, and a quiet talk is cut rather than listening forever
+  check('an end tool exists so the agent can hang up', !!toolSpecs.find((s) => s.name === 'end'));
+  const ended = (await agent.call('end', {})) as { ended?: boolean };
+  check('the end tool answers that the conversation is over', ended.ended === true, JSON.stringify(ended));
+  check('a quiet talk is cut after a sensible pause', IDLE_MS >= 5000 && IDLE_MS <= 60000, String(IDLE_MS));
+
   // the server copies each description into the Gemini declaration and cuts it at 1000 characters (declarations.py): a longer one loses its tail in silence
   check('every tool description fits the server limit of 1000 characters', toolSpecs.every((s) => s.description.length <= 1000), toolSpecs.filter((s) => s.description.length > 1000).map((s) => `${s.name}:${s.description.length}`).join(', '));
 

@@ -5,7 +5,7 @@ import { t } from '../i18n/tables';
 import { createStore } from '../core/store';
 import { apiBase } from '../api/client';
 import { freshToken } from '../session/store';
-import { audioAvailable, isSpeaking, playPcm24k, startMic, stopMic, stopPlayback } from './audio';
+import { audioAvailable, isSpeaking, playPcm24k, speechSeenAt, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
 import { hideSurface } from './surface';
 
@@ -29,6 +29,40 @@ let ready = false;
 let queued: string[] = [];
 let held: string[] = []; // microphone chunks spoken before the agent was ready
 let starting: symbol | null = null;
+
+/**
+ * The talk ends by itself when it is over: with no word from the agent and nothing said into the microphone
+ * for IDLE_MS, the call is cut and the bar goes back to "Tap to talk". Without this, a person who says
+ * "that's all, thanks" leaves the agent listening to them forever. The agent's own `end` tool ends it at once.
+ */
+export const IDLE_MS = 15000;
+let lastActivity = Date.now();
+let watchdog: ReturnType<typeof setInterval> | null = null;
+const poke = () => {
+  lastActivity = Date.now();
+};
+function stopWatchdog() {
+  if (watchdog) {
+    clearInterval(watchdog);
+    watchdog = null;
+  }
+}
+function startWatchdog() {
+  stopWatchdog();
+  watchdog = setInterval(() => {
+    if (!ws) return stopWatchdog();
+    const s = agentUi.get();
+    if (s.phase === 'speaking' || s.phase === 'working') {
+      lastActivity = Date.now(); // the agent is mid-answer; its clock starts when it finishes
+      return;
+    }
+    const quiet = Date.now() - lastActivity >= IDLE_MS;
+    // The microphone streams silence as well as speech, so "audio is flowing" proves nothing; it only counts
+    // as still talking when a chunk actually rose above the room tone. With no microphone up, only quiet matters.
+    const talking = s.mic && Date.now() - speechSeenAt() < IDLE_MS;
+    if (quiet && !talking) end();
+  }, 1000);
+}
 
 const set = (patch: Partial<ReturnType<typeof agentUi.get>>) => agentUi.set((s) => ({ ...s, ...patch }));
 const wsUrl = () => apiBase().replace(/^http/, 'ws') + '/v1/agent/live';
@@ -78,9 +112,12 @@ async function onToolCall(m: { id: string; name: string; args: Record<string, un
   // Acting on the app means the panel has done its job: close it first so the person sees what the agent is doing, never two things at once.
   // Lookups (tree, search, docs, read, web) and show/hide are left alone.
   if (m.name === 'open' || m.name === 'fill' || m.name === 'press' || m.name === 'run') hideSurface();
-  addLine('tool', toolWord(m.name));
-  closed.tool = true; // each action is its own line
-  closed.agent = true; // and what the agent says next starts a new line below it
+  if (m.name !== 'end') {
+    // Hanging up is not something to narrate in the transcript: the bar simply goes back to "Tap to talk".
+    addLine('tool', toolWord(m.name));
+    closed.tool = true; // each action is its own line
+    closed.agent = true; // and what the agent says next starts a new line below it
+  }
   let response: unknown;
   try {
     response = runner ? await runner.call(m.name, fixArgs(m.args ?? {})) : { error: 'not_ready' };
@@ -88,10 +125,12 @@ async function onToolCall(m: { id: string; name: string; args: Record<string, un
     response = { error: (e as Error).message };
   }
   send({ type: 'toolResult', id: m.id, name: m.name, response });
+  if (m.name === 'end') return end(); // the result is away, so now cut the call rather than keep listening
   set({ phase: isSpeaking() ? 'speaking' : 'listening' });
 }
 
 function onMessage(raw: string) {
+  poke();
   const m = JSON.parse(raw);
   switch (m.type) {
     case 'ready':
@@ -140,6 +179,7 @@ function onMessage(raw: string) {
 export async function startTalk(opts: { mic: boolean }): Promise<void> {
   if (ws || starting) return;
   set({ phase: 'listening', notice: null, mic: false });
+  poke();
   if (opts.mic && !audioAvailable()) {
     set({ notice: 'nomic' });
     opts = { mic: false };
@@ -159,6 +199,7 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
   const token = await freshToken(); // no network unless the token is about to expire
   if (!token) {
     stopMic();
+    stopWatchdog();
     return void set({ phase: 'idle', notice: 'signin' });
   }
   if (starting !== mine) return; // ended while we waited
@@ -170,12 +211,15 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
   sock.onclose = () => {
     if (ws === sock) end();
   };
+  poke();
+  startWatchdog(); // nobody says anything for IDLE_MS and the call is cut
 }
 
 /** Typed message: opens the talk (without the microphone) if it is not open yet. */
 export async function sendText(text: string): Promise<void> {
   const t = text.trim();
   if (!t) return;
+  poke();
   addLine('person', t);
   closed.person = true;
   if (!ws) {
@@ -192,6 +236,7 @@ export async function sendText(text: string): Promise<void> {
 export async function askAgent(text: string): Promise<void> {
   const m = text.trim();
   if (!m) return;
+  poke();
   if (!ws) {
     queued.push(m);
     await startTalk({ mic: false });
@@ -206,6 +251,7 @@ export function end(): void {
   ready = false;
   queued = [];
   held = [];
+  stopWatchdog();
   stopMic();
   stopPlayback();
   try {

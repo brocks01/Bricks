@@ -9,3 +9,5 @@ export function stopMic(): void {}
 export function playPcm24k(_data: string): void {}
 export function stopPlayback(): void {}
 export const isSpeaking = (): boolean => false;
+/** No microphone here, so nothing is ever heard. live.ts only asks while the microphone is up, which it never is on a phone today. */
+export const speechSeenAt = (): number => 0;

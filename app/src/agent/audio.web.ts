@@ -16,9 +16,16 @@ let stream: MediaStream | null = null;
 let node: AudioWorkletNode | null = null;
 let nextAt = 0;
 let sources: AudioBufferSourceNode[] = [];
+/** When the microphone last heard something above the room tone. The mic streams silence all the time, so
+ * "audio is flowing" says nothing about whether the person is talking; this does. */
+let lastSpeech = 0;
+/** Peak (of 32767) a 100 ms chunk must reach to count as speech. Below this is a fan, a keyboard or nothing. */
+const SPEECH_PEAK = 1600;
+export const speechSeenAt = (): number => lastSpeech;
 
 /** Starts the microphone. `onChunk` gets about 100 ms of 16 kHz PCM16 (base64) at a time. Throws if the person says no. */
 export async function startMic(onChunk: (b64pcm: string) => void): Promise<void> {
+  lastSpeech = 0;
   ctx = ctx ?? new AudioContext();
   if (ctx.state === 'suspended') await ctx.resume();
   stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, channelCount: 1 } });
@@ -42,6 +49,12 @@ export async function startMic(onChunk: (b64pcm: string) => void): Promise<void>
       out[i] = Math.max(-1, Math.min(1, sum / (z - a))) * 32767;
     }
     carry = Array.from(x.slice(Math.floor(n * ratio)));
+    let peak = 0;
+    for (let i = 0; i < n; i++) {
+      const v = out[i] < 0 ? -out[i] : out[i];
+      if (v > peak) peak = v;
+    }
+    if (peak >= SPEECH_PEAK) lastSpeech = Date.now();
     pending.push(out);
     pendingLen += n;
     if (pendingLen >= 1600) {
@@ -69,6 +82,7 @@ export function stopMic(): void {
   node = null;
   stream?.getTracks().forEach((t) => t.stop());
   stream = null;
+  lastSpeech = 0;
 }
 
 /** Plays 24 kHz PCM16 (base64), queued right after whatever is already playing. */

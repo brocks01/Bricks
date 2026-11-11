@@ -75,6 +75,7 @@ export const toolSpecs: ToolSpec[] = [
     ),
   },
   { name: 'hide', description: 'Close the panel you opened with show.', inputSchema: obj({}) },
+  { name: 'end', description: 'End this conversation and let the microphone go. Call it the moment the person says goodbye or that they are finished, so the talk does not keep listening after they have gone. Then say nothing more.', inputSchema: obj({}) },
   { name: 'run', description: 'Run a module skill by "module/skill", for example "events/create". Some skills need the person to approve.', inputSchema: obj({ skill: { type: 'string' }, input: { type: 'object' } }, ['skill']) },
 ];
 
@@ -176,6 +177,11 @@ export function createAgentTools(host: AgentHost) {
       case 'hide':
         hideSurface();
         return { hidden: true };
+
+      // The live client does the actual hanging up once this answer has been sent back (see onToolCall in live.ts),
+      // so the agent is never left holding a microphone after the person has said it is over.
+      case 'end':
+        return { ended: true, summary: 'The conversation is over.' };
 
       case 'run': {
         const [moduleId, skillName] = String(args.skill ?? '').split('/');
