@@ -5,6 +5,7 @@ export interface MyCommunity {
   name: string;
   kind: string;
   icon: string;
+  cover_url: string | null;
   area_name: string | null;
   description: string | null;
   member_count: number;

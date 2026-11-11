@@ -102,6 +102,19 @@ COMMUNITIES = [
     },
 ]
 
+# Real photos, linked directly from Unsplash (free to use under the Unsplash License; no key needed). Replace with your own uploads (Cloudinary) any time:
+# change the cover_url / image_url in the database, or upload through POST /v1/media/upload once the CLOUDINARY_* keys are in backend/.env.
+def _img(photo: str) -> str:
+    return f"https://images.unsplash.com/photo-{photo}?w=800&q=70&auto=format&fit=crop"
+
+
+PHOTOS = {  # slug -> (cover, [one image per activity, in order])
+    "bedok-heritage-kakis-demo": ("1648365304143-9aa30adbf8e4", ["1648365306256-7892c24362d6", "1700553856089-1ea9261143a7", "1779719762208-f3d2f100445b"]),
+    "toa-payoh-silver-mentors-demo": ("1642413140777-0a3bf5ff39e5", ["1604940293595-be295d67ad9e", "1591688342010-d71fbf89b4c3", "1782150924537-7a4fe94d837f"]),
+    "tampines-kampung-spirit-demo": ("1624730088819-01a310dbc10b", ["1763901682710-a18f6a7d9531", "1604940293595-be295d67ad9e", "1770184428372-ad4d28b9aef4"]),
+    "jurong-green-gardeners-demo": ("1757585267523-f689c297fa2d", ["1621460248083-6271cc4437a8", "1611843467160-25afb8df1074", "1597868165956-03a6827955b1"]),
+}
+
 # Names for the rest of each community (Singapore's Chinese, Malay, Indian and Eurasian communities). Mostly seniors, as in the communities themselves.
 FIRST = ["Ah Hock", "Ai Ling", "Beng Huat", "Bee Lian", "Cheng Hock", "Chin Siong", "Siew Mei", "Eng Kiat", "Geok Eng", "Hock Seng", "Kim Hwa", "Lay Choo", "Mei Lan", "Poh Choo",
          "Swee Lian", "Teck Kiong", "Yoke Lin", "Zainal", "Aminah", "Ismail", "Halimah", "Kamarudin", "Rosnah", "Salleh", "Normah", "Osman", "Sulaiman", "Zubaidah", "Kumar", "Devi",
@@ -149,9 +162,9 @@ def seed_community(conn, c: dict) -> None:
         ids.append(conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, :b) returning id"),
                                 {"e": _handle(name, c["slug"]), "n": name, "a": area, "b": band}).one().id)
     cid = conn.execute(
-        text("insert into communities (name, slug, kind, icon, description, area_name, privacy, invite_code, is_demo, created_by) values "
-             "(:n, :s, :k, :i, :d, :a, 'invite', :c, true, :u) returning id"),
-        {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "c": c["code"], "u": ids[0]}).one().id
+        text("insert into communities (name, slug, kind, icon, description, area_name, cover_url, privacy, invite_code, is_demo, created_by) values "
+             "(:n, :s, :k, :i, :d, :a, :cv, 'invite', :c, true, :u) returning id"),
+        {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "cv": _img(PHOTOS[c["slug"]][0]), "c": c["code"], "u": ids[0]}).one().id
     for u in ids:
         conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": u})
     for (_n, _a, _b, role_key), user in zip(c["people"], ids):
@@ -163,12 +176,13 @@ def seed_community(conn, c: dict) -> None:
         conn.execute(text("insert into announcements (community_id, author_id, title, body, pinned, created_at) values (:c, :a, :t, :b, :p, :d)"),
                      {"c": cid, "a": ids[who], "t": title, "b": body, "p": pinned, "d": now - timedelta(days=days_ago)})
     acts = []
-    for title, desc, cat, days, hours, place, cap in c["activities"]:
+    for n, (title, desc, cat, days, hours, place, cap) in enumerate(c["activities"]):
         start = now + timedelta(days=days, hours=2)
         acts.append(conn.execute(
-            text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity) values "
-                 "(:c, :o, :t, :d, :cat, :s, :e, :l, :cap) returning id"),
-            {"c": cid, "o": ids[3], "t": title, "d": desc, "cat": cat, "s": start, "e": start + timedelta(hours=hours), "l": place, "cap": cap}).one().id)
+            text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity, image_url) values "
+                 "(:c, :o, :t, :d, :cat, :s, :e, :l, :cap, :img) returning id"),
+            {"c": cid, "o": ids[3], "t": title, "d": desc, "cat": cat, "s": start, "e": start + timedelta(hours=hours), "l": place, "cap": cap,
+             "img": _img(PHOTOS[c["slug"]][1][n])}).one().id)
     for i, a in enumerate(acts):
         for u in ids[: 3 + i * 2]:
             conn.execute(text("insert into activity_participants (activity_id, user_id) values (:a, :u)"), {"a": a, "u": u})

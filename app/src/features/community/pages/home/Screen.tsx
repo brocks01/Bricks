@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { getCommunity, setGoing, type CommunityDetail } from '../../../../api/communities';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -79,15 +79,13 @@ export default function CommunityHome() {
     <Screen title={c.name} back>
       <El page={page} id="heading"><Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w('yourCommunity')}</Text></El>
 
-      <View style={{ minHeight: 130, borderRadius: radius.card, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.accentLine, padding: space.md, justifyContent: 'flex-end', marginBottom: space.md, overflow: 'hidden' }}>
-        <Ionicons name="business" size={72} color={colors.accent} style={{ position: 'absolute', right: 16, top: 14, opacity: 0.2 }} />
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-          <View style={{ width: 44, height: 44, borderRadius: 12, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="business" size={24} color="#FFFFFF" />
-          </View>
+      <View style={{ height: 160, borderRadius: radius.card, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.accentLine, justifyContent: 'flex-end', marginBottom: space.md, overflow: 'hidden' }}>
+        {c.cover_url ? <Image source={{ uri: c.cover_url }} accessibilityIgnoresInvertColors style={{ position: 'absolute', width: '100%', height: '100%' }} resizeMode="cover" /> : <Ionicons name="business" size={72} color={colors.accent} style={{ position: 'absolute', right: 16, top: 14, opacity: 0.2 }} />}
+        {c.cover_url ? <View style={{ position: 'absolute', left: 0, right: 0, bottom: 0, height: 80, backgroundColor: 'rgba(0,0,0,0.45)' }} /> : null}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, padding: space.md }}>
           <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 19, fontWeight: '800', color: colors.ink }}>{c.name}</Text>
-            <Text style={[type.small, { color: colors.muted }]}>{[c.area_name, t('common.members', { n: c.member_count })].filter(Boolean).join(' · ')}</Text>
+            <Text style={{ fontSize: 20, fontWeight: '800', color: c.cover_url ? '#FFFFFF' : colors.ink }}>{c.name}</Text>
+            <Text style={[type.small, { color: c.cover_url ? '#FFFFFF' : colors.muted }]}>{[c.area_name, t('common.members', { n: c.member_count })].filter(Boolean).join(' · ')}</Text>
           </View>
         </View>
       </View>
@@ -109,9 +107,13 @@ export default function CommunityHome() {
       <El page={page} id="happening"><Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('happening')}</Text></El>
       {next.length ? next.map((a) => (
         <View key={a.id} style={[card, { flexDirection: 'row', alignItems: 'center', gap: space.md }]}>
-          <View style={{ width: 56, height: 56, borderRadius: 12, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="calendar" size={26} color={colors.accent} />
-          </View>
+          {a.image_url ? (
+            <Image source={{ uri: a.image_url }} accessibilityIgnoresInvertColors style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.accentSoft }} />
+          ) : (
+            <View style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name="calendar" size={26} color={colors.accent} />
+            </View>
+          )}
           <View style={{ flex: 1, gap: 2 }}>
             <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{a.title}</Text>
             <Text style={[type.small, { color: colors.muted }]}>{when(a.starts_at)}</Text>

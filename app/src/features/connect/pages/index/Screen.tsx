@@ -1,6 +1,6 @@
 ﻿import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -17,7 +17,8 @@ import { connectIndex as page } from './page';
 const TINTS = ['#E3F1E7', '#E8E6F8', '#E6F4E1', '#FBEFD9'];
 const symbol = (name: string) => (name in (Ionicons.glyphMap as Record<string, unknown>) ? (name as keyof typeof Ionicons.glyphMap) : 'people');
 
-function Thumb({ icon, size, i }: { icon: string; size: number; i: number }) {
+function Thumb({ icon, size, i, uri }: { icon: string; size: number; i: number; uri?: string | null }) {
+  if (uri) return <Image source={{ uri }} accessibilityIgnoresInvertColors style={{ width: size, height: size, borderRadius: 14, backgroundColor: TINTS[i % TINTS.length] }} />;
   return (
     <View style={{ width: size, height: size, borderRadius: 14, backgroundColor: TINTS[i % TINTS.length], alignItems: 'center', justifyContent: 'center' }}>
       <Ionicons name={symbol(icon)} size={size * 0.5} color={colors.accent} />
@@ -85,7 +86,7 @@ export default function ConnectIndex() {
             list.map((c, i) => (
               <Pressable key={c.id} onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={card}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                  <Thumb icon={c.icon} size={64} i={i} />
+                  <Thumb icon={c.icon} size={64} i={i} uri={c.cover_url} />
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{c.name}</Text>
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
@@ -120,7 +121,7 @@ export default function ConnectIndex() {
           {soon.map((e, i) => (
             <View key={e.id} style={card}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                <Thumb icon={e.community_icon} size={72} i={i} />
+                <Thumb icon={e.community_icon} size={72} i={i} uri={e.image_url} />
                 <View style={{ flex: 1, gap: 2 }}>
                   <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink }}>{e.title}</Text>
                   <Text style={[type.small, { color: colors.muted }]}>{e.community_name}</Text>
