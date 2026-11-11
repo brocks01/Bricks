@@ -36,3 +36,18 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
   handling is skipped on web (phones unchanged).
 - **Accessibility trade-off:** Luma's grey pills have no outline. Their dark labels carry the
   meaning; `borderStrong` stays for text inputs.
+
+### UI step 1: shared pieces
+- **`Toast`** (`showToast(text)`, `ToastHost` in the root layout): a green pill that confirms an
+  action, shown 5 s (long enough to read twice), announced to screen readers. It sits **below**
+  the top bar so Read it out and Help are never covered.
+- **`SheetHeader`**: an icon in a soft circle, a bold title, one grey line; used by
+  `ConfirmSheet` (which gains `detail` and `icon`).
+- **`GroupedList` / `GroupedRow`**: iOS-style grouped rows on a grey panel: coloured icon
+  square, title, grey subtitle, value, chevron; rows without an action are plain information.
+- **`EmptyState`**: a soft grey icon, a bold line, an optional grey line (`detail`), one button.
+- **`AvatarStack`** (faces + "+12") and **`DateHeader`** ("Tomorrow / Wednesday").
+- All are in the `/dev/components` gallery with tests.
+- **Rule over screenshot:** Luma uses red pills for destructive actions. Red stays only for
+  Help and emergencies (docs/02), so destructive actions are black pills with a clear verb
+  ("Leave", "Sign out"). Sheets have no icon-only "X": they close with a labelled button.

@@ -1,11 +1,15 @@
 import { BottomSheet } from './BottomSheet';
-import { Text } from './primitives/Text';
+import { QuestionIcon, type Icon } from './primitives/icons';
+import { SheetHeader } from './SheetHeader';
 import { YesNo } from './YesNo';
 
 export interface ConfirmSheetProps {
   visible: boolean;
   /** One plain question: "Every day at 8 am: take medicine. Is that right?" */
   text: string;
+  /** One more line under the question, when it helps. */
+  detail?: string;
+  icon?: Icon;
   onYes: () => void;
   onNo: () => void;
   yesLabel?: string;
@@ -14,14 +18,21 @@ export interface ConfirmSheetProps {
 
 /**
  * Confirms a change before it happens (Monzo): the request read back in plain
- * words, then Yes / No. The Android back button counts as No.
+ * words under a SheetHeader, then Yes / No. The Android back button counts as No.
  */
-export function ConfirmSheet({ visible, text, onYes, onNo, yesLabel, noLabel }: ConfirmSheetProps) {
+export function ConfirmSheet({
+  visible,
+  text,
+  detail,
+  icon = QuestionIcon,
+  onYes,
+  onNo,
+  yesLabel,
+  noLabel,
+}: ConfirmSheetProps) {
   return (
     <BottomSheet visible={visible} onRequestClose={onNo} testID="confirm-sheet">
-      <Text variant="heading" accessibilityLiveRegion="polite">
-        {text}
-      </Text>
+      <SheetHeader icon={icon} title={text} text={detail} />
       <YesNo onYes={onYes} onNo={onNo} yesLabel={yesLabel} noLabel={noLabel} testID="confirm" />
     </BottomSheet>
   );

@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { BigButton, Text } from '@/components';
+import { BigButton, Text, ToastHost } from '@/components';
 import { BuddyHost } from '@/features/buddy/BuddyHost';
 import { ReadOutProvider } from '@/features/readout/ReadOutProvider';
 import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
@@ -122,6 +122,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <BuddyHost />
+      <ToastHost />
     </AppProviders>
   );
 }
