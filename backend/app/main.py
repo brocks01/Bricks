@@ -11,6 +11,7 @@ from .core.db import engine
 from .modules.identity.router import router as identity_router
 from .modules.agent.router import router as agent_router
 from .modules.communities.router import router as communities_router
+from .modules.explore.router import router as explore_router
 from .modules.media.router import router as media_router
 from .modules.voice.router import router as voice_router
 from .modules.translation.router import router as translation_router
@@ -32,6 +33,7 @@ app.include_router(identity_router)
 app.include_router(voice_router)
 app.include_router(agent_router)
 app.include_router(communities_router)
+app.include_router(explore_router)
 app.include_router(media_router)
 app.include_router(translation_router)
 

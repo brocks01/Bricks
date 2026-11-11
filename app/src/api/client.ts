@@ -46,7 +46,7 @@ async function once(method: string, path: string, body: unknown, auth: boolean):
   }
 }
 
-export async function api<T>(method: 'GET' | 'POST' | 'PATCH', path: string, body?: unknown, opts: { auth?: boolean } = {}): Promise<T> {
+export async function api<T>(method: 'GET' | 'POST' | 'PATCH' | 'PUT', path: string, body?: unknown, opts: { auth?: boolean } = {}): Promise<T> {
   const auth = opts.auth ?? true;
   let res = await once(method, path, body, auth);
   if (res.status === 401 && auth && (await hooks.refresh())) res = await once(method, path, body, auth); // one silent retry with a fresh token

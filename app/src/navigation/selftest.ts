@@ -25,7 +25,11 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('seven modules', allModules().length === 7, String(allModules().length));
+check('eight modules', allModules().length === 8, String(allModules().length));
+check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);
+check('explore item page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'explore.item'); return !!p && p.route === '/explore/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
+check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
+check('every explore category and format has words in all six languages', (() => { const ids = ['digital_skills', 'health_awareness', 'everyday_life', 'hobbies', 'culture', 'knowledge', 'guide', 'video', 'interactive', 'story', 'audio', 'activity', 'easy', 'medium']; const lines = ids.filter((i) => i.indexOf('_') > 0 && i !== 'digital_skills' || i === 'digital_skills').map((i) => i + '_line'); const st = allPages().find((x) => x.key === 'explore.home')!.strings; return Object.values(st).length === 6 && Object.values(st).every((words) => [...ids, ...lines.filter((l) => l in (st.en ?? {}))].every((k) => !!(words as Record<string, string>)[k])); })());
 check('two tabs: Connect and Grow', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index', tabPages().map((p) => p.key).join(','));
 check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
