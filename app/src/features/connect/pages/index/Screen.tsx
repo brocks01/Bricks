@@ -1,6 +1,6 @@
 import { ComingSoon } from '../../../../components/ComingSoon';
-import { communityIndex as page } from './page';
+import { connectIndex as page } from './page';
 
-export default function CommunityIndex() {
+export default function ConnectIndex() {
   return <ComingSoon page={page} icon="people-outline" />;
 }

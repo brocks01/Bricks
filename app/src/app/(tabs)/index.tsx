@@ -1,1 +1,1 @@
-export { default } from '../../features/home/pages/index/Screen';
+export { default } from '../../features/connect/pages/index/Screen';

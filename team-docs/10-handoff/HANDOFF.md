@@ -23,8 +23,7 @@ Built for the **Singapore-India Hackathon 2026** (raiSE Social Innovation track;
 Two domains: **Connect** (what people do together: communities, activities, governance, sponsors, earnings, jobs and referrals) and **Grow** (personal goals, health, learning).
 **Thrive was removed**; tagline "Connect. Grow. Participate."; a flexible activity system instead of one module per activity type; profile and settings open from the avatar;
 the Bricks Agent bar is global. Full page: `team-docs/02-product/product-architecture.md`; samples `team-docs/05-design/ui-samples/` (03 to 05 pre-date the Thrive removal).
-**The app still has the older five placeholder tabs (Home, Community, Events, Goals, Me): changing them to Connect and Grow, and building the new onboarding
-(language, interests, four-path start), are the next UI tasks. Open question for the owner: is Home its own tab or the landing view of Connect?**
+**The app now has exactly two tabs, Connect and Grow (decided by the owner), both "Coming soon"; profile and settings open from the avatar (`/me`, "My profile").** Next UI tasks: the new onboarding (language, interests, four-path start), then real content in Connect.
 
 ## 3. Repository map
 ```
@@ -89,7 +88,7 @@ Everything below was tested unless marked.
   `401 token_expired`, the app refreshes once and retries). Refresh tokens rotate and keep the same session id. The app refreshes only when the token has under
   a minute left. Design came from the Jambagrad auth module (RS256 + hot list + change log); see section 8 for what to adopt next.
 - **Profile:** first-time setup page (name required; age group under40/40to59/60plus, phone, area optional), view page, edit page, language saved to the profile.
-- **App shell:** welcome, sign-in, verify, setup, five tabs (Home, Community, Events, Goals, Me); only Me has content. Others show "Coming soon".
+- **App shell:** welcome, sign-in, verify, setup, two tabs (Connect, Grow), both "Coming soon"; the profile page opens from the avatar.
   No scroll bars (app-like scrolling). Language page works (six languages).
 - **Bricks Agent (in-app):** bottom bar under the tab bar on every signed-in page (waveform, status, red end button, chevron for transcript and a typing box).
   Tap to talk; the microphone starts at once and audio is held until the connection is ready. Browser voice tested once (works); typing tested; **iPhone

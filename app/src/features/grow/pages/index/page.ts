@@ -1,15 +1,15 @@
 import { definePage } from '../../../../kit/page';
 import { strings } from './strings';
 
-export const communityIndex = definePage({
-  key: 'community.index',
-  module: 'community',
-  route: '/community',
+export const growIndex = definePage({
+  key: 'grow.index',
+  module: 'grow',
+  route: '/grow',
   tab: 2,
-  icon: 'people',
+  icon: 'heart',
   requiresAuth: true,
-  summary: 'Coming soon. Nothing is on this page yet.',
-  keywords: ['community', 'neighbourhood'],
+  summary: 'Your personal goals, health and learning. Coming soon.',
+  keywords: ['goals', 'health', 'wellbeing', 'learning', 'personal'],
   elements: {
     heading: { kind: 'text' },
     soon: { kind: 'text', summary: 'A note that this part is coming soon.' },

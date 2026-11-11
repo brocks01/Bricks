@@ -5,10 +5,8 @@ export const meIndex = definePage({
   key: 'me.index',
   module: 'me',
   route: '/me',
-  tab: 5,
-  icon: 'person',
   requiresAuth: true,
-  summary: 'Your own page: your details, language, and sign out.',
+  summary: 'Your profile and settings, opened from your avatar: your details, language, and sign out.',
   keywords: ['profile', 'settings', 'account'],
   elements: {
     heading: { kind: 'text' },

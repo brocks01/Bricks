@@ -35,3 +35,9 @@ Tested: app type-check and self-test pass (new checks for show/hide, waiting que
 Not done / not tested: the app's tabs and onboarding still follow the OLD samples (five placeholder tabs); iPhone Safari and Expo Go (HTML is hidden on phones by design until a development build);
 a long html page's height (fixed 260 px frame, content scrolls inside it); the public Vercel/ngrok copy was rebuilt only if noted below.
 Next: owner decides Home as a tab or not; then rebuild the tabs as Connect and Grow and the new onboarding (language, interests, four-path start); then the activity system and roles/grants.
+
+## 2026-11-11 (Claude Code, Sonnet 5.5): two tabs
+Did: replaced the five placeholder tabs with exactly two, **Connect** and **Grow** (owner's decision); removed the old home, community, events and goals modules; the profile page (`me.index`, "My profile") is no longer a tab and opens from the avatar with a back arrow; words for the two tabs in six languages; docs updated (open question resolved).
+Tested: type-check and self-test pass (new checks: two tabs in order, profile not a tab); in the browser the two tabs show and the avatar opens /me.
+Not done / not tested: the public ngrok copy of the website was not rebuilt (run `npx expo export --platform web --output-dir dist` in `app`); not committed until the owner says so.
+Next: the new onboarding (language, interests, four-path start), then real content in Connect (community create/join/discover).

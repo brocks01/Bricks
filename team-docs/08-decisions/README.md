@@ -20,6 +20,6 @@ Short, dated records. Newest last.
 - No third domain for now. A **flexible activity system** (title, category, organiser, time, place, participants, registration, attendance, goals, contributions, optional sponsorship) lets each community build its own clubs, leagues, classes and programmes without a new module each time.
 - A person can use Bricks without joining a community; four starting paths: Join, Create, Start personally, Explore. Profile and settings open from the avatar. The Bricks Agent bar is global.
 - This replaces the earlier proposals (Connect / Grow / Thrive, and four tabs Community / Activities / My Life / Profile).
-- **Still open (owner to decide):** is Home its own tab, or the landing view of Connect? The app currently has five placeholder tabs from the older samples and must be changed to match.
+- **Decided (owner): exactly two tabs, Connect and Grow.** No separate Home tab; Connect is the landing view. Profile and settings open from the avatar.
 - The agent can show **smart UI** (questions, visual explanations, generated pages in the person's language) in a surface over the app. Decision to build the tool is recorded in `../10-handoff/PROGRESS.md`.
 

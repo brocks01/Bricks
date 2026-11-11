@@ -27,7 +27,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     } else if (!complete) {
       if (current.key !== 'auth.setup') go('auth.setup', {}, { replace: true });
     } else if (current.module === 'auth') {
-      go('home.index', {}, { replace: true });
+      go('connect.index', {}, { replace: true });
     }
   }, [status, complete, current, go]);
 

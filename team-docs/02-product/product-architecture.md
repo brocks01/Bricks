@@ -36,9 +36,9 @@ A person can use Bricks **without** joining a community; joining unlocks its str
 Not 20 profile fields at sign-up.
 
 ## Navigation
-Landing is **Your Bricks Home**: personal and community activity together (community status and selector, goals and progress, upcoming activities, what needs attention today, announcements). Bottom navigation has **Connect** and **Grow**. **Profile and settings** open from the avatar (language, privacy and consent, translate this screen, help). The **Bricks Agent bar** is global, always at the very bottom. Search, notifications, translation and voice work on every screen.
+**The bottom navigation has exactly two tabs: Connect and Grow** (decided by the owner, 11 Nov 2026; no separate Home tab). Connect is the landing view and carries the Home content: community status and selector, upcoming activities, what needs attention today, announcements; Grow carries goals and progress. **Profile and settings** open from the avatar (language, privacy and consent, translate this screen, help). The **Bricks Agent bar** is global, always at the very bottom. Search, notifications, translation and voice work on every screen.
 Someone who belongs to several communities switches between them without a second account. Someone with no community sees a personal home with a clear invitation to join or create one.
-*Open question for the owner:* whether Home is its own tab (three tabs: Home, Connect, Grow) or the landing view of Connect (two tabs). The current app still has the older five placeholder tabs (Home, Community, Events, Goals, Me).
+The app has these two tabs now (placeholders that say "Coming soon").
 
 ## Screens to design (about 20, many reusable)
 Welcome · Language · Sign up and code · Profile · Privacy and consent · Interests · Choose your path · Join a community · Discover communities · Create a community · Home · Connect (community home) · Members and announcements · Roles and governance · Events and activities · Activity detail (register, check in) · Contributions and recognition · Grow (personal dashboard) · Health and wellbeing · Profile and settings. Opportunities appear inside Connect, not as a separate area.

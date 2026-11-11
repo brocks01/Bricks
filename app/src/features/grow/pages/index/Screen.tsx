@@ -1,6 +1,6 @@
 import { ComingSoon } from '../../../../components/ComingSoon';
-import { goalsIndex as page } from './page';
+import { growIndex as page } from './page';
 
-export default function GoalsIndex() {
+export default function GrowIndex() {
   return <ComingSoon page={page} icon="heart-outline" />;
 }

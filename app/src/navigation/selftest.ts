@@ -23,8 +23,9 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('eight modules', allModules().length === 8, String(allModules().length));
-check('five tabs in order', tabPages().map((p) => p.key).join(',') === 'home.index,community.index,events.index,goals.index,me.index', tabPages().map((p) => p.key).join(','));
+check('six modules', allModules().length === 6, String(allModules().length));
+check('two tabs: Connect and Grow', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index', tabPages().map((p) => p.key).join(','));
+check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
 check('module lists pages and skills', (() => { const k = childrenOf('auth') ?? []; return k.some((n) => n.path === 'auth.signIn' && n.kind === 'page') && k.some((n) => n.path === 'auth/signOut' && n.kind === 'skill'); })());
 check('page lists elements', (childrenOf('me.edit') ?? []).map((n) => n.path).join(',') === 'me.edit.heading,me.edit.displayName,me.edit.ageBand,me.edit.phone,me.edit.area,me.edit.save', (childrenOf('me.edit') ?? []).map((n) => n.path).join(','));
@@ -32,7 +33,7 @@ check('element parses', parsePath('me.edit.displayName')?.level === 'element');
 check('unknown path is null', childrenOf('me.nope') === null && childrenOf('nope') === null);
 check('describe element', (describe('me.edit.displayName') ?? '').includes('required') && (describe('me.edit') ?? '').includes('me.edit.save'));
 check('describe has no code or routes', !(describe('me.edit') ?? '').includes('/profile/edit'));
-check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForPath('/')?.key === 'home.index' && pageForPath('/profile/edit')?.key === 'me.edit' && pageForPath('/sign-in')?.key === 'auth.signIn');
+check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForPath('/')?.key === 'connect.index' && pageForPath('/grow')?.key === 'grow.index' && pageForPath('/profile/edit')?.key === 'me.edit' && pageForPath('/sign-in')?.key === 'auth.signIn');
 check('private pages need sign-in', (() => { const d = resolvePage('me.edit', {}, signedOut); return !d.ok && d.reason === 'denied'; })());
 check('sign-in pages open without sign-in', resolvePage('auth.signIn', {}, signedOut).ok && resolvePage('language.pick', {}, signedOut).ok);
 check('sign-in pages have no bottom bar', allPages().filter((p) => p.module === 'auth').every((p) => p.bare));
@@ -82,7 +83,7 @@ for (const id of Object.keys(form)) registerControl({ key: `me.edit.${id}`, page
 registerControl({ key: 'me.edit.save', page: 'me.edit', id: 'save', kind: 'action', label: 'Save', run: () => { if (form.displayName.trim()) saved++; } });
 registerControl({ key: 'language.pick.language', page: 'language.pick', id: 'language', kind: 'field', label: 'Language', options: ['en', 'hi', 'bn', 'ta', 'zh', 'ms'], get: () => languageStore.get().code, set: (v) => { languageStore.set({ code: v as 'en', ready: true }); } });
 
-let current: string | undefined = 'home.index';
+let current: string | undefined = 'connect.index';
 let approve = false;
 const agent = createAgentTools({
   currentPage: () => current,
@@ -100,7 +101,7 @@ const agent = createAgentTools({
   check('tool open refuses a module', 'error' in ((await agent.call('open', { path: 'me' })) as object));
 
   // fill opens the page first, then glows, then fills
-  current = 'home.index';
+  current = 'connect.index';
   const f = (await agent.call('fill', { path: 'me.edit.displayName', value: 'Test Person' })) as { ok?: boolean };
   check('fill opens the page and fills the field', f.ok === true && current === 'me.edit' && form.displayName === 'Test Person', JSON.stringify(f));
   check('the element glows while the agent acts', glowStore.get().key === 'me.edit.displayName' && glowStore.get().caption.length > 0, JSON.stringify(glowStore.get()));
@@ -137,13 +138,13 @@ const agent = createAgentTools({
   check('run: sign out waits for approval', w.status === 'awaiting_approval');
 
   // language (nobody is signed in, so it only changes this device)
-  check('english default', t('me.index.tab') === 'Me' && t('home.index.tab') === 'Home');
+  check('english default', t('connect.index.tab') === 'Connect' && t('grow.index.tab') === 'Grow');
   await agent.call('run', { skill: 'language/set', input: { code: 'hi' } });
-  check('language/set hi', t('home.index.tab') === 'होम' && t('common.comingSoon') === 'जल्द आ रहा है');
+  check('language/set hi', t('connect.index.tab') === 'जुड़ें' && t('common.comingSoon') === 'जल्द आ रहा है');
   const bad = (await agent.call('fill', { path: 'language.pick.language', value: 'xx' })) as { ok?: boolean };
   check('choice refuses a value that is not an option', bad.ok === false);
   await agent.call('fill', { path: 'language.pick.language', value: 'ta' });
-  check('choice fill by key changes the language', t('home.index.tab') === 'முகப்பு');
+  check('choice fill by key changes the language', t('connect.index.tab') === 'இணை');
 
   console.log(failed ? `\n${failed} FAILED` : '\nall passed');
   process.exit(failed ? 1 : 0);

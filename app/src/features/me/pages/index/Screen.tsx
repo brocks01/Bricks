@@ -23,7 +23,7 @@ export default function Me() {
   useAction(page, 'signOut', signOut);
 
   return (
-    <Screen title={w('heading')} subtitle={t('common.onlyYou')}>
+    <Screen title={w('heading')} subtitle={t('common.onlyYou')} back>
       <View style={{ alignItems: 'center', paddingVertical: space.lg }}>
         <Avatar name={user?.display_name ?? user?.email ?? ''} size={84} dot />
         <Text style={{ fontSize: 24, fontWeight: '700', color: colors.ink, marginTop: space.md }}>{user?.display_name}</Text>

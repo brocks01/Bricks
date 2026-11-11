@@ -8,7 +8,7 @@ export default function Setup() {
   const w = usePageWords(page);
   return (
     <Screen title={w('heading')} subtitle={w('subtitle')} plain>
-      <ProfileForm page={page} destination="home.index" />
+      <ProfileForm page={page} destination="connect.index" />
     </Screen>
   );
 }
