@@ -11,6 +11,7 @@ Built by `scripts/build_master_docs.py`. Read the sections marked (start here) f
 - `team-docs/01-vision/README.md`
 - `team-docs/01-vision/vision.md` (start here)
 - `team-docs/02-product/feature-list.md`
+- `team-docs/02-product/grow-and-explore.md`
 - `team-docs/02-product/product-architecture.md` (start here)
 - `team-docs/02-product/README.md`
 - `team-docs/02-product/social-purpose.md` (start here)
@@ -48,7 +49,7 @@ Built by `scripts/build_master_docs.py`. Read the sections marked (start here) f
 - `platform-docs/trust-and-safety/index.md`
 - `platform-docs/voice/index.md`
 
-UI sample pictures (kept in `team-docs/05-design/ui-samples/`, attach them separately): `01-app-states-and-voice-agent.webp`, `02-multilingual.webp`, `03-onboarding-and-three-domains.webp`, `04-navigation-options.webp`, `05-onboarding-and-profile-from-avatar.webp`, `06-final-ui-direction.webp`, `07-agent-canvas.webp`, `08-complete-ecosystem-overview.webp`
+UI sample pictures (kept in `team-docs/05-design/ui-samples/`, attach them separately): `01-app-states-and-voice-agent.webp`, `02-multilingual.webp`, `03-onboarding-and-three-domains.webp`, `04-navigation-options.webp`, `05-onboarding-and-profile-from-avatar.webp`, `06-final-ui-direction.webp`, `07-agent-canvas.webp`, `08-complete-ecosystem-overview.webp`, `10-community-screens.webp`, `11-grow-screens.webp`
 
 
 ---
@@ -285,6 +286,103 @@ Identity, communities, roles and terms (basic), events with check-in, contributi
 
 ---
 
+# FILE: team-docs/02-product/grow-and-explore.md
+
+# Grow and Explore (decided with the owner, 11 Nov 2026)
+
+**This page is the source of truth for the Grow tab.** It replaces the earlier Grow layout (goal card, My Health, My Goals, My Learning, My Progress). Visual target: `../05-design/ui-samples/11-grow-screens.webp` (ten screens). The two-tab navigation (Connect, Grow) and the pinned Bricks Agent bar do not change.
+
+## The philosophy
+Grow is not about correcting weaknesses. It is about curiosity, independence, enjoyment and discovering new possibilities at every age. A 25-year-old, a 55-year-old and an 80-year-old should all feel equally welcome. So: warm, age-inclusive language; no "courses to complete", no scores that shame; the person moves at their own pace.
+
+> **Success is not measured by courses completed.** It is measured by whether people discover useful things, enjoy new experiences, become more confident in everyday life and pursue interests they care about.
+
+## The Grow home (screen 1 of the sample)
+Heading **Grow**, line "Your wellbeing, aspirations and personal journey." Six cards, in this order:
+
+| Card | Line | Holds |
+|---|---|---|
+| Health | Care and wellbeing | health score, heart rate, sleep, weight, blood pressure; records |
+| Activity | Move, walk and stay active | walking, jogging, safe physical activity |
+| Aspirations | Dreams and personal goals | goals, experiences, "something of my own" |
+| Explore | Discover, learn and experience | curiosity, knowledge, new experiences (below) |
+| My Progress | Your growth and milestones | overview, health, activity, aspirations |
+| My Contributions | Your contribution to the community | what the person has given across communities (hours, help, events) |
+
+Then the tabs Connect / Grow and the Bricks Agent bar. `grow.index` keeps the route `/grow`.
+
+## Explore: a discovery space, not a learning system
+Heading **Explore**, line "There's always something new to discover." Search ("What interests you today?"), a picture banner, then six categories as tiles, then "Picked for your interests" and "Continue exploring" (saved or started).
+
+**Six categories**
+- **Digital Skills:** smartphone basics, digital payments (UPI), online safety and fraud awareness, useful apps, video calling, digital navigation.
+- **Health Awareness:** nutrition, sleep and wellbeing, understanding common health measurements, preventive care, mental wellbeing, safe physical activity. *Educational content, not medical advice.*
+- **Everyday Life Skills:** banking and financial awareness, travel planning, public transport and navigation, personal safety, consumer awareness, everyday problem-solving.
+- **Hobbies and Interests:** music, painting and crafts, gardening, cooking, photography, reading and writing.
+- **Culture and Discovery:** Indian and Singaporean heritage, languages and literature, traditions, travel and geography, art and architecture, stories from different communities.
+- **Knowledge and Curiosity:** science and technology, nature, history, space, interesting ideas, general knowledge.
+
+**Formats** (the person picks what is comfortable): short guide, video, interactive tutorial, story, audio, activity, visual explanation, step-by-step experience. Each item shows its time and format (for example "8 min, Video", "Practical guide, 8 minutes") and language.
+
+## The seven essential Explore screens
+1. **Explore Home:** search, categories, discovery feed (sample screen 2).
+2. **Category page:** all content in a category, with filter chips (All, Basics, Daily Use, Safety) (sample 3).
+3. **Content Detail:** ONE screen that adapts to the format (video, guide, story, audio, tutorial): title, time, difficulty, language, "What you will learn", Start (sample 4).
+4. **Interactive Experience:** a safe practice with steps, using demo values only, for example "Scan and Pay (Practice)" (sample 5).
+5. **My Interests:** tick the interests to see more of; Save Interests (sample 9).
+6. **Saved Content:** bookmarks to revisit.
+7. **My Exploration:** In Progress, Completed, Saved; milestones as gentle counts (topics explored, completed, new habit) (sample 10).
+
+No separate apps for video, audio and guides. No separate Explore assistant.
+
+## The other Grow screens in the sample
+- **Aspirations** (sample 6): "It's never too late to pursue what you love." Rows: Travel and Explore, Take Up a Hobby, Stay Healthy and Active, Spend Time with Family, Something of My Own; **Add an Aspiration**.
+- **My Progress** (sample 7): tabs Overview, Health, Activity, Aspirations; an encouraging line ("You're making great progress!"); a trend chart; small cards (Health +12%, Activity +26%, Aspirations 2/3); "Keep going".
+- **Health** (sample 8): tabs Overview, Activity, Records; a Health Score ring and its monthly change; heart rate, sleep, weight, blood pressure; "Your health is improving". Not a medical device; no diagnosis, no medical claims.
+
+## Where things belong: Explore or Connect
+Explore helps **individuals discover**. Connect helps **communities organise and participate**. The same topic can appear on both sides.
+
+| Experience | Belongs to |
+|---|---|
+| Learn how to use digital payments | Grow, Explore |
+| A community digital-literacy workshop | Connect, Community |
+| Discover gardening techniques | Grow, Explore |
+| Organise a community gardening programme | Connect, Community |
+| Understand nutrition | Grow, Explore |
+| Organise a community health camp | Connect, Community |
+| Discover traditional storytelling | Grow, Explore |
+| An intergenerational storytelling event | Connect, Community |
+
+Explore items can link to a related community activity ("Join a gardening session near you"), and a community event can link to an Explore guide. This is the bridge that makes Bricks one product.
+
+## How the Bricks Agent fits
+The agent stays the single pinned voice bar. Examples: "I want to learn how to use online banking." "Show me some gardening ideas." "Explain this in simple Bengali." "Teach me Google Maps." "Find something interesting about Indian history." The agent opens the right Explore page, or shows a short interactive explanation in the Agent Canvas (see `../06-technical/agent-canvas-spec.md`). It reads what is on screen through `usePageData` (see `../06-technical/ui-build-spec.md`), never from memory.
+
+## Content and build scope (do not build thousands of courses)
+**MVP:** 6 categories; 5 to 10 quality items per category; formats guide, video and interactive; search and bookmarks; display in the person's language; a simple personal exploration history; Bricks Agent integration. Content comes from suitable existing open or licensed resources (credit and link them) plus original Bricks material. Every item has a source, a language and a reviewer. **Later:** community-contributed resources, expert-reviewed material, personalised recommendations.
+
+## Data and backend (new, small)
+`explore_categories`, `explore_items` (id, category, format, title, summary, body or media URL, minutes, level, language, source, status, reviewed_by), `explore_translations` (reuses the translation engine), `user_interests` (already planned), `explore_saved` (user, item), `explore_progress` (user, item, state, last_position). Health values and aspirations are private to the person; `aspirations` and `aspiration_steps` replace the earlier `goals` idea. Nothing from Grow is shown to a community unless the person chooses (My Contributions shows only what the person gave).
+
+## Rules
+- No hard-coded sample content in the app: unbuilt screens show "Coming soon" until their data exists.
+- Health content is educational; every health screen says it is not medical advice. No diagnosis, no claims.
+- Practice screens use demo values only (never real payment, never real card data).
+- Real names and realistic Singapore and India examples; six languages as everywhere.
+- Singapore and India both: examples and categories must work for either (UPI and PayNow, DigiLocker and Singpass are named, not integrated).
+
+## Build order
+1. New Grow home with the six cards (rows "Coming soon" until built).
+2. Explore Home, Category, Content Detail with a small seeded library (data in the database, not in the app).
+3. My Interests, Saved, My Exploration.
+4. Interactive Experience (one: UPI practice).
+5. Aspirations, then Activity and Health (needs device or manual entry decisions), then My Progress and My Contributions.
+After each step: type-check, self-test, a browser check, a PROGRESS entry.
+
+
+---
+
 # FILE: team-docs/02-product/product-architecture.md
 
 # Product architecture (final, 11 Nov 2026)
@@ -309,9 +407,9 @@ Community and governance · events and activities · **elderly participation and
 - Jobs, referrals and local opportunities (they live **inside Connect**, shared by members; Bricks does not become a job portal)
 
 **GROW** : your personal development and wellbeing. *What one person develops.*
-- Personal goals and milestones; health and wellbeing; walking, jogging and fitness
-- Learning and skill development; habits and routines; progress and achievements
-- Reminders and personal assistance; private health and activity records; family-assisted support
+- Six cards: Health, Activity, Aspirations, **Explore**, My Progress, My Contributions (decided 11 Nov 2026; full spec `grow-and-explore.md`)
+- **Explore** is curiosity and discovery in six categories (Digital Skills, Health Awareness, Everyday Life Skills, Hobbies and Interests, Culture and Discovery, Knowledge and Curiosity), not a course system
+- Private health and activity records; reminders through the Bricks Agent; family-assisted support (optional)
 
 Where things belong: job opportunities, local work and referrals, community earnings, sponsorships, community competitions, yoga/fitness events and community-organised training are **Connect**. Personal fitness tracking, personal learning goals and personal skill progress are **Grow**. The same activity can appear in both: a community walking challenge is Connect; one person's walking progress is Grow.
 
@@ -333,7 +431,7 @@ Someone who belongs to several communities switches between them without a secon
 The app has these two tabs now (placeholders that say "Coming soon").
 
 ## Final screens
-The approved visual target is `../05-design/ui-samples/06-final-ui-direction.webp`; the screen-by-screen build notes are in `../06-technical/ui-build-spec.md`. Interests offered at onboarding: Community Activities, Health and Wellbeing, Sports and Fitness, Learning and Skills, Culture and Events, Volunteering and Service. The Connect hub is a 3 by 3 grid: Communities, Events, Clubs and Groups, Competitions, Training and Workshops, Services, Opportunities (Jobs and Work), Contributions and Earnings, Governance and Roles. Grow holds a goal card and My Health, My Goals, My Learning, My Progress. Key principles: flexible and community-driven; multilingual and inclusive; voice and agent-first; people centric; private and trusted.
+The approved visual target is `../05-design/ui-samples/06-final-ui-direction.webp`; the screen-by-screen build notes are in `../06-technical/ui-build-spec.md`. Interests offered at onboarding: Community Activities, Health and Wellbeing, Sports and Fitness, Learning and Skills, Culture and Events, Volunteering and Service. The Connect hub is a 3 by 3 grid: Communities, Events, Clubs and Groups, Competitions, Training and Workshops, Services, Opportunities (Jobs and Work), Contributions and Earnings, Governance and Roles. Grow holds six cards: Health, Activity, Aspirations, Explore, My Progress, My Contributions (see `grow-and-explore.md`). Key principles: flexible and community-driven; multilingual and inclusive; voice and agent-first; people centric; private and trusted.
 
 ## Screens to design (about 20, many reusable)
 Welcome · Language · Sign up and code · Profile · Privacy and consent · Interests · Choose your path · Join a community · Discover communities · Create a community · Home · Connect (community home) · Members and announcements · Roles and governance · Events and activities · Activity detail (register, check in) · Contributions and recognition · Grow (personal dashboard) · Health and wellbeing · Profile and settings. Opportunities appear inside Connect, not as a separate area.
@@ -356,7 +454,7 @@ Visual targets: `../05-design/ui-samples/` (samples 03 to 05 were drawn **before
 
 One file per feature (communities, roles and terms, goals, events, competitions, sponsors and earnings, health, voice, central navigation) plus priorities.
 
-**Start with `product-architecture.md`: the final architecture (Connect and Grow).**
+**Start with `product-architecture.md`: the final architecture (Connect and Grow).**  Grow and Explore: `grow-and-explore.md`.
 
 
 ---
@@ -494,6 +592,8 @@ Sample screens generated with ChatGPT from our prompts, used as the visual targe
 | `07-agent-canvas.webp` | **Agent Canvas:** the agent-generated interface in the content area (label "Generated by Bricks Agent (AI)" with info, regenerate and close; title; a question with icon tiles; hint card; step dots; Next) with the Connect and Grow tabs and the agent bar still visible. Spec: `../../06-technical/agent-canvas-spec.md`. |
 
 | `08-complete-ecosystem-overview.webp` | **The latest overview.** New-user journey (Welcome, Language, Sign up with phone or email, Profile, **Choose path with only two options: Join a community / Create a community**, Home with two big tiles Connect and Grow); Connect screens (Discover communities with search and Join, community preview, community home with Home / Events / Members tabs and a post feed, members list, Create event, Event details with registrations); four Agent Canvas examples (Plan an event, Visual explanation of an election, Interactive personal goal, Dynamic health-camp form); release plan P0 about 35 screens, P1 about 40, P2 about 25; design principles. **Caution:** its P1 box mentions "Clubs"; the owner rejected clubs and groups (they run on WhatsApp), so ignore that word. |
+
+| `11-grow-screens.webp` | **Grow, the final target (11 Nov 2026):** Grow Home (six cards), Explore Home, Digital Skills category, Content Detail (UPI video), Interactive Practice (Scan and Pay), Aspirations, My Progress, Health, My Interests, My Exploration, each with the pinned Bricks Agent bar. Spec: `../../02-product/grow-and-explore.md`. It replaces the Grow layout in sample 06 (goal card, My Goals, My Learning). |
 
 **Where samples disagree, 08 and 06 win over 03 to 05.** **What is final and what is superseded (11 Nov 2026):** the architecture is two domains, **Connect and Grow**; there is no Thrive tab. Jobs, referrals, sponsors, earnings, training and services live inside Connect. Samples 03 to 05 were drawn before this decision: follow them for onboarding, the four-path start screen, the profile-from-avatar screen, translation and the agent bar, but not for the Thrive tab. Full decision: `../../02-product/product-architecture.md`.
 
@@ -852,10 +952,10 @@ Structure, top to bottom: 1. Bricks header (logo, bell, avatar). 2. Heading **Co
 Behaviour: no communities gives a welcoming empty state with Discover and Create; one community gives one prominent card; several give searchable, scrollable cards; many add sorting, favourites and filters without crowding.
 Built today (`connect.index`): everything above except community images, favourites and sorting, the "View all" link, Discover, and the working Join and Create (the button is disabled "Coming soon"). Backend: `GET /v1/communities/mine` and `GET /v1/communities/upcoming`. **Inside a community** (`connect.community`, next): announcements, events and activities, members, roles and leadership, contributions and recognition, opportunities; sponsors and funds later. **Next design step: Grow, separately; then each community page, one by one.**
 
-**Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your Goals, Health & Learning")
-- A goal card: "My Goal: <title> / <period> / <done> of <target> <unit> (<percent>%)" with a progress bar (from the person's active goal; empty state "Set your first goal" when none).
-- Rows, each opening a page: **My Health** (Track and manage your wellbeing), **My Goals** (Set and track personal goals), **My Learning** (Build skills at your pace), **My Progress** (Your activity, milestones and streaks).
-- Agent bar hint: "How can I help you grow today?".
+**Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your wellbeing, aspirations and personal journey"). **Replaced 11 Nov 2026; full spec in `../02-product/grow-and-explore.md`, sample `../05-design/ui-samples/11-grow-screens.webp`.**
+- Six cards: **Health** (Care and wellbeing), **Activity** (Move, walk and stay active), **Aspirations** (Dreams and personal goals), **Explore** (Discover, learn and experience), **My Progress** (Your growth and milestones), **My Contributions** (Your contribution to the community). Rows not yet built show "Coming soon".
+- Explore has seven screens: Explore Home, Category, Content Detail (one adaptive screen), Interactive Experience, My Interests, Saved, My Exploration. Success is measured by discovery and confidence, not courses completed.
+- Agent bar hint: "How can I help you grow today?"; the agent reads each screen through `usePageData`.
 
 **Profile and settings** (from the avatar) `me.index` `/me` "My profile": already built (Edit profile, Language, Sign out). Add later: Translate this screen, Privacy and consent, Settings, Help and support (sample 05).
 
@@ -868,14 +968,14 @@ Built today (`connect.index`): everything above except community images, favouri
 1. `onboarding` (a column or table: steps done) and `user_interests` (user_id, interest key). Interest keys: `community_activities, health_wellbeing, sports_fitness, learning_skills, culture_events, volunteering_service`.
 2. `communities`, `memberships`, `role_definitions`, `role_terms` (already designed): create, join by invite code or link, discover nearby (PostGIS), switch community.
 3. **One activity system** (`activities`, `activity_participants`, attendance, optional sponsorship; the `kind` and a free `category` carry event, competition, class, drive, club). Tiles in the Connect hub are filters over it. Do not add a table per tile.
-4. `goals` and `goal_progress` for Grow; contributions and recognition after that.
+4. For Grow: `explore_categories`, `explore_items`, `explore_saved`, `explore_progress`, `aspirations` (see `../02-product/grow-and-explore.md`); contributions and recognition after that.
 Each module follows `backend/app/modules/identity` (router, service, schemas, tests with a real database). Use grants with term dates for roles (HANDOFF section 8).
 
 ## E. Suggested build order for the UI agent
 1. Welcome heading, onboarding Language, Interests, Start screens (with `onboarding_step`), then the guard order.
 2. Connect landing with the community selector and empty states, then **create / join / discover community** (with the backend of D2).
 3. Connect hub (all tiles "Coming soon"), then Events as the first real tile on the activity system.
-4. Grow landing with the goal card and the four rows ("Coming soon"), then My Goals.
+4. Grow landing with the six cards ("Coming soon"), then Explore Home, Category and Content Detail with a seeded library.
 5. Translate-this-screen and the agent surface hooks (the agent already has `show`/`hide`; give each new page a good `summary` and element `summary` so the agent can use it).
 After each step: type-check, self-test, a browser check, and a PROGRESS entry.
 
@@ -1100,10 +1200,10 @@ Everything below was tested unless marked.
 - **App shell:** welcome, sign-in, verify, setup, two tabs (Connect, Grow), both "Coming soon"; the profile page opens from the avatar.
   No scroll bars (app-like scrolling). Language page works (six languages).
 - **Bricks Agent (in-app):** bottom bar under the tab bar on every signed-in page (waveform, status, red end button, chevron for transcript and a typing box).
-  Tap to talk; the microphone starts at once and audio is held until the connection is ready. Browser voice tested once (works); typing tested; **iPhone
+  Tap to talk; the microphone starts at once and audio is held until the connection is ready. **The talk ends by itself**: a watchdog in `agent/live.ts` cuts the call after 15 s (`IDLE_MS`) with no word from the agent and nothing said into the microphone (the mic streams silence, so `audio.web.ts` tracks when a chunk rose above the room tone), and the agent has an **`end` tool** it calls the moment the person says goodbye. Browser voice tested once (works); typing tested; **iPhone
   Safari and Expo Go are untested**. Tools (open, fill, press, run, tree, search, docs, read) run **in the app** (so the person sees the glow and gives
   approvals); `web_search` and `read_page` run on the **server** (key stays there; 20 lookups per talk). Newest talk replaces an older one for the same person.
-- **Agent surface / Canvas (smart UI):** the agent shows a **card inside the content area** — the tab bar and the agent bar stay below it and are never covered, there is no dim backdrop — with the **"Generated by Bricks Agent (AI)"** badge, an **info** line, a **regenerate** button and **close**, a title and subtitle under the agent mark, then a question, **selection tiles** (up to 12, icon + label, the person taps any and Next returns the labels they chose), text choices, a typed answer, a hint card, numbered steps, an optional generated HTML page, and a footer with **step dots and Next**. Tools `show` (a question with options, tiles or `next` WAITS and returns the person's answer; anything else returns at once) and `hide`.
+- **Agent surface / Canvas (smart UI):** the agent shows a **card inside the content area** — the tab bar and the agent bar stay below it and are never covered, there is no dim backdrop. **The header is ONE compact row** (the owner's choice, 13 Nov 2026): the **"Generated by Bricks Agent (AI)"** pill with the title beside it, then **info**, **regenerate** and **close**; the subtitle and the question are the first things in the body, so the panel wastes far less of the screen. Then **selection tiles** (up to 12, icon + label, the person taps any and Next returns the labels they chose), text choices, a typed answer, a hint card, numbered steps, an optional generated HTML page, and a footer with **step dots and Next**. Tools `show` (a question with options, tiles or `next` WAITS and returns the person's answer; anything else returns at once) and `hide`.
   Files: `app/src/agent/surface.ts` (store and the Zod `showSchema`; limits title 120, message 1500, question 200, hint 400, 8 steps, 6 options, 12 tiles, 10 dots, html 20000 characters), `app/src/components/AgentSurface.tsx`, `HtmlFrame.web.tsx`.
   The HTML runs in an iframe with `sandbox=""` (no scripts, no forms, no navigation, no access to the app) and a Content-Security-Policy that blocks every network request;
   on phones (no web view in Expo Go) only the text, tiles, choices and steps show. Words: `agent.canvas.badge|info|about|again|next` in six languages (`i18n/common.ts`); regenerate sends a silent message through `askAgent` (`agent/live.ts`). The agent writes everything in the person's language (system prompt in `backend/app/modules/agent/declarations.py`). Tested: type-check and self-test (new canvas checks). **Not tested in a browser in this state.**
@@ -1301,6 +1401,36 @@ Did: Connect dashboard now matches the locked scope and the owner's sample (head
 Tested: 62 backend tests, app type-check and self-test pass. Not checked in the browser with the owner's own account (he signs in with Google); the sample picture itself was not available as a file, so no `09` sample was stored.
 Not done: cover pictures (needs the Cloudinary keys), View all, favourites and sorting, Discover, working Join and Create, the community page.
 Next: community page, then Join and Create.
+
+## 2026-11-13 - Claude Code (Sonnet 5.5)
+Done: fixed the blank-app crash (Connect page declared a Filter button with no English word; words added in six languages); sign-in field padding and focus border (components/ui.tsx Field); Community Home screen (app/src/features/community, route /community/[id], opened from the Connect cards, data from GET /v1/communities/{id}); community sample saved as ui-samples/10-community-screens.webp; selftest now expects seven modules.
+Tested: app type-check and self-test pass; backend 62 tests pass. NOT tested: Community Home was never seen on screen (the browser pane stayed black after the dev server rebuild, cause unknown); Events, Activities, People, Initiatives, Event detail, Update detail, Invite screens (samples 2-10) are not built.
+Note: the ngrok URL is unchanged (shale-overgrown-buggy.ngrok-free.dev -> localhost:8093); after a power cut restart the backend (PORT=8093 python backend/run.py).
+Next: translation backend (spec given to another agent), then the other community screens.
+
+## 2026-11-13 (later) - Claude Code (Sonnet 5.5)
+Done: demo seed rewritten for the Singapore hackathon (backend/app/seed_demo.py): four Singapore communities led by seniors - Bedok Heritage Kakis (heritage, storytelling), Toa Payoh Silver Mentors (mentoring, paid part-time work, CV help), Tampines Kampung Spirit (child care by grandparents, tai chi), Jurong Green Gardeners (sustainability). Singapore names (Chinese, Malay, Indian, Eurasian), HDB blocks, paid opportunities in S$. Old Lakeview/Kolkata data removed (--reset now removes every is_demo community). Join codes BEDK-DEMO, TOAP-DEMO, TAMP-DEMO, JURO-DEMO. Local database reseeded; the six real accounts are members of all four.
+Tested: reseed ran and counts checked (214/168/96/58 members, 3 activities each); backend 62 tests pass. NOT tested: the app screens against the new data (the app was not viewed).
+Next: community screens 2-10, translation backend.
+
+## 2026-11-11 (system clock - the entries above are dated 12-13 Nov) - OpenCode (MiMo-V2.6-Flash): the agent reads what a screen is showing (usePageData)
+Did: the agent could only see what `page.ts` declares, so it said "you haven't joined any communities" while four were on screen. Added `usePageData(page, data)` in `app/src/kit/pageData.ts`: a screen publishes its short text values, image URL + alt, lists (item labels and details) and the actions available right now; re-published after every render and cleared on unmount. Each action with a `run()` also becomes a real control, so the existing `press`/`fill` tools drive it through the screen's own handler - the agent never calls the backend. `read` now returns that `data` next to today's element values, and omits it entirely when nothing is published (loading or gone). `press` resolves a listed item's key from the open screen's controls when it is not declared in page.ts; tool names and the free/confirm/human tiers are unchanged (a listed action carries its own tier). One line added to the system prompt (`backend/app/modules/agent/declarations.py`, where the prompt is built; router.py only passes it in): describe a screen only from `read`'s data, and say so when there is none. Used on Connect (communities, coming-up events, search text) and Community Home (name, members, what is happening, updates); community cards, RSVP buttons and the four area tiles are now wrapped in `El` so they glow when the agent presses them (no resting-look change).
+Tested: `npx tsc --noEmit` clean; `npx tsx src/navigation/selftest.ts` - all checks pass (12 new ones from this work). Backend prompt change compiles and the line is present in `system_prompt()`. **In the browser** (owner's own dev server 3000 + API 8093, signed in with his account): on Connect, "List every community name shown on this screen" answered "There are four communities in total: Bedok Heritage Kakis, Toa Payoh Silver Mentors, Tampines Kampung Spirit, and Jurong Green Gardeners." That is the acceptance criterion met.
+Note on the count: an earlier version of this entry said "43 checks, 11 new" - that was a guess, not a measurement. The real figures: **57 checks before this work, 69 after these 12, 72 today** (the last 3 came with the canvas/end work in the entry below).
+Not done / not tested: no lint is configured (CI runs type-check + self-test only); the `read` answer came back summarised ("like Bedok ... and Toa Payoh ...") until asked directly, so the system prompt may still want a nudge to list rather than sample; Community Home was not checked in the browser (only Connect); the agent canvas and Community Home were not re-checked for layout after the `El` wrappers.
+Still in the tree but now committed: the translation backend (separate task) - `a6b5832`. **83 backend tests pass** (62 existing + 21 new), exit 0; migration 0005 applied to the local database. The tests caught a real bug (Google Cloud Translation answers a list of objects, not of strings) which is fixed. Not tested: no live call to a real provider (every test uses a fake), and `te`/`mr` are accepted but not offered in any menu. `api-dev.err` is a log and should never be committed.
+Next: the owner's two UI findings - compact the agent canvas header into a small pill so Connect/Grow stays visible, and make the agent actually end the session when the person says it is over.
+
+## 2026-11-11 (system clock) - OpenCode (MiMo-V2.6-Flash): compact canvas header; the talk ends by itself
+Did: the owner's two findings from a live session. (1) **Canvas header compacted** (`app/src/components/AgentSurface.tsx`): it is now ONE row - the "Generated by Bricks Agent (AI)" pill with the title beside it, then info, regenerate and close. The 54 px avatar and the big title/subtitle block are gone from the header; the subtitle and the question are the first two things in the body. He was offered three options (compact row / shrink only the badge / float the panel over the screen) and chose the compact row, so the panel still fills the content area - it just wastes far less of it. (2) **The talk now ends by itself** - he chose "Both": (a) a watchdog in `app/src/agent/live.ts` cuts the call after `IDLE_MS` (15 s) of no word from the agent AND nothing said into the microphone, so the bar goes back to "Tap to talk"; it resets on every inbound message and on typed text, and holds while the agent is speaking or working. Because the microphone streams silence as well as speech, `audio.web.ts` now tracks when a chunk rose above the room tone (`speechSeenAt()`, peak >= 1600 of 32767, reset by `startMic`/`stopMic`) and the watchdog only treats the person as still talking when speech was recent. (b) a new `end` **tool** (a tool, not a skill): the model calls it the moment the person says goodbye, and `onToolCall` sends the tool result first and then hangs up; no transcript line is added for it, since hanging up is not something to narrate. One line added to the system prompt in `backend/app/modules/agent/declarations.py`.
+Tested: `npx tsc --noEmit` clean; `npx tsx src/navigation/selftest.ts` - **72 checks, 0 failures** (3 new: an `end` tool exists, `call('end')` answers that the conversation is over, `IDLE_MS` is a sensible pause). Backend prompt compiles and the line is present. In the browser on the owner's dev server: after a typed request the canvas opened and the accessibility tree shows badge and title on one row with About/Regenerate/Close after them, then the subtitle and the question in the body - the structure he asked for.
+Not done / not tested: **no screenshot** - the browser pane needs the desktop window visible and I could not control that, so the layout is confirmed from the accessibility tree only, and never on a phone; the 15 s silence watchdog was never actually observed firing; the `end` tool has not yet been called by a real model reply, only by the self-test; no native-phone check (there is no microphone there, so the watchdog falls back to "no word from the agent").
+Next: watch a real talk end by itself (say goodbye, then confirm the bar returns to "Tap to talk" within ~15 s); then back to the community screens 2-10.
+
+## 2026-11-11 (system clock) - Claude: Grow and Explore docs
+Did: the owner's new Grow direction is now in the docs. New page `team-docs/02-product/grow-and-explore.md` (philosophy, six Grow cards, Explore's six categories and formats, seven Explore screens, Explore-versus-Connect table, agent use, MVP scope, new tables, rules, build order). Sample saved as `05-design/ui-samples/11-grow-screens.webp` and listed in the samples README. `ui-build-spec.md` (Grow tab, backend list, build order) and `product-architecture.md` (Grow section) now point to it; the old Grow rows (goal card, My Goals, My Learning) are replaced. Master docs rebuilt.
+Not done: no code yet - the app's Grow tab still shows the old layout; the Explore library content is not chosen; `goals` is replaced by `aspirations` in the plan only.
+Next: build the Grow home with the six cards ("Coming soon"), then Explore Home.
 
 
 ---

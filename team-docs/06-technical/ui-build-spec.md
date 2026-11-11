@@ -32,10 +32,10 @@ Structure, top to bottom: 1. Bricks header (logo, bell, avatar). 2. Heading **Co
 Behaviour: no communities gives a welcoming empty state with Discover and Create; one community gives one prominent card; several give searchable, scrollable cards; many add sorting, favourites and filters without crowding.
 Built today (`connect.index`): everything above except community images, favourites and sorting, the "View all" link, Discover, and the working Join and Create (the button is disabled "Coming soon"). Backend: `GET /v1/communities/mine` and `GET /v1/communities/upcoming`. **Inside a community** (`connect.community`, next): announcements, events and activities, members, roles and leadership, contributions and recognition, opportunities; sponsors and funds later. **Next design step: Grow, separately; then each community page, one by one.**
 
-**Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your Goals, Health & Learning")
-- A goal card: "My Goal: <title> / <period> / <done> of <target> <unit> (<percent>%)" with a progress bar (from the person's active goal; empty state "Set your first goal" when none).
-- Rows, each opening a page: **My Health** (Track and manage your wellbeing), **My Goals** (Set and track personal goals), **My Learning** (Build skills at your pace), **My Progress** (Your activity, milestones and streaks).
-- Agent bar hint: "How can I help you grow today?".
+**Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your wellbeing, aspirations and personal journey"). **Replaced 11 Nov 2026; full spec in `../02-product/grow-and-explore.md`, sample `../05-design/ui-samples/11-grow-screens.webp`.**
+- Six cards: **Health** (Care and wellbeing), **Activity** (Move, walk and stay active), **Aspirations** (Dreams and personal goals), **Explore** (Discover, learn and experience), **My Progress** (Your growth and milestones), **My Contributions** (Your contribution to the community). Rows not yet built show "Coming soon".
+- Explore has seven screens: Explore Home, Category, Content Detail (one adaptive screen), Interactive Experience, My Interests, Saved, My Exploration. Success is measured by discovery and confidence, not courses completed.
+- Agent bar hint: "How can I help you grow today?"; the agent reads each screen through `usePageData`.
 
 **Profile and settings** (from the avatar) `me.index` `/me` "My profile": already built (Edit profile, Language, Sign out). Add later: Translate this screen, Privacy and consent, Settings, Help and support (sample 05).
 
@@ -48,13 +48,13 @@ Built today (`connect.index`): everything above except community images, favouri
 1. `onboarding` (a column or table: steps done) and `user_interests` (user_id, interest key). Interest keys: `community_activities, health_wellbeing, sports_fitness, learning_skills, culture_events, volunteering_service`.
 2. `communities`, `memberships`, `role_definitions`, `role_terms` (already designed): create, join by invite code or link, discover nearby (PostGIS), switch community.
 3. **One activity system** (`activities`, `activity_participants`, attendance, optional sponsorship; the `kind` and a free `category` carry event, competition, class, drive, club). Tiles in the Connect hub are filters over it. Do not add a table per tile.
-4. `goals` and `goal_progress` for Grow; contributions and recognition after that.
+4. For Grow: `explore_categories`, `explore_items`, `explore_saved`, `explore_progress`, `aspirations` (see `../02-product/grow-and-explore.md`); contributions and recognition after that.
 Each module follows `backend/app/modules/identity` (router, service, schemas, tests with a real database). Use grants with term dates for roles (HANDOFF section 8).
 
 ## E. Suggested build order for the UI agent
 1. Welcome heading, onboarding Language, Interests, Start screens (with `onboarding_step`), then the guard order.
 2. Connect landing with the community selector and empty states, then **create / join / discover community** (with the backend of D2).
 3. Connect hub (all tiles "Coming soon"), then Events as the first real tile on the activity system.
-4. Grow landing with the goal card and the four rows ("Coming soon"), then My Goals.
+4. Grow landing with the six cards ("Coming soon"), then Explore Home, Category and Content Detail with a seeded library.
 5. Translate-this-screen and the agent surface hooks (the agent already has `show`/`hide`; give each new page a good `summary` and element `summary` so the agent can use it).
 After each step: type-check, self-test, a browser check, and a PROGRESS entry.

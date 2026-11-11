@@ -20,9 +20,9 @@ Community and governance · events and activities · **elderly participation and
 - Jobs, referrals and local opportunities (they live **inside Connect**, shared by members; Bricks does not become a job portal)
 
 **GROW** : your personal development and wellbeing. *What one person develops.*
-- Personal goals and milestones; health and wellbeing; walking, jogging and fitness
-- Learning and skill development; habits and routines; progress and achievements
-- Reminders and personal assistance; private health and activity records; family-assisted support
+- Six cards: Health, Activity, Aspirations, **Explore**, My Progress, My Contributions (decided 11 Nov 2026; full spec `grow-and-explore.md`)
+- **Explore** is curiosity and discovery in six categories (Digital Skills, Health Awareness, Everyday Life Skills, Hobbies and Interests, Culture and Discovery, Knowledge and Curiosity), not a course system
+- Private health and activity records; reminders through the Bricks Agent; family-assisted support (optional)
 
 Where things belong: job opportunities, local work and referrals, community earnings, sponsorships, community competitions, yoga/fitness events and community-organised training are **Connect**. Personal fitness tracking, personal learning goals and personal skill progress are **Grow**. The same activity can appear in both: a community walking challenge is Connect; one person's walking progress is Grow.
 
@@ -44,7 +44,7 @@ Someone who belongs to several communities switches between them without a secon
 The app has these two tabs now (placeholders that say "Coming soon").
 
 ## Final screens
-The approved visual target is `../05-design/ui-samples/06-final-ui-direction.webp`; the screen-by-screen build notes are in `../06-technical/ui-build-spec.md`. Interests offered at onboarding: Community Activities, Health and Wellbeing, Sports and Fitness, Learning and Skills, Culture and Events, Volunteering and Service. The Connect hub is a 3 by 3 grid: Communities, Events, Clubs and Groups, Competitions, Training and Workshops, Services, Opportunities (Jobs and Work), Contributions and Earnings, Governance and Roles. Grow holds a goal card and My Health, My Goals, My Learning, My Progress. Key principles: flexible and community-driven; multilingual and inclusive; voice and agent-first; people centric; private and trusted.
+The approved visual target is `../05-design/ui-samples/06-final-ui-direction.webp`; the screen-by-screen build notes are in `../06-technical/ui-build-spec.md`. Interests offered at onboarding: Community Activities, Health and Wellbeing, Sports and Fitness, Learning and Skills, Culture and Events, Volunteering and Service. The Connect hub is a 3 by 3 grid: Communities, Events, Clubs and Groups, Competitions, Training and Workshops, Services, Opportunities (Jobs and Work), Contributions and Earnings, Governance and Roles. Grow holds six cards: Health, Activity, Aspirations, Explore, My Progress, My Contributions (see `grow-and-explore.md`). Key principles: flexible and community-driven; multilingual and inclusive; voice and agent-first; people centric; private and trusted.
 
 ## Screens to design (about 20, many reusable)
 Welcome · Language · Sign up and code · Profile · Privacy and consent · Interests · Choose your path · Join a community · Discover communities · Create a community · Home · Connect (community home) · Members and announcements · Roles and governance · Events and activities · Activity detail (register, check in) · Contributions and recognition · Grow (personal dashboard) · Health and wellbeing · Profile and settings. Opportunities appear inside Connect, not as a separate area.
