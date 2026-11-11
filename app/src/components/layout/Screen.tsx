@@ -14,8 +14,8 @@ import { borderWidth, color, screenPadding, space } from '@/theme';
 
 import { Text } from '../primitives/Text';
 
+import { BUDDY_BUTTON_CLEARANCE, BuddyButton } from '../BuddyButton';
 import { StatusBanner } from '../StatusBanner';
-import { TellMeButton } from '../TellMeButton';
 import { UndoHost } from '../UndoHost';
 
 import { BackButton } from './BackButton';
@@ -42,8 +42,9 @@ export interface ScreenProps {
   /** True when no tab bar sits below, so the footer must clear the home indicator. */
   standalone?: boolean;
   /**
-   * Shows Tell me (Buddy) at the bottom. On by default where the screen has no
-   * primary action of its own; off during onboarding and on SOS.
+   * Shows Buddy, the round voice button in the bottom-right corner. On by default
+   * on every screen except the safety screens (where Help is hidden: SOS, Are you
+   * OK?, helper alert). Off while the screen itself is recording audio.
    */
   tellMe?: boolean;
   children: ReactNode;
@@ -76,7 +77,7 @@ export function Screen({
   const offline = useIsOffline();
   const openBuddy = useBuddy((s) => s.open);
   const buddyListening = useBuddy((s) => s.listening);
-  const showTellMe = tellMe ?? (!footer && !standalone && showHelp);
+  const showBuddy = tellMe ?? showHelp;
   const navigation = useNavigation();
   const { t } = useTranslation();
   const { speak, stop } = useReadOut();
@@ -129,7 +130,7 @@ export function Screen({
         {scroll ? (
           <ScrollView
             style={styles.flex}
-            contentContainerStyle={styles.content}
+            contentContainerStyle={[styles.content, showBuddy && styles.buddyRoom]}
             keyboardShouldPersistTaps="handled"
           >
             {body}
@@ -139,13 +140,13 @@ export function Screen({
         )}
         {/* Floats above the footer / tab bar, on the focused screen only. */}
         <UndoHost />
+        {showBuddy ? (
+          <View style={styles.buddy} pointerEvents="box-none">
+            <BuddyButton onPress={openBuddy} listening={buddyListening} testID="tellme" />
+          </View>
+        ) : null}
       </View>
       <ReadOutBar />
-      {showTellMe ? (
-        <View style={styles.tellMe}>
-          <TellMeButton onPress={openBuddy} listening={buddyListening} testID="tellme" />
-        </View>
-      ) : null}
       {footer ? <View style={styles.footer}>{footer}</View> : null}
     </SafeAreaView>
   );
@@ -167,11 +168,14 @@ const styles = StyleSheet.create({
   title: {
     marginTop: space.xs,
   },
-  tellMe: {
-    paddingVertical: space.xs,
-    borderTopWidth: borderWidth.hairline,
-    borderTopColor: color.border,
-    backgroundColor: color.bg,
+  // The last item can always scroll clear of the round Buddy button.
+  buddyRoom: {
+    paddingBottom: BUDDY_BUTTON_CLEARANCE,
+  },
+  buddy: {
+    position: 'absolute',
+    right: screenPadding,
+    bottom: space.sm,
   },
   footer: {
     paddingHorizontal: screenPadding,

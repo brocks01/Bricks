@@ -25,7 +25,9 @@ import type {
   NewVoiceClip,
   Reminder,
   SignInMethod,
+  SosResponse,
 } from './types';
+import type { LatLng } from '@/lib/geo';
 
 /** Query keys mirror the endpoint paths, so invalidation reads like the API. */
 export const queryKeys = {
@@ -246,9 +248,32 @@ export function useLastCheckinResult(): CheckinResult | undefined {
   return results[results.length - 1];
 }
 
+/**
+ * Help pressed. Pass where they are (started when the SOS screen opened, so the
+ * countdown covers the wait); null sends no location and the server uses home.
+ */
 export function useTriggerSos() {
   return useMutation({
-    mutationFn: () => api.triggerSos({ trigger: 'button', lat: null, lng: null }),
+    mutationFn: async (where?: Promise<LatLng | null> | LatLng | null) => {
+      const here = (await where) ?? null;
+      return api.triggerSos({ trigger: 'button', lat: here?.lat ?? null, lng: here?.lng ?? null });
+    },
+  });
+}
+
+/** S30: a helper says "I'm on my way" to someone else's alert. */
+export function useRespondSos() {
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: SosResponse }) => api.respondSos(id, status),
+  });
+}
+
+/** S29: "I'm OK" after a missed check-in. */
+export function useConfirmOk() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.confirmOk(),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys.today }),
   });
 }
 

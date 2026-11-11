@@ -1,3 +1,6 @@
+// First: TaskManager needs the background walk task defined before anything mounts.
+import '@/features/walk/locationTask';
+
 import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from 'expo-font';
 import { Stack, type ErrorBoundaryProps } from 'expo-router';
@@ -93,6 +96,23 @@ export default function RootLayout() {
         <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen
           name="sos"
+          options={{
+            presentation: 'fullScreenModal',
+            animation: 'slide_from_bottom',
+            gestureEnabled: false,
+          }}
+        />
+        {/* Urgent alerts (2.2): full screen, no swipe-away, like SOS. */}
+        <Stack.Screen
+          name="are-you-ok"
+          options={{
+            presentation: 'fullScreenModal',
+            animation: 'slide_from_bottom',
+            gestureEnabled: false,
+          }}
+        />
+        <Stack.Screen
+          name="helper-alert"
           options={{
             presentation: 'fullScreenModal',
             animation: 'slide_from_bottom',

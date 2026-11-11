@@ -11,6 +11,7 @@ import type {
   NewReminder,
   PersonSummary,
   SosAlert,
+  SosResponse,
   Today,
   WalkSummary,
 } from '@/api/types';
@@ -326,6 +327,10 @@ export function createMockDb(now: () => Date = () => new Date()) {
     safeCircle: () => passItOn.getSafeCircle(),
   });
 
+  /** Safety replies (2.2): S30 helper replies to other members' alerts, S29 "I'm OK" times. */
+  const helperReplies = new Map<string, SosResponse>();
+  const okConfirmations: Date[] = [];
+
   const goingCount = (e: EventRow) => e.going.size + e.extraGoing;
 
   const toSummary = (e: EventRow): EventSummary => ({
@@ -493,6 +498,15 @@ export function createMockDb(now: () => Date = () => new Date()) {
       return alert;
     },
     resolveSos: (id: string) => thrive.resolveSos(id),
+    /** Someone else's alert (the demo one, or a real one on another phone): just record it. */
+    respondSos(id: string, status: SosResponse): void {
+      helperReplies.set(id, status);
+    },
+    helperReply: (id: string): SosResponse | null => helperReplies.get(id) ?? null,
+    confirmOk(): void {
+      okConfirmations.push(now());
+    },
+    okConfirmations: (): readonly Date[] => okConfirmations,
 
     // Onboarding, profile, Pass It On, Family (1.3).
     getMe: () => passItOn.getMe(),

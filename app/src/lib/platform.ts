@@ -22,8 +22,12 @@ export const platform = {
   canUsePosture: isAndroid && postureModule != null,
   /** Server-sent push. Expo Go supports local notifications only. */
   canUseRemotePush: isNative && !isExpoGo,
+  /** Real GPS walks (web and tests replay the simulated walk instead). */
+  canRecordGps: isNative,
   /** Walk recording with the screen locked. iPhone/Expo Go records with the app open. */
   canRecordInBackground: isAndroid && !isExpoGo,
+  /** The phone's step counter. Expo Go for Android lacks the activity permission it needs. */
+  canCountSteps: isNative && !(isAndroid && isExpoGo),
   /** Phone dialler links (tel:). */
   canCallPhone: isNative,
   /** Android groups notifications into channels that must be created first. */

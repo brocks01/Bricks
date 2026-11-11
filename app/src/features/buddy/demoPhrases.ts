@@ -3,7 +3,8 @@ import type { Language } from '@/i18n/languages';
 /**
  * What a facilitator taps on "Demo: tap what was said" while running on mock
  * data, because Expo Go has no speech-to-text (docs/04 1.3 §5.2). One phrase per
- * Buddy intent, in each language. Never shown with a real speech service.
+ * Buddy intent, in each language; the last one opens a screen by name. With the
+ * phone's own recogniser it only shows after "didn't catch that".
  */
 export const BUDDY_DEMO_PHRASES: Record<Language, string[]> = {
   en: [
@@ -16,6 +17,7 @@ export const BUDDY_DEMO_PHRASES: Record<Language, string[]> = {
     'Stop the walk',
     'Open my profile',
     'Help',
+    'Open settings',
   ],
   ms: [
     'Apa ada hari ini?',
@@ -27,6 +29,7 @@ export const BUDDY_DEMO_PHRASES: Record<Language, string[]> = {
     'Berhenti jalan',
     'Buka profil saya',
     'Tolong',
+    'Buka tetapan',
   ],
   zh: [
     '今天有什么活动？',
@@ -38,6 +41,7 @@ export const BUDDY_DEMO_PHRASES: Record<Language, string[]> = {
     '停止散步',
     '打开我的资料',
     '救命',
+    '打开设置',
   ],
   ta: [
     'இன்று என்ன இருக்கிறது?',
@@ -49,5 +53,6 @@ export const BUDDY_DEMO_PHRASES: Record<Language, string[]> = {
     'நடையை நிறுத்து',
     'என் சுயவிவரத்தைத் திற',
     'உதவி',
+    'அமைப்புகளைத் திற',
   ],
 };

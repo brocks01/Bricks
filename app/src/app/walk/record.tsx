@@ -1,8 +1,8 @@
 import { useKeepAwake } from 'expo-keep-awake';
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useEffect, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler, StyleSheet, View } from 'react-native';
+import { AppState, BackHandler, Linking, StyleSheet, View } from 'react-native';
 
 import { useUploadWalk } from '@/api';
 import {
@@ -18,6 +18,7 @@ import {
   StatusBanner,
 } from '@/components';
 import { clearUnfinishedWalk, useActiveWalk } from '@/features/walk/activeWalk';
+import { prepareWalkLocation } from '@/features/walk/gpsTrack';
 import { formatClock, formatCount, formatDistance, formatMinutes } from '@/lib/format';
 import { platform } from '@/lib/platform';
 import { space } from '@/theme';
@@ -28,15 +29,35 @@ import { useTypography } from '@/theme/TypographyProvider';
  * numbers (Time, Distance, Steps; no pace or heart rate), Pause / Carry on and
  * Finish. Opens full-screen without the tab bar, so a stray tap can't leave a
  * walk half-way. Help stays top-right; the walk keeps recording under SOS.
+ *
+ * GPS walks ask for location when the walk starts (not before). If location is
+ * off or refused, the screen says so in plain words and tries again by itself
+ * when they come back from Settings. `?eventId=` links the walk to a group walk
+ * ("Walked with" on everyone's summary).
  */
+type Access = 'starting' | 'recording' | 'off' | 'denied';
+
 export default function WalkRecordScreen() {
   useKeepAwake();
   const { t } = useTranslation();
   const { language } = useTypography();
   const router = useRouter();
+  const { eventId } = useLocalSearchParams<{ eventId?: string }>();
   const walk = useActiveWalk();
   const upload = useUploadWalk();
   const [confirming, setConfirming] = useState(false);
+  // A walk already running, or the simulated walk (no permission needed): recording at once.
+  const [access, setAccess] = useState<Access>(() => {
+    const s = useActiveWalk.getState();
+    return s.session || s.source !== 'gps' ? 'recording' : 'starting';
+  });
+  const mounted = useRef(true);
+  useEffect(
+    () => () => {
+      mounted.current = false;
+    },
+    [],
+  );
   // Buddy's "stop the walk" asks the Finish question here (adjusting state while
   // rendering, React's pattern for responding to a change from outside).
   const finishAsked = useActiveWalk((s) => s.finishAsked);
@@ -47,19 +68,48 @@ export default function WalkRecordScreen() {
   }
 
   // Start as soon as the screen opens: "Start walk" is one tap.
+  const begin = useCallback(() => {
+    const state = useActiveWalk.getState();
+    if (state.session) return;
+    const options = { eventId: typeof eventId === 'string' ? eventId : null };
+    if (state.source !== 'gps') return state.start(options);
+    void prepareWalkLocation().then((location) => {
+      // They left while the permission question was open: don't start a walk with no screen.
+      if (!mounted.current) return;
+      if (location.status !== 'ready') return setAccess(location.status);
+      useActiveWalk.getState().start({ ...options, background: location.background });
+      setAccess('recording');
+    });
+  }, [eventId]);
+
+  useEffect(begin, [begin]);
+
+  const retry = useCallback(() => {
+    setAccess('starting');
+    begin();
+  }, [begin]);
+
+  // Back from Settings with location allowed: start without another tap.
   useEffect(() => {
-    if (!useActiveWalk.getState().session) useActiveWalk.getState().start();
-  }, []);
+    if (access !== 'off' && access !== 'denied') return;
+    const sub = AppState.addEventListener('change', (next) => {
+      if (next === 'active') retry();
+    });
+    return () => sub.remove();
+  }, [access, retry]);
+
+  const recording = access === 'recording';
 
   // Android Back asks before ending the walk, like the Finish button.
   useFocusEffect(
     useCallback(() => {
+      if (!recording) return;
       const sub = BackHandler.addEventListener('hardwareBackPress', () => {
         setConfirming(true);
         return true;
       });
       return () => sub.remove();
-    }, []),
+    }, [recording]),
   );
 
   const progress = walk.progress;
@@ -88,6 +138,48 @@ export default function WalkRecordScreen() {
       distance,
       steps,
     });
+
+  if (!recording) {
+    const message =
+      access === 'off'
+        ? t('walk.locationOff')
+        : access === 'denied'
+          ? t('walk.locationDenied')
+          : t('walk.findingYou');
+    return (
+      <Screen
+        title={t('walk.recording')}
+        readOut={() => message}
+        standalone
+        testID="screen-walk-record"
+        footer={
+          access === 'starting' ? null : (
+            <ButtonRow>
+              <BigButton
+                size="lg"
+                variant="outline"
+                label={t('common.tryAgain')}
+                onPress={retry}
+                testID="walk-location-retry"
+              />
+              <BigButton
+                size="lg"
+                label={t('walk.openSettings')}
+                onPress={() => void Linking.openSettings().catch(() => {})}
+                testID="walk-location-settings"
+              />
+            </ButtonRow>
+          )
+        }
+      >
+        <StatusBanner
+          tone={access === 'starting' ? 'info' : 'notice'}
+          text={message}
+          testID={`walk-location-${access}`}
+        />
+      </Screen>
+    );
+  }
 
   return (
     <Screen

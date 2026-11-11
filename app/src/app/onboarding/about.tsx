@@ -124,7 +124,6 @@ export default function AboutScreen() {
       }
       back
       onBack={goBack}
-      tellMe={false}
       testID="screen-onboarding-about"
       footer={
         <BigButton

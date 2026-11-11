@@ -9,19 +9,26 @@ Read first: `02_DESIGN_PRINCIPLES.md`, `02b_SCREEN_DESIGNS.md` (screen IDs S1–
 ## 1. Stack and setup
 
 - **React Native + Expo (TypeScript)**, expo-router.
+- **Expo SDK 58** (`expo ~58.0.23`), **React Native 0.88.1**, **React 19.3.0**, **New Architecture only**. Node.js `^22.13` or `^24.3`.
 - Libraries:
 ```
-npx create-expo-app app -t expo-template-blank-typescript
+npx create-expo-app@latest app --template blank-typescript@sdk-58
 cd app
-npx expo install expo-router expo-speech expo-audio expo-notifications expo-location \
-  expo-sensors expo-haptics expo-localization expo-font expo-secure-store \
-  expo-task-manager expo-keep-awake expo-contacts react-native-maps react-native-svg
+npx expo install expo-router expo-linking expo-constants expo-status-bar \
+  react-native-safe-area-context react-native-screens \
+  expo-speech expo-audio expo-notifications expo-location expo-sensors expo-haptics \
+  expo-localization expo-font expo-splash-screen expo-secure-store expo-task-manager \
+  expo-keep-awake expo-contacts expo-auth-session expo-web-browser expo-crypto \
+  react-native-maps react-native-svg expo-dev-client
 npm i i18next react-i18next zustand @tanstack/react-query phosphor-react-native \
   @mapbox/polyline
+npx expo install --check && npx expo-doctor
 ```
+- **`expo-av` is not in SDK 58**: record and play voice with **`expo-audio`** (`useAudioRecorder` / `useAudioPlayer`). Read It Out stays on `expo-speech`.
+- Add native packages **only** with `npx expo install` (never a bare `npm i`), so versions match SDK 58. Never run `npm audit fix --force`.
 - **Only libraries included in Expo Go** in shared code (all of the above are), so the same JS runs on iPhone in Expo Go. The posture module is the single exception and is Android-only.
 - Sign-in via Supabase web OAuth (`expo-auth-session` / `expo-web-browser`), not a native Google SDK.
-- Lock the Expo SDK to the version the App Store's Expo Go supports when the project is created. Don't upgrade during the week.
+- Stay on **SDK 58** for the build week (App Store Expo Go runs only SDK 58 since 11 Nov). Patch updates via `npx expo install --fix` only; check Expo Go → Settings before each iPhone test.
 
 ### 1.1 Platforms and distribution
 
@@ -102,7 +109,7 @@ Legend: **Screens** refer to `02b_SCREEN_DESIGNS.md`. Every item must pass the U
 - Expo project, router, tab shell (Kampung default), fonts, `theme/tokens.ts` (type, colour, radius, spacing from design system §5).
 - `i18n` setup with key structure (`screen.element`), English only for now.
 - Mock data layer (React Query hooks reading `mocks/`).
-- Create the project on the Expo SDK version supported by App Store Expo Go; EAS development build for Android set up (needed for the posture module).
+- Create the project on **Expo SDK 58** (what App Store Expo Go runs); posture module on SDK 58's Android toolchain (`03` §2.1); EAS development build for Android set up (needed for the posture module).
 - **Done when:** app runs on an Android phone (dev build) and on an iPhone in Expo Go (checked by the Singapore team); tokens merged.
 
 **Iteration 0.2 — Core components**

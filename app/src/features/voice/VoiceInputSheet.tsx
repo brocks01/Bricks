@@ -11,6 +11,7 @@ import { config } from '@/lib/config';
 import { borderWidth, color, radius, space } from '@/theme';
 
 import { useRecorder } from './useRecorder';
+import { canRecognizeSpeech, useSpeechRecognizer } from './useSpeechRecognizer';
 
 export interface VoiceInputSheetProps {
   visible: boolean;
@@ -27,25 +28,81 @@ export interface VoiceInputSheetProps {
 const SILENCE_MS = 1500;
 
 /**
- * Listens once: records as soon as it opens, stops on Stop or after a pause,
- * and turns the recording into words with the backend's speech service.
+ * Listens once, as soon as it opens; stops on Stop or after a pause.
  *
- * Expo Go has no speech-to-text, so on mock data a clearly labelled
- * "Demo: tap what was said" list stands in for it. It's for facilitated tests
- * and filming only: we test the flow, not the recognition (1.3 §9).
+ * - Our own builds: the phone's speech recogniser, with the words shown as they
+ *   are heard. Works without the backend.
+ * - Expo Go (iPhone): records, then the backend's speech service turns it into
+ *   words. On mock data there's no speech service, so a clearly labelled
+ *   "Demo: tap what was said" list stands in for it (facilitated tests, 1.3 §9).
  */
 export function VoiceInputSheet(props: VoiceInputSheetProps) {
   // A fresh listening session each time it opens.
-  return props.visible ? <ListeningSession {...props} /> : null;
+  if (!props.visible) return null;
+  return canRecognizeSpeech ? <PhoneSession {...props} /> : <RecordingSession {...props} />;
 }
 
-function ListeningSession({
+function PhoneSession({ onResult, onClose, demoPhrases }: VoiceInputSheetProps) {
+  const language = useActiveLanguage();
+  const speech = useSpeechRecognizer({ language, onFinal: onResult });
+
+  const begin = useEffectEvent(() => void speech.start());
+  useEffect(() => begin(), []);
+
+  const mode: ListeningMode =
+    speech.state === 'denied' ? 'denied' : speech.state === 'notHeard' ? 'notHeard' : 'listening';
+  // The demo list is only a fallback here, after the phone didn't catch it.
+  const showDemo = config.demoVoice && mode === 'notHeard' && demoPhrases && demoPhrases.length > 0;
+
+  return (
+    <ListeningSheet
+      visible
+      transcript={speech.transcript}
+      mode={mode}
+      onStop={speech.stop}
+      onRetry={() => void speech.start()}
+      onClose={() => {
+        speech.cancel();
+        onClose();
+      }}
+    >
+      {showDemo ? <DemoPhrases phrases={demoPhrases} onPick={onResult} /> : null}
+    </ListeningSheet>
+  );
+}
+
+function DemoPhrases({
+  phrases,
+  onPick,
+}: {
+  phrases: readonly string[];
+  onPick: (phrase: string) => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <View style={styles.demo} testID="voice-demo">
+      <Text variant="bodyStrong">{t('listening.demoTitle')}</Text>
+      <ScrollView style={styles.demoList} contentContainerStyle={styles.demoContent}>
+        {phrases.map((phrase, i) => (
+          <Chip
+            key={phrase}
+            label={phrase}
+            selected={false}
+            onPress={() => onPick(phrase)}
+            testID={`voice-demo-${i}`}
+          />
+        ))}
+      </ScrollView>
+    </View>
+  );
+}
+
+function RecordingSession({
   onResult,
   onClose,
   demoPhrases,
   maxSeconds = 15,
 }: VoiceInputSheetProps) {
-  const { t } = useTranslation();
   const language = useActiveLanguage();
   const [mode, setMode] = useState<ListeningMode>('listening');
 
@@ -89,23 +146,13 @@ function ListeningSession({
       }}
     >
       {showDemo ? (
-        <View style={styles.demo} testID="voice-demo">
-          <Text variant="bodyStrong">{t('listening.demoTitle')}</Text>
-          <ScrollView style={styles.demoList} contentContainerStyle={styles.demoContent}>
-            {demoPhrases.map((phrase, i) => (
-              <Chip
-                key={phrase}
-                label={phrase}
-                selected={false}
-                onPress={() => {
-                  void rec.cancel();
-                  onResult(phrase);
-                }}
-                testID={`voice-demo-${i}`}
-              />
-            ))}
-          </ScrollView>
-        </View>
+        <DemoPhrases
+          phrases={demoPhrases}
+          onPick={(phrase) => {
+            void rec.cancel();
+            onResult(phrase);
+          }}
+        />
       ) : null}
     </ListeningSheet>
   );

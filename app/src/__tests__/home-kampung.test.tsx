@@ -200,6 +200,7 @@ describe('Start Something', () => {
     await press('create-next');
     await press('create-time-7');
     await press('create-next');
+    await press('create-place-other');
     await fireEvent.changeText(screen.getByTestId('create-place-typed'), 'MacRitchie Reservoir');
     await press('create-next');
     await fireEvent.changeText(screen.getByTestId('create-link'), 'www.example.com');
@@ -211,6 +212,80 @@ describe('Start Something', () => {
     );
     await press('create-next');
     expect(screen.getByText('MacRitchie Reservoir')).toBeTruthy();
+  });
+
+  it('every question takes their own answer: something else, another day, another time, somewhere else', async () => {
+    await renderApp('/kampung/create');
+
+    // What: "Something else" asks what it is, and Next waits for it.
+    await press('create-category-other');
+    expect(screen.getByTestId('create-what-typed')).toBeTruthy();
+    expect(screen.getByTestId('create-next').props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+    await fireEvent.changeText(screen.getByTestId('create-what-typed'), 'Mahjong afternoon');
+    await press('create-next');
+
+    // Day: "Another day" starts a week ahead; Later moves it by a day and a week.
+    await press('create-day-other');
+    expect(screen.getByTestId('day-adjuster')).toBeTruthy();
+    await press('day-day-later');
+    await press('day-week-later');
+    expect(screen.getByTestId('day-day-earlier').props.accessibilityState).toMatchObject({
+      disabled: false,
+    });
+    await press('create-next');
+
+    // Time: "Another time" with the big Earlier / Later buttons (10 am → 10:15 am).
+    await press('create-time-other');
+    expect(screen.getByTestId('time-adjuster-value')).toHaveTextContent('10 am');
+    await press('time-minute-later');
+    expect(screen.getByTestId('time-adjuster-value')).toHaveTextContent('10:15 am');
+    await press('create-next');
+
+    // Where: "Somewhere else" shows the field; Next waits for a place.
+    expect(screen.queryByTestId('create-place-typed')).toBeNull();
+    await press('create-place-other');
+    expect(screen.getByTestId('create-next').props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+    await fireEvent.changeText(
+      screen.getByTestId('create-place-typed'),
+      'Block 123 rooftop garden',
+    );
+    await press('create-next');
+    await press('create-link-skip');
+
+    // Their own words become the event's name and place.
+    expect(screen.getByTestId('create-title').props.value).toBe('Mahjong afternoon');
+    expect(screen.getByText('Block 123 rooftop garden')).toBeTruthy();
+    await press('create-next');
+    expect(await screen.findByText('Published. People can now see it and join.')).toBeTruthy();
+  });
+
+  it("another time today that's too soon says so and holds Next", async () => {
+    await renderApp('/kampung/create');
+    await press('create-category-walk');
+    await press('create-next');
+    await press('create-day-other');
+    // Back to today with Earlier by a week.
+    await press('day-week-earlier');
+    expect(screen.getByTestId('day-week-earlier').props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
+    while (!screen.getByTestId('day-day-earlier').props.accessibilityState?.disabled) {
+      await press('day-day-earlier');
+    }
+    await press('create-next');
+    await press('create-time-other');
+    // Step the time back to just now: too soon.
+    const now = new Date();
+    const steps = (10 - now.getHours() + 24) % 24;
+    for (let i = 0; i < steps; i++) await press('time-hour-earlier');
+    expect(screen.getByTestId('create-too-soon')).toBeTruthy();
+    expect(screen.getByTestId('create-next').props.accessibilityState).toMatchObject({
+      disabled: true,
+    });
   });
 
   it('Back walks back one step at a time', async () => {

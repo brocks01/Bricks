@@ -176,6 +176,32 @@
     "readoutLast": "Your last walk: {{place}}, {{distance}}, {{time}}.",
     "readoutReminder": "Next reminder at {{time}}: {{text}}."
   },
+  "safety": {
+    "areYouOk": {
+      "title": "Are you okay?",
+      "why": "We didn't hear from you this morning.",
+      "ok": "I'm OK",
+      "help": "I need help",
+      "countdown": "seconds before we phone you to check",
+      "noAnswer": "We'll phone you soon to check you're okay. You can still tap I'm OK.",
+      "thanks": "Thank you. We're glad you're okay.",
+      "readout": "Are you okay? We didn't hear from you this morning. Tap I'm OK, or tap I need help."
+    },
+    "helper": {
+      "title": "{{name}} needs help",
+      "someone": "Someone",
+      "when": "Asked for help at {{time}}",
+      "justNow": "just now",
+      "mapLabel": "Map showing where {{name}} is",
+      "noLocation": "We don't know exactly where {{name}} is. Please call to check.",
+      "onWay": "I'm on my way",
+      "sent": "Thank you. We've told {{name}} you're on your way.",
+      "closed": "This alert has ended. {{name}} is safe, or others are already helping.",
+      "failed": "That didn't go through. Please try again, or call {{name}}.",
+      "call": "Call {{name}}",
+      "readout": "{{name}} needs help. They asked {{time}}. Tap I'm on my way, or call them."
+    }
+  },
   "sos": {
     "title": "Getting help",
     "call": "Call {{number}} now",
@@ -279,7 +305,15 @@
     "day": "Which day?",
     "time": "What time?",
     "where": "Where?",
-    "placeOther": "Or type the place",
+    "placeOther": "Type the place",
+    "whatOther": "What is it?",
+    "whatOtherHint": "For example: Mahjong afternoon or Batik painting",
+    "anotherDay": "Another day",
+    "anotherTime": "Another time",
+    "somewhereElse": "Somewhere else",
+    "byDay": "One day",
+    "byWeek": "One week",
+    "tooSoon": "That's too soon. Please choose a time at least 30 minutes from now.",
     "link": "Add a WhatsApp group link?",
     "linkHint": "Paste the group's invite link so people can say hello. You can skip this.",
     "linkLabel": "WhatsApp group link",
@@ -388,6 +422,12 @@
     "paused": "Paused. Tap Carry on when you're ready.",
     "autoPaused": "You've stopped. The time carries on when you walk again.",
     "keepOpen": "Keep this screen open while you walk.",
+    "findingYou": "Finding where you are…",
+    "locationOff": "Your phone's location is switched off. Turn it on in Settings to record your walk.",
+    "locationDenied": "To record your walk, Bricks needs to use your location. You can allow it in Settings.",
+    "openSettings": "Open Settings",
+    "serviceTitle": "Recording your walk",
+    "serviceBody": "Tap to open",
     "finishConfirm": "Finish your walk?",
     "saving": "Saving your walk…",
     "saveFailed": "We couldn't save your walk yet. It's kept on your phone; we'll try again from Thrive.",
@@ -466,7 +506,12 @@
     "reminderBody": "Tap Done when you have.",
     "snooze": "Snooze {{count}} min",
     "checkinTitle": "Check-in: did you move yesterday?",
-    "checkinBody": "Tap Yes or No."
+    "checkinBody": "Tap Yes or No.",
+    "alertsChannel": "Urgent alerts",
+    "areYouOkTitle": "Are you okay?",
+    "areYouOkBody": "We didn't hear from you this morning. Tap to answer.",
+    "sosTitle": "{{name}} needs help",
+    "sosBody": "Tap to see where they are."
   },
   "readOutBar": {
     "label": "Reading the screen out loud",
@@ -500,7 +545,11 @@
     "walkContinues": "Your walk is still going.",
     "noWalk": "You're not on a walk right now.",
     "profile": "Here is your profile.",
-    "unknown": "Sorry, I didn't understand. You can say: what's on today, join the walk, remind me to take medicine at 8, or help."
+    "unknown": "Sorry, I didn't understand. You can say: what's on today, join the walk, remind me to take medicine at 8, or help.",
+    "name": "Buddy",
+    "buttonLabel": "Buddy. Tap and say what you want",
+    "opening": "Here is {{place}}.",
+    "cantGoBack": "You're already at the start."
   },
   "interests": {
     "walking": "Walking",
@@ -643,7 +692,12 @@
     "privacy": "Privacy",
     "signOut": "Sign out",
     "signOutConfirm": "Sign out? You'll need to sign in again.",
-    "signOutConfirmDemo": "Sign out? This also starts the demo again from the beginning."
+    "signOutConfirmDemo": "Sign out? This also starts the demo again from the beginning.",
+    "demoHeading": "Demo",
+    "demoAreYouOk": "Demo: missed check-in",
+    "demoHelperAlert": "Demo: someone needs help",
+    "demoScheduled": "Demo: the alert comes in {{seconds}} seconds. You can lock your phone.",
+    "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first."
   },
   "family": {
     "title": "My family",

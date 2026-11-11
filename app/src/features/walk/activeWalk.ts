@@ -9,8 +9,21 @@ import {
   type WalkSnapshot,
   type WalkUpload,
 } from './engine';
+import { GpsTrackSource } from './gpsTrack';
 import { scaledClock, SimulatedTrackSource } from './simulatedTrack';
+import { StepCounter } from './stepCounter';
+import i18n from '@/i18n';
 import { pathLength } from '@/lib/geo';
+import { platform } from '@/lib/platform';
+
+/** Real GPS, or the simulated Bishan Park loop (indoor demos, web, tests). */
+export type WalkSource = 'gps' | 'simulated';
+
+export interface StartWalkOptions {
+  eventId?: string | null;
+  /** GPS only: record with the screen locked (our Android build, "all the time" allowed). */
+  background?: boolean;
+}
 
 /**
  * The walk being recorded right now, app-wide, so it keeps going while SOS or
@@ -24,10 +37,14 @@ const SAVE_EVERY_MS = 30_000;
 interface ActiveWalkState {
   session: WalkSession | null;
   progress: WalkProgress | null;
+  /** Developer option: GPS or the simulated walk. */
+  source: WalkSource;
+  setSource: (source: WalkSource) => void;
   /** Developer option: replay the simulated walk faster (1× or 10×). */
   simulationSpeed: 1 | 10;
   setSimulationSpeed: (speed: 1 | 10) => void;
-  start: (eventId?: string | null) => void;
+  /** For GPS, ask for location first (prepareWalkLocation). */
+  start: (options?: StartWalkOptions) => void;
   /** Bumped when Buddy hears "stop the walk": the walk screen then asks "Finish your walk?". */
   finishAsked: number;
   askToFinish: () => void;
@@ -39,6 +56,14 @@ interface ActiveWalkState {
 }
 
 let saveTimer: ReturnType<typeof setInterval> | null = null;
+let stepCounter: StepCounter | null = null;
+
+function stopTimers(): void {
+  if (saveTimer) clearInterval(saveTimer);
+  saveTimer = null;
+  stepCounter?.stop();
+  stepCounter = null;
+}
 
 async function saveSnapshot(snapshot: WalkSnapshot): Promise<void> {
   try {
@@ -51,21 +76,37 @@ async function saveSnapshot(snapshot: WalkSnapshot): Promise<void> {
 export const useActiveWalk = create<ActiveWalkState>()((set, get) => ({
   session: null,
   progress: null,
+  source: platform.canRecordGps ? 'gps' : 'simulated',
+  setSource: (source) => set({ source }),
   simulationSpeed: 1,
   setSimulationSpeed: (simulationSpeed) => set({ simulationSpeed }),
 
   finishAsked: 0,
   askToFinish: () => set((s) => ({ finishAsked: s.finishAsked + 1 })),
-  start: (eventId = null) => {
+  start: ({ eventId = null, background = false } = {}) => {
     if (get().session) return;
-    // Iteration 1.2: simulated track. 2.2 swaps in GPS (+ the phone's step counter) here.
-    const clock = scaledClock(systemClock, get().simulationSpeed);
-    const session = new WalkSession({
-      source: new SimulatedTrackSource(clock),
-      clock,
-      eventId,
-      onProgress: (progress) => set({ progress }),
-    });
+    const onProgress = (progress: WalkProgress) => set({ progress });
+    let session: WalkSession;
+    if (get().source === 'gps') {
+      session = new WalkSession({
+        source: new GpsTrackSource(background, {
+          title: i18n.t('walk.serviceTitle'),
+          body: i18n.t('walk.serviceBody'),
+        }),
+        eventId,
+        onProgress,
+      });
+      stepCounter = new StepCounter((steps) => session.setMeasuredSteps(steps));
+      void stepCounter.start();
+    } else {
+      const clock = scaledClock(systemClock, get().simulationSpeed);
+      session = new WalkSession({
+        source: new SimulatedTrackSource(clock),
+        clock,
+        eventId,
+        onProgress,
+      });
+    }
     set({ session, finishAsked: 0 });
     session.start();
     saveTimer = setInterval(() => void saveSnapshot(session.snapshot()), SAVE_EVERY_MS);
@@ -75,16 +116,19 @@ export const useActiveWalk = create<ActiveWalkState>()((set, get) => ({
     const { session } = get();
     if (!session) return;
     session.pause();
+    stepCounter?.pause();
     void saveSnapshot(session.snapshot());
   },
 
-  resume: () => get().session?.resume(),
+  resume: () => {
+    stepCounter?.resume();
+    get().session?.resume();
+  },
 
   finish: () => {
     const { session } = get();
     if (!session) return null;
-    if (saveTimer) clearInterval(saveTimer);
-    saveTimer = null;
+    stopTimers();
     const upload = session.finish();
     void saveSnapshot(session.snapshot());
     set({ session: null, progress: null });
@@ -93,8 +137,7 @@ export const useActiveWalk = create<ActiveWalkState>()((set, get) => ({
 
   discard: async () => {
     get().session?.discard();
-    if (saveTimer) clearInterval(saveTimer);
-    saveTimer = null;
+    stopTimers();
     set({ session: null, progress: null });
     await clearUnfinishedWalk();
   },

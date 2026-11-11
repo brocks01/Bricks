@@ -1,0 +1,9 @@
+# Secrets at the repo root (Twilio, Google, Meta keys). EAS Build uploads the
+# whole repository, and respects this file, so they must never be committed or uploaded.
+.env
+.env.*
+!.env.example
+*.service-account.json
+
+# Python caches anywhere in the repo
+__pycache__/

@@ -40,7 +40,7 @@ export function TopBar({ readOut, showHelp = true, owner }: TopBarProps) {
           />
         ) : null}
       </View>
-      <View style={styles.slot}>
+      <View style={styles.helpSlot}>
         {showHelp ? (
           <BigButton
             variant="sos"
@@ -69,6 +69,12 @@ const styles = StyleSheet.create({
   },
   slot: {
     flexShrink: 1,
+    maxWidth: '60%',
+  },
+  // Help is one short word in every language: it keeps its full width so it never
+  // breaks mid-word ("Hel / p" on a large-font Android phone); Read it out wraps instead.
+  helpSlot: {
+    flexShrink: 0,
     maxWidth: '60%',
   },
 });

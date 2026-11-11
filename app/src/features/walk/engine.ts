@@ -9,7 +9,8 @@ import { cleanTrack, haversine, pathLength, type TrackPoint } from '@/lib/geo';
  *   segment, so the gap is never counted as walked distance.
  * - Auto-pause: no real movement for 20 s → the clock stops (and those 20 s are
  *   taken back off), until they move again.
- * - Steps: from the phone's step counter when there is one, else distance ÷ 0.7 m.
+ * - Steps: from the phone's step counter when there is one (never below the
+ *   estimate, since the counter stops in the background), else distance ÷ 0.7 m.
  */
 
 /** Walking slower than this for AUTO_PAUSE_MS counts as stopped (0.3 m/s). */
@@ -183,7 +184,10 @@ export class WalkSession {
   }
 
   private steps(): number {
-    return this.measuredSteps ?? Math.round(this.distance / STRIDE_M);
+    const estimate = Math.round(this.distance / STRIDE_M);
+    // The step counter pauses while the app is in the background (screen locked),
+    // so never show fewer steps than the distance implies.
+    return this.measuredSteps === null ? estimate : Math.max(this.measuredSteps, estimate);
   }
 
   private addPoint(point: TrackPoint): void {

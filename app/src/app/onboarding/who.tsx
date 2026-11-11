@@ -27,7 +27,6 @@ export default function WhoScreen() {
     <Screen
       title={t('onboarding.who.title')}
       readOut={() => t('onboarding.who.readout')}
-      tellMe={false}
       testID="screen-onboarding-who"
     >
       <View style={styles.cards}>

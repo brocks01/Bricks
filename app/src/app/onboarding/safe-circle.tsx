@@ -23,7 +23,6 @@ export default function SafeCircleSetupScreen() {
     <Screen
       title={t('onboarding.safeCircle.title')}
       readOut={() => t('onboarding.safeCircle.readout')}
-      tellMe={false}
       testID="screen-onboarding-safe-circle"
       footer={
         members.length > 0 ? (

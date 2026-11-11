@@ -9,6 +9,7 @@ import { BigButton, ConfirmSheet, PhoneIcon, Screen, StatusBanner, Text } from '
 import { config } from '@/lib/config';
 import { formatDistance } from '@/lib/format';
 import { warningFeedback } from '@/lib/haptics';
+import { currentLocation } from '@/lib/location';
 import { platform } from '@/lib/platform';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
@@ -34,6 +35,8 @@ export default function SosScreen() {
   const [openedAt] = useState(() => Date.now());
   const [now, setNow] = useState(openedAt);
   const secondsLeft = Math.max(0, SOS_COUNTDOWN_S - Math.floor((now - openedAt) / 1000));
+  // Where they are, found during the countdown (no permission prompt; null → home).
+  const [where] = useState(currentLocation);
   const [callFailed, setCallFailed] = useState(false);
   const [confirmingSafe, setConfirmingSafe] = useState(false);
   const trigger = useTriggerSos();
@@ -57,7 +60,7 @@ export default function SosScreen() {
     const timer = setInterval(() => setNow(Date.now()), 250);
     return () => clearInterval(timer);
   }, [counting]);
-  const sendAlert = useEffectEvent(() => trigger.mutate());
+  const sendAlert = useEffectEvent(() => trigger.mutate(where));
   useEffect(() => {
     if (secondsLeft === 0 && !started) sendAlert();
   }, [secondsLeft, started]);

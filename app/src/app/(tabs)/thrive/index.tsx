@@ -30,6 +30,7 @@ import {
   useActiveWalk,
 } from '@/features/walk/activeWalk';
 import { config } from '@/lib/config';
+import { platform } from '@/lib/platform';
 import { formatDistance, formatMinutes, formatTime, weekdayLabels } from '@/lib/format';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
@@ -47,6 +48,8 @@ export default function ThriveScreen() {
   const stats = useWalkStats();
   const week = useCheckinWeek();
   const upload = useUploadWalk();
+  const walkSource = useActiveWalk((s) => s.source);
+  const setWalkSource = useActiveWalk((s) => s.setSource);
   const simulationSpeed = useActiveWalk((s) => s.simulationSpeed);
   const setSimulationSpeed = useActiveWalk((s) => s.setSimulationSpeed);
 
@@ -136,14 +139,25 @@ export default function ThriveScreen() {
         testID="thrive-start-walk"
       />
       {config.devTools ? (
-        // Developer builds only: replay the simulated walk 10× faster for demos.
+        // Developer builds only: real GPS, or the simulated walk (1× or 10×) for indoor demos.
         <ChipGroup>
+          {platform.canRecordGps ? (
+            <Chip
+              label="Real GPS"
+              selected={walkSource === 'gps'}
+              onPress={() => setWalkSource('gps')}
+              testID="thrive-gps"
+            />
+          ) : null}
           {([1, 10] as const).map((speed) => (
             <Chip
               key={speed}
               label={`Simulated walk ${speed}×`}
-              selected={simulationSpeed === speed}
-              onPress={() => setSimulationSpeed(speed)}
+              selected={walkSource === 'simulated' && simulationSpeed === speed}
+              onPress={() => {
+                setWalkSource('simulated');
+                setSimulationSpeed(speed);
+              }}
               testID={`thrive-sim-${speed}`}
             />
           ))}

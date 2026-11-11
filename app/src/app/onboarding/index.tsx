@@ -40,7 +40,6 @@ export default function LanguageScreen() {
         language,
       }))}
       back={false}
-      tellMe={false}
       testID="screen-onboarding-language"
     >
       <Text variant="display" style={styles.appName}>

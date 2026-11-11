@@ -169,6 +169,32 @@
     "readoutLast": "上一次步行：{{place}}，{{distance}}，{{time}}。",
     "readoutReminder": "下一个提醒在 {{time}}：{{text}}。"
   },
+  "safety": {
+    "areYouOk": {
+      "title": "您还好吗？",
+      "why": "今天早上我们没有收到您的回复。",
+      "ok": "我很好",
+      "help": "我需要帮助",
+      "countdown": "秒后我们会打电话给您确认",
+      "noAnswer": "我们很快会打电话给您，确认您没事。您仍然可以点“我很好”。",
+      "thanks": "谢谢您。知道您没事，我们很高兴。",
+      "readout": "您还好吗？今天早上我们没有收到您的回复。请点“我很好”，或者点“我需要帮助”。"
+    },
+    "helper": {
+      "title": "{{name}}需要帮助",
+      "someone": "有人",
+      "when": "{{time}}请求帮助",
+      "justNow": "刚才",
+      "mapLabel": "显示{{name}}位置的地图",
+      "noLocation": "我们不知道{{name}}的确切位置。请打电话确认。",
+      "onWay": "我在路上了",
+      "sent": "谢谢您。我们已经告诉{{name}}您在路上了。",
+      "closed": "这个求助已经结束。{{name}}已经安全，或者已经有其他人在帮忙。",
+      "failed": "没有发送成功。请再试一次，或者打电话给{{name}}。",
+      "call": "打电话给{{name}}",
+      "readout": "{{name}}需要帮助，求助时间是{{time}}。请点“我在路上了”，或者打电话给对方。"
+    }
+  },
   "sos": {
     "title": "正在求助",
     "call": "立即拨打 {{number}}",
@@ -269,7 +295,15 @@
     "day": "哪一天？",
     "time": "几点？",
     "where": "在哪里？",
-    "placeOther": "或者输入地点",
+    "placeOther": "输入地点",
+    "whatOther": "是什么活动？",
+    "whatOtherHint": "例如：麻将下午或蜡染绘画",
+    "anotherDay": "其他日子",
+    "anotherTime": "其他时间",
+    "somewhereElse": "其他地点",
+    "byDay": "一天",
+    "byWeek": "一周",
+    "tooSoon": "时间太近了。请选择至少30分钟以后的时间。",
     "link": "要加上 WhatsApp 群组链接吗？",
     "linkHint": "贴上群组的邀请链接，大家就可以打招呼。也可以跳过。",
     "linkLabel": "WhatsApp 群组链接",
@@ -376,6 +410,12 @@
     "paused": "已暂停。准备好了就点继续。",
     "autoPaused": "您停下来了。再走的时候时间会继续。",
     "keepOpen": "步行时请保持这个画面打开。",
+    "findingYou": "正在找您的位置…",
+    "locationOff": "您手机的定位已关闭。请在设置中打开，才能记录您的步行。",
+    "locationDenied": "要记录您的步行，Bricks 需要使用您的位置。您可以在设置中允许。",
+    "openSettings": "打开设置",
+    "serviceTitle": "正在记录您的步行",
+    "serviceBody": "点一下打开",
     "finishConfirm": "结束这次步行吗？",
     "saving": "正在保存您的步行…",
     "saveFailed": "暂时无法保存您的步行。记录已留在手机里，我们会在健康页面再试。",
@@ -454,7 +494,12 @@
     "reminderBody": "做好了就点完成。",
     "snooze": "{{count}} 分钟后再提醒",
     "checkinTitle": "问候：您昨天有活动吗？",
-    "checkinBody": "请按“是”或“不是”。"
+    "checkinBody": "请按“是”或“不是”。",
+    "alertsChannel": "紧急提醒",
+    "areYouOkTitle": "您还好吗？",
+    "areYouOkBody": "今天早上我们没有收到您的回复。点一下回答。",
+    "sosTitle": "{{name}}需要帮助",
+    "sosBody": "点一下查看对方的位置。"
   },
   "readOutBar": {
     "label": "正在朗读屏幕",
@@ -488,7 +533,11 @@
     "walkContinues": "您的散步还在进行中。",
     "noWalk": "您现在没有在散步。",
     "profile": "这是您的资料。",
-    "unknown": "对不起，我没听懂。您可以说：今天有什么活动、我要参加、提醒我8点吃药，或者救命。"
+    "unknown": "对不起，我没听懂。您可以说：今天有什么活动、我要参加、提醒我8点吃药，或者救命。",
+    "name": "Buddy",
+    "buttonLabel": "Buddy。点一下，说出您想做的事",
+    "opening": "这是{{place}}。",
+    "cantGoBack": "您已经在最前面了。"
   },
   "interests": {
     "walking": "散步",
@@ -629,7 +678,12 @@
     "privacy": "隐私",
     "signOut": "退出登录",
     "signOutConfirm": "退出登录？之后需要重新登录。",
-    "signOutConfirmDemo": "退出登录？这也会让演示从头开始。"
+    "signOutConfirmDemo": "退出登录？这也会让演示从头开始。",
+    "demoHeading": "演示",
+    "demoAreYouOk": "演示：错过每日问候",
+    "demoHelperAlert": "演示：有人需要帮助",
+    "demoScheduled": "演示：提醒会在 {{seconds}} 秒后出现。您可以先锁上手机。",
+    "demoNoNotifications": "请先在手机设置中允许 Bricks 发送通知。"
   },
   "family": {
     "title": "我的家人",

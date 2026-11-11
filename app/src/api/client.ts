@@ -39,6 +39,7 @@ import type {
   Transcript,
   VoiceClip,
   SosAlert,
+  SosResponse,
   Today,
   WalkStats,
   WalkSummary,
@@ -76,6 +77,10 @@ export interface BricksApi {
   }): Promise<SosAlert>;
   getSos(id: string): Promise<SosAlert>;
   resolveSos(id: string): Promise<void>;
+  /** A helper's reply to someone else's alert (S30). Rejects (404) once it's over. */
+  respondSos(id: string, status: SosResponse): Promise<void>;
+  /** "I'm OK" on S29: stops the missed-check-in ladder (doesn't answer the check-in). */
+  confirmOk(): Promise<void>;
 
   // Iteration 1.3: onboarding, Pass It On, family, voice.
   signIn(method: SignInMethod, phone?: string): Promise<SignInResult>;
@@ -137,6 +142,10 @@ const httpApi: BricksApi = {
   getSos: (id) => request(`/sos/${encodeURIComponent(id)}`),
   resolveSos: (id) =>
     request(`/sos/${encodeURIComponent(id)}`, { method: 'PATCH', body: { status: 'resolved' } }),
+  respondSos: (id, status) =>
+    request(`/sos/${encodeURIComponent(id)}/respond`, { method: 'POST', body: { status } }),
+  confirmOk: () =>
+    request('/checkins/are-you-ok', { method: 'POST', body: { answer: 'ok', channel: 'app' } }),
   signIn: (method, phone) => request(`/auth/${method}`, { method: 'POST', body: { phone } }),
   updateMe: (update) => request('/me', { method: 'PATCH', body: update }),
   getSafeCircle: () => request('/safe-circle'),

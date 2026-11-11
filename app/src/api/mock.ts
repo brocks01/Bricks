@@ -56,6 +56,8 @@ export const mockApi: BricksApi = {
   triggerSos: () => respond(() => db.triggerSos(), '/sos'),
   getSos: (id) => respond(() => db.getSos(id), `/sos/${id}`),
   resolveSos: (id) => respond(() => db.resolveSos(id), `/sos/${id}`),
+  respondSos: (id, status) => respond(() => db.respondSos(id, status), `/sos/${id}/respond`),
+  confirmOk: () => respond(() => db.confirmOk(), '/checkins/are-you-ok'),
   signIn: (method) => respond(() => db.signIn(method), `/auth/${method}`),
   updateMe: (update) => respond(() => db.updateMe(update), '/me'),
   getSafeCircle: () => respond(() => db.getSafeCircle(), '/safe-circle'),

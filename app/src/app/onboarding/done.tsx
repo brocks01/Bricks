@@ -25,7 +25,6 @@ export default function AllSetScreen() {
     <Screen
       readOut={() => `${welcome} ${t('onboarding.done.next')}`}
       back={false}
-      tellMe={false}
       testID="screen-onboarding-done"
       footer={
         <BigButton

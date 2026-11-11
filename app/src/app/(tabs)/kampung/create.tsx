@@ -7,13 +7,19 @@ import { useCreateEvent, useMe } from '@/api';
 import type { EventCategory, EventSummary } from '@/api/types';
 import {
   BigButton,
+  CalendarBlankIcon,
   Chip,
   ChipGroup,
+  ClockIcon,
+  DayAdjuster,
   EventCard,
+  MapPinIcon,
   Screen,
+  StatusBanner,
   StepProgress,
   Text,
   TextField,
+  TimeAdjuster,
 } from '@/components';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
@@ -41,25 +47,35 @@ const CATEGORIES: readonly EventCategory[] = [
 const HOURS = [7, 8, 9, 10, 14, 16, 18, 19];
 const PLACES = ['cc', 'park', 'voidDeck', 'hawker'] as const;
 const DAYS_AHEAD = 7;
-/** Don't offer a time that starts in less than this. */
+/** "Another day" reaches this far ahead (about three months). */
+const MAX_DAYS_AHEAD = 90;
+/** Don't allow a time that starts in less than this. */
 const MIN_LEAD_MS = 30 * 60 * 1000;
 
-function dayAt(offset: number, hour = 0): Date {
+/** The day `offset` days from today, at `minutes` after midnight. */
+function dayAt(offset: number, minutes = 0): Date {
   const d = new Date();
   d.setDate(d.getDate() + offset);
-  d.setHours(hour, 0, 0, 0);
+  d.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
   return d;
+}
+
+/** Starts in less than the minimum lead time (or is already past). */
+function startsTooSoon(start: Date): boolean {
+  return start.getTime() < Date.now() + MIN_LEAD_MS;
 }
 
 function hoursFor(dayOffset: number): number[] {
   const earliest = Date.now() + MIN_LEAD_MS;
-  return HOURS.filter((h) => dayAt(dayOffset, h).getTime() > earliest);
+  return HOURS.filter((h) => dayAt(dayOffset, h * 60).getTime() > earliest);
 }
 
 /**
  * S17 Start Something (Airbnb one-question-per-screen + Luma create): what →
  * which day → what time → where → WhatsApp link (optional) → preview → Publish.
- * Every answer is a big tap; typing is only ever an extra option.
+ * Every answer is a big tap, and every question also has "my own answer":
+ * Something else (type what it is) · Another day / Another time (big Earlier /
+ * Later buttons, no calendar or wheels) · Somewhere else (type the place).
  */
 export default function CreateEventScreen() {
   const { t } = useTranslation();
@@ -70,9 +86,14 @@ export default function CreateEventScreen() {
 
   const [step, setStep] = useState<Step>('what');
   const [category, setCategory] = useState<EventCategory | null>(null);
+  const [otherWhat, setOtherWhat] = useState('');
   const [dayOffset, setDayOffset] = useState<number | null>(null);
-  const [hour, setHour] = useState<number | null>(null);
+  const [customDay, setCustomDay] = useState(false);
+  /** Minutes after midnight. */
+  const [minutes, setMinutes] = useState<number | null>(null);
+  const [customTime, setCustomTime] = useState(false);
   const [placeKey, setPlaceKey] = useState<(typeof PLACES)[number] | null>(null);
+  const [placeOther, setPlaceOther] = useState(false);
   const [placeTyped, setPlaceTyped] = useState('');
   const [link, setLink] = useState('');
   const [linkError, setLinkError] = useState<string | null>(null);
@@ -87,17 +108,29 @@ export default function CreateEventScreen() {
 
   const placeLabel = (key: (typeof PLACES)[number]) =>
     area ? t(`create.place.${key}`, { area }) : t(`create.placeGeneric.${key}`);
-  const placeName = placeTyped.trim() || (placeKey ? placeLabel(placeKey) : '');
-  const start = dayOffset !== null && hour !== null ? dayAt(dayOffset, hour) : null;
-  const shownTitle = title.trim() || (category ? t(`category.${category}.title`) : '');
+  const placeName = placeOther ? placeTyped.trim() : placeKey ? placeLabel(placeKey) : '';
+  const start = dayOffset !== null && minutes !== null ? dayAt(dayOffset, minutes) : null;
+  const tooSoon = start !== null && startsTooSoon(start);
+  const ownWhat = category === 'other' ? otherWhat.trim() : '';
+  const shownTitle = title.trim() || ownWhat || (category ? t(`category.${category}.title`) : '');
 
   const canContinue: Record<Step, boolean> = {
-    what: category !== null,
+    // "Something else" needs a few words about what it is.
+    what: category !== null && (category !== 'other' || ownWhat !== ''),
     day: dayOffset !== null,
-    time: hour !== null,
+    time: minutes !== null && !tooSoon,
     where: placeName !== '',
     link: true,
-    preview: shownTitle !== '' && start !== null && !create.isPending,
+    preview: shownTitle !== '' && start !== null && !tooSoon && !create.isPending,
+  };
+
+  const chooseDay = (offset: number, custom: boolean) => {
+    setDayOffset(offset);
+    setCustomDay(custom);
+    // A listed time chosen for another day may not exist on this one.
+    if (minutes !== null && !customTime && !hoursFor(offset).includes(minutes / 60)) {
+      setMinutes(null);
+    }
   };
 
   const goBack = useCallback(() => {
@@ -218,6 +251,17 @@ export default function CreateEventScreen() {
               />
             ))}
           </ChipGroup>
+          {category === 'other' ? (
+            <TextField
+              label={t('create.whatOther')}
+              hint={t('create.whatOtherHint')}
+              value={otherWhat}
+              onChangeText={setOtherWhat}
+              autoFocus
+              returnKeyType="done"
+              testID="create-what-typed"
+            />
+          ) : null}
         </>
       ) : null}
 
@@ -228,17 +272,28 @@ export default function CreateEventScreen() {
             {days.map((offset) => (
               <Chip
                 key={offset}
-                label={formatDay(dayAt(offset, 12), language, t)}
-                selected={dayOffset === offset}
-                onPress={() => {
-                  setDayOffset(offset);
-                  // A time chosen for another day may not exist on this one.
-                  if (hour !== null && !hoursFor(offset).includes(hour)) setHour(null);
-                }}
+                label={formatDay(dayAt(offset, 12 * 60), language, t)}
+                selected={!customDay && dayOffset === offset}
+                onPress={() => chooseDay(offset, false)}
                 testID={`create-day-${offset}`}
               />
             ))}
+            <Chip
+              icon={CalendarBlankIcon}
+              label={t('create.anotherDay')}
+              selected={customDay}
+              onPress={() => chooseDay(dayOffset ?? DAYS_AHEAD, true)}
+              testID="create-day-other"
+            />
           </ChipGroup>
+          {customDay && dayOffset !== null ? (
+            <DayAdjuster
+              offset={dayOffset}
+              onChange={(offset) => chooseDay(offset, true)}
+              language={language}
+              max={MAX_DAYS_AHEAD}
+            />
+          ) : null}
         </>
       ) : null}
 
@@ -249,13 +304,32 @@ export default function CreateEventScreen() {
             {hoursFor(dayOffset).map((h) => (
               <Chip
                 key={h}
-                label={formatTime(dayAt(dayOffset, h), language)}
-                selected={hour === h}
-                onPress={() => setHour(h)}
+                label={formatTime(dayAt(dayOffset, h * 60), language)}
+                selected={!customTime && minutes === h * 60}
+                onPress={() => {
+                  setCustomTime(false);
+                  setMinutes(h * 60);
+                }}
                 testID={`create-time-${h}`}
               />
             ))}
+            <Chip
+              icon={ClockIcon}
+              label={t('create.anotherTime')}
+              selected={customTime}
+              onPress={() => {
+                setCustomTime(true);
+                setMinutes((m) => m ?? 10 * 60);
+              }}
+              testID="create-time-other"
+            />
           </ChipGroup>
+          {customTime && minutes !== null ? (
+            <TimeAdjuster minutes={minutes} onChange={setMinutes} language={language} />
+          ) : null}
+          {tooSoon ? (
+            <StatusBanner tone="notice" text={t('create.tooSoon')} testID="create-too-soon" />
+          ) : null}
         </>
       ) : null}
 
@@ -267,22 +341,32 @@ export default function CreateEventScreen() {
               <Chip
                 key={p}
                 label={placeLabel(p)}
-                selected={placeKey === p && !placeTyped.trim()}
+                selected={!placeOther && placeKey === p}
                 onPress={() => {
                   setPlaceKey(p);
-                  setPlaceTyped('');
+                  setPlaceOther(false);
                 }}
                 testID={`create-place-${p}`}
               />
             ))}
+            <Chip
+              icon={MapPinIcon}
+              label={t('create.somewhereElse')}
+              selected={placeOther}
+              onPress={() => setPlaceOther(true)}
+              testID="create-place-other"
+            />
           </ChipGroup>
-          <TextField
-            label={t('create.placeOther')}
-            value={placeTyped}
-            onChangeText={setPlaceTyped}
-            returnKeyType="done"
-            testID="create-place-typed"
-          />
+          {placeOther ? (
+            <TextField
+              label={t('create.placeOther')}
+              value={placeTyped}
+              onChangeText={setPlaceTyped}
+              autoFocus
+              returnKeyType="done"
+              testID="create-place-typed"
+            />
+          ) : null}
         </>
       ) : null}
 

@@ -14,6 +14,7 @@ const EXPECTED = [
   'stop_walk',
   'profile',
   'help',
+  'navigate',
 ] as const;
 
 describe.each(LANGUAGES)('Buddy intents in %s', (language) => {
@@ -28,6 +29,14 @@ describe.each(LANGUAGES)('Buddy intents in %s', (language) => {
     const [, , yes, no] = BUDDY_DEMO_PHRASES[language];
     expect(matchIntent(yes!, language)).toEqual({ kind: 'checkin', answer: 'yes' });
     expect(matchIntent(no!, language)).toEqual({ kind: 'checkin', answer: 'no' });
+  });
+
+  it('opens settings by name', () => {
+    const phrases = BUDDY_DEMO_PHRASES[language];
+    expect(matchIntent(phrases[phrases.length - 1]!, language)).toEqual({
+      kind: 'navigate',
+      to: 'settings',
+    });
   });
 
   it('reads "medicine at 8 in the morning" as a daily 8 am medicine reminder', () => {
@@ -51,6 +60,50 @@ describe('help always opens SOS (T5)', () => {
     ['remind me, help!', 'en'],
   ] as const)('"%s" (%s)', (phrase, language) => {
     expect(matchIntent(phrase, language).kind).toBe('help');
+  });
+});
+
+describe('going to any screen by name', () => {
+  it.each([
+    ['open settings', 'en', 'settings'],
+    ['go home', 'en', 'home'],
+    ['show me my reminders', 'en', 'reminders'],
+    ['my reminders', 'en', 'reminders'],
+    ['take me to the safe circle', 'en', 'safeCircle'],
+    ['open my circles', 'en', 'circles'],
+    ['I want to start something', 'en', 'create'],
+    ['show me the events', 'en', 'kampung'],
+    ['open pass it on', 'en', 'passItOn'],
+    ['change the language', 'en', 'language'],
+    ['my family', 'en', 'family'],
+    ['Thrive', 'en', 'thrive'],
+    ['buka tetapan', 'ms', 'settings'],
+    ['pergi ke kampung', 'ms', 'kampung'],
+    ['打开提醒列表', 'zh', 'reminders'],
+    ['我的圈子', 'zh', 'circles'],
+    ['அமைப்புகளைத் திற', 'ta', 'settings'],
+    ['என் குடும்பத்தைக் காட்டு', 'ta', 'family'],
+    ['நினைவூட்டல்களைத் திற', 'ta', 'reminders'],
+  ] as const)('"%s" (%s) → %s', (phrase, language, to) => {
+    expect(matchIntent(phrase, language)).toEqual({ kind: 'navigate', to });
+  });
+
+  it.each([
+    ['go back', 'en'],
+    ['kembali', 'ms'],
+    ['返回', 'zh'],
+    ['பின்செல்', 'ta'],
+  ] as const)('"%s" (%s) goes back', (phrase, language) => {
+    expect(matchIntent(phrase, language).kind).toBe('back');
+  });
+
+  it('never takes over from help, a reminder with a time, or joining', () => {
+    expect(matchIntent('help, open settings', 'en').kind).toBe('help');
+    expect(matchIntent('remind me to take medicine at 8', 'en').kind).toBe('remind');
+    expect(matchIntent('join the walk', 'en').kind).toBe('join');
+    expect(matchIntent('我要参加活动', 'zh').kind).toBe('join');
+    // "Show my profile" is still the profile answer.
+    expect(matchIntent('show my profile', 'en').kind).toBe('profile');
   });
 });
 

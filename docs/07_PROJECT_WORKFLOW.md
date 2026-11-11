@@ -57,7 +57,7 @@ India teammates land ~6 am on 14 Nov; Iteration 2.3 must close before they fly o
 | C | Twilio account + number; Meta developer app + WhatsApp test number; Twilio sandbox backup; hello-world call |
 | D | Start Mobbin board (Luma, Airbnb, Apple Health, Hinge, Strava, Monzo, Grab, Singpass/LifeSG, Be My Eyes, WhatsApp) |
 | E | Start Meta Business verification; line up 3–5 seniors (≥ 2 men) for 12 Nov; consent form; **install Expo Go on your iPhones** for iteration checks |
-**Exit:** Expo project on the Expo-Go-supported SDK; Android dev build runs; app opens in Expo Go on a Singapore teammate's iPhone; contracts merged; posture skeleton shows a camera preview on Android.
+**Exit:** Expo project on **Expo SDK 58** (matching App Store Expo Go); Android dev build runs; app opens in Expo Go on a Singapore teammate's iPhone; contracts merged; posture skeleton shows a camera preview on Android.
 
 ### Iteration 0.2 — Design system & seed (Wed 11 Nov morning)
 | Lane | Tasks |

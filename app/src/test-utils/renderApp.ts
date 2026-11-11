@@ -24,6 +24,8 @@ export async function resetAppState({ onboarded = true } = {}): Promise<void> {
   useUndo.getState().clear();
   useSettings.setState({ language: 'en' });
   await useActiveWalk.getState().discard();
+  // Screen tests replay the simulated walk; GPS has its own tests (gpsTrack.test.ts).
+  useActiveWalk.getState().setSource('simulated');
   useActiveWalk.getState().setSimulationSpeed(1);
   await AsyncStorage.clear();
   (jest.requireMock('expo-speech') as { __state: { autoFinish: boolean } }).__state.autoFinish =

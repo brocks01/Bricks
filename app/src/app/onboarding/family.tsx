@@ -161,7 +161,6 @@ export default function AddParentScreen() {
       }
       back
       onBack={goBack}
-      tellMe={false}
       testID="screen-family-add"
       footer={
         <BigButton

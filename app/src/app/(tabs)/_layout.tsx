@@ -53,6 +53,10 @@ function tabIcon(IconComponent: Icon) {
 }
 
 function tabLabel(label: string) {
+  // A one-word label ("Kampung") stays on one line and shrinks a little to fit, so it
+  // never breaks mid-word ("Kampun / g") at a large phone font. Longer labels wrap
+  // between words.
+  const oneWord = !/\s/.test(label.trim());
   return function TabLabel({ focused }: { focused: boolean }) {
     return (
       <Text
@@ -60,7 +64,9 @@ function tabLabel(label: string) {
         weight={focused ? 'bold' : 'regular'}
         color={focused ? 'primary' : 'textSecondary'}
         align="center"
-        numberOfLines={2}
+        numberOfLines={oneWord ? 1 : 2}
+        adjustsFontSizeToFit={oneWord}
+        minimumFontScale={0.75}
         maxFontSizeMultiplier={maxChromeFontScale}
       >
         {label}

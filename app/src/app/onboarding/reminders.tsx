@@ -64,7 +64,6 @@ export default function ChannelScreen() {
     <Screen
       title={t('onboarding.channel.title')}
       readOut={() => t('onboarding.channel.readout')}
-      tellMe={false}
       testID="screen-onboarding-channel"
       footer={
         <BigButton

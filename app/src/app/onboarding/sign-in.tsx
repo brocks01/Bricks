@@ -89,7 +89,6 @@ export default function SignInScreen() {
     <Screen
       title={t('onboarding.signIn.title')}
       readOut={() => t('onboarding.signIn.readout')}
-      tellMe={false}
       testID="screen-onboarding-sign-in"
     >
       <View style={styles.buttons}>

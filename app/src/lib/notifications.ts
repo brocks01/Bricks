@@ -1,6 +1,6 @@
 import * as Notifications from 'expo-notifications';
 
-import type { Reminder } from '@/api/types';
+import type { PushData, Reminder } from '@/api/types';
 import i18n from '@/i18n';
 
 import { platform } from './platform';
@@ -23,6 +23,8 @@ export const ACTION_DONE = 'done';
 export const ACTION_SNOOZE = 'snooze';
 export const SNOOZE_MINUTES = 10;
 const CHANNEL_ID = 'reminders';
+/** Urgent alerts (S29 Are you OK?, S30 someone needs help). The server notifier uses this channel too. */
+export const ALERTS_CHANNEL_ID = 'alerts';
 const ID_PREFIX = 'reminder:';
 
 /** Shows alerts while the app is open too, and sets up the Done / Snooze buttons. */
@@ -41,7 +43,18 @@ export async function setupNotifications(): Promise<void> {
       name: i18n.t('notifications.channel'),
       // eslint-disable-next-line import/namespace -- re-exported via a .types file the import plugin doesn't follow
       importance: Notifications.AndroidImportance.HIGH,
-      sound: 'default',
+      // No `sound`: on a channel it names a bundled sound file, and leaving it out
+      // gives the phone's own notification sound ('default' looked for a file).
+    });
+    // Help requests ring through Do Not Disturb and show on the lock screen.
+    await Notifications.setNotificationChannelAsync(ALERTS_CHANNEL_ID, {
+      name: i18n.t('notifications.alertsChannel'),
+      // eslint-disable-next-line import/namespace -- re-exported via a .types file the import plugin doesn't follow
+      importance: Notifications.AndroidImportance.MAX,
+      bypassDnd: true,
+      // eslint-disable-next-line import/namespace -- as above
+      lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+      vibrationPattern: [0, 500, 250, 500],
     });
   }
   // Buttons work from the lock screen without opening the app.
@@ -202,6 +215,49 @@ export async function syncReminderAlarms(reminders: readonly Reminder[]): Promis
         }),
       ),
   );
+}
+
+/** Seconds before a demo alert arrives: time to lock the phone and see the real thing. */
+export const DEMO_ALERT_DELAY_S = 5;
+
+/**
+ * Demo only (mock data): what the server notifier will send, as a local
+ * notification in a few seconds, so S29 / S30 can be tried on one phone.
+ * Uses the same data and channel as the real push (PushData in api/types).
+ */
+export async function scheduleDemoAlert(kind: 'are_you_ok' | 'sos_alert'): Promise<boolean> {
+  if (!(await notificationsAllowed(true))) return false;
+  const data: PushData =
+    kind === 'are_you_ok'
+      ? { kind }
+      : {
+          kind,
+          sos_id: 's_demo_tan',
+          member_name: 'Tan Mei Ling',
+          member_phone: '+6591234567',
+          lat: 1.3505,
+          lng: 103.8486,
+          created_at: new Date().toISOString(),
+        };
+  const content: Notifications.NotificationContentInput =
+    kind === 'are_you_ok'
+      ? {
+          title: i18n.t('notifications.areYouOkTitle'),
+          body: i18n.t('notifications.areYouOkBody'),
+        }
+      : {
+          title: i18n.t('notifications.sosTitle', { name: 'Tan Mei Ling' }),
+          body: i18n.t('notifications.sosBody'),
+        };
+  await Notifications.scheduleNotificationAsync({
+    content: { ...content, data, sound: 'default' },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+      seconds: DEMO_ALERT_DELAY_S,
+      channelId: ALERTS_CHANNEL_ID,
+    },
+  });
+  return true;
 }
 
 /** "Snooze 10 min": the same alert again, once, in ten minutes. */

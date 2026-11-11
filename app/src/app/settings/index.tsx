@@ -31,6 +31,7 @@ import { CHANNEL_ICON, CHANNELS } from '@/features/settings/channels';
 import { LANGUAGE_INFO } from '@/i18n/languages';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import { config } from '@/lib/config';
+import { DEMO_ALERT_DELAY_S, scheduleDemoAlert } from '@/lib/notifications';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
 import { useUndo } from '@/state/undo';
@@ -72,6 +73,16 @@ export default function SettingsScreen() {
   const setRate = useSettings((s) => s.setReadOutRate);
   const resetOnboarding = useOnboarding((s) => s.reset);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [demoNote, setDemoNote] = useState<string | null>(null);
+
+  const demoAlert = async (kind: 'are_you_ok' | 'sos_alert') => {
+    const scheduled = await scheduleDemoAlert(kind).catch(() => false);
+    setDemoNote(
+      scheduled
+        ? t('settings.demoScheduled', { seconds: DEMO_ALERT_DELAY_S })
+        : t('settings.demoNoNotifications'),
+    );
+  };
 
   const speed = nearestSpeed(rate);
   const channel = me?.channel_pref ?? 'app';
@@ -222,6 +233,30 @@ export default function SettingsScreen() {
           testID="settings-sign-out"
         />
       </View>
+
+      {config.demoVoice ? (
+        // Demo only (mock data): the alerts the server sends, so S29 / S30 can be tried on one phone.
+        <View style={styles.rows} testID="settings-demo">
+          <Text variant="heading" style={styles.heading}>
+            {t('settings.demoHeading')}
+          </Text>
+          <BigButton
+            variant="outline"
+            label={t('settings.demoAreYouOk')}
+            onPress={() => void demoAlert('are_you_ok')}
+            testID="settings-demo-are-you-ok"
+          />
+          <BigButton
+            variant="outline"
+            label={t('settings.demoHelperAlert')}
+            onPress={() => void demoAlert('sos_alert')}
+            testID="settings-demo-helper-alert"
+          />
+          {demoNote ? (
+            <StatusBanner tone="info" text={demoNote} testID="settings-demo-note" />
+          ) : null}
+        </View>
+      ) : null}
 
       <ConfirmSheet
         visible={confirmSignOut}

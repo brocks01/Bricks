@@ -27,6 +27,7 @@ const SAY = {
   stopWalk: 6,
   profile: 7,
   help: 8,
+  openSettings: 9,
 } as const;
 
 /** Tell me → (mock data) tap what was said. */
@@ -143,10 +144,32 @@ describe('Buddy (S36)', () => {
     expect(await screen.findByTestId('screen-profile')).toBeTruthy();
   });
 
-  it('Tell me is not on SOS or during onboarding', async () => {
-    await renderApp('/sos');
-    expect(screen.queryByTestId('tellme')).toBeNull();
+  it('"Open settings" goes there without asking and says where we are', async () => {
+    await renderApp('/home');
+    await say('openSettings');
+    await waitFor(() => expect(currentPath()).toBe('/settings'));
+    expect(await screen.findByTestId('screen-settings')).toBeTruthy();
+    expect(screen.queryByTestId('buddy-reply')).toBeNull();
+    await waitFor(() => expect(spokenText()).toContain('Here is Settings.'));
   });
+
+  it.each([
+    ['/home', 'a tab'],
+    ['/kampung/create', 'a screen with its own Next button'],
+    ['/onboarding', 'onboarding'],
+    ['/settings', 'settings'],
+  ])('the round Buddy button is on %s (%s)', async (url) => {
+    await renderApp(url);
+    expect(screen.getByTestId('tellme')).toBeTruthy();
+  });
+
+  it.each(['/sos', '/are-you-ok', '/helper-alert?sos=s1&name=Tan&phone=%2B6591234567'])(
+    'but not on the safety screen %s',
+    async (url) => {
+      await renderApp(url);
+      expect(screen.queryByTestId('tellme')).toBeNull();
+    },
+  );
 });
 
 describe('Read It Out (S37)', () => {

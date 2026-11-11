@@ -37,7 +37,8 @@ describe('Onboarding: Myself (S1 → S8)', () => {
     expect(screen.getByText('Choose your language')).toBeTruthy();
     expect(screen.getByText('请选择语言')).toBeTruthy();
     expect(screen.getByText('தமிழ்')).toBeTruthy();
-    expect(screen.queryByTestId('tellme')).toBeNull();
+    // Buddy is there from the very first screen.
+    expect(screen.getByTestId('tellme')).toBeTruthy();
 
     await press('language-ta');
     expect(useSettings.getState().language).toBe('ta');

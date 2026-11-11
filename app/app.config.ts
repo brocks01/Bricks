@@ -36,6 +36,7 @@ const PERMISSION_TEXT = {
   locationWhenInUse: 'So we can draw your walk on the map and show events near you.',
   locationAlways: 'So your walk keeps recording when the screen is off.',
   microphone: 'So you can talk to Buddy and record thank-you messages.',
+  speech: 'So the app can understand what you say to Buddy.',
   contacts: 'So you can choose who to tell if you need help.',
   motion: 'So we can count your steps on a walk.',
 } as const;
@@ -63,6 +64,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       monochromeImage: './assets/android-icon-monochrome.png',
     },
     predictiveBackGestureEnabled: false,
+    // The step counter on walks (Pedometer). Asked at runtime on the first walk.
+    permissions: ['android.permission.ACTIVITY_RECOGNITION'],
     // Posture (RightPosture) ships arm64 only; keep every build consistent with it.
     // Revisit when modules/posture lands.
   },
@@ -81,6 +84,16 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       },
     ],
     ['expo-audio', { microphonePermission: PERMISSION_TEXT.microphone }],
+    // The phone's own speech recogniser: "Say it" and Buddy understand speech without
+    // the backend. Google's speech service must be visible to the app on Android 11+.
+    [
+      'expo-speech-recognition',
+      {
+        microphonePermission: PERMISSION_TEXT.microphone,
+        speechRecognitionPermission: PERMISSION_TEXT.speech,
+        androidSpeechServicePackages: ['com.google.android.googlequicksearchbox'],
+      },
+    ],
     'expo-localization',
     'expo-font',
     'expo-secure-store',
@@ -106,11 +119,28 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-notifications',
     // Google sign-in opens in the phone's browser and comes back to the app.
     'expo-web-browser',
+    [
+      'expo-build-properties',
+      {
+        android: {
+          // Release builds shrink code with R8, which stripped the Room database class
+          // WorkManager (used by notifications) creates by name at startup: the APK
+          // crashed before the first screen. Keep Room's generated databases.
+          extraProguardRules: [
+            '-keep class * extends androidx.room.RoomDatabase { <init>(); }',
+            '-keep class androidx.work.impl.WorkDatabase_Impl { *; }',
+          ].join('\n'),
+        },
+      },
+    ],
   ],
   experiments: {
     typedRoutes: true,
   },
   extra: {
     variant: VARIANT,
+    // EAS project @codinsayan/bricks (not a secret).
+    eas: { projectId: 'f225bee3-21db-406b-a95b-a1e2799c22eb' },
   },
+  owner: 'codinsayan',
 });

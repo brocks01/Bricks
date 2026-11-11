@@ -141,7 +141,10 @@ jest.mock('expo-notifications', () => {
       DATE: 'date',
       TIME_INTERVAL: 'timeInterval',
     },
-    AndroidImportance: { HIGH: 4 },
+    AndroidImportance: { HIGH: 4, MAX: 5 },
+    AndroidNotificationVisibility: { PUBLIC: 1 },
+    getLastNotificationResponse: jest.fn(() => null),
+    clearLastNotificationResponse: jest.fn(),
     setNotificationHandler: jest.fn(),
     setNotificationChannelAsync: jest.fn(() => Promise.resolve()),
     setNotificationCategoryAsync: jest.fn(() => Promise.resolve()),
@@ -160,6 +163,72 @@ jest.mock('expo-notifications', () => {
       return Promise.resolve();
     }),
     addNotificationResponseReceivedListener: jest.fn(() => ({ remove: jest.fn() })),
+  };
+});
+
+// GPS: tests push locations through __emit (foreground watch) and __runTask (background task).
+jest.mock('expo-location', () => {
+  const watchers = new Set<(mockLoc: unknown) => void>();
+  const started = new Set<string>();
+  const granted = () => Promise.resolve({ granted: true, status: 'granted', canAskAgain: true });
+  return {
+    __watchers: watchers,
+    __started: started,
+    __emit: (loc: unknown) => watchers.forEach((cb) => cb(loc)),
+    Accuracy: { Balanced: 3, High: 4, Highest: 5, BestForNavigation: 6 },
+    hasServicesEnabledAsync: jest.fn(() => Promise.resolve(true)),
+    getForegroundPermissionsAsync: jest.fn(granted),
+    getLastKnownPositionAsync: jest.fn(() =>
+      Promise.resolve({ coords: { latitude: 1.3521, longitude: 103.8198 }, timestamp: 0 }),
+    ),
+    getCurrentPositionAsync: jest.fn(() =>
+      Promise.resolve({ coords: { latitude: 1.3521, longitude: 103.8198 }, timestamp: 0 }),
+    ),
+    requestForegroundPermissionsAsync: jest.fn(granted),
+    getBackgroundPermissionsAsync: jest.fn(() =>
+      Promise.resolve({ granted: false, status: 'undetermined', canAskAgain: true }),
+    ),
+    requestBackgroundPermissionsAsync: jest.fn(granted),
+    watchPositionAsync: jest.fn((_opts: unknown, cb: (mockLoc: unknown) => void) => {
+      watchers.add(cb);
+      return Promise.resolve({ remove: jest.fn(() => watchers.delete(cb)) });
+    }),
+    startLocationUpdatesAsync: jest.fn((task: string) => {
+      started.add(task);
+      return Promise.resolve();
+    }),
+    hasStartedLocationUpdatesAsync: jest.fn((task: string) => Promise.resolve(started.has(task))),
+    stopLocationUpdatesAsync: jest.fn((task: string) => {
+      started.delete(task);
+      return Promise.resolve();
+    }),
+  };
+});
+
+jest.mock('expo-task-manager', () => {
+  const tasks = new Map<string, (mockBody: unknown) => Promise<unknown>>();
+  return {
+    __runTask: (name: string, body: unknown) => tasks.get(name)?.(body),
+    defineTask: jest.fn((name: string, fn: (mockBody: unknown) => Promise<unknown>) =>
+      tasks.set(name, fn),
+    ),
+    isTaskDefined: jest.fn((name: string) => tasks.has(name)),
+  };
+});
+
+// Step counter: tests report steps through __emit.
+jest.mock('expo-sensors', () => {
+  const watchers = new Set<(mockResult: { steps: number }) => void>();
+  return {
+    Pedometer: {
+      __emit: (steps: number) => watchers.forEach((cb) => cb({ steps })),
+      isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+      requestPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true, status: 'granted' })),
+      watchStepCount: jest.fn((cb: (mockResult: { steps: number }) => void) => {
+        watchers.add(cb);
+        return { remove: jest.fn(() => watchers.delete(cb)) };
+      }),
+    },
   };
 });
 

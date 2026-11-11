@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query';
-import { useRouter } from 'expo-router';
+import { type Href, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -24,7 +24,7 @@ import { useUndo } from '@/state/undo';
 import { borderWidth, color, radius, space } from '@/theme';
 
 import { BUDDY_DEMO_PHRASES } from './demoPhrases';
-import { matchIntent } from './intents';
+import { matchIntent, type NavTarget } from './intents';
 
 type Stage =
   | { kind: 'idle' }
@@ -189,6 +189,21 @@ export function BuddyHost() {
         router.navigate('/profile');
         return reply(t('buddy.profile'));
 
+      case 'navigate': {
+        // Going places never asks first: open it and say where we are.
+        setStage({ kind: 'idle' });
+        const place = NAV_ROUTES[intent.to];
+        router.navigate(place.href);
+        say(t('buddy.opening', { place: t(place.name) }));
+        return;
+      }
+
+      case 'back':
+        setStage({ kind: 'idle' });
+        if (router.canGoBack()) router.back();
+        else reply(t('buddy.cantGoBack'));
+        return;
+
       default:
         return reply(t('buddy.unknown'), true);
     }
@@ -256,6 +271,22 @@ export function BuddyHost() {
 }
 
 const BUDDY = 'buddy';
+
+/** Where each screen Buddy can open lives, and the name it's read out by. */
+const NAV_ROUTES = {
+  home: { href: '/home', name: 'tabs.home' },
+  kampung: { href: '/kampung', name: 'tabs.kampung' },
+  circles: { href: '/kampung/circles', name: 'circles.title' },
+  create: { href: '/kampung/create', name: 'create.title' },
+  passItOn: { href: '/pass-it-on', name: 'tabs.passItOn' },
+  thrive: { href: '/thrive', name: 'tabs.thrive' },
+  checkin: { href: '/thrive/checkin', name: 'checkin.title' },
+  reminders: { href: '/thrive/reminders', name: 'reminders.title' },
+  settings: { href: '/settings', name: 'settings.title' },
+  language: { href: '/settings/language', name: 'settings.language' },
+  safeCircle: { href: '/settings/safe-circle', name: 'settings.safeCircle' },
+  family: { href: '/family', name: 'family.title' },
+} as const satisfies Record<NavTarget, { href: Href; name: string }>;
 
 /** "08:30" → 510. */
 function toMinutes(time: string): number {

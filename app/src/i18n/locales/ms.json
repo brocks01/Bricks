@@ -169,6 +169,32 @@
     "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
     "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
   },
+  "safety": {
+    "areYouOk": {
+      "title": "Anda okey?",
+      "why": "Kami tidak mendengar khabar daripada anda pagi ini.",
+      "ok": "Saya okey",
+      "help": "Saya perlukan bantuan",
+      "countdown": "saat sebelum kami menelefon anda",
+      "noAnswer": "Kami akan menelefon anda sebentar lagi untuk memastikan anda okey. Anda masih boleh ketik Saya okey.",
+      "thanks": "Terima kasih. Kami gembira anda okey.",
+      "readout": "Anda okey? Kami tidak mendengar khabar daripada anda pagi ini. Ketik Saya okey, atau ketik Saya perlukan bantuan."
+    },
+    "helper": {
+      "title": "{{name}} perlukan bantuan",
+      "someone": "Seseorang",
+      "when": "Meminta bantuan pada {{time}}",
+      "justNow": "sebentar tadi",
+      "mapLabel": "Peta menunjukkan lokasi {{name}}",
+      "noLocation": "Kami tidak tahu lokasi tepat {{name}}. Sila telefon untuk bertanya.",
+      "onWay": "Saya dalam perjalanan",
+      "sent": "Terima kasih. Kami telah memberitahu {{name}} bahawa anda dalam perjalanan.",
+      "closed": "Amaran ini telah tamat. {{name}} selamat, atau orang lain sudah membantu.",
+      "failed": "Itu tidak berjaya. Sila cuba lagi, atau telefon {{name}}.",
+      "call": "Telefon {{name}}",
+      "readout": "{{name}} perlukan bantuan. Dia meminta {{time}}. Ketik Saya dalam perjalanan, atau telefon dia."
+    }
+  },
   "sos": {
     "title": "Mendapatkan bantuan",
     "call": "Hubungi {{number}} sekarang",
@@ -269,7 +295,15 @@
     "day": "Hari apa?",
     "time": "Pukul berapa?",
     "where": "Di mana?",
-    "placeOther": "Atau taip tempatnya",
+    "placeOther": "Taip nama tempat",
+    "whatOther": "Apa aktivitinya?",
+    "whatOtherHint": "Contohnya: Petang mahjong atau melukis batik",
+    "anotherDay": "Hari lain",
+    "anotherTime": "Masa lain",
+    "somewhereElse": "Tempat lain",
+    "byDay": "Satu hari",
+    "byWeek": "Satu minggu",
+    "tooSoon": "Itu terlalu awal. Sila pilih masa sekurang-kurangnya 30 minit dari sekarang.",
     "link": "Tambah pautan kumpulan WhatsApp?",
     "linkHint": "Tampal pautan jemputan kumpulan supaya orang boleh menegur. Anda boleh langkau.",
     "linkLabel": "Pautan kumpulan WhatsApp",
@@ -376,6 +410,12 @@
     "paused": "Dijeda. Ketik Teruskan apabila anda bersedia.",
     "autoPaused": "Anda telah berhenti. Masa akan diteruskan apabila anda berjalan semula.",
     "keepOpen": "Biarkan skrin ini terbuka semasa anda berjalan.",
+    "findingYou": "Mencari lokasi anda…",
+    "locationOff": "Lokasi telefon anda dimatikan. Hidupkan dalam Tetapan untuk merekod perjalanan anda.",
+    "locationDenied": "Untuk merekod perjalanan anda, Bricks perlu menggunakan lokasi anda. Anda boleh membenarkannya dalam Tetapan.",
+    "openSettings": "Buka Tetapan",
+    "serviceTitle": "Merekod perjalanan anda",
+    "serviceBody": "Ketik untuk buka",
     "finishConfirm": "Selesaikan jalan kaki anda?",
     "saving": "Menyimpan jalan kaki anda…",
     "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Sihat.",
@@ -454,7 +494,12 @@
     "reminderBody": "Ketik Selesai apabila sudah.",
     "snooze": "Tunda {{count}} min",
     "checkinTitle": "Daftar masuk: adakah anda bergerak semalam?",
-    "checkinBody": "Tekan Ya atau Tidak."
+    "checkinBody": "Tekan Ya atau Tidak.",
+    "alertsChannel": "Amaran penting",
+    "areYouOkTitle": "Anda okey?",
+    "areYouOkBody": "Kami tidak mendengar khabar daripada anda pagi ini. Ketik untuk menjawab.",
+    "sosTitle": "{{name}} perlukan bantuan",
+    "sosBody": "Ketik untuk melihat lokasinya."
   },
   "readOutBar": {
     "label": "Membaca skrin dengan kuat",
@@ -488,7 +533,11 @@
     "walkContinues": "Jalan anda masih berjalan.",
     "noWalk": "Anda tidak sedang berjalan sekarang.",
     "profile": "Ini profil anda.",
-    "unknown": "Maaf, saya tidak faham. Anda boleh sebut: apa ada hari ini, saya nak ikut, ingatkan saya makan ubat pukul 8, atau tolong."
+    "unknown": "Maaf, saya tidak faham. Anda boleh sebut: apa ada hari ini, saya nak ikut, ingatkan saya makan ubat pukul 8, atau tolong.",
+    "name": "Buddy",
+    "buttonLabel": "Buddy. Tekan dan sebut apa yang anda mahu",
+    "opening": "Ini {{place}}.",
+    "cantGoBack": "Anda sudah di permulaan."
   },
   "interests": {
     "walking": "Berjalan",
@@ -629,7 +678,12 @@
     "privacy": "Privasi",
     "signOut": "Log keluar",
     "signOutConfirm": "Log keluar? Anda perlu log masuk semula.",
-    "signOutConfirmDemo": "Log keluar? Ini juga memulakan demo semula dari awal."
+    "signOutConfirmDemo": "Log keluar? Ini juga memulakan demo semula dari awal.",
+    "demoHeading": "Demo",
+    "demoAreYouOk": "Demo: terlepas daftar masuk",
+    "demoHelperAlert": "Demo: seseorang perlukan bantuan",
+    "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
+    "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu."
   },
   "family": {
     "title": "Keluarga saya",

@@ -224,6 +224,31 @@ export interface SosAlert {
   }[];
 }
 
+/** POST /sos/{id}/respond body: a helper who is a member replies (S30). */
+export type SosResponse = Extract<SosHelperStatus, 'on_way' | 'arrived'>;
+
+/**
+ * Push data the notifier sends with server notifications (iteration 2.2).
+ * Proposed contract for the backend notifier (owner: backend); the app opens
+ * S29 / S30 from these. Helpers can't GET someone else's alert, so the S30
+ * push carries everything the screen shows.
+ */
+export type PushData =
+  | { kind: 'checkin' }
+  /** Missed check-in (escalation ladder, +2 h): opens S29 Are you OK? */
+  | { kind: 'are_you_ok' }
+  /** Someone in whose Safe Circle this member is pressed Help: opens S30. */
+  | {
+      kind: 'sos_alert';
+      sos_id: string;
+      member_name: string;
+      member_phone: string | null;
+      /** Where they are (or home); null if unknown. */
+      lat: number | null;
+      lng: number | null;
+      created_at: string;
+    };
+
 /* ---------- Onboarding, Pass It On, Family, voice (iteration 1.3). Proposed shapes; confirm with backend. ---------- */
 
 /** Interests asked at onboarding (S4); also the starting tags for "Ask me about". */

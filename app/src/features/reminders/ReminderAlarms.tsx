@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import { useEffect, useEffectEvent, useRef } from 'react';
 
 import { useAnswerCheckin, useCompleteReminder, useReminders, useUpdateMe } from '@/api';
+import type { PushData } from '@/api/types';
 import { config } from '@/lib/config';
 import {
   ACTION_DONE,
@@ -31,6 +32,8 @@ const projectId =
  *   or mock data), and registers for server push in our Android build.
  * - Acts on the buttons: Done / Snooze for reminders, Yes / No for the check-in.
  *   Tapping a notification opens its screen and reads it out (S38).
+ * - Urgent alerts: "Are you OK?" opens S29; "{name} needs help" opens S30 (2.2),
+ *   also when the tap is what opened the app.
  */
 export function ReminderAlarms() {
   const router = useRouter();
@@ -68,10 +71,36 @@ export function ReminderAlarms() {
     });
   }, [onboarded, serverPushes]);
 
+  // A notification can arrive both as the app's launch response and through the listener.
+  const handled = useRef(new Set<string>());
+
   const onResponse = useEffectEvent((response: Notifications.NotificationResponse) => {
+    const key = `${response.notification.request.identifier}:${response.actionIdentifier}`;
+    if (handled.current.has(key)) return;
+    handled.current.add(key);
+
     const content = response.notification.request.content;
-    const data = (content.data ?? {}) as { reminderId?: string; kind?: string };
+    const data = (content.data ?? {}) as Partial<PushData> & { reminderId?: string };
     const action = response.actionIdentifier;
+
+    // Urgent alerts open their own full-screen page (S29, S30).
+    if (data.kind === 'are_you_ok') return void router.push('/are-you-ok');
+    if (data.kind === 'sos_alert') {
+      const alert = data as Extract<PushData, { kind: 'sos_alert' }>;
+      if (!alert.sos_id) return;
+      router.push({
+        pathname: '/helper-alert',
+        params: {
+          sos: alert.sos_id,
+          name: alert.member_name ?? '',
+          phone: alert.member_phone ?? '',
+          lat: alert.lat != null ? String(alert.lat) : '',
+          lng: alert.lng != null ? String(alert.lng) : '',
+          at: alert.created_at ?? '',
+        },
+      });
+      return;
+    }
 
     if (data.kind === 'checkin') {
       if (action === ACTION_YES) return void answer.mutate('yes');
@@ -93,6 +122,12 @@ export function ReminderAlarms() {
   });
 
   useEffect(() => {
+    // Tapped while the app was closed: the tap that opened the app.
+    const launch = Notifications.getLastNotificationResponse();
+    if (launch) {
+      onResponse(launch);
+      Notifications.clearLastNotificationResponse();
+    }
     const sub = Notifications.addNotificationResponseReceivedListener((r) => onResponse(r));
     return () => sub.remove();
   }, []);

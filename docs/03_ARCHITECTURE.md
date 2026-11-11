@@ -48,7 +48,7 @@ Version 2.1 · 10 Nov 2026 · Owner: Person B (Backend & Platform)
 
 | Layer | Choice | Why |
 |---|---|---|
-| Mobile app | **React Native + Expo** (TypeScript) — **decided** | One codebase. **Android:** our own EAS build (APK) including the posture module. **iPhone:** runs in **Expo Go** (free App Store app) — no Mac, no Apple Developer account, no iOS build needed. Lock the project to the exact Expo SDK version that the App Store's Expo Go supports on the day we create it |
+| Mobile app | **React Native + Expo** (TypeScript) — **decided** | One codebase. **Android:** our own EAS build (APK) including the posture module. **iPhone:** runs in **Expo Go** (free App Store app) — no Mac, no Apple Developer account, no iOS build needed. **Expo SDK 58** (React Native 0.88.1, React 19.3.0, New Architecture), the SDK App Store Expo Go runs |
 | App libraries | expo-router, i18next + react-i18next, expo-speech (on-device TTS for Read It Out), expo-audio (record voice), expo-notifications, expo-location, expo-sensors (pedometer/fall), expo-task-manager + react-native-maps (walk recording), phosphor-react-native (icons) | **Only libraries included in Expo Go**, so the same JS runs on iPhone. Sign-in uses Supabase's web OAuth flow (no native Google SDK) |
 | Posture (Move Along) | **Local Expo module `modules/posture`, Android only** — Kotlin, wrapping RightPosture's engine, camera and pose code | See §2.1 |
 | Backend | **Python FastAPI** | Most logic is AI/voice; team knows Python |
@@ -101,7 +101,7 @@ export const isPostureAvailable: boolean   // false on iPhone / Expo Go
 
 **Build notes**
 - Keep `abiFilters = ["arm64-v8a"]`; test on real arm64 phones only.
-- RightPosture uses AGP 9.0.1 / Kotlin 2.0.21. **Align the module to the Expo SDK's Android Gradle/Kotlin versions in Iteration 0.1** before writing features.
+- RightPosture uses AGP 9.0.1 / Kotlin 2.0.21. **Upgrade the module to Expo SDK 58's toolchain** before writing features: **AGP 9.2.1, Kotlin 2.2.0, compileSdk 37, targetSdk 36, minSdk 24, NDK 27.1.12297006** (from React Native 0.88.1). Kotlin 2.2 needs the Compose compiler Gradle plugin (`org.jetbrains.kotlin.plugin.compose`, same version as Kotlin) if any Compose code is kept. Check that the CameraX and MediaPipe Tasks versions build with compileSdk 37. The module is an Expo module, so it runs on the New Architecture with no extra work.
 - Make the 3 JVM-only spots safe for later KMP: `Rpose.kt` (zip I/O), `Phrases.kt` (`Locale`), `SyntheticLandmarkGenerator.kt` (`java.util.Random`).
 - **Roadmap (after hackathon):** move `core/` into a Kotlin Multiplatform library + MediaPipe iOS pose landmarker → posture on iPhone (needs a Mac + Apple Developer account).
 

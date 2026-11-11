@@ -18,7 +18,131 @@ export type Intent =
   | { kind: 'join' }
   | { kind: 'profile' }
   | { kind: 'today' }
+  | { kind: 'navigate'; to: NavTarget }
+  | { kind: 'back' }
   | { kind: 'unknown' };
+
+/** Every screen Buddy can open by name. */
+export type NavTarget =
+  | 'home'
+  | 'kampung'
+  | 'circles'
+  | 'create'
+  | 'passItOn'
+  | 'thrive'
+  | 'checkin'
+  | 'reminders'
+  | 'settings'
+  | 'language'
+  | 'safeCircle'
+  | 'family';
+
+/**
+ * What people call each screen, per language: the app's own names for it (tabs and
+ * titles) plus everyday words. More specific targets come first ("safe circle"
+ * before "circles", "start something" before "events").
+ */
+const NAV_WORDS: Record<Language, [NavTarget, string[]][]> = {
+  en: [
+    ['safeCircle', ['safe circle']],
+    [
+      'create',
+      [
+        'start something',
+        'create an event',
+        'create event',
+        'new event',
+        'host an event',
+        'organise',
+        'organize',
+      ],
+    ],
+    ['circles', ['my circles', 'circles', 'groups']],
+    ['checkin', ['check-in', 'check in', 'checkin', 'morning question', 'morning check']],
+    ['reminders', ['reminders', 'my reminders', 'reminder list']],
+    ['passItOn', ['pass it on', 'share a skill', 'share my skill', 'teach']],
+    ['kampung', ['kampung', 'happenings', 'events', 'activities']],
+    ['thrive', ['thrive', 'my health', 'health']],
+    ['language', ['language', 'languages']],
+    ['settings', ['settings', 'setting']],
+    ['family', ['my family', 'family']],
+    ['home', ['home', 'home page', 'main page', 'start page']],
+  ],
+  ms: [
+    ['safeCircle', ['bulatan selamat']],
+    ['create', ['mulakan sesuatu', 'buat acara', 'acara baru']],
+    ['circles', ['bulatan saya', 'bulatan', 'kumpulan']],
+    ['checkin', ['soalan pagi', 'daftar masuk']],
+    ['reminders', ['peringatan saya', 'senarai peringatan']],
+    ['passItOn', ['kongsi ilmu', 'kongsi kemahiran']],
+    ['kampung', ['kampung', 'aktiviti', 'acara']],
+    ['thrive', ['sihat', 'kesihatan']],
+    ['language', ['bahasa']],
+    ['settings', ['tetapan']],
+    ['family', ['keluarga']],
+    ['home', ['utama', 'laman utama']],
+  ],
+  zh: [
+    ['safeCircle', ['安全圈']],
+    ['create', ['发起活动', '创建活动', '新活动', '发起']],
+    ['circles', ['我的圈子', '圈子', '小组']],
+    ['checkin', ['早上问候', '签到']],
+    ['reminders', ['我的提醒', '提醒列表']],
+    ['passItOn', ['传承分享', '传承', '分享技能']],
+    ['kampung', ['甘榜', '活动']],
+    ['thrive', ['健康']],
+    ['language', ['语言']],
+    ['settings', ['设置']],
+    ['family', ['家人', '家庭']],
+    ['home', ['首页', '主页']],
+  ],
+  // Word stems: Tamil adds endings ("அமைப்புகளைத் திற" = open settings).
+  ta: [
+    ['safeCircle', ['பாதுகாப்பு வட்ட']],
+    ['create', ['ஒன்றைத் தொடங்', 'புதிய நிகழ்வ']],
+    ['circles', ['என் வட்ட', 'வட்டங்க']],
+    ['checkin', ['காலை விசாரிப்ப', 'செக் இன்']],
+    ['reminders', ['நினைவூட்டல்க']],
+    ['passItOn', ['பகிர்ந்து கொ', 'திறமை']],
+    ['kampung', ['கம்போங்', 'நிகழ்வுக', 'நிகழ்ச்சிக']],
+    ['thrive', ['நலம்', 'நலத்', 'ஆரோக்கிய']],
+    ['language', ['மொழி']],
+    ['settings', ['அமைப்பு']],
+    ['family', ['குடும்ப']],
+    ['home', ['முகப்ப']],
+  ],
+};
+
+/** "Open …", "go to …", "show me …": with one of these, a screen name always wins. */
+const NAV_VERBS: Record<Language, string[]> = {
+  en: [
+    'open',
+    'go to',
+    'go',
+    'show',
+    'take me',
+    'bring me',
+    'see',
+    'view',
+    'where is',
+    'switch to',
+  ],
+  ms: ['buka', 'pergi ke', 'pergi', 'tunjuk', 'bawa saya', 'lihat'],
+  // Not 去 / போ: they also mean "I'm going" (join).
+  zh: ['打开', '去看', '看看', '显示', '带我', '进入'],
+  ta: ['திற', 'காட்டு', 'செல்'],
+};
+
+const BACK_WORDS: Record<Language, string[]> = {
+  en: ['go back', 'back', 'previous page', 'previous screen'],
+  ms: ['kembali', 'balik', 'undur'],
+  zh: ['返回', '回去', '上一页'],
+  ta: ['பின்செல்', 'திரும்பி', 'முந்தைய'],
+};
+
+function navTarget(text: string, language: Language): NavTarget | null {
+  return NAV_WORDS[language].find(([, words]) => has(text, words))?.[0] ?? null;
+}
 
 export interface ReminderRequest {
   kind: ReminderKind;
@@ -198,7 +322,20 @@ export function matchIntent(said: string, language: Language): Intent {
 
   // Help always wins: it must never be mistaken for anything else.
   if (has(text, w.help) || has(text, WORDS.en.help)) return { kind: 'help' };
-  if (has(text, w.remind)) return { kind: 'remind', reminder: parseReminder(text, language) };
+
+  // "Open settings", "go to my reminders": a screen named with a verb is a place to go.
+  const target = navTarget(text, language);
+  if (target && has(text, NAV_VERBS[language])) return { kind: 'navigate', to: target };
+  if (has(text, BACK_WORDS[language])) return { kind: 'back' };
+
+  if (has(text, w.remind)) {
+    const reminder = parseReminder(text, language);
+    // "My reminders" with no time is the list, not a new reminder.
+    if (reminder.minutes === null && target === 'reminders') {
+      return { kind: 'navigate', to: 'reminders' };
+    }
+    return { kind: 'remind', reminder };
+  }
   if (has(text, w.yesterday)) {
     return { kind: 'checkin', answer: has(text, w.negation) ? 'no' : 'yes' };
   }
@@ -209,5 +346,7 @@ export function matchIntent(said: string, language: Language): Intent {
   if (has(text, w.join)) return { kind: 'join' };
   if (has(text, w.profile)) return { kind: 'profile' };
   if (has(text, w.today)) return { kind: 'today' };
+  // Just the name of a screen ("Settings") also goes there.
+  if (target) return { kind: 'navigate', to: target };
   return { kind: 'unknown' };
 }
