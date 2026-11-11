@@ -96,7 +96,8 @@ async def live(ws: WebSocket):
             if web_calls > MAX_WEB_CALLS_PER_TALK:
                 response = {"error": "Too many lookups in this talk. Say so briefly and carry on without searching."}
             else:
-                await _send(ws, {"type": "tool", "text": f"{f['name']}{': ' + str(args['query'])[:80] if args.get('query') else ''}"})  # the person sees what it looks up
+                # The person sees a plain phrase the app writes in their language; `name` lets the app localise it and `text` keeps an older build working.
+                await _send(ws, {"type": "tool", "name": f["name"], "text": f"{f['name']}{': ' + str(args['query'])[:80] if args.get('query') else ''}"})
                 response = await web.run(f["name"], args, memo)
             live_session.push({"toolResponse": {"id": f.get("id"), "name": f["name"], "response": response}})
 

@@ -1,6 +1,7 @@
 // The in-app agent, client side: one WebSocket to the Bricks API (which talks to Gemini Live), the microphone up, the voice down,
 // and the agent's tool requests run HERE, in the app, so the person watches the glow and gives approvals on their own screen.
 // The same agent will also be reachable by phone call (backend/app/modules/voice); both use the same engine.
+import { t } from '../i18n/tables';
 import { createStore } from '../core/store';
 import { apiBase } from '../api/client';
 import { freshToken } from '../session/store';
@@ -60,10 +61,20 @@ const fixArgs = (a: Record<string, unknown>) => {
   return out;
 };
 
+/**
+ * What the person sees in the transcript for an action: a plain phrase in their language. NEVER the tool's own name or a
+ * page/element key (those are internal and must not be shown or read out). Words live in i18n/common.ts under agent.tool.
+ */
+const TOOL_WORD: Record<string, 'lookup' | 'screen' | 'show'> = {
+  tree: 'lookup', search: 'lookup', docs: 'lookup', read: 'lookup', web_search: 'lookup', read_page: 'lookup',
+  open: 'screen', fill: 'screen', press: 'screen', run: 'screen',
+  show: 'show', hide: 'show',
+};
+const toolWord = (name: string) => t(`common.agent.tool.${TOOL_WORD[name] ?? 'screen'}`);
+
 async function onToolCall(m: { id: string; name: string; args: Record<string, unknown> }) {
   set({ phase: 'working' });
-  const target = typeof m.args?.path === 'string' ? m.args.path : typeof m.args?.skill === 'string' ? m.args.skill : typeof m.args?.query === 'string' ? m.args.query : '';
-  addLine('tool', `${m.name}${target ? ' ' + target : ''}`);
+  addLine('tool', toolWord(m.name));
   closed.tool = true; // each action is its own line
   closed.agent = true; // and what the agent says next starts a new line below it
   let response: unknown;
@@ -97,8 +108,8 @@ function onMessage(raw: string) {
     case 'toolCall':
       void onToolCall(m);
       break;
-    case 'tool': // something the server looked up for the agent (a web search, a page)
-      addLine('tool', m.text);
+    case 'tool': // something the server looked up for the agent (a web search, a page): plain words, never the tool's name
+      addLine('tool', m.name ? toolWord(String(m.name)) : m.text);
       closed.tool = true;
       closed.agent = true;
       break;

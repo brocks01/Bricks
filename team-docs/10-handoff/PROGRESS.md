@@ -48,6 +48,15 @@ Tested: docs only (no code change in this entry).
 Not done: none of the new screens is built yet (Language onboarding, Interests, Start, Connect landing content, hub, Grow content); Phone OTP, photo upload, Apple sign-in are not built.
 Next: follow the build order in `ui-build-spec.md` section E.
 
+## 2026-11-11 (OpenCode, mimo-v2.6-flash): the agent no longer shows internal keys to the person
+Did:
+- Two places leaked internals to the person: the transcript line printed the tool name plus a page/element key (`docs grow.index`) and the approval banner printed `me.edit.save: Save`. Both now show plain words in the person's language. Three new shared words `agent.tool.lookup`, `agent.tool.screen`, `agent.tool.show` (all six languages), picked by tool; the tool's own name, path, key and query are never shown or read out.
+- The server-side lookup line (`web_search`, `read_page`) now also sends `name` so the app writes the localised phrase; `text` is kept so an older built copy still displays something.
+- Left in the tree from this session's first small piece: the Welcome heading/subtitle now carry the tagline from `ui-build-spec.md` A1 (six languages).
+Tested: `cd app && npx tsc --noEmit && npx tsx src/navigation/selftest.ts` — all 46 checks pass, including "every word exists in all six languages" with the three new word ids added to the self-test list. `backend/app/modules/agent/router.py` compiles (`py_compile`).
+Not done / not tested: **no browser or live-talk check** — no real talk has been watched to confirm the transcript now reads "Looking something up…" instead of `docs grow.index`; the public `app/dist` copy was not rebuilt (rebuild it before the owner's tunnel shows this); the Welcome tagline edit is committed to no branch yet and was not reviewed by the owner.
+Next: the panel (the thing the owner calls the canvas) — a prompt rule so the agent never duplicates what the open page already shows, and auto-close of the panel when the person moves page or when the agent starts acting.
+
 ## 2026-11-11 (Claude Code, Sonnet 5.5): Agent Canvas spec stored
 Did: stored sample 07 (Agent Canvas) and wrote `06-technical/agent-canvas-spec.md` from the owner's proposal, adapted to our stack (the proposal's Next.js/Node/Mongo stack is replaced by Expo/FastAPI/PostgreSQL); decisions, samples README and HANDOFF updated.
 Tested: docs only (no code change in this entry).

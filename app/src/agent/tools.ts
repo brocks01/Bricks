@@ -129,7 +129,8 @@ export function createAgentTools(host: AgentHost) {
         if (!p || p.level !== 'element') return { error: 'not_an_element', hint: 'Give an element key like "events.new.title". Use tree on a page to list its elements.' };
         const wanted = name === 'fill' ? ['field', 'choice'] : ['action'];
         if (!wanted.includes(p.element.kind)) return { error: 'wrong_kind', hint: `${path} is a ${p.element.kind}; use ${p.element.kind === 'action' ? 'press' : 'fill'}.` };
-        const blocked = await allowed(p.element.agent, `${path}: ${t(path, {}, 'en')}`, { value: args.value });
+        // The approval title is for the person: a plain label in their language, never the element key.
+        const blocked = await allowed(p.element.agent, t(path), { value: args.value });
         if (blocked) return blocked;
         const refused = await ensureOpen(p.page.key);
         if (refused) return { error: 'could_not_open_page' };
@@ -153,7 +154,7 @@ export function createAgentTools(host: AgentHost) {
         const input = (args.input ?? {}) as Record<string, unknown>;
         const missing = skill.input.filter((f) => f.required && (input[f.name] === undefined || input[f.name] === '')).map((f) => f.name);
         if (missing.length) return { error: 'missing_input', missing, expected: skill.input.map((f) => f.name) };
-        const blocked = await allowed(skill.by === 'human' ? 'human' : skill.confirm ? 'confirm' : 'free', `${id}: ${skill.summary}`, input);
+        const blocked = await allowed(skill.by === 'human' ? 'human' : skill.confirm ? 'confirm' : 'free', skill.summary, input);
         if (blocked) return { ...blocked, action: id };
         let result: SkillResult;
         try {
