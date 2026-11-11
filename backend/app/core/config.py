@@ -1,6 +1,8 @@
 """Settings come from environment variables. For local work they are read from backend/.env (never committed, never shared)."""
 import os
+import re
 from dataclasses import dataclass
+from urllib.parse import quote, unquote
 from pathlib import Path
 
 ENV_FILE = Path(__file__).resolve().parents[2] / ".env"
@@ -52,13 +54,27 @@ class Settings:
         return self.app_env != "prod"
 
 
+def clean_database_url(url: str) -> str:
+    """Make a pasted database address safe to use. Hosts like Supabase and Render give `postgres://user:password@host:port/db`, and people paste the
+    password raw, so a password with an @, :, / or # breaks the address. The LAST @ is the one before the host, so everything before it is the user and
+    password: it is percent-encoded here (an already-encoded one is left as it was), and `postgres://` becomes `postgresql://`, which SQLAlchemy needs."""
+    m = re.match(r"^(postgres(?:ql)?(?:\+\w+)?)://(.*)@([^@/]+(?::\d+)?(?:/.*)?)$", url.strip())
+    if not m:
+        return url.strip()
+    scheme, userinfo, rest = m.groups()
+    user, sep, password = userinfo.partition(":")
+    safe = quote(unquote(user), safe="") + (":" + quote(unquote(password), safe="") if sep else "")
+    scheme = "postgresql" + scheme[len("postgres"):] if scheme.startswith("postgres") and not scheme.startswith("postgresql") else scheme
+    return f"{scheme}://{safe}@{rest}"
+
+
 def get_settings() -> Settings:
     url = os.environ.get("DATABASE_URL", "")
     secret = os.environ.get("JWT_SECRET", "")
     if not url or not secret:
         raise RuntimeError("DATABASE_URL and JWT_SECRET must be set (see backend/.env.example).")
     return Settings(
-        database_url=url,
+        database_url=clean_database_url(url),
         jwt_secret=secret,
         app_env=os.environ.get("APP_ENV", "dev"),
         access_minutes=int(os.environ.get("ACCESS_MINUTES", "15")),
