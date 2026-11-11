@@ -43,7 +43,8 @@ export function AppTabBar() {
           })}
         </View>
       )}
-      <AgentDock />
+      {/* Once the sheet is open it has its own control row (keyboard, mic, waveform), so the peek bar steps aside. It stays while a hand is still dragging it. */}
+      {open ? null : <AgentDock />}
     </View>
   );
 }

@@ -13,6 +13,7 @@ export type Phase = 'idle' | 'connecting' | 'listening' | 'speaking' | 'working'
 export interface Line {
   role: 'agent' | 'person' | 'tool'; // tool = something the agent did in the app
   text: string;
+  at?: number; // when it started, for the time under a chat bubble
 }
 
 export const agentUi = createStore<{ phase: Phase; open: boolean; mic: boolean; lines: Line[]; notice: string | null }>({ phase: 'idle', open: false, mic: false, lines: [], notice: null });
@@ -74,7 +75,7 @@ function addLine(role: Line['role'], text: string) {
   agentUi.set((s) => {
     const last = s.lines[s.lines.length - 1];
     // Fragments of one spoken turn join the same line.
-    const lines = last && last.role === role && !closed[role] ? [...s.lines.slice(0, -1), { role, text: last.text + text }] : [...s.lines, { role, text }].slice(-40);
+    const lines = last && last.role === role && !closed[role] ? [...s.lines.slice(0, -1), { role, text: last.text + text, at: last.at }] : [...s.lines, { role, text, at: Date.now() }].slice(-40);
     return { ...s, lines };
   });
   closed[role] = false;

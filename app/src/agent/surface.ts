@@ -52,7 +52,7 @@ export const LIMITS = {
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
-export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number; live: number | null }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO, live: null });
+export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number; live: number | null; voice: boolean }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO, live: null, voice: false });
 
 let waiting: ((r: { answer?: string; how?: 'option' | 'typed'; dismissed?: boolean }) => void) | null = null;
 
@@ -165,7 +165,7 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.
-  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO, live: null });
+  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO, live: null, voice: false });
   const waitsForAPerson = surface.options.length > 0 || surface.allowText || surface.tiles.length > 0 || surface.next;
   if (!waitsForAPerson) return Promise.resolve({ shown: true, note: 'It stays until the person closes it or you call hide.' });
   return new Promise((resolve) => {
@@ -186,7 +186,7 @@ export function hideSurface(): void {
   const w = waiting;
   waiting = null;
   w?.({ dismissed: true });
-  surfaceStore.set((s) => ({ ...s, open: false, surface: null, ratio: SHEET_RATIO }));
+  surfaceStore.set((s) => ({ ...s, open: false, surface: null, ratio: SHEET_RATIO, voice: false }));
 }
 
 /**
@@ -258,4 +258,17 @@ export function releaseSurface(dy: number): void {
     return;
   }
   surfaceStore.set((s) => ({ ...s, open: true, ratio: Math.min(1, Math.max(MIN_RATIO, landed)) }));
+}
+
+/** Open the agent area at a height (from the peek bar's chevron or mic). `voice` opens it as the full-screen listening view. */
+export function openArea(ratio = 0.5, voice = false): void {
+  surfaceStore.set((s) => ({ ...s, open: true, ratio: voice ? 1 : Math.min(1, Math.max(MIN_RATIO, ratio)), voice }));
+}
+/** Switch between the chat and the full-screen listening view without losing either. */
+export function setVoiceView(on: boolean): void {
+  surfaceStore.set((s) => ({ ...s, open: true, voice: on }));
+}
+/** Put the area away WITHOUT losing the conversation or a screen the agent made (tap the dimmed app, or drag all the way down). */
+export function putAway(): void {
+  surfaceStore.set((s) => ({ ...s, open: false, voice: false }));
 }

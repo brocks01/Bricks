@@ -19,6 +19,8 @@ Sample screens generated with ChatGPT from our prompts, used as the visual targe
 
 | `11-grow-screens.webp` | **Grow, the final target (11 Nov 2026):** Grow Home (six cards), Explore Home, Digital Skills category, Content Detail (UPI video), Interactive Practice (Scan and Pay), Aspirations, My Progress, Health, My Interests, My Exploration, each with the pinned Bricks Agent bar. Spec: `../../02-product/grow-and-explore.md`. It replaces the Grow layout in sample 06 (goal card, My Goals, My Learning). |
 
+| `12-agent-states.webp` | **THE agent area, final (11 Nov 2026):** six states on one drag line (not fixed steps): 1 peek bar, 2 about 25%, 3 about 50%, 4 about 75%, 5 full screen (chat only), 6 voice active (full-screen listening, red stop). Sheet = handle, header (Bricks Agent, info, close), chat bubbles under Today, ONE control row (keyboard, big mic, waveform). **Ignore the four tabs in the picture: Bricks has two, Connect and Grow, shown just above the peek bar and hidden once the area passes about 10%.** The agent's generated screen appears inside the chat as the agent's own message. |
+
 **Where samples disagree, 08 and 06 win over 03 to 05.** **What is final and what is superseded (11 Nov 2026):** the architecture is two domains, **Connect and Grow**; there is no Thrive tab. Jobs, referrals, sponsors, earnings, training and services live inside Connect. Samples 03 to 05 were drawn before this decision: follow them for onboarding, the four-path start screen, the profile-from-avatar screen, translation and the agent bar, but not for the Thrive tab. Full decision: `../../02-product/product-architecture.md`.
 
 Developer notes taken from these samples: `../../06-technical/ui-spec-from-samples.md`.
