@@ -144,3 +144,8 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
   breaks the 150–200 ms motion rule and can unsettle people prone to motion sickness.
 - Phone and code entry screens aren't built yet (phone sign-in is off until an SMS provider
   exists), so Luma's code-entry box isn't used.
+
+### UI step 9: safety screens (checked, kept plain)
+- **SOS, Are you okay?, helper alert:** unchanged apart from the shared pill shapes. Still plain,
+  very large, red only for the emergency call, with **no Buddy, no pictures and no gradients**.
+  The safety tests pass unchanged.
