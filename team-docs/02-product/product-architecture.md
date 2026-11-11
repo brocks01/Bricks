@@ -7,6 +7,9 @@ Finalised with the owner after two rounds of discussion. **This replaces the ear
 
 One identity · one community ecosystem · one personal journey · one intelligent agent. We do **not** build four apps (a community app, a health app, a job portal, an AI assistant).
 
+## What is inside Connect (updated 12 Nov 2026)
+Community and governance · events and activities · **elderly participation and mentorship** · **employment, skills and earning** · **childcare and community services** · **culture, traditions and storytelling** · sponsorships and shared earnings · **sustainability initiatives**. These are things a community does on the one activity system (plus roles, contributions and opportunities), **not separate areas**; there is no "Elderly Welfare" section. Success is measured as **Community Vitality** (see `social-purpose.md`). *Ignore the word "clubs" if you see it in older proposals: the owner rejected clubs and groups (they already run on WhatsApp).*
+
 ## Two domains (Thrive is removed)
 **CONNECT** : your community and everything happening within it. *What people do together.*
 - Communities and members; clubs, groups and committees

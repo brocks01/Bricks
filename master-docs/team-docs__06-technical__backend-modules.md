@@ -1,18 +1,3 @@
-# 04. Architecture and backend modules
-
-## Stack (decided)
-- **Backend:** Python 3, FastAPI, one service, modular monolith. One database. One email service (provider not chosen).
-- **Database:** PostgreSQL 16 with **PostGIS 3.6** (location search and recommendation: nearby communities and events), local on the developer PC for now; hosting for later is open (PostGIS support required).
-- **App:** Expo (React Native, TypeScript) with Expo Router; the same code runs on the web in a phone-sized middle column.
-- **Docs website:** static files in `platform-docs` (to be served at docs.bricks.com), organised in folders with an `llms.txt` so language models can read it directly; no database.
-- **Later:** push notifications (Expo), voice (Gemini Live and Twilio for phone), WhatsApp.
-- **Capacity goal:** 2 to 3 thousand people at once on mostly free services. This is an estimate and must be load-tested; free database tiers have limits (storage, connections, pausing).
-
-## Security rules
-Members-only visibility; consent records; every route checks membership and permission; sensitive actions are written to an audit log; secrets only in `.env` files that the owner fills in (never shared or committed).
-
----
-
 # Backend modules (draft 1, 11 Nov 2026)
 
 One service, one database, one email service. A **modular monolith**: one FastAPI app, split into modules that can be separated later if needed. No message queues, no extra services for now.

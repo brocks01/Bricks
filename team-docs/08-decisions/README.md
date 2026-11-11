@@ -34,3 +34,13 @@ Short, dated records. Newest last.
 - **Connect shows communities, nothing else on its first screen**: new person sees Join and Create; a member sees their communities; everything else (announcements, events and activities, members, roles, contributions, opportunities) is **inside** a community. **No clubs and groups, no nine-tile grid** (the earlier 100-screen proposal listed a clubs module; the owner rejected it: groups already run on WhatsApp).
 - Media: one basic module (`backend/app/modules/media`), signed Cloudinary uploads over REST, images only, 5 MB, file type checked from the bytes. The Jambagrad media module is NOT copied. Cloudinary credentials are not in the Jambagrad env files (they live in its database): the owner adds `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (or `CLOUDINARY_URL`) to `backend/.env`.
 - Demo data: `python backend/run.py seed-demo [emails]` creates one full community (Lakeview Residency, join code LAKE-DEMO) marked `is_demo`; `--reset` removes it.
+
+## 2026-11-12: social purpose recorded
+- The reason behind the product is written in `../02-product/social-purpose.md`: elders as contributors and leaders, earning, employability, sustainability, child care (the community's own legal duty), culture, values and storytelling. Every feature is judged against it. Open questions (stories feature, how earning is recorded, demo community setting) are listed there.
+- New-user path in the latest sample (08): only **Join a community** and **Create a community** are offered; Home shows Connect and Grow.
+
+## 2026-11-12 (later): six pillars and Community Vitality
+- Six pillars are central: elderly participation and dignity; employability and earning; childcare and community care; culture, values and storytelling; community sustainability; social connection and belonging. Written in `../02-product/social-purpose.md`.
+- **No separate Elderly Welfare section.** Seniors teach, mentor, tell stories, lead and decide inside the normal community screens (intergenerational value creation).
+- Success is **Community Vitality**, not registrations or engagement.
+- Master documentation folder rebuilt flat for sharing (`../../master-docs/`, rebuilt with `scripts/build_master_docs.py`).

@@ -19,6 +19,9 @@ Built for the **Singapore-India Hackathon 2026** (raiSE Social Innovation track;
   are AI drafts that need native-speaker review); member-written content is shown as written (a Translate button comes later, translate on read, cached);
   risk-based authorization; the platform never holds money.
 
+## 2a. Why this exists (read `team-docs/02-product/social-purpose.md`)
+Elders as contributors and leaders, earning, employability, sustainability, child care, culture, values and storytelling: this is the point of Bricks, not a side note. Examples and demo data should show it.
+
 ## 2b. Product architecture (FINAL, 11 Nov 2026)
 Two domains: **Connect** (what people do together: communities, activities, governance, sponsors, earnings, jobs and referrals) and **Grow** (personal goals, health, learning).
 **Thrive was removed**; tagline "Connect. Grow. Participate."; a flexible activity system instead of one module per activity type; profile and settings open from the avatar;
@@ -52,7 +55,7 @@ backend/               Python 3.11+ FastAPI. Start: python backend/run.py (port 
   migrations/          SQL files applied in order (0001 identity, 0002 token state, 0003 communities)
   tests/               pytest (61 tests, real local database, fakes for phone/model/mail)
 team-docs/             our docs (vision, product, design samples, technical, decisions). 10-handoff = this folder
-platform-docs/         public docs (about, FAQ ...). master-docs/ is an OLD generated all-in-one copy: stale, ignore
+platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: every document in one flat folder plus 00_ALL_IN_ONE.md, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
 ```
 
 ## 4. How to run it (local)
@@ -142,7 +145,7 @@ auth page goes Home. The navigation guard is read at the moment of every move.
 6. Native-speaker review of hi, bn, ta, zh, ms words (the five new `agent.canvas.*` words are first drafts like the rest).
 7. **The Agent Canvas has not been looked at in a browser** in its present state: it was verified by type-check and self-test only. Run the app, ask the agent for a question with tiles, and check the badge row, the tile grid, the hint card, the step dots and Next against sample 07; also confirm the transcript no longer prints `press me.edit.save` (the fix is in the source but the public `app/dist` copy must be rebuilt to show it).
 8. Docs: `team-docs/06-technical/app-navigation-agent-language.md` and `app-plan.md` still describe the removed sample modules (events, goals, mock data) and the
-   old "assistant brain not connected" state: the code is the truth, update them. `master-docs/` is stale.
+   old "assistant brain not connected" state: the code is the truth, update them. `master-docs/` is rebuilt by `scripts/build_master_docs.py`.
 9. Backend in-memory pieces to move to a shared store before running more than one process: the signed-out session list and `changed at` cache
    (`auth_state.py`), voice call store, the in-app talk counters. The CI backend job is new and has not run on GitHub yet.
 10. A leaked MongoDB Atlas password (from a mistake in an earlier session) must be rotated by the owner; the local Postgres admin password and network exposure should

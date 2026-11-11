@@ -98,3 +98,15 @@ Did: removed the nine-tile grid and any clubs and groups (owner: Connect is comm
 Tested: 61 backend tests pass (communities, capacity, membership privacy, media with a fake Cloudinary, off without settings); app type-check and self-test pass; in the browser Connect shows "Your communities: Lakeview Residency, 13 members, Secretary" for the test account.
 Not done: **Cloudinary credentials are not set** (not in the Jambagrad env files; the owner must add them), so real uploads are untested; the community page, Join and Create screens, the activity "I'm going" button in the app; all other modules.
 Next: build `connect.community` (dashboard from `GET /v1/communities/{id}`), then Join by code and Create screens, then upload of a community logo and cover.
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): social purpose and latest overview sample stored
+Did: stored sample 08 (complete ecosystem overview) with notes on what differs; wrote `02-product/social-purpose.md` (elders, earning, employability, sustainability, child care, culture, values, storytelling, and where each lives in the product); decisions, samples README and HANDOFF updated.
+Tested: docs only.
+Not done: the demo community does not yet show these themes (add an elder-led storytelling session, an intergenerational activity, a child-care or homework-help service, a skill-sharing opportunity, contributions by seniors); the open questions in social-purpose.md need the owner's decision.
+Next: owner decides the open questions; then extend `seed_demo.py` and build the community page.
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): six pillars, Community Vitality, master-docs rebuilt
+Did: wrote the six pillars, the "no separate Elderly Welfare section" decision and the Community Vitality measure into `02-product/social-purpose.md`, `product-architecture.md` and the decisions list; deleted the old master-docs and rebuilt it **flat** (no sub-folders: 43 documents, 8 sample pictures and `00_ALL_IN_ONE.md`) with the new `scripts/build_master_docs.py` (replaces the old `merge-docs.ps1`).
+Tested: the script ran; master-docs has 0 sub-folders and 52 files; no code change.
+Not done: demo data does not yet show the pillars; the app has no Community Vitality view.
+Next: owner shares master-docs to generate UI samples; then extend the demo community and build the community page.
