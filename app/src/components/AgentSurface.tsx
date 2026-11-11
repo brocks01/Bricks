@@ -1,8 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { Pressable, ScrollView, View } from 'react-native';
-import { agentUi } from '../agent/live';
-import { dragSurface, FULL_AT, hideSurface, openArea, putAway, releaseSurface, setSurfaceArea, surfaceStore } from '../agent/surface';
+import { dragSurface, FULL_AT, hideSurface, putAway, releaseSurface, setSurfaceArea, surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
 import { useCurrentPage } from '../navigation';
@@ -19,18 +18,12 @@ import { AgentSheet, SurfaceMessage, Warning } from './AgentSheet';
  */
 export function AgentSurface() {
   const { open, surface, ratio: rest, live } = useStore(surfaceStore);
-  const ui = useStore(agentUi);
   const page = useCurrentPage();
   const t = useT();
   // Moving to another screen closes it. A question asked for the old screen is answered as "closed", so the agent is never left waiting.
   useEffect(() => {
     hideSurface();
   }, [page?.key]);
-  // A reason the call or the microphone did not work is shown in the sheet, so open it rather than say nothing.
-  useEffect(() => {
-    if (ui.notice && !open && live === null) openArea(0.5);
-  }, [ui.notice, open, live]);
-
   const measure = { onLayout: (e: { nativeEvent: { layout: { height: number } } }) => setSurfaceArea(e.nativeEvent.layout.height) };
   const fill = { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 } as const;
 

@@ -36,7 +36,7 @@ export function AgentSheet({ surface, onMove, onRelease }: { surface: Surface | 
   return (
     <View style={{ flex: 1, backgroundColor: colors.card, borderTopLeftRadius: 22, borderTopRightRadius: 22, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.line, overflow: 'hidden' }}>
       <DragHandle label={t('agent.canvas.grow')} onMove={onMove} onRelease={onRelease} style={{ paddingTop: space.xs, paddingBottom: space.xs }} />
-      {hearing && empty ? <CallScreen phase={ui.phase} /> : <Chat surface={surface} />}
+      {hearing && empty ? <CallScreen phase={ui.phase} since={ui.since} /> : <Chat surface={surface} />}
       {typing ? (
         <View style={{ paddingHorizontal: space.lg, paddingBottom: space.sm }}>
           <TextInput value={text} onChangeText={setText} onSubmitEditing={send} returnKeyType="send" placeholder={t('common.agent.type')} placeholderTextColor={colors.muted} accessibilityLabel={t('common.agent.type')} autoFocus style={{ fontSize: 16, color: colors.ink, backgroundColor: colors.bg, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 9, borderWidth: 1, borderColor: G }} />
@@ -190,19 +190,19 @@ export function SurfaceMessage({ surface }: { surface: Surface }) {
 }
 
 /** On a call with nothing else to show: a waveform, what the agent is doing, and how long the call has been going. */
-function CallScreen({ phase }: { phase: string }) {
+function CallScreen({ phase, since }: { phase: string; since: number | null }) {
   const t = useT();
   const pulse = useRef(new Animated.Value(0)).current;
-  const [sec, setSec] = useState(0);
+  const [sec, setSec] = useState(since ? Math.floor((Date.now() - since) / 1000) : 0);
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([Animated.timing(pulse, { toValue: 1, duration: 900, useNativeDriver: true }), Animated.timing(pulse, { toValue: 0, duration: 900, useNativeDriver: true })]));
     loop.start();
-    const tick = setInterval(() => setSec((s) => s + 1), 1000);
+    const tick = setInterval(() => setSec(since ? Math.floor((Date.now() - since) / 1000) : 0), 1000);
     return () => {
       loop.stop();
       clearInterval(tick);
     };
-  }, [pulse]);
+  }, [pulse, since]);
   const word = phase === 'speaking' ? t('common.agent.speaking') : phase === 'working' ? t('common.agent.working') : phase === 'connecting' ? t('common.agent.connecting') : t('common.agent.listening');
   const heights = [26, 50, 74, 44, 62, 30];
   return (

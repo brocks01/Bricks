@@ -16,7 +16,7 @@ export interface Line {
   at?: number; // when it started, for the time under a chat bubble
 }
 
-export const agentUi = createStore<{ phase: Phase; open: boolean; mic: boolean; lines: Line[]; notice: string | null }>({ phase: 'idle', open: false, mic: false, lines: [], notice: null });
+export const agentUi = createStore<{ phase: Phase; open: boolean; mic: boolean; lines: Line[]; notice: string | null; since: number | null }>({ phase: 'idle', open: false, mic: false, lines: [], notice: null, since: null });
 
 type Runner = { call: (name: string, args?: Record<string, unknown>) => Promise<unknown>; page: () => string | undefined };
 let runner: Runner | null = null;
@@ -194,7 +194,7 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
       if (ready) send({ type: 'audio', data: b64 });
       else if (held.length < 60) held.push(b64); // about six seconds while the connection opens
     })
-      .then(() => starting === mine && set({ mic: true }))
+      .then(() => starting === mine && set({ mic: true, since: Date.now() }))
       .catch(() => set({ notice: 'micdenied' }));
   }
   const token = await freshToken(); // no network unless the token is about to expire
@@ -261,7 +261,7 @@ export function end(): void {
   } catch {
     /* already closed */
   }
-  set({ phase: 'idle', mic: false });
+  set({ phase: 'idle', mic: false, since: null });
 }
 
 export const togglePanel = () => set({ open: !agentUi.get().open });
