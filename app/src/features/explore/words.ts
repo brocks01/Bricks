@@ -4,7 +4,7 @@ import type { PageStrings } from '../../navigation/types';
 // native-speaker review needed for hi, bn, ta, zh, ms. Category and format names are used by all five Explore pages.
 export const strings: PageStrings = {
   en: {
-    heading: 'Explore', intro: "There's always something new to discover.", search: 'What interests you today?', categories: 'Explore categories', picked: 'Picked for you',
+    heading: 'Explore', intro: "There's always something new to discover.", intro2: 'Explore interests, useful knowledge and new experiences, at your own pace.', search: 'What interests you today?', categories: 'Explore categories', picked: 'Picked for you',
     pickedAll: 'To start with', continue: 'Continue exploring', continueBody: 'Things you have saved or started.', noResults: 'Nothing found. Try another word.',
     interests: 'My interests', mine: 'My exploration', items: '{n} things', itemOne: '1 thing',
     digital_skills: 'Digital Skills', digital_skills_line: 'Technology made simple', health_awareness: 'Health Awareness', health_awareness_line: 'Know, prevent and stay healthy',
@@ -19,7 +19,7 @@ export const strings: PageStrings = {
     nothingInProgress: 'Nothing started yet. Pick something that interests you.', nothingCompleted: 'Nothing completed yet.', nothingSaved: 'Nothing saved yet. Tap Save on anything you want to come back to.',
   },
   hi: {
-    heading: 'खोजें', intro: 'हमेशा कुछ नया खोजने को है।', search: 'आज आपको क्या दिलचस्प लगता है?', categories: 'श्रेणियाँ', picked: 'आपके लिए चुना गया',
+    heading: 'खोजें', intro: 'हमेशा कुछ नया खोजने को है।', intro2: 'अपनी रफ़्तार से रुचियाँ, उपयोगी ज्ञान और नए अनुभव खोजें।', search: 'आज आपको क्या दिलचस्प लगता है?', categories: 'श्रेणियाँ', picked: 'आपके लिए चुना गया',
     pickedAll: 'शुरू करने के लिए', continue: 'खोज जारी रखें', continueBody: 'जो आपने सहेजा या शुरू किया है।', noResults: 'कुछ नहीं मिला। कोई और शब्द आज़माएँ।',
     interests: 'मेरी रुचियाँ', mine: 'मेरी खोज', items: '{n} चीज़ें', itemOne: '1 चीज़',
     digital_skills: 'डिजिटल कौशल', digital_skills_line: 'तकनीक आसान', health_awareness: 'स्वास्थ्य जागरूकता', health_awareness_line: 'जानें, बचाव करें, स्वस्थ रहें',
@@ -34,7 +34,7 @@ export const strings: PageStrings = {
     nothingInProgress: 'अभी कुछ शुरू नहीं किया। कुछ दिलचस्प चुनें।', nothingCompleted: 'अभी कुछ पूरा नहीं हुआ।', nothingSaved: 'अभी कुछ सहेजा नहीं। जो फिर देखना हो उस पर सहेजें दबाएँ।',
   },
   bn: {
-    heading: 'আবিষ্কার', intro: 'নতুন কিছু আবিষ্কারের সুযোগ সবসময় আছে।', search: 'আজ কী আপনার আগ্রহের?', categories: 'বিভাগ', picked: 'আপনার জন্য বাছাই',
+    heading: 'আবিষ্কার', intro: 'নতুন কিছু আবিষ্কারের সুযোগ সবসময় আছে।', intro2: 'নিজের গতিতে আগ্রহ, কাজের জ্ঞান ও নতুন অভিজ্ঞতা আবিষ্কার করুন।', search: 'আজ কী আপনার আগ্রহের?', categories: 'বিভাগ', picked: 'আপনার জন্য বাছাই',
     pickedAll: 'শুরু করার জন্য', continue: 'আবিষ্কার চালিয়ে যান', continueBody: 'যা আপনি সংরক্ষণ বা শুরু করেছেন।', noResults: 'কিছু পাওয়া যায়নি। অন্য শব্দ চেষ্টা করুন।',
     interests: 'আমার আগ্রহ', mine: 'আমার আবিষ্কার', items: '{n}টি বিষয়', itemOne: '১টি বিষয়',
     digital_skills: 'ডিজিটাল দক্ষতা', digital_skills_line: 'প্রযুক্তি সহজ', health_awareness: 'স্বাস্থ্য সচেতনতা', health_awareness_line: 'জানুন, প্রতিরোধ করুন, সুস্থ থাকুন',
@@ -49,7 +49,7 @@ export const strings: PageStrings = {
     nothingInProgress: 'এখনও কিছু শুরু হয়নি। আগ্রহের কিছু বেছে নিন।', nothingCompleted: 'এখনও কিছু সম্পূর্ণ হয়নি।', nothingSaved: 'এখনও কিছু সংরক্ষিত নয়। যা পরে দেখতে চান তাতে সংরক্ষণ চাপুন।',
   },
   ta: {
-    heading: 'ஆராயுங்கள்', intro: 'கண்டறிய எப்போதும் புதிதாக ஏதாவது உண்டு.', search: 'இன்று உங்களுக்கு என்ன ஆர்வம்?', categories: 'பிரிவுகள்', picked: 'உங்களுக்காகத் தேர்ந்தது',
+    heading: 'ஆராயுங்கள்', intro: 'கண்டறிய எப்போதும் புதிதாக ஏதாவது உண்டு.', intro2: 'உங்கள் வேகத்தில் ஆர்வங்கள், பயனுள்ள அறிவு, புதிய அனுபவங்களை ஆராயுங்கள்.', search: 'இன்று உங்களுக்கு என்ன ஆர்வம்?', categories: 'பிரிவுகள்', picked: 'உங்களுக்காகத் தேர்ந்தது',
     pickedAll: 'தொடங்க', continue: 'ஆராய்வதைத் தொடருங்கள்', continueBody: 'நீங்கள் சேமித்தவை அல்லது தொடங்கியவை.', noResults: 'எதுவும் கிடைக்கவில்லை. வேறு சொல்லை முயலுங்கள்.',
     interests: 'என் ஆர்வங்கள்', mine: 'என் ஆராய்வு', items: '{n} விஷயங்கள்', itemOne: '1 விஷயம்',
     digital_skills: 'டிஜிட்டல் திறன்கள்', digital_skills_line: 'எளிய தொழில்நுட்பம்', health_awareness: 'சுகாதார விழிப்புணர்வு', health_awareness_line: 'அறிந்து, தடுத்து, நலமாக இருங்கள்',
@@ -64,7 +64,7 @@ export const strings: PageStrings = {
     nothingInProgress: 'இன்னும் எதுவும் தொடங்கவில்லை. ஆர்வமுள்ளதைத் தேர்ந்தெடுங்கள்.', nothingCompleted: 'இன்னும் எதுவும் முடியவில்லை.', nothingSaved: 'இன்னும் எதுவும் சேமிக்கவில்லை. மீண்டும் பார்க்க விரும்புவதில் சேமி என்பதைத் தட்டுங்கள்.',
   },
   zh: {
-    heading: '探索', intro: '总有新鲜事等你发现。', search: '今天你对什么感兴趣？', categories: '探索分类', picked: '为你挑选',
+    heading: '探索', intro: '总有新鲜事等你发现。', intro2: '按你自己的节奏，探索兴趣、实用知识和新体验。', search: '今天你对什么感兴趣？', categories: '探索分类', picked: '为你挑选',
     pickedAll: '从这里开始', continue: '继续探索', continueBody: '你收藏或开始的内容。', noResults: '没有找到。换个词试试。',
     interests: '我的兴趣', mine: '我的探索', items: '{n} 项', itemOne: '1 项',
     digital_skills: '数字技能', digital_skills_line: '让科技更简单', health_awareness: '健康常识', health_awareness_line: '了解、预防、保持健康',
@@ -79,7 +79,7 @@ export const strings: PageStrings = {
     nothingInProgress: '还没有开始任何内容。选一个你感兴趣的吧。', nothingCompleted: '还没有完成的内容。', nothingSaved: '还没有收藏。点“收藏”就能以后再看。',
   },
   ms: {
-    heading: 'Teroka', intro: 'Sentiasa ada sesuatu yang baharu untuk ditemui.', search: 'Apa yang menarik minat anda hari ini?', categories: 'Kategori', picked: 'Dipilih untuk anda',
+    heading: 'Teroka', intro: 'Sentiasa ada sesuatu yang baharu untuk ditemui.', intro2: 'Terokai minat, pengetahuan berguna dan pengalaman baharu, mengikut rentak anda.', search: 'Apa yang menarik minat anda hari ini?', categories: 'Kategori', picked: 'Dipilih untuk anda',
     pickedAll: 'Untuk bermula', continue: 'Teruskan menerokai', continueBody: 'Perkara yang anda simpan atau mulakan.', noResults: 'Tiada hasil. Cuba perkataan lain.',
     interests: 'Minat saya', mine: 'Penerokaan saya', items: '{n} perkara', itemOne: '1 perkara',
     digital_skills: 'Kemahiran Digital', digital_skills_line: 'Teknologi dipermudah', health_awareness: 'Kesedaran Kesihatan', health_awareness_line: 'Tahu, cegah dan kekal sihat',

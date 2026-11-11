@@ -10,13 +10,17 @@ export type IconName = keyof typeof Ionicons.glyphMap;
  * A page. Tab pages show the app header (logo, bell, avatar); inner pages show a back header with the page title;
  * `plain` pages (sign-in start, profile setup) show neither.
  */
-export function Screen({ title, subtitle, children, back, plain }: { title: string; subtitle?: string; children: ReactNode; back?: boolean; plain?: boolean }) {
+export function Screen({ title, subtitle, children, back, plain, hero }: { title: string; subtitle?: string; children: ReactNode; back?: boolean; plain?: boolean; hero?: ReactNode }) {
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg }}>
       {plain ? null : back ? <BackHeader title={title} /> : <AppHeader />}
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
-        {back ? null : <Text style={[type.h1, { color: colors.ink }]} accessibilityRole="header">{title}</Text>}
-        {subtitle ? <Text style={[type.small, { color: colors.muted, marginTop: 2, marginBottom: space.md }]}>{subtitle}</Text> : <View style={{ height: space.md }} />}
+        {hero ?? (
+          <>
+            {back ? null : <Text style={[type.h1, { color: colors.ink }]} accessibilityRole="header">{title}</Text>}
+            {subtitle ? <Text style={[type.small, { color: colors.muted, marginTop: 2, marginBottom: space.md }]}>{subtitle}</Text> : <View style={{ height: space.md }} />}
+          </>
+        )}
         {children}
       </ScrollView>
     </View>

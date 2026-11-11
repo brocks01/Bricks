@@ -2,6 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { getExploreItems, type ExploreItem } from '../../../../api/explore';
+import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -9,6 +10,7 @@ import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
+import { categoryPic } from '../../pics';
 import { ItemRow } from '../../ui';
 import { useToggleSave } from '../../useItems';
 import { exploreCategory as page } from './page';
@@ -47,7 +49,9 @@ export default function ExploreCategory() {
 
   return (
     <Screen title={name} back>
-      <El page={page} id="heading"><Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w(String(id) + '_line')}</Text></El>
+      <El page={page} id="heading">
+        <Hero source={categoryPic[id as keyof typeof categoryPic] ?? categoryPic.digital_skills} title={name} subtitle={w(String(id) + '_line')} height={170} light />
+      </El>
       {String(id) === 'health_awareness' ? <Text style={[type.small, { color: colors.warn, backgroundColor: colors.warnSoft, padding: space.sm, borderRadius: 10, marginBottom: space.md }]}>{w('notAdvice')}</Text> : null}
       {failed ? (
         <>

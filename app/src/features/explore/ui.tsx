@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { Image, Pressable, Text, View } from 'react-native';
 import type { ExploreFormat, ExploreItem } from '../../api/explore';
 import { colors, radius, space, type } from '../../theme/tokens';
@@ -46,4 +46,14 @@ export function ItemRow({ item, i, meta, onOpen, onSave, saveLabel }: { item: Ex
 
 export function SectionTitle({ children }: { children: string }) {
   return <Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{children}</Text>;
+}
+
+/** A small coloured symbol on a soft square, as on the sample cards. `lib` picks the icon set. */
+export function Glyph({ icon, lib, color, tint, size = 48 }: { icon: string; lib: 'ion' | 'mci'; color: string; tint: string; size?: number }) {
+  const inner = Math.round(size * 0.55);
+  return (
+    <View style={{ width: size, height: size, borderRadius: 14, backgroundColor: tint, alignItems: 'center', justifyContent: 'center' }}>
+      {lib === 'ion' ? <Ionicons name={symbol(icon)} size={inner} color={color} /> : <MaterialCommunityIcons name={icon as keyof typeof MaterialCommunityIcons.glyphMap} size={inner} color={color} />}
+    </View>
+  );
 }
