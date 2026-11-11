@@ -43,21 +43,21 @@ export function AgentSheet({ surface, onMove, onRelease }: { surface: Surface | 
         </View>
       ) : null}
       {ui.notice ? <Text style={{ fontSize: 13, color: colors.danger, fontWeight: '600', paddingHorizontal: space.lg, paddingBottom: 4, textAlign: 'center' }}>{t(`common.agent.${ui.notice}`)}</Text> : null}
-      <Warning />
       <View style={{ borderTopWidth: 1, borderColor: colors.line }}>
         <AgentControls />
+        <Warning />
       </View>
     </View>
   );
 }
 
-/** The one marker that the agent's words are AI-made: small, always at the bottom of the sheet, never in the way. */
+/** The one marker that the agent's words are AI-made: very small, just below the call button, never in the way. */
 export function Warning() {
   const t = useT();
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, paddingBottom: 6 }}>
-      <Ionicons name="alert-circle-outline" size={14} color={colors.muted} />
-      <Text style={{ fontSize: 12, color: colors.muted }}>{t('common.agent.warn')}</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 4, paddingBottom: 8 }}>
+      <Ionicons name="alert-circle-outline" size={11} color={colors.muted} />
+      <Text style={{ fontSize: 11, color: colors.muted }}>{t('common.agent.warn')}</Text>
     </View>
   );
 }
