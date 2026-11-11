@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { Screen, Text } from '@/components';
+import { WelcomeCollage } from '@/features/onboarding/WelcomeCollage';
 import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { LanguagePicker } from '@/features/settings/LanguagePicker';
 import { LANGUAGE_INFO, LANGUAGES } from '@/i18n/languages';
@@ -42,6 +43,7 @@ export default function LanguageScreen() {
       back={false}
       testID="screen-onboarding-language"
     >
+      <WelcomeCollage />
       <Text variant="display" style={styles.appName}>
         {t('common.appName')}
       </Text>

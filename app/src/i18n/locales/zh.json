@@ -620,7 +620,8 @@
       "demoNote": "演示：每个选项都会登录到示例账户，不会使用真实的 Singpass 或 Google 账户。",
       "readout": "用 Singpass、Google 或手机号码登录。没有您的同意，我们绝不分享您的资料。",
       "googleFailed": "Google 登录没有成功。请再试一次，或者用 Singpass。",
-      "demoNoteSingpass": "演示：Singpass 会登录到示例账户，不会使用真实的 Singpass 账户。"
+      "demoNoteSingpass": "演示：Singpass 会登录到示例账户，不会使用真实的 Singpass 账户。",
+      "subtitle": "这样我们知道是您本人，也能保护好您的资料。"
     },
     "about": {
       "readout": "第 {{step}} 步，共 {{total}} 步。{{question}} {{hint}}",

@@ -21,7 +21,7 @@ import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { config } from '@/lib/config';
 import { isSingaporeMobile, normalisePhone } from '@/lib/phone';
 import { useOnboarding } from '@/state/onboarding';
-import { color, iconSize, space } from '@/theme';
+import { color, iconSize, radius, space } from '@/theme';
 
 /** "Raj Kumar" → "Raj": what we call them unless they choose otherwise. */
 const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? '';
@@ -86,11 +86,19 @@ export default function SignInScreen() {
   };
 
   return (
-    <Screen
-      title={t('onboarding.signIn.title')}
-      readOut={() => t('onboarding.signIn.readout')}
-      testID="screen-onboarding-sign-in"
-    >
+    <Screen readOut={() => t('onboarding.signIn.readout')} testID="screen-onboarding-sign-in">
+      {/* Luma's sign-in: an icon in a soft circle, a centred title and one line, then the choices. */}
+      <View style={styles.header}>
+        <View style={styles.iconWell}>
+          <IdentificationCardIcon size={iconSize.hero} color={color.text} weight="bold" />
+        </View>
+        <Text variant="title" align="center">
+          {t('onboarding.signIn.title')}
+        </Text>
+        <Text color="textSecondary" align="center">
+          {t('onboarding.signIn.subtitle')}
+        </Text>
+      </View>
       <View style={styles.buttons}>
         <BigButton
           size="lg"
@@ -173,7 +181,23 @@ export default function SignInScreen() {
   );
 }
 
+const ICON_WELL = 80;
+
 const styles = StyleSheet.create({
+  header: {
+    alignItems: 'center',
+    gap: space.xs,
+    marginVertical: space.md,
+  },
+  iconWell: {
+    width: ICON_WELL,
+    height: ICON_WELL,
+    borderRadius: radius.avatar,
+    backgroundColor: color.bgSubtle,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: space.xs,
+  },
   buttons: {
     gap: space.sm,
   },

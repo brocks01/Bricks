@@ -620,7 +620,8 @@
       "demoNote": "Demo: setiap pilihan log masuk ke akaun contoh. Tiada akaun Singpass atau Google sebenar digunakan.",
       "readout": "Log masuk dengan Singpass, Google, atau nombor telefon anda. Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu.",
       "googleFailed": "Log masuk Google tidak berjaya. Sila cuba lagi, atau guna Singpass.",
-      "demoNoteSingpass": "Demo: Singpass log masuk ke akaun contoh. Tiada akaun Singpass sebenar digunakan."
+      "demoNoteSingpass": "Demo: Singpass log masuk ke akaun contoh. Tiada akaun Singpass sebenar digunakan.",
+      "subtitle": "Supaya kami tahu ini anda dan dapat menjaga maklumat anda."
     },
     "about": {
       "readout": "Langkah {{step}} daripada {{total}}. {{question}} {{hint}}",

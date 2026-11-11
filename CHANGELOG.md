@@ -134,3 +134,13 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - **Profile:** a 96 dp face and a larger name at the top (new `Avatar` size 96); the rest reuses
   the restyled Activity pieces.
 - **Family:** the empty state is the new `EmptyState` with one line on what adding someone gives.
+
+### UI step 8: welcome and sign-in
+- **Welcome** (`onboarding/index`, the language picker): a collage of our own category art as
+  tilted tiles (`WelcomeCollage`) above "Bricks" and the four language pills.
+- **Sign in:** Luma's header: an icon in a soft circle, a centred title and one line on why
+  ("So we know it's you…"), then Singpass (black pill) and Google (grey pill).
+- **Rule over screenshot:** Luma's welcome collage drifts slowly. Ours is still: continuous motion
+  breaks the 150–200 ms motion rule and can unsettle people prone to motion sickness.
+- Phone and code entry screens aren't built yet (phone sign-in is off until an SMS provider
+  exists), so Luma's code-entry box isn't used.
