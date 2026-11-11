@@ -7,6 +7,7 @@ import { apiBase } from '../api/client';
 import { freshToken } from '../session/store';
 import { audioAvailable, isSpeaking, playPcm24k, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
+import { hideSurface } from './surface';
 
 export type Phase = 'idle' | 'connecting' | 'listening' | 'speaking' | 'working';
 export interface Line {
@@ -74,6 +75,9 @@ const toolWord = (name: string) => t(`common.agent.tool.${TOOL_WORD[name] ?? 'sc
 
 async function onToolCall(m: { id: string; name: string; args: Record<string, unknown> }) {
   set({ phase: 'working' });
+  // Acting on the app means the panel has done its job: close it first so the person sees what the agent is doing, never two things at once.
+  // Lookups (tree, search, docs, read, web) and show/hide are left alone.
+  if (m.name === 'open' || m.name === 'fill' || m.name === 'press' || m.name === 'run') hideSurface();
   addLine('tool', toolWord(m.name));
   closed.tool = true; // each action is its own line
   closed.agent = true; // and what the agent says next starts a new line below it

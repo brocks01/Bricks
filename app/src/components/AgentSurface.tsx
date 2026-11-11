@@ -4,6 +4,7 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { answerSurface, hideSurface, surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
+import { useCurrentPage } from '../navigation';
 import { colors, radius, space, type } from '../theme/tokens';
 import { HtmlFrame } from './HtmlFrame';
 import { Button } from './ui';
@@ -16,9 +17,14 @@ export function AgentSurface() {
   const t = useT();
   const { open, surface } = useStore(surfaceStore);
   const [text, setText] = useState('');
+  const page = useCurrentPage();
   useEffect(() => {
     if (open) setText('');
   }, [open, surface]);
+  // Moving to another screen closes it. A question asked for the old screen is answered as "closed", so the agent is never left waiting.
+  useEffect(() => {
+    hideSurface();
+  }, [page?.key]);
   if (!open || !surface) return null;
 
   return (
