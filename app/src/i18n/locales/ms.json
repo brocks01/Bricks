@@ -714,7 +714,9 @@
     "demoAreYouOk": "Demo: terlepas daftar masuk",
     "demoHelperAlert": "Demo: seseorang perlukan bantuan",
     "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
-    "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu."
+    "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
+    "you": "Anda",
+    "viewProfile": "Lihat profil saya"
   },
   "family": {
     "title": "Keluarga saya",
@@ -769,7 +771,8 @@
       "send": "Hantar jemputan",
       "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}}",
       "readoutSend": "Tekan Hantar jemputan apabila semuanya betul."
-    }
+    },
+    "emptyDetail": "Tambah ibu bapa atau datuk nenek untuk melihat keadaan mereka dan menetapkan peringatan."
   },
   "profile": {
     "title": "Profil saya",

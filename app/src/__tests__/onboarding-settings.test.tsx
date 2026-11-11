@@ -261,7 +261,7 @@ describe('Settings (S40)', () => {
     expect(alert.helpers.map((h) => h.name)).toContain('Siti Nurhaliza');
   });
 
-  it('Coming-soon rows are greyed out, and Sign out (asked first) starts again at S1', async () => {
+  it('Coming-soon rows say so, and Sign out (asked first) starts again at S1', async () => {
     await renderApp('/settings');
     expect(screen.getAllByText('Coming soon')).toHaveLength(3);
     await press('settings-sign-out');

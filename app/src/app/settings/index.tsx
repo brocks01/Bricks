@@ -2,19 +2,21 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 
 import { useMe, useSafeCircle, useUpdateMe } from '@/api';
 import { resetMockDb } from '@/api/mock';
 import type { ChannelPref } from '@/api/types';
 import {
+  Avatar,
   BigButton,
   Chip,
   ChipGroup,
   ConfirmSheet,
+  GroupedList,
+  GroupedRow,
   HeartbeatIcon,
   LockIcon,
-  ListRow,
   Screen,
   ShieldCheckIcon,
   SignOutIcon,
@@ -22,6 +24,7 @@ import {
   StatusBanner,
   Text,
   TranslateIcon,
+  CaretRightIcon,
   UserCircleIcon,
   UsersThreeIcon,
 } from '@/components';
@@ -35,7 +38,7 @@ import { DEMO_ALERT_DELAY_S, scheduleDemoAlert } from '@/lib/notifications';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
 import { useUndo } from '@/state/undo';
-import { space } from '@/theme';
+import { color, iconSize, radius, space } from '@/theme';
 
 /** Reading speeds offered (expo-speech rates). "Normal" is already slow and clear. */
 const SPEEDS = [
@@ -119,13 +122,34 @@ export default function SettingsScreen() {
       }
       testID="screen-settings"
     >
-      <ListRow
-        icon={TranslateIcon}
-        label={t('settings.language')}
-        value={LANGUAGE_INFO[language].nativeName}
-        onPress={() => router.push('/settings/language')}
-        testID="settings-language"
-      />
+      {/* Luma settings: who you are first, then grouped rows. */}
+      {me ? (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`${me.name}. ${t('settings.viewProfile')}`}
+          onPress={() => router.push('/profile')}
+          style={({ pressed }) => [styles.me, pressed && styles.mePressed]}
+          testID="settings-profile"
+        >
+          <Avatar name={me.name} size={64} />
+          <View style={styles.flex}>
+            <Text variant="heading">{me.name}</Text>
+            <Text color="textSecondary">{t('settings.viewProfile')}</Text>
+          </View>
+          <CaretRightIcon size={iconSize.inline} color={color.textSecondary} weight="bold" />
+        </Pressable>
+      ) : null}
+
+      <GroupedList title={t('settings.you')}>
+        <GroupedRow
+          icon={TranslateIcon}
+          tint="exercise"
+          title={t('settings.language')}
+          value={LANGUAGE_INFO[language].nativeName}
+          onPress={() => router.push('/settings/language')}
+          testID="settings-language"
+        />
+      </GroupedList>
 
       <Text variant="heading" style={styles.heading}>
         {t('settings.readAloud')}
@@ -191,47 +215,52 @@ export default function SettingsScreen() {
         ))}
       </ChipGroup>
 
-      <Text variant="heading" style={styles.heading}>
-        {t('settings.people')}
-      </Text>
-      <View style={styles.rows}>
-        <ListRow
-          icon={ShieldCheckIcon}
-          label={t('settings.safeCircle')}
-          value={count > 0 ? t('settings.peopleCount', { count }) : t('settings.nobodyYet')}
-          onPress={() => router.push('/settings/safe-circle')}
-          testID="settings-safe-circle"
-        />
-        <ListRow
-          icon={UsersThreeIcon}
-          label={t('settings.family')}
-          onPress={() => router.push('/family')}
-          testID="settings-family"
-        />
-        <ListRow
-          icon={UserCircleIcon}
-          label={t('settings.simpleMode')}
-          note={t('common.comingSoon')}
-          disabled
-        />
-        <ListRow
-          icon={HeartbeatIcon}
-          label={t('settings.healthCard')}
-          note={t('common.comingSoon')}
-          disabled
-        />
-        <ListRow
-          icon={LockIcon}
-          label={t('settings.privacy')}
-          note={t('common.comingSoon')}
-          disabled
-        />
-        <ListRow
-          icon={SignOutIcon}
-          label={t('settings.signOut')}
-          onPress={() => setConfirmSignOut(true)}
-          testID="settings-sign-out"
-        />
+      <View style={styles.groups}>
+        <GroupedList title={t('settings.people')}>
+          <GroupedRow
+            icon={ShieldCheckIcon}
+            tint="walk"
+            title={t('settings.safeCircle')}
+            value={count > 0 ? t('settings.peopleCount', { count }) : t('settings.nobodyYet')}
+            onPress={() => router.push('/settings/safe-circle')}
+            testID="settings-safe-circle"
+          />
+          <GroupedRow
+            icon={UsersThreeIcon}
+            tint="meetup"
+            title={t('settings.family')}
+            onPress={() => router.push('/family')}
+            testID="settings-family"
+          />
+        </GroupedList>
+
+        {/* Not ready yet: plain rows that say so, never buttons that do nothing. */}
+        <GroupedList>
+          <GroupedRow
+            icon={UserCircleIcon}
+            title={t('settings.simpleMode')}
+            subtitle={t('common.comingSoon')}
+          />
+          <GroupedRow
+            icon={HeartbeatIcon}
+            title={t('settings.healthCard')}
+            subtitle={t('common.comingSoon')}
+          />
+          <GroupedRow
+            icon={LockIcon}
+            title={t('settings.privacy')}
+            subtitle={t('common.comingSoon')}
+          />
+        </GroupedList>
+
+        <GroupedList>
+          <GroupedRow
+            icon={SignOutIcon}
+            title={t('settings.signOut')}
+            onPress={() => setConfirmSignOut(true)}
+            testID="settings-sign-out"
+          />
+        </GroupedList>
       </View>
 
       {config.demoVoice ? (
@@ -260,6 +289,7 @@ export default function SettingsScreen() {
 
       <ConfirmSheet
         visible={confirmSignOut}
+        icon={SignOutIcon}
         text={config.demoVoice ? t('settings.signOutConfirmDemo') : t('settings.signOutConfirm')}
         onYes={signOut}
         onNo={() => setConfirmSignOut(false)}
@@ -269,6 +299,24 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
+  me: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.sm,
+    padding: space.sm,
+    borderRadius: radius.card,
+    backgroundColor: color.bgSubtle,
+  },
+  mePressed: {
+    backgroundColor: color.primarySubtle,
+  },
+  flex: {
+    flex: 1,
+  },
+  groups: {
+    gap: space.lg,
+    marginTop: space.md,
+  },
   heading: {
     marginTop: space.md,
   },

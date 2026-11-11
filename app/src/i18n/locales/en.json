@@ -730,7 +730,9 @@
     "demoAreYouOk": "Demo: missed check-in",
     "demoHelperAlert": "Demo: someone needs help",
     "demoScheduled": "Demo: the alert comes in {{seconds}} seconds. You can lock your phone.",
-    "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first."
+    "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first.",
+    "you": "You",
+    "viewProfile": "See my profile"
   },
   "family": {
     "title": "My family",
@@ -785,7 +787,8 @@
       "send": "Send invite",
       "readoutStep": "Step {{step}} of {{total}}. {{question}}",
       "readoutSend": "Tap Send invite when it's right."
-    }
+    },
+    "emptyDetail": "Add a parent or grandparent to see how they're doing and set reminders for them."
   },
   "profile": {
     "title": "My profile",

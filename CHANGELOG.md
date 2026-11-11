@@ -125,3 +125,12 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - **Recording** keeps a grey **Pause** and a black **Finish**.
 - **Rule over screenshot:** the brief asks for a red Finish pill. Red stays only for Help and
   emergencies, so Finish is black.
+
+### UI step 7: Settings, Profile, Family
+- **Settings:** Luma's grouped style. The member at the top (face, name, "See my profile");
+  **You** (Language); Read aloud and How we remind you stay as big chips (they're choices, not
+  links); **People and safety** (Safe Circle, Family); the not-ready items as plain rows that each
+  say "Coming soon" (no dead buttons); **Sign out** on its own, confirmed in a `SheetHeader` sheet.
+- **Profile:** a 96 dp face and a larger name at the top (new `Avatar` size 96); the rest reuses
+  the restyled Activity pieces.
+- **Family:** the empty state is the new `EmptyState` with one line on what adding someone gives.
