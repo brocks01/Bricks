@@ -50,7 +50,7 @@ for (const p of allPages()) {
   if (p.module === 'dev') continue; // developer page is English only on purpose
   for (const id of Object.keys(p.strings.en ?? {})) for (const l of languagesMissing(`${p.key}.${id}`)) gaps.push(`${p.key}.${id}:${l}`);
 }
-const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'agent.tool.lookup', 'agent.tool.screen', 'agent.tool.show', 'agent.canvas.badge', 'agent.canvas.info', 'agent.canvas.about', 'agent.canvas.again', 'agent.canvas.next', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy', 'agent.close', 'agent.type'];
+const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'agent.tool.lookup', 'agent.tool.screen', 'agent.tool.show', 'agent.canvas.badge', 'agent.canvas.info', 'agent.canvas.about', 'agent.canvas.again', 'agent.canvas.next', 'agent.approve.ask', 'agent.approve.yes', 'agent.approve.no', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy', 'agent.close', 'agent.type'];
 for (const id of commonIds) for (const l of languagesMissing(`common.${id}`)) gaps.push(`common.${id}:${l}`);
 check('every word exists in all six languages', gaps.length === 0, gaps.slice(0, 8).join(', '));
 

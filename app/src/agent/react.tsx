@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { Button } from '../components/ui';
+import { useT } from '../i18n';
 import { useCurrentPage, useNavigate } from '../navigation/NavigationProvider';
 import { colors, space } from '../theme/tokens';
 import { registerRunner } from './live';
@@ -50,17 +51,23 @@ export function useAgent(): Agent {
   return a;
 }
 
-/** Shown when the agent proposes something that needs the person's approval. Only the person can approve. */
+/** Shown when the agent proposes something that needs the person's approval. Only the person can approve.
+ *  The words are in the person's language like the rest of the app; only the plain label is shown, never the tool's arguments. */
 export function ApprovalBanner() {
+  const t = useT();
   const { pending, answer } = useAgent();
   if (!pending) return null;
   return (
-    <View style={{ backgroundColor: colors.warnSoft, borderBottomWidth: 2, borderColor: colors.warn, padding: space.lg }}>
-      <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink }}>The assistant wants to do this</Text>
+    <View accessibilityLiveRegion="polite" style={{ backgroundColor: colors.warnSoft, borderBottomWidth: 2, borderColor: colors.warn, padding: space.lg }}>
+      <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink }}>{t('common.agent.approve.ask')}</Text>
       <Text style={{ fontSize: 16, color: colors.ink, marginVertical: space.sm }}>{pending.title}</Text>
       <View style={{ flexDirection: 'row', gap: space.md }}>
-        <View style={{ flex: 1 }}><Button label="Approve" onPress={() => answer(true)} /></View>
-        <View style={{ flex: 1 }}><Button kind="plain" label="Decline" onPress={() => answer(false)} /></View>
+        <View style={{ flex: 1 }}>
+          <Button label={t('common.agent.approve.yes')} onPress={() => answer(true)} />
+        </View>
+        <View style={{ flex: 1 }}>
+          <Button kind="plain" label={t('common.agent.approve.no')} onPress={() => answer(false)} />
+        </View>
       </View>
     </View>
   );

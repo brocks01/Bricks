@@ -95,6 +95,7 @@ export const common: PageStrings = {
     agentFilling: 'Pembantu sedang mengisi: {label}', agentPressing: 'Pembantu sedang menekan: {label}', agentOpening: 'Pembantu sedang membuka: {label}',
     'agent.tool.lookup': 'Mencari sesuatu…', 'agent.tool.screen': 'Bekerja di skrin ini…', 'agent.tool.show': 'Menunjukkan sesuatu…',
     'agent.canvas.badge': 'Dijana oleh Bricks Agent (AI)', 'agent.canvas.info': 'Mengenai skrin ini', 'agent.canvas.about': 'Bricks Agent menulis skrin ini mengikut permintaan anda. Tiada apa-apa disimpan sehingga anda mengesahkannya.', 'agent.canvas.again': 'Jana semula', 'agent.canvas.next': 'Seterusnya',
+    'agent.approve.ask': 'Pembantu mahu melakukan ini', 'agent.approve.yes': 'Luluskan', 'agent.approve.no': 'Tolak',
     comingSoon: 'Akan datang', comingSoonBody: 'Kami sedang membina bahagian ini. Ia akan muncul di sini tidak lama lagi.',
     'ageBand.under40': 'Bawah 40', 'ageBand.40to59': '40 hingga 59', 'ageBand.60plus': '60 dan ke atas',
     notSet: 'Belum ditetapkan', saved: 'Disimpan.', loading: 'Memuatkan…',
