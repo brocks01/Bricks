@@ -24,6 +24,7 @@ export interface Me {
   simple_mode: boolean;
   onboarded_by: OnboardedBy;
   status: UserStatus;
+  interests: Interest[];
 }
 
 /** Event categories. Each has an icon used when an event has no photo. */
@@ -151,7 +152,10 @@ export interface Reminder {
 }
 
 /** POST /reminders body. */
-export type NewReminder = Pick<Reminder, 'kind' | 'text' | 'time' | 'repeat' | 'date'>;
+export type NewReminder = Pick<Reminder, 'kind' | 'text' | 'time' | 'repeat' | 'date'> & {
+  /** Family setting a reminder for their parent (needs the parent's yes first). */
+  for_senior_id?: string | null;
+};
 
 /** GET /checkins/week. Days are Monday-first, this week. */
 export interface CheckinWeek {
@@ -218,4 +222,167 @@ export interface SosAlert {
     distance_m: number | null;
     status: SosHelperStatus;
   }[];
+}
+
+/* ---------- Onboarding, Pass It On, Family, voice (iteration 1.3). Proposed shapes; confirm with backend. ---------- */
+
+/** Interests asked at onboarding (S4); also the starting tags for "Ask me about". */
+export const INTERESTS = [
+  'walking',
+  'taichi',
+  'cooking',
+  'chess',
+  'music',
+  'gardening',
+  'teaching',
+  'technology',
+] as const;
+export type Interest = (typeof INTERESTS)[number];
+
+export type SignInMethod = 'singpass' | 'google' | 'phone';
+
+/** POST /auth/{method}. Singpass fills in the name and area; the others don't. */
+export interface SignInResult {
+  prefill: { name: string | null; area_name: string | null };
+  singpass_verified: boolean;
+}
+
+/** PATCH /me body (onboarding answers, Settings). */
+export interface MeUpdate {
+  name?: string;
+  preferred_name?: string | null;
+  area_name?: string | null;
+  interests?: Interest[];
+  channel_pref?: ChannelPref;
+  language?: Language;
+}
+
+/** GET/PUT /safe-circle: who we tell if the member needs help, in order. */
+export interface SafeCircleMember {
+  id: string;
+  name: string;
+  phone: string | null;
+  is_family: boolean;
+}
+export type NewSafeCircleMember = Omit<SafeCircleMember, 'id'>;
+
+/** A recorded voice clip: a voice intro, a thank-you or a story. */
+export interface VoiceClip {
+  audio_url: string;
+  duration_s: number;
+  /** What was said; null until it's been written out. */
+  transcript: string | null;
+}
+
+/** GET/POST /skills. */
+export interface SkillOffer {
+  id: string;
+  title: string;
+  tags: string[];
+  /** A session with a date also appears as a Kampung event (PO-4). */
+  start_at: string | null;
+  place_name: string | null;
+  is_paid: boolean;
+  event_id: string | null;
+  /** People who thanked the member for this skill. */
+  endorsement_count: number;
+}
+
+/** POST /skills body. Paid sessions come later; always free for now. */
+export interface NewSkillOffer {
+  title: string;
+  tags: string[];
+  start_at: string | null;
+  place_name: string | null;
+  is_paid: false;
+}
+
+/** A thank-you on the Thank-You Wall (endorsements in docs/03). Never negative, never stars. */
+export interface ThankYou {
+  id: string;
+  from: PersonSummary;
+  kind: 'thumb' | 'voice';
+  voice: VoiceClip | null;
+  skill: { id: string; title: string } | null;
+  event_title: string | null;
+  created_at: string;
+}
+
+export type BadgeKey = 'first_session' | 'ten_thanks' | 'kind_neighbour' | 'storyteller';
+
+/** GET /users/{id}/profile (and /users/me/profile for Pass It On). */
+export interface Profile {
+  id: string;
+  name: string;
+  preferred_name: string | null;
+  photo_url: string | null;
+  area_name: string | null;
+  languages: Language[];
+  singpass_verified: boolean;
+  intro: VoiceClip | null;
+  /** "Ask me about" topics (their interests). */
+  ask_me_about: Interest[];
+  given: { sessions_taught: number; people_helped: number; thank_yous: number };
+  skills: SkillOffer[];
+  badges: { key: BadgeKey; earned_at: string }[];
+  /** Newest first. */
+  thank_yous: ThankYou[];
+}
+
+/** GET /endorsements/pending: events the member went to and hasn't thanked the host for yet. */
+export interface ThanksPrompt {
+  event_id: string;
+  event_title: string;
+  host: PersonSummary;
+  skill: { id: string; title: string } | null;
+  ended_at: string;
+}
+
+/** POST /endorsements. The server checks the member went to the event. */
+export interface NewThanks {
+  event_id: string;
+  kind: 'thumb' | 'voice';
+  /** Local recording, uploaded with the request. */
+  audio_uri: string | null;
+  duration_s: number | null;
+}
+
+/** PUT /me/intro: the voice intro on the profile (S5). */
+export interface NewVoiceClip {
+  audio_uri: string;
+  duration_s: number;
+}
+
+export type Relation = 'mother' | 'father' | 'grandmother' | 'grandfather' | 'other';
+
+/**
+ * POST /family/invite (S9) and its status (S10). The senior's account stays
+ * inactive until the senior says yes (ON-5).
+ */
+export interface FamilyInvite {
+  id: string;
+  senior_name: string;
+  senior_phone: string;
+  relation: Relation;
+  language: Language;
+  interests: Interest[];
+  add_me_to_safe_circle: boolean;
+  status: 'invited' | 'accepted';
+  /** The parent's account, once they've said yes. */
+  senior_id: string | null;
+  created_at: string;
+}
+export type NewFamilyInvite = Omit<FamilyInvite, 'id' | 'status' | 'senior_id' | 'created_at'>;
+
+/** Skill tags use the interest keys, so the app can translate them. */
+export type SkillTag = Interest;
+
+/** POST /assistant/transcribe: the words in a voice recording. */
+export interface Transcript {
+  text: string;
+}
+
+/** POST /tts: spoken audio for phones without a voice for this language. */
+export interface SpokenAudio {
+  audio_url: string;
 }

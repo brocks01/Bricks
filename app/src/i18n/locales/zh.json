@@ -17,7 +17,10 @@
     "pause": "暂停",
     "stop": "停止",
     "next": "下一步",
-    "couldNotOpen": "打不开。请再试一次。"
+    "couldNotOpen": "打不开。请再试一次。",
+    "close": "关闭",
+    "comingSoon": "即将推出",
+    "save": "保存"
   },
   "tabs": {
     "home": "首页",
@@ -71,8 +74,53 @@
   },
   "passItOn": {
     "title": "传承分享",
-    "comingSoon": "在这里，您可以分享您的技能，并看到别人对您的感谢。",
-    "readout": "传承分享。在这里，您可以分享您的技能，并看到别人对您的感谢。"
+    "myStory": "我的故事",
+    "noIntro": "还没有语音介绍。",
+    "recordIntro": "录一段简短的问候",
+    "seeProfile": "看我的资料",
+    "canShare": "我能分享的",
+    "noSkills": "还没有。您可以教什么，或者帮什么忙？",
+    "shareSkill": "分享一项技能",
+    "skill": {
+      "anyTime": "有人问的时候",
+      "free": "免费",
+      "thanked_other": "{{count}} 人感谢过"
+    },
+    "given": {
+      "title": "我付出过的",
+      "sessions": "教过的课",
+      "people": "帮过的人",
+      "thanks": "收到的感谢"
+    },
+    "badge": {
+      "first_session": "教了第一堂课",
+      "ten_thanks": "收到 10 次感谢",
+      "kind_neighbour": "热心邻居",
+      "storyteller": "分享了自己的故事"
+    },
+    "wall": "感谢墙",
+    "seeAllThanks_other": "看全部 {{count}} 条感谢",
+    "noThanks": "还没有感谢。收到后会显示在这里。",
+    "thanks": {
+      "thumb": "{{name}}说了谢谢"
+    },
+    "wallReadout_other": "感谢墙。有 {{count}} 人说了谢谢。",
+    "wallReadoutVoice": "{{name}}说：{{words}}",
+    "readoutShare": "您能分享的：{{skills}}。",
+    "readoutGiven": "您教过 {{sessions}} 堂课，帮过 {{people}} 个人，收到 {{thanks}} 次感谢。",
+    "readoutActions": "按分享一项技能，提供新的东西。",
+    "prompt": {
+      "title": "说声谢谢",
+      "question": "{{name}}的{{event}}怎么样？",
+      "open": "向{{name}}说声谢谢",
+      "thank": "谢谢{{name}}",
+      "sayThanks": "说声谢谢",
+      "send": "发送",
+      "skip": "跳过",
+      "sent": "我们已经告诉{{name}}了。谢谢您。",
+      "none": "您已经说过谢谢了。谢谢您！",
+      "readout": "按谢谢{{name}}，或者按说声谢谢录一段短消息，或者跳过。"
+    }
   },
   "kampung": {
     "title": "甘榜",
@@ -179,7 +227,11 @@
   },
   "listening": {
     "title": "正在听…",
-    "hint": "请说话。说完后点停止。"
+    "hint": "请说话。说完后点停止。",
+    "thinking": "请稍等…",
+    "notHeard": "对不起，我没听清楚。",
+    "denied": "请在手机的设置里允许使用麦克风，这样我才能听到您。",
+    "demoTitle": "演示：点一下说了什么"
   },
   "stat": {
     "daysActive": "{{total}} 天中有 {{done}} 天活动"
@@ -389,13 +441,268 @@
       "repeatTitle": "多久一次？",
       "summary": "{{repeat}} {{time}}：{{text}}",
       "save": "保存提醒",
-      "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}点一个选项，再点下一步。"
-    }
+      "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}点一个选项，再点下一步。",
+      "forSomeone": "这是给{{name}}的提醒。"
+    },
+    "sayIt": "用说的"
   },
   "notifications": {
     "channel": "提醒",
     "reminderTitle": "提醒：{{text}}",
     "reminderBody": "做好了就点完成。",
     "snooze": "{{count}} 分钟后再提醒"
+  },
+  "readOutBar": {
+    "label": "正在朗读屏幕",
+    "resume": "继续",
+    "repeat": "重复",
+    "slower": "慢一点"
+  },
+  "record": {
+    "start": "录音",
+    "recording": "正在录音… {{time}} / {{max}}",
+    "hint": "最多 {{seconds}} 秒。说完后按停止。",
+    "denied": "要录音，请在手机的设置里允许使用麦克风。"
+  },
+  "buddy": {
+    "playAgain": "再听一次",
+    "cancelled": "好的，我什么都没改。",
+    "todayCheckin": "有一个问题请您回答：您昨天有活动吗？",
+    "todayEvent": "接下来：{{title}}，{{when}}。",
+    "todayReminder": "{{time}} 的提醒：{{text}}。",
+    "todayNothing": "今天没有别的事了。祝您愉快。",
+    "nothingToJoin": "现在没有新的活动可以参加。去甘榜看看吧。",
+    "alreadyGoing": "您已经报名参加 {{title}}，{{when}}。",
+    "joinConfirm": "参加 {{title}}，{{when}}？",
+    "checkinConfirm": {
+      "yes": "您昨天有活动。对吗？",
+      "no": "您昨天没有活动。对吗？"
+    },
+    "remindNoTime": "要在几点提醒您？请在这里选择。",
+    "confirmQuestion": "{{summary}}。对吗？",
+    "walkStarted": "开始散步了。祝您走得开心。",
+    "walkContinues": "您的散步还在进行中。",
+    "noWalk": "您现在没有在散步。",
+    "profile": "这是您的资料。",
+    "unknown": "对不起，我没听懂。您可以说：今天有什么活动、我要参加、提醒我8点吃药，或者救命。"
+  },
+  "interests": {
+    "walking": "散步",
+    "taichi": "太极",
+    "cooking": "烹饪",
+    "chess": "下棋",
+    "music": "音乐",
+    "gardening": "园艺",
+    "teaching": "教学",
+    "technology": "手机和电脑"
+  },
+  "channel": {
+    "app": {
+      "title": "应用通知",
+      "description": "这部手机上会弹出消息。"
+    },
+    "whatsapp": {
+      "title": "WhatsApp 消息",
+      "description": "我们给您发 WhatsApp 消息。"
+    },
+    "call": {
+      "title": "电话",
+      "description": "我们打电话给您，读给您听。"
+    }
+  },
+  "onboarding": {
+    "sayIt": "用说的",
+    "skipForNow": "先跳过",
+    "later": "以后再说",
+    "who": {
+      "title": "谁在设置？",
+      "self": "我自己",
+      "selfHint": "为我设置 Bricks",
+      "family": "我的家人",
+      "familyHint": "为父母或祖父母设置",
+      "community": "我的社区或中心",
+      "communityHint": "一次添加很多成员",
+      "readout": "谁在设置？我自己、我的家人，或者我的社区或中心。"
+    },
+    "signIn": {
+      "title": "登录",
+      "singpass": "用 Singpass 登录",
+      "singpassHint": "您的名字和地区会自动填好。",
+      "google": "用 Google 继续",
+      "phone": "用我的手机号码",
+      "phoneLabel": "您的手机号码",
+      "phoneInvalid": "这不像新加坡的手机号码。应该有 8 个数字，比如 9123 4567。",
+      "privacy": "没有您的同意，我们绝不分享您的资料。",
+      "demoNote": "演示：每个选项都会登录到示例账户，不会使用真实的 Singpass 或 Google 账户。",
+      "readout": "用 Singpass、Google 或手机号码登录。没有您的同意，我们绝不分享您的资料。"
+    },
+    "about": {
+      "readout": "第 {{step}} 步，共 {{total}} 步。{{question}} {{hint}}",
+      "name": {
+        "title": "我们怎么称呼您？",
+        "label": "您的名字",
+        "readoutHint": "可以打字，或者按“用说的”。"
+      },
+      "area": {
+        "title": "您住在哪里？",
+        "other": "其他地方",
+        "label": "您住的地区",
+        "readoutHint": "按您住的地区，或者按“用说的”。"
+      },
+      "interests": {
+        "title": "您喜欢做什么？",
+        "hint": "可以选很多个。",
+        "demo": "{{a}}和{{b}}",
+        "readoutHint": "可以选很多个，然后按下一步。"
+      }
+    },
+    "voiceIntro": {
+      "title": "您的声音",
+      "prompt": "跟大家简单介绍一下自己",
+      "examples": "比如：您以前做什么工作、您喜欢什么，或者大家可以问您什么。",
+      "readout": "跟大家简单介绍一下自己。按录音，最多说 {{seconds}} 秒。也可以跳过。"
+    },
+    "safeCircle": {
+      "title": "您需要帮助时，我们该通知谁？",
+      "why": "您按求助时，我们会马上通知这些人。最多选五个人。",
+      "readout": "您需要帮助时，我们该通知谁？最多选五个人。也可以以后再设置。"
+    },
+    "channel": {
+      "title": "我们该怎么提醒您？",
+      "readout": "我们该怎么提醒您？应用通知、WhatsApp 消息，或者电话。"
+    },
+    "done": {
+      "welcome": "欢迎您，{{name}}。",
+      "welcomeNoName": "欢迎您。",
+      "next": "每天早上我们会问候您。",
+      "goHome": "去首页"
+    }
+  },
+  "safeCircle": {
+    "fromContacts": "从通讯录选择",
+    "typeIt": "输入名字和号码",
+    "nameLabel": "对方的名字",
+    "phoneLabel": "对方的手机号码",
+    "add": "添加",
+    "family": "家人",
+    "remove": "移除",
+    "removed": "已移除 {{name}}。",
+    "already": "{{name}} 已经在您的安全圈里了。",
+    "noName": "没有名字",
+    "contactsDenied": "我们看不到您的通讯录。您可以直接输入名字和号码。",
+    "full_other": "已经有 {{count}} 个人了，这是最多的人数。",
+    "saved": "安全圈已保存。"
+  },
+  "settings": {
+    "title": "设置",
+    "readout": "设置。语言：{{language}}。我们用{{channel}}提醒您。您也可以修改朗读、安全圈和家人。",
+    "language": "语言",
+    "languageReadout": "语言。请选择语言。",
+    "languageChanged": "语言已改为 {{language}}。",
+    "readAloud": "朗读",
+    "autoRead": "每个页面打开时自动朗读？",
+    "speed": "朗读速度",
+    "speeds": {
+      "slowest": "很慢",
+      "slow": "慢",
+      "normal": "正常",
+      "quick": "快一点"
+    },
+    "speedSample": "我会用这个速度朗读。",
+    "tryVoice": "听听声音",
+    "missingVoice": "这部手机还没有{{language}}的语音，我们暂时用别的声音朗读。您可以在手机设置的“文字转语音”里添加。",
+    "remindTitle": "提醒方式",
+    "channelChanged": "我们会用{{channel}}提醒您。",
+    "people": "家人与安全",
+    "safeCircle": "安全圈",
+    "peopleCount_other": "{{count}} 人",
+    "nobodyYet": "还没有人",
+    "family": "家人",
+    "simpleMode": "简易模式",
+    "healthCard": "健康卡",
+    "privacy": "隐私",
+    "signOut": "退出登录",
+    "signOutConfirm": "退出登录？之后需要重新登录。",
+    "signOutConfirmDemo": "退出登录？这也会让演示从头开始。"
+  },
+  "family": {
+    "title": "我的家人",
+    "them": "对方",
+    "empty": "您还没有添加任何人。",
+    "waiting": "等待{{name}}同意",
+    "waitingHint": "我们已经在 WhatsApp 上给{{name}}发了消息。对方同意之前，什么都不会设置。",
+    "joined": "{{name}}已加入",
+    "inSafeCircle": "您在{{name}}的安全圈里。",
+    "setReminder": "为{{name}}设置提醒",
+    "simpleMode": "开启简易模式",
+    "simpleModeLater": "简易模式即将推出。",
+    "addAnother": "添加另一位家人",
+    "demoHint": "演示：在真实手机上，对方会在 WhatsApp 上同意。",
+    "demoAccept": "演示：{{name}}同意了",
+    "called": {
+      "mother": "妈妈",
+      "father": "爸爸",
+      "grandmother": "奶奶",
+      "grandfather": "爷爷"
+    },
+    "relation": {
+      "mother": "母亲",
+      "father": "父亲",
+      "grandmother": "祖母",
+      "grandfather": "祖父",
+      "other": "其他人"
+    },
+    "add": {
+      "title": "添加我的父母",
+      "name": "对方叫什么名字？",
+      "phone": "{{name}}的手机号码是多少？",
+      "relation": "{{name}}是您的什么人？",
+      "language": "{{name}}喜欢用哪种语言？",
+      "interests": "{{name}}喜欢做什么？",
+      "safeCircle": "把您加入{{name}}的安全圈？",
+      "nameLabel": "对方的名字",
+      "phoneLabel": "对方的手机号码",
+      "phoneHint": "我们会把邀请发到这个号码给{{name}}。",
+      "interestsHint": "可以跳过，{{name}}以后可以自己选。",
+      "safeCircleWhy": "{{name}}按求助时，我们会马上通知您。",
+      "review": "请检查",
+      "reviewName": "名字",
+      "reviewPhone": "手机号码",
+      "reviewRelation": "和您的关系",
+      "reviewLanguage": "语言",
+      "reviewInterests": "喜欢",
+      "reviewSafeCircle": "您在对方的安全圈里",
+      "notChosen": "未选择",
+      "change": "修改",
+      "consent": "我们会在 WhatsApp 上给{{name}}发邀请。{{name}}同意之前，什么都不会设置。",
+      "send": "发送邀请",
+      "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}",
+      "readoutSend": "确认无误后，按发送邀请。"
+    }
+  },
+  "profile": {
+    "title": "我的资料",
+    "verified": "已通过 Singpass 验证",
+    "speaks": "会说{{languages}}",
+    "askMeAbout": "可以问我",
+    "endorsed_other": "{{count}} 人因{{skill}}感谢过",
+    "readout": "{{name}}，{{area}}。可以问我：{{about}}。这是其他会员看到的您。"
+  },
+  "share": {
+    "what": "您可以分享什么？",
+    "when": "什么时候？",
+    "where": "在哪里？",
+    "price": "免费吗？",
+    "preview": "检查并发布",
+    "titleLabel": "您想叫它什么？",
+    "defaultTitle": "跟我学{{skill}}",
+    "demoPhrase": "我可以教{{skill}}",
+    "flexible": "有人问的时候",
+    "anywhere": "哪里方便都可以",
+    "free": "免费：大家不用付钱。",
+    "paidLater": "收费课程即将推出。",
+    "alsoEvent": "它也会出现在甘榜里，大家可以报名参加。",
+    "published": "已分享，大家现在可以看到了。",
+    "publishedWithEvent": "已分享，现在也在甘榜里了。"
   }
 }

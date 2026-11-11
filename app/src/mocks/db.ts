@@ -16,6 +16,7 @@ import type {
 } from '@/api/types';
 import type { WalkUpload } from '@/features/walk/engine';
 
+import { createPassItOnDb } from './passItOnDb';
 import { createThriveDb } from './thriveDb';
 
 /**
@@ -285,6 +286,36 @@ export function createMockDb(now: () => Date = () => new Date()) {
     nextId: 1,
   };
 
+  // Created before Thrive, which reads the Safe Circle for SOS.
+  const passItOn = createPassItOnDb({
+    now,
+    meId: ME_ID,
+    person,
+    createEvent: (input) => {
+      const id = `e_new_${state.nextId++}`;
+      const start = new Date(input.start_at);
+      state.events.set(id, {
+        id,
+        title: input.title,
+        category: input.category,
+        start,
+        end: hours(start, 1),
+        place: input.place_name,
+        lat: 1.3505,
+        lng: 103.8486,
+        description: '',
+        host: ME_ID,
+        circle: null,
+        whatsapp: null,
+        going: new Set([ME_ID]),
+        extraGoing: 0,
+      });
+      return { id };
+    },
+    deleteEvent: (id) => void state.events.delete(id),
+    eventStart: (id) => state.events.get(id)?.start.toISOString() ?? null,
+  });
+
   const thrive = createThriveDb({
     now,
     person,
@@ -292,6 +323,7 @@ export function createMockDb(now: () => Date = () => new Date()) {
       const e = state.events.get(eventId);
       return e ? [...e.going].filter((id) => id !== ME_ID).map(person) : [];
     },
+    safeCircle: () => passItOn.getSafeCircle(),
   });
 
   const goingCount = (e: EventRow) => e.going.size + e.extraGoing;
@@ -461,6 +493,27 @@ export function createMockDb(now: () => Date = () => new Date()) {
       return alert;
     },
     resolveSos: (id: string) => thrive.resolveSos(id),
+
+    // Onboarding, profile, Pass It On, Family (1.3).
+    getMe: () => passItOn.getMe(),
+    updateMe: passItOn.updateMe,
+    signIn: passItOn.signIn,
+    getSafeCircle: () => passItOn.getSafeCircle(),
+    setSafeCircle: passItOn.setSafeCircle,
+    getProfile: passItOn.getProfile,
+    saveIntro: passItOn.saveIntro,
+    createSkill: passItOn.createSkill,
+    deleteSkill: passItOn.deleteSkill,
+    getThanksPrompts: () => passItOn.getThanksPrompts(),
+    sendThanks: passItOn.sendThanks,
+    skipThanks: passItOn.skipThanks,
+    getFamilyInvites: () => passItOn.getFamilyInvites(),
+    createFamilyInvite: passItOn.createFamilyInvite,
+    acceptFamilyInvite(id: string) {
+      const invite = passItOn.acceptFamilyInvite(id);
+      if (!invite) throw new MockNotFound(`invite ${id}`);
+      return invite;
+    },
 
     listCircles(): CircleList {
       const all = [...state.circles.values()].map(toCircleSummary);

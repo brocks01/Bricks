@@ -6,7 +6,9 @@ import { useMe, useToday } from '@/api';
 import {
   BigButton,
   HandHeartIcon,
+  GearSixIcon,
   HeartbeatIcon,
+  ListRow,
   QueryState,
   Screen,
   SectionCard,
@@ -16,6 +18,7 @@ import {
 } from '@/components';
 import { dayPart } from '@/features/home/greeting';
 import { timeToday, TodaySection } from '@/features/home/TodaySection';
+import { ReadOutTarget } from '@/features/readout/ReadOutTarget';
 import { config } from '@/lib/config';
 import { formatTime, formatWhen } from '@/lib/format';
 import { space } from '@/theme';
@@ -66,7 +69,15 @@ export default function HomeScreen() {
         text: d.next_reminder.text,
       });
     }
-    return t('home.readout', { greeting, today: todayText });
+    // Highlight "Today" and the three sections while each is read.
+    const full = t('home.readout', { greeting, today: todayText });
+    const at = todayText ? full.indexOf(todayText) : -1;
+    if (at < 0) return full;
+    return [
+      { text: full.slice(0, at) },
+      { text: todayText, target: 'today' },
+      { text: full.slice(at + todayText.length), target: 'sections' },
+    ];
   };
 
   return (
@@ -78,22 +89,35 @@ export default function HomeScreen() {
       <Text variant="heading" style={styles.heading}>
         {t('home.today')}
       </Text>
-      <QueryState query={today}>{(data) => <TodaySection today={data} />}</QueryState>
+      <ReadOutTarget id="today">
+        <QueryState query={today}>{(data) => <TodaySection today={data} />}</QueryState>
+      </ReadOutTarget>
 
       <Text variant="heading" style={styles.heading}>
         {t('home.explore')}
       </Text>
-      <View style={styles.sections}>
-        {SECTIONS.map(({ key, href, icon }) => (
-          <SectionCard
-            key={key}
-            icon={icon}
-            title={t(`home.section.${key}.title`)}
-            description={t(`home.section.${key}.description`)}
-            onPress={() => router.navigate(href)}
-            testID={`home-section-${key}`}
-          />
-        ))}
+      <ReadOutTarget id="sections">
+        <View style={styles.sections}>
+          {SECTIONS.map(({ key, href, icon }) => (
+            <SectionCard
+              key={key}
+              icon={icon}
+              title={t(`home.section.${key}.title`)}
+              description={t(`home.section.${key}.description`)}
+              onPress={() => router.navigate(href)}
+              testID={`home-section-${key}`}
+            />
+          ))}
+        </View>
+      </ReadOutTarget>
+
+      <View style={styles.settings}>
+        <ListRow
+          icon={GearSixIcon}
+          label={t('settings.title')}
+          onPress={() => router.push('/settings')}
+          testID="home-settings"
+        />
       </View>
 
       {config.devTools ? (
@@ -118,5 +142,8 @@ const styles = StyleSheet.create({
   },
   sections: {
     gap: space.sm,
+  },
+  settings: {
+    marginTop: space.md,
   },
 });

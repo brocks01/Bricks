@@ -39,3 +39,6 @@ export { ButtonRow } from './ButtonRow';
 export { RouteMap } from './RouteMap';
 export { SplitBars, type Split } from './SplitBars';
 export { TimeAdjuster } from './TimeAdjuster';
+export { RecordPanel, type RecordPanelProps } from './RecordPanel';
+export { ListRow, type ListRowProps } from './ListRow';
+export { Tag, TagRow } from './Tag';

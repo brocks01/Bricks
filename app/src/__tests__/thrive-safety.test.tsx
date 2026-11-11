@@ -214,9 +214,11 @@ describe('SOS (S28)', () => {
     expect(currentPath()).toBe('/sos');
     expect(screen.getByText('Call 995 now')).toBeTruthy();
     expect(screen.getByText('Telling your Safe Circle in 5 seconds…')).toBeTruthy();
-    expect(Speech.speak).toHaveBeenCalledWith(
-      expect.stringContaining('Telling your Safe Circle in 5 seconds'),
-      expect.anything(),
+    await waitFor(() =>
+      expect(Speech.speak).toHaveBeenCalledWith(
+        expect.stringContaining('Telling your Safe Circle in 5 seconds'),
+        expect.anything(),
+      ),
     );
     await press('sos-call');
     expect(openURL).toHaveBeenCalledWith('tel:995');

@@ -3,6 +3,7 @@ import type {
   NewReminder,
   PersonSummary,
   Reminder,
+  SafeCircleMember,
   SosAlert,
   WalkListItem,
   WalkStats,
@@ -55,9 +56,11 @@ export interface ThriveDeps {
   person: (id: string) => PersonSummary;
   /** People going to an event, for "Walked with" (excluding the walker). */
   attendees: (eventId: string) => PersonSummary[];
+  /** Who to tell in an SOS, in order (set at onboarding, S6). */
+  safeCircle: () => SafeCircleMember[];
 }
 
-export function createThriveDb({ now, person, attendees }: ThriveDeps) {
+export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDeps) {
   let nextId = 1;
   const today = () => isoDate(now());
 
@@ -79,8 +82,17 @@ export function createThriveDb({ now, person, attendees }: ThriveDeps) {
 
   /* ---------- Reminders ---------- */
   const reminders = new Map<string, Reminder & { doneOn: string | null }>();
-  const addReminder = (r: NewReminder, created_by: Reminder['created_by'] = 'self') => {
+  // Reminders family set for their parent: they ring on the parent's phone, not here.
+  const forFamily = new Map<string, Reminder>();
+  const addReminder = (
+    { for_senior_id, ...r }: NewReminder,
+    created_by: Reminder['created_by'] = 'self',
+  ) => {
     const id = `r_${nextId++}`;
+    if (for_senior_id) {
+      forFamily.set(id, { ...r, id, done_today: false, created_by: 'family' });
+      return id;
+    }
     reminders.set(id, { ...r, id, done_today: false, created_by, doneOn: null });
     return id;
   };
@@ -157,12 +169,10 @@ export function createThriveDb({ now, person, attendees }: ThriveDeps) {
 
   /* ---------- SOS ---------- */
   const alerts = new Map<string, { created: number; resolved: boolean }>();
-  // Safe Circle: family first, then neighbours by distance (docs/03 §7).
-  const SAFE_CIRCLE = [
-    { id: 'u_priya', is_family: true, distance_m: null, comesAfterMs: 3000 },
-    { id: 'u_ahmad', is_family: false, distance_m: 300, comesAfterMs: 6000 },
-    { id: 'u_lim', is_family: false, distance_m: 650, comesAfterMs: null },
-  ];
+  // The demo story: the first person sets off after 3 s, the second after 6 s,
+  // the rest have been told. Neighbours we know show how far away they are.
+  const SETS_OFF_AFTER_MS = [3000, 6000];
+  const DISTANCE_M: Record<string, number> = { u_ahmad: 300, u_lim: 650 };
 
   return {
     /* Check-ins */
@@ -191,10 +201,12 @@ export function createThriveDb({ now, person, attendees }: ThriveDeps) {
     },
     createReminder(input: NewReminder): Reminder {
       const id = addReminder(input);
-      return toReminder(reminders.get(id)!);
+      const own = reminders.get(id);
+      return own ? toReminder(own) : forFamily.get(id)!;
     },
     deleteReminder(id: string): void {
       reminders.delete(id);
+      forFamily.delete(id);
     },
     completeReminder(id: string): void {
       const r = reminders.get(id);
@@ -256,16 +268,17 @@ export function createThriveDb({ now, person, attendees }: ThriveDeps) {
       const alert = alerts.get(id);
       if (!alert) return null;
       const elapsed = now().getTime() - alert.created;
-      const helpers = SAFE_CIRCLE.map((h) => ({
-        id: h.id,
-        name: person(h.id).name,
-        is_family: h.is_family,
-        distance_m: h.distance_m,
-        status:
-          h.comesAfterMs !== null && elapsed >= h.comesAfterMs
-            ? ('on_way' as const)
-            : ('notified' as const),
-      }));
+      const helpers = safeCircle().map((h, i) => {
+        const after = SETS_OFF_AFTER_MS[i];
+        return {
+          id: h.id,
+          name: h.name,
+          is_family: h.is_family,
+          distance_m: h.is_family ? null : (DISTANCE_M[h.id] ?? null),
+          status:
+            after !== undefined && elapsed >= after ? ('on_way' as const) : ('notified' as const),
+        };
+      });
       return {
         id,
         status: alert.resolved

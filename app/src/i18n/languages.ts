@@ -18,12 +18,40 @@ export const LANGUAGE_INFO: Record<
     speechLocale: string;
     /** BCP 47 locale for dates and times (Intl). */
     intlLocale: string;
+    /** "Choose your language", in this language (S1 shows all four, stacked). */
+    chooseLanguage: string;
+    /** What S1 reads out in this language. */
+    chooseLanguageReadOut: string;
   }
 > = {
-  en: { nativeName: 'English', speechLocale: 'en-SG', intlLocale: 'en-SG' },
-  ms: { nativeName: 'Bahasa Melayu', speechLocale: 'ms-MY', intlLocale: 'ms-MY' },
-  zh: { nativeName: '中文', speechLocale: 'zh-CN', intlLocale: 'zh-CN' },
-  ta: { nativeName: 'தமிழ்', speechLocale: 'ta-IN', intlLocale: 'ta-IN' },
+  en: {
+    nativeName: 'English',
+    speechLocale: 'en-SG',
+    intlLocale: 'en-SG',
+    chooseLanguage: 'Choose your language',
+    chooseLanguageReadOut: 'Hello. Choose your language.',
+  },
+  ms: {
+    nativeName: 'Bahasa Melayu',
+    speechLocale: 'ms-MY',
+    intlLocale: 'ms-MY',
+    chooseLanguage: 'Pilih bahasa anda',
+    chooseLanguageReadOut: 'Selamat datang. Pilih bahasa anda.',
+  },
+  zh: {
+    nativeName: '中文',
+    speechLocale: 'zh-CN',
+    intlLocale: 'zh-CN',
+    chooseLanguage: '请选择语言',
+    chooseLanguageReadOut: '您好。请选择语言。',
+  },
+  ta: {
+    nativeName: 'தமிழ்',
+    speechLocale: 'ta-IN',
+    intlLocale: 'ta-IN',
+    chooseLanguage: 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்',
+    chooseLanguageReadOut: 'வணக்கம். உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்.',
+  },
 };
 
 export function isLanguage(value: unknown): value is Language {

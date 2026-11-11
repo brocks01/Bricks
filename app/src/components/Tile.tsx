@@ -4,13 +4,15 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { tapFeedback } from '@/lib/haptics';
 import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
 
-import type { Icon } from './primitives/icons';
+import { CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
 
 export interface TileProps {
   icon: Icon;
   label: string;
   onPress: () => void;
+  /** For multiple-choice steps (interests): a tick and a blue outline when chosen. */
+  selected?: boolean;
   testID?: string;
 }
 
@@ -18,18 +20,24 @@ export interface TileProps {
  * A large shortcut tile: icon above a word (Grab home). Used two per row through
  * <TileGrid>. The tile grows taller instead of cutting text at large font sizes.
  */
-export function Tile({ icon: IconComponent, label, onPress, testID }: TileProps) {
+export function Tile({ icon: IconComponent, label, onPress, selected, testID }: TileProps) {
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole={selected === undefined ? 'button' : 'checkbox'}
       accessibilityLabel={label}
+      accessibilityState={selected === undefined ? undefined : { checked: selected }}
       testID={testID}
       onPress={() => {
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.tile, selected && styles.selected, pressed && styles.pressed]}
     >
+      {selected ? (
+        <View style={styles.tick}>
+          <CheckCircleIcon size={iconSize.inline} color={color.primary} weight="fill" />
+        </View>
+      ) : null}
       <View style={styles.iconWell}>
         <IconComponent size={iconSize.hero} color={color.primary} weight="bold" />
       </View>
@@ -90,6 +98,16 @@ const styles = StyleSheet.create({
   pressed: {
     backgroundColor: color.bgSubtle,
     borderColor: color.primary,
+  },
+  selected: {
+    borderWidth: borderWidth.control,
+    borderColor: color.primary,
+    backgroundColor: color.primarySubtle,
+  },
+  tick: {
+    position: 'absolute',
+    top: space.xs,
+    right: space.xs,
   },
   iconWell: {
     width: ICON_WELL,

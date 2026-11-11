@@ -17,7 +17,10 @@
     "pause": "Jeda",
     "stop": "Berhenti",
     "next": "Seterusnya",
-    "couldNotOpen": "Kami tidak dapat membukanya. Sila cuba lagi."
+    "couldNotOpen": "Kami tidak dapat membukanya. Sila cuba lagi.",
+    "close": "Tutup",
+    "comingSoon": "Akan datang",
+    "save": "Simpan"
   },
   "tabs": {
     "home": "Utama",
@@ -71,8 +74,53 @@
   },
   "passItOn": {
     "title": "Kongsi Ilmu",
-    "comingSoon": "Di sini anda akan berkongsi kemahiran dan melihat ucapan terima kasih yang anda terima.",
-    "readout": "Kongsi Ilmu. Di sini anda akan berkongsi kemahiran dan melihat ucapan terima kasih yang anda terima."
+    "myStory": "Kisah saya",
+    "noIntro": "Belum ada pengenalan suara.",
+    "recordIntro": "Rakam salam ringkas",
+    "seeProfile": "Lihat profil saya",
+    "canShare": "Apa yang saya boleh kongsi",
+    "noSkills": "Belum ada. Apa yang anda boleh ajar atau bantu?",
+    "shareSkill": "Kongsi kemahiran",
+    "skill": {
+      "anyTime": "Bila-bila masa orang minta",
+      "free": "Percuma",
+      "thanked_other": "Diucapkan terima kasih oleh {{count}} orang"
+    },
+    "given": {
+      "title": "Apa yang saya telah beri",
+      "sessions": "Sesi diajar",
+      "people": "Orang dibantu",
+      "thanks": "Ucapan terima kasih"
+    },
+    "badge": {
+      "first_session": "Mengajar sesi pertama",
+      "ten_thanks": "Diucapkan terima kasih 10 kali",
+      "kind_neighbour": "Jiran yang baik hati",
+      "storyteller": "Berkongsi kisah"
+    },
+    "wall": "Dinding Terima Kasih",
+    "seeAllThanks_other": "Lihat semua {{count}} ucapan terima kasih",
+    "noThanks": "Belum ada ucapan terima kasih. Ia akan muncul di sini.",
+    "thanks": {
+      "thumb": "{{name}} mengucapkan terima kasih"
+    },
+    "wallReadout_other": "Dinding Terima Kasih. {{count}} orang mengucapkan terima kasih.",
+    "wallReadoutVoice": "{{name}} berkata: {{words}}",
+    "readoutShare": "Apa yang anda boleh kongsi: {{skills}}.",
+    "readoutGiven": "Anda telah mengajar {{sessions}} sesi, membantu {{people}} orang dan menerima {{thanks}} ucapan terima kasih.",
+    "readoutActions": "Tekan Kongsi kemahiran untuk menawarkan sesuatu yang baharu.",
+    "prompt": {
+      "title": "Ucap terima kasih",
+      "question": "Bagaimana {{event}} {{name}}?",
+      "open": "Ucap terima kasih kepada {{name}}",
+      "thank": "Terima kasih, {{name}}",
+      "sayThanks": "Sebut terima kasih",
+      "send": "Hantar",
+      "skip": "Langkau",
+      "sent": "Kami telah beritahu {{name}}. Terima kasih.",
+      "none": "Anda sudah mengucapkan terima kasih. Terima kasih!",
+      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau."
+    }
   },
   "kampung": {
     "title": "Kampung",
@@ -179,7 +227,11 @@
   },
   "listening": {
     "title": "Sedang mendengar…",
-    "hint": "Bercakap sekarang. Ketik Berhenti apabila selesai."
+    "hint": "Bercakap sekarang. Ketik Berhenti apabila selesai.",
+    "thinking": "Sekejap…",
+    "notHeard": "Maaf, saya tidak dengar dengan jelas.",
+    "denied": "Sila benarkan mikrofon dalam Tetapan telefon anda, supaya saya boleh dengar.",
+    "demoTitle": "Demo: tekan apa yang disebut"
   },
   "stat": {
     "daysActive": "{{done}} daripada {{total}} hari aktif"
@@ -389,13 +441,268 @@
       "repeatTitle": "Berapa kerap?",
       "summary": "{{repeat}} pada {{time}}: {{text}}",
       "save": "Simpan peringatan",
-      "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}} Ketik pilihan, kemudian Seterusnya."
-    }
+      "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}} Ketik pilihan, kemudian Seterusnya.",
+      "forSomeone": "Peringatan ini untuk {{name}}."
+    },
+    "sayIt": "Sebut sahaja"
   },
   "notifications": {
     "channel": "Peringatan",
     "reminderTitle": "Peringatan: {{text}}",
     "reminderBody": "Ketik Selesai apabila sudah.",
     "snooze": "Tunda {{count}} min"
+  },
+  "readOutBar": {
+    "label": "Membaca skrin dengan kuat",
+    "resume": "Teruskan",
+    "repeat": "Ulang",
+    "slower": "Lebih perlahan"
+  },
+  "record": {
+    "start": "Rakam",
+    "recording": "Merakam… {{time}} daripada {{max}}",
+    "hint": "Sehingga {{seconds}} saat. Tekan Berhenti apabila selesai.",
+    "denied": "Untuk merakam, sila benarkan mikrofon dalam Tetapan telefon anda."
+  },
+  "buddy": {
+    "playAgain": "Main semula",
+    "cancelled": "Baik, saya tidak ubah apa-apa.",
+    "todayCheckin": "Ada satu soalan untuk anda: adakah anda bergerak semalam?",
+    "todayEvent": "Akan datang: {{title}}, {{when}}.",
+    "todayReminder": "Peringatan pada {{time}}: {{text}}.",
+    "todayNothing": "Tiada apa-apa lagi hari ini. Selamat menikmati hari anda.",
+    "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Kampung.",
+    "alreadyGoing": "Anda sudah pergi ke {{title}}, {{when}}.",
+    "joinConfirm": "Sertai {{title}}, {{when}}?",
+    "checkinConfirm": {
+      "yes": "Anda bergerak semalam. Betul?",
+      "no": "Anda tidak bergerak semalam. Betul?"
+    },
+    "remindNoTime": "Pukul berapa saya patut ingatkan anda? Pilih di sini.",
+    "confirmQuestion": "{{summary}}. Betul?",
+    "walkStarted": "Jalan anda sudah bermula. Selamat berjalan.",
+    "walkContinues": "Jalan anda masih berjalan.",
+    "noWalk": "Anda tidak sedang berjalan sekarang.",
+    "profile": "Ini profil anda.",
+    "unknown": "Maaf, saya tidak faham. Anda boleh sebut: apa ada hari ini, saya nak ikut, ingatkan saya makan ubat pukul 8, atau tolong."
+  },
+  "interests": {
+    "walking": "Berjalan",
+    "taichi": "Tai chi",
+    "cooking": "Memasak",
+    "chess": "Catur",
+    "music": "Muzik",
+    "gardening": "Berkebun",
+    "teaching": "Mengajar",
+    "technology": "Telefon dan komputer"
+  },
+  "channel": {
+    "app": {
+      "title": "Pemberitahuan aplikasi",
+      "description": "Mesej muncul di telefon ini."
+    },
+    "whatsapp": {
+      "title": "Mesej WhatsApp",
+      "description": "Kami hantar mesej WhatsApp kepada anda."
+    },
+    "call": {
+      "title": "Panggilan telefon",
+      "description": "Kami telefon anda dan sebutkannya."
+    }
+  },
+  "onboarding": {
+    "sayIt": "Sebut sahaja",
+    "skipForNow": "Langkau dahulu",
+    "later": "Nanti",
+    "who": {
+      "title": "Siapa yang menyediakan?",
+      "self": "Saya sendiri",
+      "selfHint": "Sediakan Bricks untuk saya",
+      "family": "Keluarga saya",
+      "familyHint": "Sediakan untuk ibu bapa atau datuk nenek",
+      "community": "Komuniti atau pusat saya",
+      "communityHint": "Tambah ramai ahli sekali gus",
+      "readout": "Siapa yang menyediakan? Saya sendiri, keluarga saya, atau komuniti atau pusat saya."
+    },
+    "signIn": {
+      "title": "Log masuk",
+      "singpass": "Log masuk dengan Singpass",
+      "singpassHint": "Nama dan kawasan anda akan diisi untuk anda.",
+      "google": "Teruskan dengan Google",
+      "phone": "Guna nombor telefon saya",
+      "phoneLabel": "Nombor telefon bimbit anda",
+      "phoneInvalid": "Itu bukan nombor telefon bimbit Singapura. Ia patut ada 8 nombor, seperti 9123 4567.",
+      "privacy": "Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu.",
+      "demoNote": "Demo: setiap pilihan log masuk ke akaun contoh. Tiada akaun Singpass atau Google sebenar digunakan.",
+      "readout": "Log masuk dengan Singpass, Google, atau nombor telefon anda. Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu."
+    },
+    "about": {
+      "readout": "Langkah {{step}} daripada {{total}}. {{question}} {{hint}}",
+      "name": {
+        "title": "Apa nama panggilan anda?",
+        "label": "Nama anda",
+        "readoutHint": "Taipkan, atau tekan Sebut sahaja."
+      },
+      "area": {
+        "title": "Di mana anda tinggal?",
+        "other": "Tempat lain",
+        "label": "Kawasan anda",
+        "readoutHint": "Tekan kawasan anda, atau tekan Sebut sahaja."
+      },
+      "interests": {
+        "title": "Apa yang anda suka?",
+        "hint": "Pilih seberapa banyak yang anda suka.",
+        "demo": "{{a}} dan {{b}}",
+        "readoutHint": "Pilih seberapa banyak yang anda suka, kemudian tekan Seterusnya."
+      }
+    },
+    "voiceIntro": {
+      "title": "Suara anda",
+      "prompt": "Ceritakan sedikit tentang diri anda",
+      "examples": "Contohnya: kerja anda dahulu, apa yang anda suka, atau apa yang orang boleh tanya anda.",
+      "readout": "Ceritakan sedikit tentang diri anda. Tekan Rakam dan bercakap sehingga {{seconds}} saat. Anda boleh langkau ini."
+    },
+    "safeCircle": {
+      "title": "Siapa yang perlu kami beritahu jika anda perlukan bantuan?",
+      "why": "Jika anda tekan Bantuan, kami terus beritahu mereka. Pilih sehingga lima orang.",
+      "readout": "Siapa yang perlu kami beritahu jika anda perlukan bantuan? Pilih sehingga lima orang. Anda boleh buat ini nanti."
+    },
+    "channel": {
+      "title": "Bagaimana kami patut ingatkan anda?",
+      "readout": "Bagaimana kami patut ingatkan anda? Pemberitahuan aplikasi, mesej WhatsApp, atau panggilan telefon."
+    },
+    "done": {
+      "welcome": "Selamat datang, {{name}}.",
+      "welcomeNoName": "Selamat datang.",
+      "next": "Setiap pagi kami akan tanya khabar anda.",
+      "goHome": "Pergi ke Utama"
+    }
+  },
+  "safeCircle": {
+    "fromContacts": "Pilih daripada kenalan saya",
+    "typeIt": "Taip nama dan nombor",
+    "nameLabel": "Nama mereka",
+    "phoneLabel": "Nombor telefon bimbit mereka",
+    "add": "Tambah",
+    "family": "Keluarga",
+    "remove": "Buang",
+    "removed": "{{name}} dibuang.",
+    "already": "{{name}} sudah ada dalam Bulatan Selamat anda.",
+    "noName": "Tiada nama",
+    "contactsDenied": "Kami tidak dapat melihat kenalan anda. Anda boleh taip nama dan nombor.",
+    "full_other": "Itu {{count}} orang, paling ramai yang dibenarkan.",
+    "saved": "Bulatan Selamat disimpan."
+  },
+  "settings": {
+    "title": "Tetapan",
+    "readout": "Tetapan. Bahasa: {{language}}. Kami ingatkan anda melalui {{channel}}. Anda juga boleh ubah Baca dengan kuat, Bulatan Selamat dan Keluarga.",
+    "language": "Bahasa",
+    "languageReadout": "Bahasa. Pilih bahasa anda.",
+    "languageChanged": "Bahasa ditukar kepada {{language}}.",
+    "readAloud": "Baca dengan kuat",
+    "autoRead": "Baca setiap skrin apabila ia dibuka?",
+    "speed": "Kelajuan membaca",
+    "speeds": {
+      "slowest": "Sangat perlahan",
+      "slow": "Perlahan",
+      "normal": "Biasa",
+      "quick": "Lebih cepat"
+    },
+    "speedSample": "Beginilah kelajuan saya membaca.",
+    "tryVoice": "Dengar suara",
+    "missingVoice": "Telefon ini belum ada suara {{language}}. Buat masa ini kami baca dengan suara lain. Anda boleh tambah suara dalam tetapan telefon di bawah Teks-ke-pertuturan.",
+    "remindTitle": "Cara kami ingatkan anda",
+    "channelChanged": "Kami akan ingatkan anda melalui {{channel}}.",
+    "people": "Orang dan keselamatan",
+    "safeCircle": "Bulatan Selamat",
+    "peopleCount_other": "{{count}} orang",
+    "nobodyYet": "Belum ada sesiapa",
+    "family": "Keluarga",
+    "simpleMode": "Mod Mudah",
+    "healthCard": "Kad Kesihatan",
+    "privacy": "Privasi",
+    "signOut": "Log keluar",
+    "signOutConfirm": "Log keluar? Anda perlu log masuk semula.",
+    "signOutConfirmDemo": "Log keluar? Ini juga memulakan demo semula dari awal."
+  },
+  "family": {
+    "title": "Keluarga saya",
+    "them": "mereka",
+    "empty": "Anda belum menambah sesiapa.",
+    "waiting": "Menunggu {{name}} bersetuju",
+    "waitingHint": "Kami telah hantar mesej WhatsApp kepada {{name}}. Tiada apa-apa disediakan sehingga mereka bersetuju.",
+    "joined": "{{name}} sudah menyertai",
+    "inSafeCircle": "Anda dalam Bulatan Selamat {{name}}.",
+    "setReminder": "Tetapkan peringatan untuk {{name}}",
+    "simpleMode": "Hidupkan Mod Mudah",
+    "simpleModeLater": "Mod Mudah akan datang.",
+    "addAnother": "Tambah ahli keluarga lain",
+    "demoHint": "Demo: di telefon sebenar, mereka bersetuju melalui WhatsApp.",
+    "demoAccept": "Demo: {{name}} bersetuju",
+    "called": {
+      "mother": "Ibu",
+      "father": "Ayah",
+      "grandmother": "Nenek",
+      "grandfather": "Datuk"
+    },
+    "relation": {
+      "mother": "Ibu",
+      "father": "Bapa",
+      "grandmother": "Nenek",
+      "grandfather": "Datuk",
+      "other": "Orang lain"
+    },
+    "add": {
+      "title": "Tambah ibu bapa saya",
+      "name": "Siapa nama mereka?",
+      "phone": "Apa nombor telefon bimbit {{name}}?",
+      "relation": "Siapa {{name}} kepada anda?",
+      "language": "Bahasa apa yang {{name}} suka?",
+      "interests": "Apa yang {{name}} suka?",
+      "safeCircle": "Tambah anda ke Bulatan Selamat {{name}}?",
+      "nameLabel": "Nama mereka",
+      "phoneLabel": "Nombor telefon bimbit mereka",
+      "phoneHint": "Kami akan hantar jemputan kepada {{name}} di sini.",
+      "interestsHint": "Anda boleh langkau ini. {{name}} boleh pilih nanti.",
+      "safeCircleWhy": "Jika {{name}} tekan Bantuan, kami akan terus beritahu anda.",
+      "review": "Sila semak",
+      "reviewName": "Nama",
+      "reviewPhone": "Nombor telefon bimbit",
+      "reviewRelation": "Hubungan dengan anda",
+      "reviewLanguage": "Bahasa",
+      "reviewInterests": "Suka",
+      "reviewSafeCircle": "Anda dalam Bulatan Selamat mereka",
+      "notChosen": "Belum dipilih",
+      "change": "Ubah",
+      "consent": "Kami akan hantar jemputan WhatsApp kepada {{name}}. Tiada apa-apa disediakan sehingga {{name}} bersetuju.",
+      "send": "Hantar jemputan",
+      "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}}",
+      "readoutSend": "Tekan Hantar jemputan apabila semuanya betul."
+    }
+  },
+  "profile": {
+    "title": "Profil saya",
+    "verified": "Disahkan dengan Singpass",
+    "speaks": "Bertutur {{languages}}",
+    "askMeAbout": "Tanya saya tentang",
+    "endorsed_other": "Diucapkan terima kasih untuk {{skill}} oleh {{count}} orang",
+    "readout": "{{name}}, {{area}}. Tanya saya tentang: {{about}}. Beginilah ahli lain melihat anda."
+  },
+  "share": {
+    "what": "Apa yang anda boleh kongsi?",
+    "when": "Bila?",
+    "where": "Di mana?",
+    "price": "Adakah ia percuma?",
+    "preview": "Semak dan terbitkan",
+    "titleLabel": "Apa nama yang anda mahu?",
+    "defaultTitle": "{{skill}} bersama saya",
+    "demoPhrase": "Saya boleh ajar {{skill}}",
+    "flexible": "Bila orang minta",
+    "anywhere": "Di mana-mana yang sesuai",
+    "free": "Percuma: orang tidak perlu bayar.",
+    "paidLater": "Sesi berbayar akan datang.",
+    "alsoEvent": "Ia juga akan muncul di Kampung, supaya orang boleh sertai.",
+    "published": "Dikongsi. Orang kini boleh melihatnya.",
+    "publishedWithEvent": "Dikongsi. Ia juga ada di Kampung sekarang."
   }
 }

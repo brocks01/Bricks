@@ -1,12 +1,19 @@
 # Mock data
 
-Phase 1 runs on these files (`EXPO_PUBLIC_USE_MOCKS=true`). Each file is the exact JSON
-an API endpoint returns, so switching to the real backend in iteration 2.1 changes no screen code.
+Phase 1 runs on an in-memory backend (`EXPO_PUBLIC_USE_MOCKS=true`). Each function returns the
+exact JSON its API endpoint will return (`src/api/types.ts`), so switching to the real backend in
+iteration 2.1 changes no screen code.
 
-| File      | Endpoint  |
-| --------- | --------- |
-| `me.json` | `GET /me` |
+| File                | What                                                                      |
+| ------------------- | ------------------------------------------------------------------------- |
+| `db.ts`             | Events, Circles, people; joins the parts below                            |
+| `thriveDb.ts`       | Check-ins, reminders, walks (3 weeks for Raj), SOS (uses the Safe Circle) |
+| `walkProcessing.ts` | Reference implementation of the walk pipeline (docs/03 §6)                |
+| `passItOnDb.ts`     | Me, sign-in, Safe Circle, profile, skills, thank-yous, family invites     |
+| `audio.ts`          | Sample voice notes (`assets/audio/*.wav`, synthetic English voice)        |
+| `me.json`           | Raj's starting `GET /me`                                                  |
 
-Iteration 0.2 replaces and extends these with the backend seed export
-(5 users, 3 circles, 8 events around Bishan / Toa Payoh, walks, GPS track).
-Keep names, ids and shapes identical to the seed.
+Times are relative to "now", so "Tomorrow, 7 am" is always true. Keep names, ids and shapes
+identical to the backend seed (docs/03 §9). Not supported on mock data: speech-to-text
+(`/assistant/transcribe`) and cloud voices (`/tts`); the app falls back as described in
+`app/README.md` → Demo on mock data.

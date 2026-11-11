@@ -37,6 +37,14 @@ export default function WalkRecordScreen() {
   const walk = useActiveWalk();
   const upload = useUploadWalk();
   const [confirming, setConfirming] = useState(false);
+  // Buddy's "stop the walk" asks the Finish question here (adjusting state while
+  // rendering, React's pattern for responding to a change from outside).
+  const finishAsked = useActiveWalk((s) => s.finishAsked);
+  const [answeredAsk, setAnsweredAsk] = useState(0);
+  if (finishAsked > answeredAsk) {
+    setAnsweredAsk(finishAsked);
+    setConfirming(true);
+  }
 
   // Start as soon as the screen opens: "Start walk" is one tap.
   useEffect(() => {
@@ -87,6 +95,8 @@ export default function WalkRecordScreen() {
       readOut={readOut}
       back={false}
       standalone
+      // Hands-free: "stop the walk" works from here too.
+      tellMe
       testID="screen-walk-record"
       footer={
         <ButtonRow>

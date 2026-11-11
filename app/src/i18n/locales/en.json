@@ -17,7 +17,10 @@
     "pause": "Pause",
     "stop": "Stop",
     "next": "Next",
-    "couldNotOpen": "We couldn't open that. Please try again."
+    "couldNotOpen": "We couldn't open that. Please try again.",
+    "close": "Close",
+    "comingSoon": "Coming soon",
+    "save": "Save"
   },
   "tabs": {
     "home": "Home",
@@ -71,8 +74,56 @@
   },
   "passItOn": {
     "title": "Pass It On",
-    "comingSoon": "Here you will share your skills and see the thank-yous you receive.",
-    "readout": "Pass It On. Here you will share your skills and see the thank-yous you receive."
+    "myStory": "My story",
+    "noIntro": "No voice intro yet.",
+    "recordIntro": "Record a short hello",
+    "seeProfile": "See my profile",
+    "canShare": "What I can share",
+    "noSkills": "Nothing yet. What could you teach or help with?",
+    "shareSkill": "Share a skill",
+    "skill": {
+      "anyTime": "Whenever someone asks",
+      "free": "Free",
+      "thanked_one": "Thanked by {{count}} person",
+      "thanked_other": "Thanked by {{count}} people"
+    },
+    "given": {
+      "title": "What I've given",
+      "sessions": "Sessions taught",
+      "people": "People helped",
+      "thanks": "Thank-yous"
+    },
+    "badge": {
+      "first_session": "Taught a first session",
+      "ten_thanks": "Thanked 10 times",
+      "kind_neighbour": "Kind neighbour",
+      "storyteller": "Shared their story"
+    },
+    "wall": "Thank-You Wall",
+    "seeAllThanks_one": "See {{count}} thank-you",
+    "seeAllThanks_other": "See all {{count}} thank-yous",
+    "noThanks": "No thank-yous yet. They'll appear here.",
+    "thanks": {
+      "thumb": "{{name}} said thank you"
+    },
+    "wallReadout_one": "Thank-You Wall. {{count}} person said thank you.",
+    "wallReadout_other": "Thank-You Wall. {{count}} people said thank you.",
+    "wallReadoutVoice": "{{name}} said: {{words}}",
+    "readoutShare": "What you can share: {{skills}}.",
+    "readoutGiven": "You have taught {{sessions}} sessions, helped {{people}} people and received {{thanks}} thank-yous.",
+    "readoutActions": "Tap Share a skill to offer something new.",
+    "prompt": {
+      "title": "Say thank you",
+      "question": "How was {{name}}'s {{event}}?",
+      "open": "Say thank you to {{name}}",
+      "thank": "Thank {{name}}",
+      "sayThanks": "Say thank you",
+      "send": "Send",
+      "skip": "Skip",
+      "sent": "We've told {{name}}. Thank you.",
+      "none": "You've already said thank you. Thank you!",
+      "readout": "Tap Thank {{name}}, or Say thank you to record a short message, or Skip."
+    }
   },
   "kampung": {
     "title": "Kampung",
@@ -186,7 +237,11 @@
   },
   "listening": {
     "title": "Listening…",
-    "hint": "Speak now. Tap Stop when you have finished."
+    "hint": "Speak now. Tap Stop when you have finished.",
+    "thinking": "Just a moment…",
+    "notHeard": "Sorry, I didn't catch that.",
+    "denied": "Please allow the microphone in your phone's Settings, so I can hear you.",
+    "demoTitle": "Demo: tap what was said"
   },
   "stat": {
     "daysActive": "{{done}} of {{total}} days active"
@@ -398,13 +453,271 @@
       "repeatTitle": "How often?",
       "summary": "{{repeat}} at {{time}}: {{text}}",
       "save": "Save reminder",
-      "readoutStep": "Step {{step}} of {{total}}. {{question}} Tap a choice, then Next."
-    }
+      "readoutStep": "Step {{step}} of {{total}}. {{question}} Tap a choice, then Next.",
+      "forSomeone": "This reminder is for {{name}}."
+    },
+    "sayIt": "Say it instead"
   },
   "notifications": {
     "channel": "Reminders",
     "reminderTitle": "Reminder: {{text}}",
     "reminderBody": "Tap Done when you have.",
     "snooze": "Snooze {{count}} min"
+  },
+  "readOutBar": {
+    "label": "Reading the screen out loud",
+    "resume": "Carry on",
+    "repeat": "Repeat",
+    "slower": "Slower"
+  },
+  "record": {
+    "start": "Record",
+    "recording": "Recording… {{time}} of {{max}}",
+    "hint": "Up to {{seconds}} seconds. Tap Stop when you have finished.",
+    "denied": "To record, please allow the microphone in your phone's Settings."
+  },
+  "buddy": {
+    "playAgain": "Play again",
+    "cancelled": "Okay, I didn't change anything.",
+    "todayCheckin": "You have one question to answer: did you move yesterday?",
+    "todayEvent": "Coming up: {{title}}, {{when}}.",
+    "todayReminder": "Reminder at {{time}}: {{text}}.",
+    "todayNothing": "Nothing else today. Enjoy your day.",
+    "nothingToJoin": "There's nothing new to join right now. Have a look at Kampung.",
+    "alreadyGoing": "You're already going to {{title}}, {{when}}.",
+    "joinConfirm": "Join {{title}}, {{when}}?",
+    "checkinConfirm": {
+      "yes": "You moved yesterday. Is that right?",
+      "no": "You didn't move yesterday. Is that right?"
+    },
+    "remindNoTime": "What time should I remind you? Choose it here.",
+    "confirmQuestion": "{{summary}}. Is that right?",
+    "walkStarted": "Your walk has started. Enjoy it.",
+    "walkContinues": "Your walk is still going.",
+    "noWalk": "You're not on a walk right now.",
+    "profile": "Here is your profile.",
+    "unknown": "Sorry, I didn't understand. You can say: what's on today, join the walk, remind me to take medicine at 8, or help."
+  },
+  "interests": {
+    "walking": "Walking",
+    "taichi": "Tai chi",
+    "cooking": "Cooking",
+    "chess": "Chess",
+    "music": "Music",
+    "gardening": "Gardening",
+    "teaching": "Teaching",
+    "technology": "Phones and computers"
+  },
+  "channel": {
+    "app": {
+      "title": "App notification",
+      "description": "A message pops up on this phone."
+    },
+    "whatsapp": {
+      "title": "WhatsApp message",
+      "description": "We send you a WhatsApp message."
+    },
+    "call": {
+      "title": "Phone call",
+      "description": "We call you and say it out loud."
+    }
+  },
+  "onboarding": {
+    "sayIt": "Say it instead",
+    "skipForNow": "Skip for now",
+    "later": "Later",
+    "who": {
+      "title": "Who is setting up?",
+      "self": "Myself",
+      "selfHint": "Set up Bricks for me",
+      "family": "My family",
+      "familyHint": "Set up for a parent or grandparent",
+      "community": "My community or centre",
+      "communityHint": "Add many members at once",
+      "readout": "Who is setting up? Myself, my family, or my community or centre."
+    },
+    "signIn": {
+      "title": "Sign in",
+      "singpass": "Sign in with Singpass",
+      "singpassHint": "Your name and area will be filled in for you.",
+      "google": "Continue with Google",
+      "phone": "Use my phone number",
+      "phoneLabel": "Your mobile number",
+      "phoneInvalid": "That doesn't look like a Singapore mobile number. It should have 8 numbers, like 9123 4567.",
+      "privacy": "We never share your details without asking you.",
+      "demoNote": "Demo: every option signs in to a sample account. No real Singpass or Google account is used.",
+      "readout": "Sign in with Singpass, Google, or your phone number. We never share your details without asking you."
+    },
+    "about": {
+      "readout": "Step {{step}} of {{total}}. {{question}} {{hint}}",
+      "name": {
+        "title": "What should we call you?",
+        "label": "Your name",
+        "readoutHint": "Type it, or tap Say it instead."
+      },
+      "area": {
+        "title": "Where do you live?",
+        "other": "Somewhere else",
+        "label": "Your area",
+        "readoutHint": "Tap your area, or tap Say it instead."
+      },
+      "interests": {
+        "title": "What do you enjoy?",
+        "hint": "Choose as many as you like.",
+        "demo": "{{a}} and {{b}}",
+        "readoutHint": "Choose as many as you like, then tap Next."
+      }
+    },
+    "voiceIntro": {
+      "title": "Your voice",
+      "prompt": "Tell people a little about you",
+      "examples": "For example: what you used to do, what you love, or what people can ask you about.",
+      "readout": "Tell people a little about you. Tap Record and speak for up to {{seconds}} seconds. You can skip this."
+    },
+    "safeCircle": {
+      "title": "Who should we tell if you need help?",
+      "why": "If you press Help, we tell these people straight away. Choose up to five.",
+      "readout": "Who should we tell if you need help? Choose up to five people. You can do this later."
+    },
+    "channel": {
+      "title": "How should we remind you?",
+      "readout": "How should we remind you? App notification, WhatsApp message, or phone call."
+    },
+    "done": {
+      "welcome": "Welcome, {{name}}.",
+      "welcomeNoName": "Welcome.",
+      "next": "Every morning we'll ask how you are.",
+      "goHome": "Go to Home"
+    }
+  },
+  "safeCircle": {
+    "fromContacts": "Choose from my contacts",
+    "typeIt": "Type a name and number",
+    "nameLabel": "Their name",
+    "phoneLabel": "Their mobile number",
+    "add": "Add",
+    "family": "Family",
+    "remove": "Remove",
+    "removed": "Removed {{name}}.",
+    "already": "{{name}} is already in your Safe Circle.",
+    "noName": "No name",
+    "contactsDenied": "We can't see your contacts. You can type the name and number instead.",
+    "full_one": "That's {{count}} person, the most we allow.",
+    "full_other": "That's {{count}} people, the most we allow.",
+    "saved": "Safe Circle saved."
+  },
+  "settings": {
+    "title": "Settings",
+    "readout": "Settings. Language: {{language}}. We remind you by {{channel}}. You can also change Read aloud, your Safe Circle and Family.",
+    "language": "Language",
+    "languageReadout": "Language. Choose your language.",
+    "languageChanged": "Language changed to {{language}}.",
+    "readAloud": "Read aloud",
+    "autoRead": "Read each screen out when it opens?",
+    "speed": "Reading speed",
+    "speeds": {
+      "slowest": "Very slow",
+      "slow": "Slow",
+      "normal": "Normal",
+      "quick": "Quicker"
+    },
+    "speedSample": "This is how fast I will read.",
+    "tryVoice": "Hear the voice",
+    "missingVoice": "This phone has no {{language}} voice yet. We'll read with another voice for now. You can add one in your phone's settings under Text-to-speech.",
+    "remindTitle": "How we remind you",
+    "channelChanged": "We'll remind you by {{channel}}.",
+    "people": "People and safety",
+    "safeCircle": "Safe Circle",
+    "peopleCount_one": "{{count}} person",
+    "peopleCount_other": "{{count}} people",
+    "nobodyYet": "Nobody yet",
+    "family": "Family",
+    "simpleMode": "Simple Mode",
+    "healthCard": "Health Card",
+    "privacy": "Privacy",
+    "signOut": "Sign out",
+    "signOutConfirm": "Sign out? You'll need to sign in again.",
+    "signOutConfirmDemo": "Sign out? This also starts the demo again from the beginning."
+  },
+  "family": {
+    "title": "My family",
+    "them": "them",
+    "empty": "You haven't added anyone yet.",
+    "waiting": "Waiting for {{name}} to say yes",
+    "waitingHint": "We've sent {{name}} a message on WhatsApp. Nothing is set up until they say yes.",
+    "joined": "{{name}} joined",
+    "inSafeCircle": "You're in {{name}}'s Safe Circle.",
+    "setReminder": "Set a reminder for {{name}}",
+    "simpleMode": "Turn on Simple Mode",
+    "simpleModeLater": "Simple Mode is coming soon.",
+    "addAnother": "Add another family member",
+    "demoHint": "Demo: on a real phone, they say yes on WhatsApp.",
+    "demoAccept": "Demo: {{name}} says yes",
+    "called": {
+      "mother": "Mum",
+      "father": "Dad",
+      "grandmother": "Grandma",
+      "grandfather": "Grandpa"
+    },
+    "relation": {
+      "mother": "Mother",
+      "father": "Father",
+      "grandmother": "Grandmother",
+      "grandfather": "Grandfather",
+      "other": "Someone else"
+    },
+    "add": {
+      "title": "Add my parent",
+      "name": "What is their name?",
+      "phone": "What is {{name}}'s mobile number?",
+      "relation": "Who is {{name}} to you?",
+      "language": "Which language does {{name}} prefer?",
+      "interests": "What does {{name}} enjoy?",
+      "safeCircle": "Add you to {{name}}'s Safe Circle?",
+      "nameLabel": "Their name",
+      "phoneLabel": "Their mobile number",
+      "phoneHint": "We'll send {{name}} an invite here.",
+      "interestsHint": "You can skip this. {{name}} can choose later.",
+      "safeCircleWhy": "If {{name}} presses Help, we'll tell you straight away.",
+      "review": "Please check",
+      "reviewName": "Name",
+      "reviewPhone": "Mobile number",
+      "reviewRelation": "Who they are to you",
+      "reviewLanguage": "Language",
+      "reviewInterests": "Enjoys",
+      "reviewSafeCircle": "You in their Safe Circle",
+      "notChosen": "Not chosen",
+      "change": "Change",
+      "consent": "We'll send {{name}} an invite on WhatsApp. Nothing is set up until {{name}} says yes.",
+      "send": "Send invite",
+      "readoutStep": "Step {{step}} of {{total}}. {{question}}",
+      "readoutSend": "Tap Send invite when it's right."
+    }
+  },
+  "profile": {
+    "title": "My profile",
+    "verified": "Verified with Singpass",
+    "speaks": "Speaks {{languages}}",
+    "askMeAbout": "Ask me about",
+    "endorsed_one": "Thanked for {{skill}} by {{count}} person",
+    "endorsed_other": "Thanked for {{skill}} by {{count}} people",
+    "readout": "{{name}}, {{area}}. Ask me about: {{about}}. This is how other members see you."
+  },
+  "share": {
+    "what": "What can you share?",
+    "when": "When?",
+    "where": "Where?",
+    "price": "Is it free?",
+    "preview": "Check and publish",
+    "titleLabel": "What would you call it?",
+    "defaultTitle": "{{skill}} with me",
+    "demoPhrase": "I can teach {{skill}}",
+    "flexible": "When people ask me",
+    "anywhere": "Wherever suits us",
+    "free": "Free: people don't pay.",
+    "paidLater": "Paid sessions are coming soon.",
+    "alsoEvent": "It will also appear in Kampung, so people can join.",
+    "published": "Shared. People can now see it.",
+    "publishedWithEvent": "Shared. It's also in Kampung now."
   }
 }

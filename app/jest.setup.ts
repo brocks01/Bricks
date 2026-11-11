@@ -4,12 +4,20 @@ jest.mock('@react-native-async-storage/async-storage', () =>
   require('@react-native-async-storage/async-storage/jest/async-storage-mock'),
 );
 
-jest.mock('expo-speech', () => ({
-  speak: jest.fn(),
-  stop: jest.fn(() => Promise.resolve()),
-  isSpeakingAsync: jest.fn(() => Promise.resolve(false)),
-  getAvailableVoicesAsync: jest.fn(() => Promise.resolve([])),
-}));
+// Speech finishes each sentence straight away (so whole scripts get read), unless a
+// test sets `__state.autoFinish = false` to look at the Pause / Repeat / Slower bar.
+jest.mock('expo-speech', () => {
+  const state = { autoFinish: true };
+  return {
+    __state: state,
+    speak: jest.fn((_text: string, options?: { onDone?: () => void }) => {
+      if (state.autoFinish) void Promise.resolve().then(() => options?.onDone?.());
+    }),
+    stop: jest.fn(() => Promise.resolve()),
+    isSpeakingAsync: jest.fn(() => Promise.resolve(false)),
+    getAvailableVoicesAsync: jest.fn(() => Promise.resolve([])),
+  };
+});
 
 jest.mock('expo-haptics', () => ({
   selectionAsync: jest.fn(() => Promise.resolve()),
@@ -47,6 +55,56 @@ jest.mock('expo-audio', () => {
       isLoaded: true,
     }),
     setAudioModeAsync: jest.fn(() => Promise.resolve()),
+    createAudioPlayer: jest.fn(() => ({
+      play: jest.fn(),
+      remove: jest.fn(),
+      setPlaybackRate: jest.fn(),
+      addListener: jest.fn(),
+    })),
+    // Recording: starts and stops instantly; every clip is 5 seconds long.
+    RecordingPresets: { HIGH_QUALITY: {} },
+    requestRecordingPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+    useAudioRecorder: () => {
+      const recorder = {
+        isRecording: false,
+        uri: null as string | null,
+        prepareToRecordAsync: jest.fn(() => Promise.resolve()),
+        record: jest.fn(() => {
+          recorder.isRecording = true;
+        }),
+        stop: jest.fn(() => {
+          recorder.isRecording = false;
+          recorder.uri = 'file:///recording.m4a';
+          return Promise.resolve();
+        }),
+        getStatus: () => ({ durationMillis: 5000, isRecording: recorder.isRecording }),
+      };
+      return recorder;
+    },
+    useAudioRecorderState: () => ({ isRecording: false, durationMillis: 0, canRecord: true }),
+  };
+});
+
+// The phone's contact picker: returns whoever a test puts in `__nextContact`.
+jest.mock('expo-contacts', () => {
+  const state: { next: { name: string; phone: string } | null } = {
+    next: { name: 'Priya Kumar', phone: '+65 9000 0003' },
+  };
+  return {
+    __state: state,
+    requestPermissionsAsync: jest.fn(() => Promise.resolve({ granted: true })),
+    Contact: {
+      presentPicker: jest.fn(() =>
+        Promise.resolve(
+          state.next
+            ? {
+                getFullName: () => Promise.resolve(state.next!.name),
+                getPhones: () => Promise.resolve([{ number: state.next!.phone }]),
+              }
+            : null,
+        ),
+      ),
+    },
   };
 });
 

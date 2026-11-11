@@ -28,6 +28,23 @@ cp .env.example .env.local      # defaults run fully on mock data
 
 Phone on a different network from the laptop? Add `--tunnel`.
 
+**Added a route folder** (like `settings/`)? Restart `expo start`. A server that was already
+running generates wrong typed routes for new folders (`/settings/index` instead of `/settings`),
+and `npm run typecheck` then fails until it restarts.
+
+## Demo on mock data
+
+A fresh install opens on **S1 Language**, then onboarding; the app opens on Home once set up.
+
+- **Buddy (Tell me)** records your voice, but Expo Go has no speech-to-text, so the sheet also
+  shows **"Demo: tap what was said"**: one phrase per intent, in the app's language. The
+  facilitator taps what the senior said. These phrases never show with a real speech service.
+- **Sign in** with Singpass, Google or a phone number all sign in to the sample account (Raj).
+- **Family:** after "Send invite", a **"Demo: Dad says yes"** button stands in for the parent's
+  WhatsApp reply.
+- **Start again:** Settings → **Sign out** resets the demo data and goes back to S1.
+- Filming instructions: [`FILMING.md`](FILMING.md).
+
 ## Checks (run before every PR)
 
 ```bash
@@ -47,14 +64,19 @@ eas.json             build profiles: development · preview (demo APK) · produc
 src/
   app/               routes only (Expo Router)
     _layout.tsx      fonts + saved settings + language behind the splash; providers; crash screen
+    index.tsx        opens Home, or onboarding (resuming the last step) until set up
+    onboarding/      S1 Language → S2 Who → S3 Sign in → S4 ×3 → S5 → S6 → S7 → S8; S9 Family
     (tabs)/          Home · Pass It On · Kampung · Thrive, each its own stack
     sos.tsx          S28 emergency screen (full-screen modal)
-  components/        BigButton, SectionCard, layout/Screen (fixed controls), primitives/Text, icons
-  features/          feature logic (readout = Read It Out engine, home)
+    settings/, family.tsx, profile.tsx, thank/[eventId].tsx, event/, going/, walk/
+  components/        BigButton, SectionCard, ListRow, RecordPanel, layout/Screen (fixed controls), …
+  features/          readout (Read It Out: sentences, Pause/Repeat/Slower, highlight, /tts fallback),
+                     buddy (intents in 4 languages, BuddyHost), voice (recorder, listening sheet),
+                     onboarding, passItOn, safety (Safe Circle editor), walk, reminders, events, home
   api/               wire types, mock + HTTP clients, React Query hooks
   mocks/             JSON fixtures = exact API responses (filled from backend seed in 0.2)
   i18n/              en / ms / zh / ta strings, language matching
-  state/             persisted device settings (zustand + AsyncStorage)
+  state/             settings, onboarding progress (persisted), undo, Buddy listening
   theme/             tokens.ts: the only place with colours and sizes
   lib/               config (env), platform flags, query client, haptics
 ```
@@ -73,6 +95,8 @@ src/
   ‹ Back                                         ← own row, only off a stack root
   Title
   …
+  [ Pause | Repeat | Slower ]                    ← only while reading
+  [ Tell me ]  or  [ primary action ]            ← Buddy where there's no action bar
   ```
 
 - **Every string is translated.** Tests fail if `ms` / `zh` / `ta` miss a key, drop a
@@ -98,5 +122,6 @@ Noto Sans SC would add ~96 MB.
 
 ## Translation status
 
-`ms`, `zh`, `ta` strings for the 0.1 shell are **drafts** written to test layout and fonts.
-The Voice track replaces them with native-speaker-reviewed text in translation wave 1 (iteration 1.1).
+All `ms`, `zh`, `ta` strings (0.1 to 1.3) are **drafts** written to test layout and fonts, and need
+native-speaker review (SOS and consent wording first). Buddy's keyword lists
+(`src/features/buddy/intents.ts`) are drafts too, until the Voice track's lists arrive.

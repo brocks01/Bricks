@@ -15,9 +15,16 @@ import type {
   EventDetail,
   EventFilter,
   EventSummary,
+  MeUpdate,
   NewEvent,
+  NewFamilyInvite,
   NewReminder,
+  NewSafeCircleMember,
+  NewSkillOffer,
+  NewThanks,
+  NewVoiceClip,
   Reminder,
+  SignInMethod,
 } from './types';
 
 /** Query keys mirror the endpoint paths, so invalidation reads like the API. */
@@ -250,5 +257,114 @@ export function useResolveSos() {
   return useMutation({
     mutationFn: (id: string) => api.resolveSos(id),
     onSettled: (_d, _e, id) => client.invalidateQueries({ queryKey: queryKeys.sos(id) }),
+  });
+}
+
+/* ---------- Onboarding, Pass It On, Family (1.3) ---------- */
+
+export const queryKeys13 = {
+  safeCircle: ['safe-circle'] as const,
+  profile: (id: string) => ['profile', id] as const,
+  thanksPrompts: ['endorsements', 'pending'] as const,
+  familyInvites: ['family', 'invites'] as const,
+};
+
+export function useSignIn() {
+  return useMutation({
+    mutationFn: ({ method, phone }: { method: SignInMethod; phone?: string }) =>
+      api.signIn(method, phone),
+  });
+}
+
+export function useUpdateMe() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (update: MeUpdate) => api.updateMe(update),
+    onSuccess: (me) => client.setQueryData(queryKeys.me, me),
+    onSettled: () => client.invalidateQueries({ queryKey: ['profile'] }),
+  });
+}
+
+export function useSafeCircle() {
+  return useQuery({ queryKey: queryKeys13.safeCircle, queryFn: () => api.getSafeCircle() });
+}
+
+export function useSetSafeCircle() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (members: NewSafeCircleMember[]) => api.setSafeCircle(members),
+    onSuccess: (list) => client.setQueryData(queryKeys13.safeCircle, list),
+  });
+}
+
+/** 'me' for the signed-in member's own profile (Pass It On, S33). */
+export function useProfile(id: string) {
+  return useQuery({ queryKey: queryKeys13.profile(id), queryFn: () => api.getProfile(id) });
+}
+
+const refreshProfile = (client: QueryClient) => client.invalidateQueries({ queryKey: ['profile'] });
+
+export function useSaveIntro() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (clip: NewVoiceClip) => api.saveIntro(clip),
+    onSettled: () => refreshProfile(client),
+  });
+}
+
+export function useCreateSkill() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: NewSkillOffer) => api.createSkill(input),
+    // A skill with a date is also a Kampung event.
+    onSettled: () => Promise.all([refreshProfile(client), refreshCommunity(client)]),
+  });
+}
+
+export function useDeleteSkill() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteSkill(id),
+    onSettled: () => Promise.all([refreshProfile(client), refreshCommunity(client)]),
+  });
+}
+
+export function useThanksPrompts() {
+  return useQuery({ queryKey: queryKeys13.thanksPrompts, queryFn: () => api.getThanksPrompts() });
+}
+
+export function useSendThanks() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: NewThanks) => api.sendThanks(input),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.thanksPrompts }),
+  });
+}
+
+export function useSkipThanks() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (eventId: string) => api.skipThanks(eventId),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.thanksPrompts }),
+  });
+}
+
+export function useFamilyInvites() {
+  return useQuery({ queryKey: queryKeys13.familyInvites, queryFn: () => api.getFamilyInvites() });
+}
+
+export function useCreateFamilyInvite() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: NewFamilyInvite) => api.createFamilyInvite(input),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.familyInvites }),
+  });
+}
+
+export function useAcceptFamilyInvite() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.acceptFamilyInvite(id),
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.familyInvites }),
   });
 }

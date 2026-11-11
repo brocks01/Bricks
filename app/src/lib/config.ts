@@ -29,12 +29,19 @@ function readApiUrl(value: string | undefined): string | null {
 }
 
 const variant = readVariant();
+const apiUrl = readApiUrl(process.env.EXPO_PUBLIC_API_URL);
+const useMocks = readBoolean(process.env.EXPO_PUBLIC_USE_MOCKS, true);
 
 export const config = {
   variant,
   /** null when unset: the app must then run on mocks. */
-  apiUrl: readApiUrl(process.env.EXPO_PUBLIC_API_URL),
-  useMocks: readBoolean(process.env.EXPO_PUBLIC_USE_MOCKS, true),
+  apiUrl,
+  useMocks,
+  /**
+   * Running on mock data, where there is no speech-to-text: voice screens show a
+   * labelled "Demo: tap what was said" list, and demo-only controls appear.
+   */
+  demoVoice: useMocks || !apiUrl,
   /** Hidden developer screens (component gallery, account switcher). */
   devTools: readBoolean(process.env.EXPO_PUBLIC_DEV_TOOLS, __DEV__) && variant !== 'production',
   /** Emergency number shown on the SOS screen. 995 in Singapore; 112 for India later. */

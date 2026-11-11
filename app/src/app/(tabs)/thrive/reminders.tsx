@@ -12,6 +12,7 @@ import {
   Card,
   CheckCircleIcon,
   EmptyState,
+  MicrophoneIcon,
   PlusIcon,
   QueryState,
   Screen,
@@ -23,6 +24,7 @@ import { REMINDER_ICON, timeToday } from '@/features/reminders/kinds';
 import { formatTime } from '@/lib/format';
 import { notificationsAllowed } from '@/lib/notifications';
 import { platform } from '@/lib/platform';
+import { useBuddy } from '@/state/buddy';
 import { useUndo } from '@/state/undo';
 import { color, iconSize, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
@@ -36,6 +38,7 @@ export default function RemindersScreen() {
   const { t } = useTranslation();
   const { language } = useTypography();
   const router = useRouter();
+  const openBuddy = useBuddy((s) => s.open);
   const query = useReminders();
   const complete = useCompleteReminder();
   const remove = useDeleteReminder();
@@ -89,12 +92,22 @@ export default function RemindersScreen() {
       readOut={readOut}
       testID="screen-reminders"
       footer={
-        <BigButton
-          icon={PlusIcon}
-          label={t('reminders.add')}
-          onPress={() => router.push('/thrive/reminder-new')}
-          testID="reminders-add"
-        />
+        <>
+          {/* By voice: Buddy asks before it sets anything ("Every day at 8 am… Is that right?"). */}
+          <BigButton
+            variant="outline"
+            icon={MicrophoneIcon}
+            label={t('reminders.sayIt')}
+            onPress={openBuddy}
+            testID="reminders-say-it"
+          />
+          <BigButton
+            icon={PlusIcon}
+            label={t('reminders.add')}
+            onPress={() => router.push('/thrive/reminder-new')}
+            testID="reminders-add"
+          />
+        </>
       }
     >
       {alertsOff ? <StatusBanner tone="notice" text={t('reminders.notifyOff')} /> : null}

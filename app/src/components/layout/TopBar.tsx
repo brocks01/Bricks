@@ -12,13 +12,15 @@ export interface TopBarProps {
   readOut?: ReadOutScript;
   /** False only on the SOS screen itself. */
   showHelp?: boolean;
+  /** The screen's read-out owner id (see useReadOut().speak). */
+  owner?: string;
 }
 
 /**
  * The fixed controls (docs/02 rule 4). They sit in the same place on every screen:
  * Read it out top-left, Help top-right in red. Never icon-only.
  */
-export function TopBar({ readOut, showHelp = true }: TopBarProps) {
+export function TopBar({ readOut, showHelp = true, owner }: TopBarProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { speaking, toggle } = useReadOut();
@@ -33,7 +35,7 @@ export function TopBar({ readOut, showHelp = true }: TopBarProps) {
             label={speaking ? t('common.stopReading') : t('common.readOut')}
             labelVariant="bodyStrong"
             maxFontSizeMultiplier={maxChromeFontScale}
-            onPress={() => toggle(readOut)}
+            onPress={() => toggle(readOut, owner)}
             testID="topbar-readout"
           />
         ) : null}

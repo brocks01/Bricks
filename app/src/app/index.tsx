@@ -1,6 +1,14 @@
-import { Redirect } from 'expo-router';
+import { Redirect, type Href } from 'expo-router';
 
-/** The app opens on Home. (Onboarding will gate this in iteration 1.3.) */
+import { useOnboarding } from '@/state/onboarding';
+
+/**
+ * Where the app opens: Home once set up; otherwise onboarding, resuming on the
+ * screen they were last on (the root layout waits for saved progress to load).
+ */
 export default function Index() {
-  return <Redirect href="/home" />;
+  const completed = useOnboarding((s) => s.completed);
+  const resumeAt = useOnboarding((s) => s.resumeAt);
+  if (completed) return <Redirect href="/home" />;
+  return <Redirect href={(resumeAt ?? '/onboarding') as Href} />;
 }

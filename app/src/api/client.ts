@@ -1,8 +1,10 @@
 import { config } from '@/lib/config';
 
-import { request } from './http';
-import { mockApi } from './mock';
 import type { WalkUpload } from '@/features/walk/engine';
+import type { Language } from '@/i18n/languages';
+
+import { audioFile, formData, request } from './http';
+import { mockApi } from './mock';
 
 import type {
   CheckinResult,
@@ -10,13 +12,30 @@ import type {
   CircleDetail,
   CircleList,
   CircleSummary,
+  FamilyInvite,
   EventDetail,
   EventFilter,
   EventSummary,
   Me,
+  MeUpdate,
   NewEvent,
+  NewFamilyInvite,
   NewReminder,
+  NewSafeCircleMember,
+  NewSkillOffer,
+  NewThanks,
+  NewVoiceClip,
+  Profile,
   Reminder,
+  SafeCircleMember,
+  SignInMethod,
+  SignInResult,
+  SkillOffer,
+  SpokenAudio,
+  ThankYou,
+  ThanksPrompt,
+  Transcript,
+  VoiceClip,
   SosAlert,
   Today,
   WalkStats,
@@ -55,6 +74,28 @@ export interface BricksApi {
   }): Promise<SosAlert>;
   getSos(id: string): Promise<SosAlert>;
   resolveSos(id: string): Promise<void>;
+
+  // Iteration 1.3: onboarding, Pass It On, family, voice.
+  signIn(method: SignInMethod, phone?: string): Promise<SignInResult>;
+  updateMe(update: MeUpdate): Promise<Me>;
+  getSafeCircle(): Promise<SafeCircleMember[]>;
+  setSafeCircle(members: NewSafeCircleMember[]): Promise<SafeCircleMember[]>;
+  /** 'me' for the signed-in member. */
+  getProfile(id: string): Promise<Profile>;
+  saveIntro(clip: NewVoiceClip): Promise<VoiceClip>;
+  createSkill(input: NewSkillOffer): Promise<SkillOffer>;
+  deleteSkill(id: string): Promise<void>;
+  getThanksPrompts(): Promise<ThanksPrompt[]>;
+  sendThanks(input: NewThanks): Promise<ThankYou>;
+  skipThanks(eventId: string): Promise<void>;
+  getFamilyInvites(): Promise<FamilyInvite[]>;
+  createFamilyInvite(input: NewFamilyInvite): Promise<FamilyInvite>;
+  /** The senior's yes (ON-5). Normally sent from WhatsApp or SMS; a demo control in the app. */
+  acceptFamilyInvite(id: string): Promise<FamilyInvite>;
+  /** What was said in a recording. Rejects when there's no speech service (mock data). */
+  transcribe(input: { audio_uri: string; language: Language }): Promise<Transcript>;
+  /** Spoken audio for a phone without a voice for this language. */
+  tts(input: { text: string; language: Language }): Promise<SpokenAudio>;
 }
 
 /** Filter → query string for GET /events. */
@@ -94,6 +135,42 @@ const httpApi: BricksApi = {
   getSos: (id) => request(`/sos/${encodeURIComponent(id)}`),
   resolveSos: (id) =>
     request(`/sos/${encodeURIComponent(id)}`, { method: 'PATCH', body: { status: 'resolved' } }),
+  signIn: (method, phone) => request(`/auth/${method}`, { method: 'POST', body: { phone } }),
+  updateMe: (update) => request('/me', { method: 'PATCH', body: update }),
+  getSafeCircle: () => request('/safe-circle'),
+  setSafeCircle: (members) => request('/safe-circle', { method: 'PUT', body: { members } }),
+  getProfile: (id) => request(`/users/${encodeURIComponent(id)}/profile`),
+  saveIntro: ({ audio_uri, duration_s }) =>
+    request('/me/intro', {
+      method: 'PUT',
+      body: formData({ audio: audioFile(audio_uri), duration_s }),
+    }),
+  createSkill: (input) => request('/skills', { method: 'POST', body: input }),
+  deleteSkill: (id) => request(`/skills/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  getThanksPrompts: () => request('/endorsements/pending'),
+  sendThanks: ({ event_id, kind, audio_uri, duration_s }) =>
+    request('/endorsements', {
+      method: 'POST',
+      body: formData({
+        event_id,
+        kind,
+        duration_s,
+        audio: audio_uri ? audioFile(audio_uri) : null,
+      }),
+    }),
+  skipThanks: (eventId) =>
+    request(`/endorsements/pending/${encodeURIComponent(eventId)}`, { method: 'DELETE' }),
+  getFamilyInvites: () => request('/family/invites'),
+  createFamilyInvite: (input) => request('/family/invite', { method: 'POST', body: input }),
+  acceptFamilyInvite: (id) =>
+    request(`/invites/${encodeURIComponent(id)}/accept`, { method: 'POST' }),
+  transcribe: ({ audio_uri, language }) =>
+    request('/assistant/transcribe', {
+      method: 'POST',
+      body: formData({ audio: audioFile(audio_uri), language }),
+      timeoutMs: 20_000,
+    }),
+  tts: (input) => request('/tts', { method: 'POST', body: input }),
 };
 
 export const api: BricksApi = config.useMocks || !config.apiUrl ? mockApi : httpApi;

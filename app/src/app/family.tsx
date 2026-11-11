@@ -1,0 +1,149 @@
+import { useRouter } from 'expo-router';
+import { useTranslation } from 'react-i18next';
+import { StyleSheet, View } from 'react-native';
+
+import { useAcceptFamilyInvite, useFamilyInvites } from '@/api';
+import {
+  BellIcon,
+  BigButton,
+  Card,
+  EmptyState,
+  HouseIcon,
+  QueryState,
+  Screen,
+  ShieldCheckIcon,
+  StatusBanner,
+  Text,
+  UserPlusIcon,
+  InfoRow,
+} from '@/components';
+import { useRelationName } from '@/features/family/relationName';
+import { config } from '@/lib/config';
+import { borderWidth, color, radius, space } from '@/theme';
+
+/**
+ * S10 Family view (LifeSG status): for each parent, "Waiting for Dad to say yes"
+ * until they accept on WhatsApp or SMS, then "Dad joined". Once they've joined,
+ * family can set a reminder for them. The weekly overview comes in 3.2.
+ */
+export default function FamilyScreen() {
+  const { t } = useTranslation();
+  const router = useRouter();
+  const invites = useFamilyInvites();
+  const accept = useAcceptFamilyInvite();
+  const relationName = useRelationName();
+
+  const readOut = () => {
+    const list = invites.data ?? [];
+    if (list.length === 0) return `${t('family.title')}. ${t('family.empty')}`;
+    return `${t('family.title')}. ${list
+      .map((i) =>
+        i.status === 'accepted'
+          ? t('family.joined', { name: relationName(i) })
+          : t('family.waiting', { name: relationName(i) }),
+      )
+      .join('. ')}.`;
+  };
+
+  return (
+    <Screen title={t('family.title')} readOut={readOut} testID="screen-family">
+      <QueryState query={invites}>
+        {(list) =>
+          list.length === 0 ? (
+            <EmptyState text={t('family.empty')} />
+          ) : (
+            <View style={styles.list}>
+              {list.map((invite) => {
+                const who = relationName(invite);
+                const joined = invite.status === 'accepted';
+                return (
+                  <Card key={invite.id} testID={`family-invite-${invite.id}`}>
+                    <Text variant="heading">{invite.senior_name}</Text>
+                    <StatusBanner
+                      tone={joined ? 'success' : 'info'}
+                      text={
+                        joined
+                          ? t('family.joined', { name: who })
+                          : t('family.waiting', { name: who })
+                      }
+                      testID={`family-status-${invite.id}`}
+                    />
+                    {!joined ? <Text>{t('family.waitingHint', { name: who })}</Text> : null}
+                    {invite.add_me_to_safe_circle ? (
+                      <InfoRow
+                        icon={ShieldCheckIcon}
+                        text={t('family.inSafeCircle', { name: who })}
+                      />
+                    ) : null}
+                    {joined && invite.senior_id ? (
+                      <BigButton
+                        icon={BellIcon}
+                        label={t('family.setReminder', { name: who })}
+                        onPress={() =>
+                          router.push({
+                            pathname: '/thrive/reminder-new',
+                            params: { for: invite.senior_id!, forName: who },
+                          })
+                        }
+                        testID={`family-reminder-${invite.id}`}
+                      />
+                    ) : null}
+                    <BigButton
+                      variant="outline"
+                      label={t('family.simpleMode')}
+                      disabled
+                      onPress={() => {}}
+                    />
+                    <Text color="textSecondary">{t('family.simpleModeLater')}</Text>
+                    {config.demoVoice && !joined ? (
+                      // Facilitator control on mock data: the parent's "Yes" happens on WhatsApp or SMS.
+                      <View style={styles.demo}>
+                        <Text color="textSecondary">{t('family.demoHint')}</Text>
+                        <BigButton
+                          variant="outline"
+                          label={t('family.demoAccept', { name: who })}
+                          disabled={accept.isPending}
+                          onPress={() => accept.mutate(invite.id)}
+                          testID={`family-demo-accept-${invite.id}`}
+                        />
+                      </View>
+                    ) : null}
+                  </Card>
+                );
+              })}
+            </View>
+          )
+        }
+      </QueryState>
+
+      <BigButton
+        variant="outline"
+        icon={UserPlusIcon}
+        label={t('family.addAnother')}
+        onPress={() => router.push('/onboarding/family')}
+        testID="family-add"
+      />
+      <BigButton
+        variant="outline"
+        icon={HouseIcon}
+        label={t('onboarding.done.goHome')}
+        onPress={() => router.navigate('/home')}
+        testID="family-home"
+      />
+    </Screen>
+  );
+}
+
+const styles = StyleSheet.create({
+  list: {
+    gap: space.sm,
+  },
+  demo: {
+    gap: space.xs,
+    padding: space.sm,
+    borderRadius: radius.card,
+    borderWidth: borderWidth.control,
+    borderStyle: 'dashed',
+    borderColor: color.borderStrong,
+  },
+});

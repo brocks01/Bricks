@@ -14,6 +14,7 @@ export function setAuthTokenProvider(provider: TokenProvider): void {
 
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
+  /** JSON body, or FormData for uploads (voice recordings). */
   body?: unknown;
   timeoutMs?: number;
   signal?: AbortSignal;
@@ -32,7 +33,9 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   try {
     const token = await getToken();
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (options.body !== undefined) headers['Content-Type'] = 'application/json';
+    const isForm = typeof FormData !== 'undefined' && options.body instanceof FormData;
+    // FormData sets its own multipart Content-Type (with the boundary).
+    if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
     if (token) headers.Authorization = `Bearer ${token}`;
 
     let response: Response;
@@ -41,7 +44,12 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
         method: options.method ?? 'GET',
         signal: controller.signal,
         headers,
-        body: options.body === undefined ? undefined : JSON.stringify(options.body),
+        body:
+          options.body === undefined
+            ? undefined
+            : isForm
+              ? (options.body as FormData)
+              : JSON.stringify(options.body),
       });
     } catch (cause) {
       throw new NetworkError(path, cause);
@@ -57,4 +65,22 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     clearTimeout(timeout);
     options.signal?.removeEventListener('abort', onCallerAbort);
   }
+}
+
+/** A recorded file for a multipart upload (React Native's FormData file shape). */
+export function audioFile(uri: string): Blob {
+  const name = uri.split('/').pop() || 'recording.m4a';
+  return { uri, name, type: 'audio/m4a' } as unknown as Blob;
+}
+
+/** FormData from plain fields; null and undefined fields are left out. */
+export function formData(
+  fields: Record<string, string | number | boolean | Blob | null | undefined>,
+) {
+  const form = new FormData();
+  for (const [key, value] of Object.entries(fields)) {
+    if (value === null || value === undefined) continue;
+    form.append(key, typeof value === 'object' ? value : String(value));
+  }
+  return form;
 }

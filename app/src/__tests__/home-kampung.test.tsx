@@ -1,9 +1,8 @@
 import { act, fireEvent, screen, waitFor, within } from 'expo-router/testing-library';
-import * as Speech from 'expo-speech';
 import { Linking } from 'react-native';
 
 import { useSettings } from '@/state/settings';
-import { currentPath, renderApp, resetAppState } from '@/test-utils/renderApp';
+import { currentPath, renderApp, resetAppState, spokenText } from '@/test-utils/renderApp';
 
 /**
  * Iteration 1.1 exit criteria and test cases (iterations/app/1.1-home-kampung.md §6),
@@ -74,7 +73,9 @@ describe('Home', () => {
     await renderApp('/home');
     await screen.findByText('Did you move yesterday?');
     await press('topbar-readout');
-    const spoken = (Speech.speak as jest.Mock).mock.calls[0][0] as string;
+    // Read sentence by sentence: wait for the last part, then check the whole script.
+    await waitFor(() => expect(spokenText()).toContain('Kampung: join activities near you.'));
+    const spoken = spokenText();
     expect(spoken).toMatch(/^Good (morning|afternoon|evening), Raj\./);
     expect(spoken).toContain('did you move yesterday?');
     expect(spoken).toMatch(/Reminder at (8 am: Take medicine|8 pm: Blood pressure tablet)\./);

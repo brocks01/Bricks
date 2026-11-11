@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Alert, BackHandler } from 'react-native';
@@ -18,7 +18,7 @@ import {
   TextField,
   TimeAdjuster,
 } from '@/components';
-import { REMINDER_ICON, REMINDER_KINDS } from '@/features/reminders/kinds';
+import { hhmm, REMINDER_ICON, REMINDER_KINDS, reminderDate } from '@/features/reminders/kinds';
 import { formatTime } from '@/lib/format';
 import { notificationsAllowed } from '@/lib/notifications';
 import { useUndo } from '@/state/undo';
@@ -30,16 +30,6 @@ const QUESTIONS = STEPS.length - 1;
 /** Common reminder times, as big buttons (minutes after midnight). */
 const COMMON_TIMES = [7, 8, 9, 12, 14, 18, 20, 21].map((h) => h * 60);
 const REPEATS: readonly ReminderRepeat[] = ['daily', 'weekdays', 'once'];
-
-const hhmm = (minutes: number) =>
-  `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
-
-/** For "once": today if that time is still ahead, otherwise tomorrow. */
-function nextDate(minutes: number): string {
-  const d = new Date();
-  if (d.getHours() * 60 + d.getMinutes() >= minutes) d.setDate(d.getDate() + 1);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-}
 
 /**
  * Add a reminder (S26 form): What is it for? → What time? (common times, or
@@ -53,6 +43,9 @@ export default function NewReminderScreen() {
   const create = useCreateReminder();
   const remove = useDeleteReminder();
   const showUndo = useUndo((s) => s.show);
+  // Family setting a reminder for their parent (from S10): "for" is the parent's id.
+  const params = useLocalSearchParams<{ for?: string; forName?: string }>();
+  const forSenior = params.for ?? null;
 
   const [step, setStep] = useState<Step>('what');
   const [kind, setKind] = useState<ReminderKind | null>(null);
@@ -104,7 +97,8 @@ export default function NewReminderScreen() {
         text: shownText,
         time: hhmm(minutes),
         repeat,
-        date: repeat === 'once' ? nextDate(minutes) : null,
+        date: repeat === 'once' ? reminderDate(minutes) : null,
+        for_senior_id: forSenior,
       });
       showUndo(t('reminders.added', { time: shownTime }), () => remove.mutate(reminder));
       if (router.canGoBack()) router.back();
@@ -155,6 +149,9 @@ export default function NewReminderScreen() {
         />
       }
     >
+      {forSenior && params.forName ? (
+        <StatusBanner text={t('reminders.new.forSomeone', { name: params.forName })} />
+      ) : null}
       {step !== 'review' ? <StepProgress step={index + 1} total={QUESTIONS} /> : null}
 
       {step === 'what' ? (

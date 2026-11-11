@@ -9,6 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { BigButton, Text } from '@/components';
+import { BuddyHost } from '@/features/buddy/BuddyHost';
 import { ReadOutProvider } from '@/features/readout/ReadOutProvider';
 import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
 // Importing @/i18n also initialises i18next before any screen renders.
@@ -16,6 +17,7 @@ import { setLanguage } from '@/i18n';
 import type { Language } from '@/i18n/languages';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import { createQueryClient, useAppStateFocus } from '@/lib/queryClient';
+import { useOnboardingHydrated } from '@/state/onboarding';
 import { useSettingsHydrated } from '@/state/settings';
 import { color, fontAssets, screenPadding, space } from '@/theme';
 import { TypographyProvider } from '@/theme/TypographyProvider';
@@ -31,7 +33,9 @@ const STARTUP_TIMEOUT_MS = 4000;
 
 export default function RootLayout() {
   const [fontsLoaded, fontError] = useFonts(fontAssets);
-  const hydrated = useSettingsHydrated();
+  const settingsHydrated = useSettingsHydrated();
+  const onboardingHydrated = useOnboardingHydrated();
+  const hydrated = settingsHydrated && onboardingHydrated;
   const language = useActiveLanguage();
   const [i18nLanguage, setI18nLanguage] = useState<Language | null>(null);
   const [timedOut, setTimedOut] = useState(false);
@@ -83,6 +87,8 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="(tabs)" />
+        {/* No swipe-back out of onboarding: Back is the labelled button on each step. */}
+        <Stack.Screen name="onboarding" options={{ gestureEnabled: false }} />
         <Stack.Screen
           name="sos"
           options={{
@@ -93,6 +99,7 @@ export default function RootLayout() {
         />
         <Stack.Screen name="+not-found" />
       </Stack>
+      <BuddyHost />
     </AppProviders>
   );
 }

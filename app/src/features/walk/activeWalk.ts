@@ -28,6 +28,9 @@ interface ActiveWalkState {
   simulationSpeed: 1 | 10;
   setSimulationSpeed: (speed: 1 | 10) => void;
   start: (eventId?: string | null) => void;
+  /** Bumped when Buddy hears "stop the walk": the walk screen then asks "Finish your walk?". */
+  finishAsked: number;
+  askToFinish: () => void;
   pause: () => void;
   resume: () => void;
   /** Ends the walk and returns what to upload. Keeps the snapshot until the upload succeeds. */
@@ -51,6 +54,8 @@ export const useActiveWalk = create<ActiveWalkState>()((set, get) => ({
   simulationSpeed: 1,
   setSimulationSpeed: (simulationSpeed) => set({ simulationSpeed }),
 
+  finishAsked: 0,
+  askToFinish: () => set((s) => ({ finishAsked: s.finishAsked + 1 })),
   start: (eventId = null) => {
     if (get().session) return;
     // Iteration 1.2: simulated track. 2.2 swaps in GPS (+ the phone's step counter) here.
@@ -61,7 +66,7 @@ export const useActiveWalk = create<ActiveWalkState>()((set, get) => ({
       eventId,
       onProgress: (progress) => set({ progress }),
     });
-    set({ session });
+    set({ session, finishAsked: 0 });
     session.start();
     saveTimer = setInterval(() => void saveSnapshot(session.snapshot()), SAVE_EVERY_MS);
   },

@@ -12,6 +12,8 @@ import {
   type TypeVariant,
 } from '@/theme';
 
+import type { Language } from '@/i18n/languages';
+
 import { Text } from './primitives/Text';
 import type { Icon } from './primitives/icons';
 
@@ -29,6 +31,8 @@ export interface BigButtonProps extends Omit<PressableProps, 'children' | 'style
   /** Cap on system font growth, for fixed controls. */
   maxFontSizeMultiplier?: number;
   fullWidth?: boolean;
+  /** The label's language when it isn't the app's (language buttons). */
+  labelLanguage?: Language;
 }
 
 const MIN_HEIGHT: Record<BigButtonSize, number> = {
@@ -59,6 +63,7 @@ export function BigButton({
   labelVariant = 'button',
   maxFontSizeMultiplier,
   fullWidth = true,
+  labelLanguage,
   disabled,
   onPress,
   accessibilityLabel,
@@ -96,6 +101,7 @@ export function BigButton({
           variant={labelVariant}
           color={textColor}
           maxFontSizeMultiplier={maxFontSizeMultiplier}
+          lang={labelLanguage}
           style={styles.label}
         >
           {label}

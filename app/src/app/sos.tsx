@@ -6,7 +6,6 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { useResolveSos, useSos, useTriggerSos } from '@/api';
 import type { SosAlert } from '@/api/types';
 import { BigButton, ConfirmSheet, PhoneIcon, Screen, StatusBanner, Text } from '@/components';
-import { useReadOut } from '@/features/readout/ReadOutProvider';
 import { config } from '@/lib/config';
 import { formatDistance } from '@/lib/format';
 import { warningFeedback } from '@/lib/haptics';
@@ -29,7 +28,6 @@ export default function SosScreen() {
   const { t } = useTranslation();
   const { language } = useTypography();
   const router = useRouter();
-  const { speak } = useReadOut();
   const number = config.emergencyNumber;
 
   // Counted from when the screen opened, so the countdown stays honest even if the phone stutters.
@@ -49,12 +47,9 @@ export default function SosScreen() {
 
   const close = () => (router.canGoBack() ? router.back() : router.replace('/home'));
 
-  // Say what's happening straight away: they may not be able to read the screen.
-  const announce = useEffectEvent(() => {
-    warningFeedback();
-    speak(t('sos.readout', { number, count: SOS_COUNTDOWN_S }));
-  });
-  useEffect(() => announce(), []);
+  // A warning buzz straight away; the screen also reads itself out as it opens
+  // (readOnOpen), as they may not be able to read it.
+  useEffect(() => warningFeedback(), []);
 
   // The countdown; at zero, alert the Safe Circle.
   useEffect(() => {
@@ -96,6 +91,7 @@ export default function SosScreen() {
     <Screen
       title={t('sos.title')}
       readOut={readOut}
+      readOnOpen
       back={false}
       showHelp={false}
       standalone

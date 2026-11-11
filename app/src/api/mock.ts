@@ -1,14 +1,17 @@
 import { createMockDb, MockNotFound, type MockDb } from '@/mocks/db';
-import meFixture from '@/mocks/me.json';
 
 import type { BricksApi } from './client';
 import { ApiError } from './errors';
-import type { Me } from './types';
 
 /** Small delay in development so loading states get exercised, like a real network. */
 const MOCK_LATENCY_MS = __DEV__ && process.env.NODE_ENV !== 'test' ? 250 : 0;
 
 let db: MockDb = createMockDb();
+
+const NO_SPEECH = 'No speech service with mock data';
+
+/** The mock data itself, for tests to check what was saved (no network delay). */
+export const mockDb = (): MockDb => db;
 
 /** Fresh seed data (tests, and the demo reset later). */
 export function resetMockDb(now?: () => Date): void {
@@ -30,7 +33,7 @@ function respond<T>(operation: () => T, path: string): Promise<T> {
 }
 
 export const mockApi: BricksApi = {
-  getMe: () => respond(() => meFixture as Me, '/me'),
+  getMe: () => respond(() => db.getMe(), '/me'),
   getToday: () => respond(() => db.getToday(), '/home/today'),
   getEvents: (filter) => respond(() => db.listEvents(filter), '/events'),
   getEvent: (id) => respond(() => db.getEvent(id), `/events/${id}`),
@@ -53,4 +56,22 @@ export const mockApi: BricksApi = {
   triggerSos: () => respond(() => db.triggerSos(), '/sos'),
   getSos: (id) => respond(() => db.getSos(id), `/sos/${id}`),
   resolveSos: (id) => respond(() => db.resolveSos(id), `/sos/${id}`),
+  signIn: (method) => respond(() => db.signIn(method), `/auth/${method}`),
+  updateMe: (update) => respond(() => db.updateMe(update), '/me'),
+  getSafeCircle: () => respond(() => db.getSafeCircle(), '/safe-circle'),
+  setSafeCircle: (members) => respond(() => db.setSafeCircle(members), '/safe-circle'),
+  getProfile: (id) => respond(() => db.getProfile(id), `/users/${id}/profile`),
+  saveIntro: (clip) => respond(() => db.saveIntro(clip), '/me/intro'),
+  createSkill: (input) => respond(() => db.createSkill(input), '/skills'),
+  deleteSkill: (id) => respond(() => db.deleteSkill(id), `/skills/${id}`),
+  getThanksPrompts: () => respond(() => db.getThanksPrompts(), '/endorsements/pending'),
+  sendThanks: (input) => respond(() => db.sendThanks(input), '/endorsements'),
+  skipThanks: (eventId) =>
+    respond(() => db.skipThanks(eventId), `/endorsements/pending/${eventId}`),
+  getFamilyInvites: () => respond(() => db.getFamilyInvites(), '/family/invites'),
+  createFamilyInvite: (input) => respond(() => db.createFamilyInvite(input), '/family/invite'),
+  acceptFamilyInvite: (id) => respond(() => db.acceptFamilyInvite(id), `/invites/${id}/accept`),
+  // No speech service on mock data: voice screens use demo phrases and the phone's own voice.
+  transcribe: () => Promise.reject(new ApiError(503, NO_SPEECH, '/assistant/transcribe')),
+  tts: () => Promise.reject(new ApiError(503, NO_SPEECH, '/tts')),
 };

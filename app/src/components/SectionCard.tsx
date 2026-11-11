@@ -3,7 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { tapFeedback } from '@/lib/haptics';
 import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
 
-import { CaretRightIcon, type Icon } from './primitives/icons';
+import { CaretRightIcon, CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
 
 export interface SectionCardProps {
@@ -11,6 +11,11 @@ export interface SectionCardProps {
   description: string;
   icon: Icon;
   onPress: () => void;
+  /** Not available yet: greyed out, with a short note such as "Coming soon". */
+  disabled?: boolean;
+  note?: string;
+  /** Selected choice in a one-question step. */
+  selected?: boolean;
   testID?: string;
 }
 
@@ -23,27 +28,49 @@ export function SectionCard({
   description,
   icon: IconComponent,
   onPress,
+  disabled = false,
+  note,
+  selected = false,
   testID,
 }: SectionCardProps) {
+  const fg = disabled ? color.textSecondary : color.primary;
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${title}. ${description}`}
+      accessibilityLabel={[title, description, note].filter(Boolean).join('. ')}
+      accessibilityState={{ disabled, selected }}
+      disabled={disabled}
       testID={testID}
       onPress={() => {
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.card, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        selected && styles.selected,
+        disabled && styles.disabled,
+        pressed && styles.pressed,
+      ]}
     >
-      <View style={styles.iconWell}>
-        <IconComponent size={iconSize.hero} color={color.primary} weight="bold" />
+      <View style={[styles.iconWell, disabled && styles.iconWellDisabled]}>
+        <IconComponent size={iconSize.hero} color={fg} weight="bold" />
       </View>
       <View style={styles.text}>
-        <Text variant="heading">{title}</Text>
+        <Text variant="heading" color={disabled ? 'textSecondary' : 'text'}>
+          {title}
+        </Text>
         <Text color="textSecondary">{description}</Text>
+        {note ? (
+          <Text variant="bodyStrong" color="textSecondary">
+            {note}
+          </Text>
+        ) : null}
       </View>
-      <CaretRightIcon size={iconSize.inline} color={color.primary} weight="bold" />
+      {selected ? (
+        <CheckCircleIcon size={iconSize.button} color={color.primary} weight="fill" />
+      ) : disabled ? null : (
+        <CaretRightIcon size={iconSize.inline} color={color.primary} weight="bold" />
+      )}
     </Pressable>
   );
 }
@@ -65,6 +92,17 @@ const styles = StyleSheet.create({
   pressed: {
     backgroundColor: color.bgSubtle,
     borderColor: color.primary,
+  },
+  selected: {
+    borderWidth: borderWidth.control,
+    borderColor: color.primary,
+    backgroundColor: color.primarySubtle,
+  },
+  disabled: {
+    backgroundColor: color.bgSubtle,
+  },
+  iconWellDisabled: {
+    backgroundColor: color.border,
   },
   iconWell: {
     width: ICON_WELL,

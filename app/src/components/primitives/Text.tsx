@@ -10,6 +10,7 @@ import {
   type FontWeightToken,
   type TypeVariant,
 } from '@/theme';
+import type { Language } from '@/i18n/languages';
 import { useTypography } from '@/theme/TypographyProvider';
 
 export interface TextProps extends RNTextProps {
@@ -19,6 +20,8 @@ export interface TextProps extends RNTextProps {
   weight?: FontWeightToken;
   color?: ColorToken;
   align?: 'left' | 'center' | 'right';
+  /** Text in a language other than the app's (the language picker): picks its font. */
+  lang?: Language;
 }
 
 const HEADER_VARIANTS: readonly TypeVariant[] = ['display', 'title', 'heading'];
@@ -36,9 +39,11 @@ export function Text({
   style,
   maxFontSizeMultiplier = maxFontScale,
   accessibilityRole,
+  lang,
   ...rest
 }: TextProps) {
-  const { language, fontsLoaded, fontScale } = useTypography();
+  const { language: appLanguage, fontsLoaded, fontScale } = useTypography();
+  const language = lang ?? appLanguage;
   const scale = typeScale[variant];
   const size = scale.size * fontScale;
 

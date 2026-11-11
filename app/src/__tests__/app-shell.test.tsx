@@ -7,6 +7,9 @@ import { renderApp, resetAppState } from '@/test-utils/renderApp';
 // The first render transforms the whole route tree, which is slow on a cold cache.
 jest.setTimeout(30_000);
 
+const speechState = (jest.requireMock('expo-speech') as { __state: { autoFinish: boolean } })
+  .__state;
+
 describe('app shell', () => {
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -56,6 +59,7 @@ describe('app shell', () => {
   });
 
   it('Read it out speaks the screen in the member language at a slow rate', async () => {
+    speechState.autoFinish = false;
     await renderApp('/kampung');
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(
@@ -66,6 +70,34 @@ describe('app shell', () => {
     expect(screen.getByText('Stop reading')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.stop).toHaveBeenCalled();
+  });
+
+  it('while reading: Pause, Carry on, Repeat and Slower (S37)', async () => {
+    speechState.autoFinish = false;
+    await renderApp('/thrive');
+    await screen.findByTestId('thrive-start-walk');
+    expect(screen.queryByTestId('readout-bar')).toBeNull();
+    await fireEvent.press(screen.getByTestId('topbar-readout'));
+    expect(screen.getByTestId('readout-bar')).toBeTruthy();
+    const speak = Speech.speak as jest.Mock;
+    const first = speak.mock.calls[0][0] as string;
+
+    await fireEvent.press(screen.getByTestId('readout-pause'));
+    expect(screen.getByText('Carry on')).toBeTruthy();
+    speak.mockClear();
+    await fireEvent.press(screen.getByTestId('readout-pause'));
+    expect(speak).toHaveBeenLastCalledWith(first, expect.anything());
+
+    await fireEvent.press(screen.getByTestId('readout-repeat'));
+    expect(speak).toHaveBeenLastCalledWith(first, expect.anything());
+
+    await fireEvent.press(screen.getByTestId('readout-slower'));
+    expect(speak).toHaveBeenLastCalledWith(first, expect.objectContaining({ rate: 0.75 }));
+    expect(useSettings.getState().readOut.rate).toBe(0.75);
+
+    // Stop is on the Read it out button, where it always is; the bar goes away.
+    await fireEvent.press(screen.getByTestId('topbar-readout'));
+    expect(screen.queryByTestId('readout-bar')).toBeNull();
   });
 
   it('switches the whole app to Tamil', async () => {
