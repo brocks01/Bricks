@@ -70,6 +70,11 @@ export const toolSpecs: ToolSpec[] = [
         step: { type: 'number', description: 'Which step dot is lit, counting from 1.' },
         step_count: { type: 'number', description: 'How many step dots to show, up to 10. 0 for none.' },
         next: { type: 'boolean', description: 'Show a Next button that waits for the person.' },
+        full: {
+          type: 'boolean',
+          description:
+            'Open over the whole content area instead of compact. Use it when the person really needs to see a lot - a table, a lesson, many steps. Leave it off when you are mostly talking, so the screen behind stays visible.',
+        },
       },
       []
     ),

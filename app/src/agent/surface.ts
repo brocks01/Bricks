@@ -28,6 +28,7 @@ export interface Surface {
   step: number; // which step dot is lit, 0 for none
   stepTotal: number; // how many step dots, 0 for none
   next: boolean; // show the Next button
+  full: boolean; // the agent asked for the whole content area; otherwise the panel opens compact and floats
 }
 
 export const LIMITS = {
@@ -107,6 +108,7 @@ const showSchema = z.object({
   step: int(LIMITS.stepCount),
   step_count: int(LIMITS.stepCount),
   next: flag,
+  full: flag, // open at once over the whole content area instead of compact
 });
 
 export type ShowSpec = z.infer<typeof showSchema>;
@@ -143,6 +145,7 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
     step: stepTotal ? Math.min(a.step || 1, stepTotal) : 0,
     stepTotal,
     next: a.next,
+    full: a.full,
   };
   const empty = !surface.title && !surface.message && !surface.question && !surface.steps.length && !surface.html && !surface.options.length && !surface.tiles.length && !surface.hint;
   if (empty) return Promise.resolve({ error: 'nothing_to_show', hint: 'Give a title, a message, a question, steps, tiles, html or options.' });
