@@ -13,38 +13,39 @@ import { space } from '@/theme';
 export { timeToday } from '@/features/reminders/kinds';
 
 /**
- * The Today area of Home (S12): at most three things, in order of importance:
- * the morning check-in, the next event worth joining, and the next reminder.
- * Each answers in place; nothing here sends the member somewhere unexpected.
+ * The Today area of Home (S12), as grey cards at the top: the morning check-in and
+ * the next reminder. Each answers in place; nothing here sends the member somewhere
+ * unexpected.
  */
 export function TodaySection({ today }: { today: Today }) {
+  return (
+    <View style={styles.section}>
+      <CheckinFlow pending={today.checkin.pending} />
+      <NextReminderCard reminder={today.next_reminder} />
+    </View>
+  );
+}
+
+/**
+ * "Picked for you" (Luma): one event worth joining that they aren't going to yet.
+ * Hidden when it's already the check-in's walk suggestion, so it never shows twice.
+ */
+export function PickedForYou({ today }: { today: Today }) {
   const { t } = useTranslation();
   const router = useRouter();
   const join = useJoinEvent();
   const answered = useLastCheckinResult();
+  const event = today.next_event;
+  if (!event || event.my_rsvp === 'going' || event.id === answered?.suggestion?.id) return null;
 
   return (
-    <View style={styles.section}>
-      <CheckinFlow pending={today.checkin.pending} />
-
-      {/* Don't show the same walk twice when it's also the check-in suggestion. */}
-      {today.next_event && today.next_event.id !== answered?.suggestion?.id ? (
-        <View style={styles.group}>
-          <Text variant="bodyStrong" color="textSecondary">
-            {t('home.comingUp')}
-          </Text>
-          <EventCard
-            compact
-            event={today.next_event}
-            onOpen={() =>
-              router.push({ pathname: '/event/[id]', params: { id: today.next_event!.id } })
-            }
-            onGoing={() => join(today.next_event!)}
-          />
-        </View>
-      ) : null}
-
-      <NextReminderCard reminder={today.next_reminder} />
+    <View style={styles.group} testID="picked-for-you">
+      <Text variant="title">{t('home.pickedForYou')}</Text>
+      <EventCard
+        event={event}
+        onOpen={() => router.push({ pathname: '/event/[id]', params: { id: event.id } })}
+        onGoing={() => join(event)}
+      />
     </View>
   );
 }

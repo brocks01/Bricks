@@ -2,13 +2,14 @@ import { useRouter, type Href } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { useMe, useToday } from '@/api';
+import { useEvents, useMe, useToday } from '@/api';
 import {
   BigButton,
-  HandHeartIcon,
   GearSixIcon,
+  GroupedList,
+  GroupedRow,
+  HandHeartIcon,
   HeartbeatIcon,
-  ListRow,
   QueryState,
   Screen,
   SectionCard,
@@ -17,7 +18,8 @@ import {
   type Icon,
 } from '@/components';
 import { dayPart } from '@/features/home/greeting';
-import { timeToday, TodaySection } from '@/features/home/TodaySection';
+import { PickedForYou, timeToday, TodaySection } from '@/features/home/TodaySection';
+import { YourEvents } from '@/features/home/YourEvents';
 import { ReadOutTarget } from '@/features/readout/ReadOutTarget';
 import { config } from '@/lib/config';
 import { formatTime, formatWhen } from '@/lib/format';
@@ -30,16 +32,17 @@ interface Section {
   icon: Icon;
 }
 
-/** Same order as the tab bar: skills, community, health. */
+/** Same order as the tab bar: Community, Activity, Health. */
 const SECTIONS: readonly Section[] = [
-  { key: 'passItOn', href: '/pass-it-on', icon: HandHeartIcon },
   { key: 'kampung', href: '/kampung', icon: UsersThreeIcon },
+  { key: 'passItOn', href: '/pass-it-on', icon: HandHeartIcon },
   { key: 'thrive', href: '/thrive', icon: HeartbeatIcon },
 ];
 
 /**
- * S12 Home. Greeting, then "Today" (check-in, next event, next reminder: at most
- * three things), then the three parts of the app as large, plainly described cards.
+ * S12 Home, Luma style: a big greeting; the check-in and next reminder as grey cards;
+ * "Your events" as a dated timeline; one event "Picked for you"; then the three
+ * parts of the app as large, plainly described cards, and Settings.
  */
 export default function HomeScreen() {
   const { t } = useTranslation();
@@ -47,6 +50,7 @@ export default function HomeScreen() {
   const router = useRouter();
   const { data: me } = useMe();
   const today = useToday();
+  const events = useEvents(null);
 
   const part = dayPart();
   const name = me?.preferred_name ?? me?.name;
@@ -86,14 +90,18 @@ export default function HomeScreen() {
         {greeting}
       </Text>
 
-      <Text variant="heading" style={styles.heading}>
-        {t('home.today')}
-      </Text>
       <ReadOutTarget id="today">
         <QueryState query={today}>{(data) => <TodaySection today={data} />}</QueryState>
       </ReadOutTarget>
 
-      <Text variant="heading" style={styles.heading}>
+      <Text variant="title" style={styles.heading}>
+        {t('home.yourEvents')}
+      </Text>
+      <QueryState query={events}>{(list) => <YourEvents events={list} meId={me?.id} />}</QueryState>
+
+      {today.data ? <PickedForYou today={today.data} /> : null}
+
+      <Text variant="title" style={styles.heading}>
         {t('home.explore')}
       </Text>
       <ReadOutTarget id="sections">
@@ -112,12 +120,14 @@ export default function HomeScreen() {
       </ReadOutTarget>
 
       <View style={styles.settings}>
-        <ListRow
-          icon={GearSixIcon}
-          label={t('settings.title')}
-          onPress={() => router.push('/settings')}
-          testID="home-settings"
-        />
+        <GroupedList>
+          <GroupedRow
+            icon={GearSixIcon}
+            title={t('settings.title')}
+            onPress={() => router.push('/settings')}
+            testID="home-settings"
+          />
+        </GroupedList>
       </View>
 
       {config.devTools ? (

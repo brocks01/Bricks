@@ -55,9 +55,7 @@
         "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
       }
     },
-    "readout": "{{greeting}}. {{today}}Aktiviti Saya: kongsi apa yang anda tahu. Komuniti: sertai aktiviti berdekatan. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
-    "today": "Hari ini",
-    "comingUp": "Akan datang",
+    "readout": "{{greeting}}. {{today}}Komuniti: sertai aktiviti berdekatan. Aktiviti Saya: kongsi apa yang anda tahu. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
     "explore": "Apa yang anda mahu buat?",
     "readoutCheckin": "Ada soalan untuk anda: adakah anda bergerak semalam? ",
     "readoutEvent": "Akan datang: {{title}}, {{when}}. ",
@@ -72,7 +70,13 @@
       "line": "{{time}} · {{text}}",
       "done": "Selesai",
       "doneThanks": "Selesai. Syabas."
-    }
+    },
+    "yourEvents": "Acara anda",
+    "pickedForYou": "Dipilih untuk anda",
+    "nothingPlanned": "Belum ada rancangan",
+    "nothingPlannedDetail": "Cari jalan kaki, kelas atau sembang berdekatan.",
+    "findSomething": "Cari sesuatu untuk disertai",
+    "seeAllEvents_other": "Lihat semua {{count}} acara anda"
   },
   "passItOn": {
     "title": "Aktiviti Saya",
@@ -231,7 +235,8 @@
     "imGoing": "Saya pergi",
     "youreGoing": "Anda akan pergi",
     "joinWhatsApp": "Sertai kumpulan WhatsApp",
-    "openHint": "Buka butiran"
+    "openHint": "Buka butiran",
+    "youreHosting": "Anda penganjurnya"
   },
   "circle": {
     "members_other": "{{count}} ahli",

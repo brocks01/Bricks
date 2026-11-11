@@ -16,13 +16,13 @@ describe('app shell', () => {
     await resetAppState();
   });
 
-  it('opens on Home with skills, community and health sections in that order', async () => {
+  it('opens on Home with the Community, Activity and Health sections in tab order', async () => {
     await renderApp();
     expect(screen).toHavePathname('/home');
     const order = screen
       .getAllByTestId(/^home-section-/)
       .map((node) => node.props.testID as string);
-    expect(order).toEqual(['home-section-passItOn', 'home-section-kampung', 'home-section-thrive']);
+    expect(order).toEqual(['home-section-kampung', 'home-section-passItOn', 'home-section-thrive']);
   });
 
   it('greets the member by their preferred name', async () => {

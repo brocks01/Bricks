@@ -55,9 +55,7 @@
         "description": "保持活跃，设置提醒，注意安全。"
       }
     },
-    "readout": "{{greeting}}。{{today}}我的活动：分享您的所长。社区：参加附近的活动。健康：保持活跃和安全。点一下就能打开。",
-    "today": "今天",
-    "comingUp": "即将举行",
+    "readout": "{{greeting}}。{{today}}社区：参加附近的活动。我的活动：分享您的所长。健康：保持活跃和安全。点一下就能打开。",
     "explore": "您想做什么？",
     "readoutCheckin": "有一个问题要您回答：您昨天有活动身体吗？",
     "readoutEvent": "即将举行：{{title}}，{{when}}。",
@@ -72,7 +70,13 @@
       "line": "{{time}} · {{text}}",
       "done": "完成",
       "doneThanks": "完成了。做得好。"
-    }
+    },
+    "yourEvents": "您的活动",
+    "pickedForYou": "为您推荐",
+    "nothingPlanned": "还没有安排",
+    "nothingPlannedDetail": "找找附近的步行、课程或聊天聚会。",
+    "findSomething": "找活动参加",
+    "seeAllEvents_other": "查看您的全部 {{count}} 个活动"
   },
   "passItOn": {
     "title": "我的活动",
@@ -231,7 +235,8 @@
     "imGoing": "我要参加",
     "youreGoing": "您已报名参加",
     "joinWhatsApp": "加入 WhatsApp 群组",
-    "openHint": "打开详情"
+    "openHint": "打开详情",
+    "youreHosting": "您是主办人"
   },
   "circle": {
     "members_other": "{{count}} 位成员",

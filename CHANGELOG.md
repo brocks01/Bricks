@@ -51,3 +51,14 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - **Rule over screenshot:** Luma uses red pills for destructive actions. Red stays only for
   Help and emergencies (docs/02), so destructive actions are black pills with a clear verb
   ("Leave", "Sign out"). Sheets have no icon-only "X": they close with a labelled button.
+
+### UI step 2: Home
+- A big greeting, then the **check-in** and **next reminder** as grey cards at the top.
+- **"Your events"**: the member's next three plans as a timeline under `DateHeader`s
+  ("14 Nov / Saturday"), with **Going / Hosting** badges on the covers; "See all N of your
+  events" when there are more; an `EmptyState` with "Find something to join" when there are none.
+- **"Picked for you"**: one event worth joining (hidden when it's already the check-in's walk
+  suggestion, or they're going).
+- The **Community · Activity · Health** cards follow in tab order; Settings is a `GroupedRow`.
+- Read-out order matches the screen (Community first).
+- Event rows say **"You're hosting"** on the member's own events.

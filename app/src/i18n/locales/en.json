@@ -55,9 +55,7 @@
         "description": "Stay active, set reminders and stay safe."
       }
     },
-    "readout": "{{greeting}}. {{today}}Activity: share what you know. Community: join activities near you. Health: stay active and safe. Tap one to open it.",
-    "today": "Today",
-    "comingUp": "Coming up",
+    "readout": "{{greeting}}. {{today}}Community: join activities near you. Activity: share what you know. Health: stay active and safe. Tap one to open it.",
     "explore": "What would you like to do?",
     "readoutCheckin": "You have a question to answer: did you move yesterday? ",
     "readoutEvent": "Coming up: {{title}}, {{when}}. ",
@@ -72,7 +70,14 @@
       "line": "{{time}} · {{text}}",
       "done": "Done",
       "doneThanks": "Done. Well done."
-    }
+    },
+    "yourEvents": "Your events",
+    "pickedForYou": "Picked for you",
+    "nothingPlanned": "Nothing planned yet",
+    "nothingPlannedDetail": "Find a walk, a class or a chat near you.",
+    "findSomething": "Find something to join",
+    "seeAllEvents_one": "See your {{count}} event",
+    "seeAllEvents_other": "See all {{count}} of your events"
   },
   "passItOn": {
     "title": "Activity",
@@ -240,7 +245,8 @@
     "imGoing": "I'm going",
     "youreGoing": "You're going",
     "joinWhatsApp": "Join WhatsApp group",
-    "openHint": "Opens the details"
+    "openHint": "Opens the details",
+    "youreHosting": "You're hosting"
   },
   "circle": {
     "members_one": "{{count}} member",

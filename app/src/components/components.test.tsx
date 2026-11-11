@@ -125,6 +125,20 @@ describe('EventCard', () => {
     expect(screen.queryByText("I'm going")).toBeNull();
   });
 
+  it('says "You\'re hosting" with a Hosting badge on their own event', async () => {
+    await renderWithProviders(
+      <EventCard
+        event={{ ...walk, my_rsvp: 'going' }}
+        hosting
+        onOpen={jest.fn()}
+        onGoing={jest.fn()}
+        now={NOW}
+      />,
+    );
+    expect(screen.getByText("You're hosting")).toBeTruthy();
+    expect(screen.getByText('Hosting')).toBeTruthy();
+  });
+
   it('uses the right plural in Tamil', async () => {
     await renderWithProviders(
       <EventCard

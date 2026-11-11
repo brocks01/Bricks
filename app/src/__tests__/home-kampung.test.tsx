@@ -28,7 +28,8 @@ describe('Home', () => {
   it('shows the check-in, a walk to join and the medicine reminder under Today', async () => {
     await renderApp('/home');
     expect(await screen.findByText('Did you move yesterday?')).toBeTruthy();
-    expect(screen.getByText('Coming up')).toBeTruthy();
+    expect(screen.getByText('Picked for you')).toBeTruthy();
+    expect(screen.getByText('Your events')).toBeTruthy();
     expect(screen.getByText(/Take medicine|Blood pressure tablet/)).toBeTruthy();
     expect(screen.getByText('What would you like to do?')).toBeTruthy();
   });

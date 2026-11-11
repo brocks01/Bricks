@@ -101,7 +101,7 @@ export function EventCard({
           >
             <CheckCircleIcon size={iconSize.button} color={color.success} weight="fill" />
             <Text variant="bodyStrong" color="success">
-              {t('event.youreGoing')}
+              {hosting ? t('event.youreHosting') : t('event.youreGoing')}
             </Text>
           </View>
         ) : (
