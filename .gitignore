@@ -12,3 +12,10 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+
+# Tool and agent local files
+.claude/
+**/.claude/
+CLAUDE.md
+*.err
+*.out
