@@ -22,7 +22,10 @@ export function AppTabBar() {
   const go = useNavigate();
   const current = useCurrentPage();
   const { status, user } = useStore(sessionStore);
-  const { open: canvasOpen } = useStore(surfaceStore);
+  // The tabs sit just above the agent bar and go away as soon as the agent area is pulled open (it is never shorter than 16% of the area once it shows),
+  // including while the hand is still dragging it, and come back when it is put away.
+  const { open, live } = useStore(surfaceStore);
+  const canvasOpen = open || (live !== null && live > 0.1);
   if (status !== 'in' || !user?.profile_complete || current?.bare) return null;
   return (
     <View style={{ backgroundColor: colors.card }}>
