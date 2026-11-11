@@ -1,4 +1,6 @@
 """Email tests with a fake Brevo (no network, nothing sent)."""
+import uuid
+
 import httpx
 import pytest
 from fastapi.testclient import TestClient
@@ -81,11 +83,11 @@ def test_sign_in_request_reports_a_failed_send(monkeypatch):
     fake = FakeBrevo(status=401)
     monkeypatch.setattr(mail.httpx, "get", fake.get)
     monkeypatch.setattr(mail.httpx, "post", fake.post)
-    r = client.post("/v1/auth/request-code", json={"email": "mailfail-check@example.com"})
+    r = client.post("/v1/auth/request-code", json={"email": f"mailfail-{uuid.uuid4().hex[:8]}@example.com"})
     assert r.status_code == 502 and r.json()["detail"]["code"] == "email_failed" and "xkeysib" not in r.text
 
 
 def test_the_daily_cap_stops_new_codes(monkeypatch):
     monkeypatch.setenv("EMAIL_DAILY_LIMIT", "0")
-    r = client.post("/v1/auth/request-code", json={"email": "cap-check@example.com"})
+    r = client.post("/v1/auth/request-code", json={"email": f"cap-{uuid.uuid4().hex[:8]}@example.com"})
     assert r.status_code == 503 and r.json()["detail"]["code"] == "email_busy"

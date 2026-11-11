@@ -150,7 +150,7 @@ def test_web_tools_run_on_the_server_and_are_not_relayed(monkeypatch):
         assert json.loads(ws.receive_text())["type"] == "ready"
         ws.send_text(json.dumps({"type": "text", "text": "weather?"}))
         seen = [json.loads(ws.receive_text()) for _ in range(3)]
-        assert seen[0] == {"type": "tool", "text": "web_search: weather in Singapore"}  # shown to the person, never sent to the app to run
+        assert seen[0] == {"type": "tool", "name": "web_search", "text": "web_search: weather in Singapore"}  # shown to the person, never sent to the app to run
         assert seen[1] == {"type": "text", "role": "agent", "text": "It is warm."} and seen[2]["type"] == "turn"
         ws.send_text(json.dumps({"type": "end"}))
     assert ran == [("web_search", {"query": "weather in Singapore"})]
