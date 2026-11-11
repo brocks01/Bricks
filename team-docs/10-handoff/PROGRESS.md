@@ -110,3 +110,8 @@ Did: wrote the six pillars, the "no separate Elderly Welfare section" decision a
 Tested: the script ran; master-docs has 0 sub-folders and 52 files; no code change.
 Not done: demo data does not yet show the pillars; the app has no Community Vitality view.
 Next: owner shares master-docs to generate UI samples; then extend the demo community and build the community page.
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): master-docs is one file
+Did: master-docs now holds only 00_ALL_IN_ONE.md (the small copies and picture copies are gone); the build script was simplified. Pictures stay in team-docs/05-design/ui-samples/.
+Tested: script ran; one file in master-docs.
+

@@ -1,6 +1,6 @@
 # Bricks: all documentation in one file
 
-Built by `scripts/build_master_docs.py`. Start with the sections marked (start here).
+Built by `scripts/build_master_docs.py`. Read the sections marked (start here) first.
 
 ## Contents
 
@@ -48,7 +48,7 @@ Built by `scripts/build_master_docs.py`. Start with the sections marked (start h
 - `platform-docs/trust-and-safety/index.md`
 - `platform-docs/voice/index.md`
 
-UI sample pictures (copied beside this file): `ui-sample__01-app-states-and-voice-agent.webp`, `ui-sample__02-multilingual.webp`, `ui-sample__03-onboarding-and-three-domains.webp`, `ui-sample__04-navigation-options.webp`, `ui-sample__05-onboarding-and-profile-from-avatar.webp`, `ui-sample__06-final-ui-direction.webp`, `ui-sample__07-agent-canvas.webp`, `ui-sample__08-complete-ecosystem-overview.webp`
+UI sample pictures (kept in `team-docs/05-design/ui-samples/`, attach them separately): `01-app-states-and-voice-agent.webp`, `02-multilingual.webp`, `03-onboarding-and-three-domains.webp`, `04-navigation-options.webp`, `05-onboarding-and-profile-from-avatar.webp`, `06-final-ui-direction.webp`, `07-agent-canvas.webp`, `08-complete-ecosystem-overview.webp`
 
 
 ---
@@ -1054,7 +1054,7 @@ backend/               Python 3.11+ FastAPI. Start: python backend/run.py (port 
   migrations/          SQL files applied in order (0001 identity, 0002 token state, 0003 communities)
   tests/               pytest (61 tests, real local database, fakes for phone/model/mail)
 team-docs/             our docs (vision, product, design samples, technical, decisions). 10-handoff = this folder
-platform-docs/         public docs (about, FAQ ...). master-docs/ is an OLD generated all-in-one copy: stale, ignore
+platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: every document in one flat folder plus 00_ALL_IN_ONE.md, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
 ```
 
 ## 4. How to run it (local)
@@ -1144,7 +1144,7 @@ auth page goes Home. The navigation guard is read at the moment of every move.
 6. Native-speaker review of hi, bn, ta, zh, ms words (the five new `agent.canvas.*` words are first drafts like the rest).
 7. **The Agent Canvas has not been looked at in a browser** in its present state: it was verified by type-check and self-test only. Run the app, ask the agent for a question with tiles, and check the badge row, the tile grid, the hint card, the step dots and Next against sample 07; also confirm the transcript no longer prints `press me.edit.save` (the fix is in the source but the public `app/dist` copy must be rebuilt to show it).
 8. Docs: `team-docs/06-technical/app-navigation-agent-language.md` and `app-plan.md` still describe the removed sample modules (events, goals, mock data) and the
-   old "assistant brain not connected" state: the code is the truth, update them. `master-docs/` is stale.
+   old "assistant brain not connected" state: the code is the truth, update them. `master-docs/` is rebuilt by `scripts/build_master_docs.py`.
 9. Backend in-memory pieces to move to a shared store before running more than one process: the signed-out session list and `changed at` cache
    (`auth_state.py`), voice call store, the in-app talk counters. The CI backend job is new and has not run on GitHub yet.
 10. A leaked MongoDB Atlas password (from a mistake in an earlier session) must be rotated by the owner; the local Postgres admin password and network exposure should
@@ -1281,6 +1281,12 @@ Did: stored sample 08 (complete ecosystem overview) with notes on what differs; 
 Tested: docs only.
 Not done: the demo community does not yet show these themes (add an elder-led storytelling session, an intergenerational activity, a child-care or homework-help service, a skill-sharing opportunity, contributions by seniors); the open questions in social-purpose.md need the owner's decision.
 Next: owner decides the open questions; then extend `seed_demo.py` and build the community page.
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): six pillars, Community Vitality, master-docs rebuilt
+Did: wrote the six pillars, the "no separate Elderly Welfare section" decision and the Community Vitality measure into `02-product/social-purpose.md`, `product-architecture.md` and the decisions list; deleted the old master-docs and rebuilt it **flat** (no sub-folders: 43 documents, 8 sample pictures and `00_ALL_IN_ONE.md`) with the new `scripts/build_master_docs.py` (replaces the old `merge-docs.ps1`).
+Tested: the script ran; master-docs has 0 sub-folders and 52 files; no code change.
+Not done: demo data does not yet show the pillars; the app has no Community Vitality view.
+Next: owner shares master-docs to generate UI samples; then extend the demo community and build the community page.
 
 
 ---

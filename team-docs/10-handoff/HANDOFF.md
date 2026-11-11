@@ -55,7 +55,7 @@ backend/               Python 3.11+ FastAPI. Start: python backend/run.py (port 
   migrations/          SQL files applied in order (0001 identity, 0002 token state, 0003 communities)
   tests/               pytest (61 tests, real local database, fakes for phone/model/mail)
 team-docs/             our docs (vision, product, design samples, technical, decisions). 10-handoff = this folder
-platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: every document in one flat folder plus 00_ALL_IN_ONE.md, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
+platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: ONE file, 00_ALL_IN_ONE.md, holding every document, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
 ```
 
 ## 4. How to run it (local)
