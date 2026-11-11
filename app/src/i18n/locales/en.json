@@ -296,7 +296,14 @@
     "notFound": "We couldn't find this event. It may have been cancelled.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
     "readoutJoin": "Tap I'm going to join.",
-    "readoutGoing": "You're going."
+    "readoutGoing": "You're going.",
+    "whatsapp": "WhatsApp group",
+    "more": "More",
+    "addToCalendar": "Add to calendar",
+    "share": "Share",
+    "shareMessage": "{{title}}: {{when}}, {{place}}. Come along!",
+    "location": "Location",
+    "mapOf": "Map of {{place}}"
   },
   "going": {
     "title": "You're going.",

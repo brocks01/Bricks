@@ -285,7 +285,14 @@
     "notFound": "Kami tidak menemui aktiviti ini. Mungkin sudah dibatalkan.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
     "readoutJoin": "Ketik Saya pergi untuk menyertai.",
-    "readoutGoing": "Anda akan pergi."
+    "readoutGoing": "Anda akan pergi.",
+    "whatsapp": "Kumpulan WhatsApp",
+    "more": "Lagi",
+    "addToCalendar": "Tambah ke kalendar",
+    "share": "Kongsi",
+    "shareMessage": "{{title}}: {{when}}, {{place}}. Jom sertai!",
+    "location": "Lokasi",
+    "mapOf": "Peta {{place}}"
   },
   "going": {
     "title": "Anda akan pergi.",

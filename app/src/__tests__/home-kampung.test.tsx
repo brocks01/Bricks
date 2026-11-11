@@ -150,10 +150,22 @@ describe('Kampung: Happenings', () => {
     await renderApp('/event/e_taichi');
     await fireEvent.press(await screen.findByTestId('event-join'));
     await fireEvent.press(await screen.findByTestId('going-done'));
+    // Leaving is tucked under More (two deliberate steps, then a confirm).
+    await fireEvent.press(await screen.findByTestId('event-more'));
     await fireEvent.press(await screen.findByTestId('event-cant-go'));
     expect(screen.getByText('Give up your place at Tai chi in the park?')).toBeTruthy();
     await press('confirm-yes');
     expect(await screen.findByTestId('event-join')).toBeTruthy();
+  });
+
+  it('More: Add to calendar opens a calendar link with the event filled in', async () => {
+    await renderApp('/event/e_taichi');
+    await fireEvent.press(await screen.findByTestId('event-more'));
+    expect(screen.queryByTestId('event-cant-go')).toBeNull();
+    await press('event-calendar');
+    expect(openURL).toHaveBeenCalledWith(
+      expect.stringMatching(/calendar\.google\.com.*text=Tai\+chi\+in\+the\+park/),
+    );
   });
 
   it('shows a plain message for an event that no longer exists', async () => {

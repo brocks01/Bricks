@@ -16,6 +16,7 @@ import { Text } from '../primitives/Text';
 
 import { BUDDY_BUTTON_CLEARANCE, BuddyButton } from '../BuddyButton';
 import { StatusBanner } from '../StatusBanner';
+import { TintBackdrop } from '../TintBackdrop';
 import { UndoHost } from '../UndoHost';
 
 import { BackButton } from './BackButton';
@@ -47,6 +48,8 @@ export interface ScreenProps {
    * OK?, helper alert). Off while the screen itself is recording audio.
    */
   tellMe?: boolean;
+  /** A colour at the top fading to white (the event page's cover tint, Luma). */
+  tint?: string;
   children: ReactNode;
   testID?: string;
 }
@@ -71,6 +74,7 @@ export function Screen({
   scroll = true,
   standalone = false,
   tellMe,
+  tint,
   children,
   testID,
 }: ScreenProps) {
@@ -124,6 +128,7 @@ export function Screen({
       edges={standalone ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}
       testID={testID}
     >
+      {tint ? <TintBackdrop tint={tint} /> : null}
       {/* Read it out never disappears: without a script it reads the title. */}
       <TopBar readOut={script} showHelp={showHelp} owner={owner} />
       <View style={styles.flex}>

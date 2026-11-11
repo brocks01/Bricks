@@ -285,7 +285,14 @@
     "notFound": "找不到这个活动。它可能已经取消了。",
     "readout": "{{title}}。{{when}}，{{place}}。{{host}}。{{going}}。{{action}}",
     "readoutJoin": "点我要参加就能加入。",
-    "readoutGoing": "您已报名参加。"
+    "readoutGoing": "您已报名参加。",
+    "whatsapp": "WhatsApp 群组",
+    "more": "更多",
+    "addToCalendar": "加入日历",
+    "share": "分享",
+    "shareMessage": "{{title}}：{{when}}，{{place}}。一起来吧！",
+    "location": "地点",
+    "mapOf": "{{place}}的地图"
   },
   "going": {
     "title": "您已报名参加。",

@@ -62,3 +62,23 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - The **Community · Activity · Health** cards follow in tab order; Settings is a `GroupedRow`.
 - Read-out order matches the screen (Community first).
 - Event rows say **"You're hosting"** on the member's own events.
+
+### UI step 3: event page and "You're going"
+- **Event page** (`event/[id]`): the page is **tinted from the cover** (a gradient from the colour
+  to white, drawn with `react-native-svg`: no new native library). The colour is the event's
+  `cover_color` when the server sends one and it keeps text readable (7:1, grey 4.5:1), otherwise
+  the category colour. A large square cover floats on it with a white edge; then the title, when,
+  and "You're going / You're hosting".
+- **Three action tiles** (`ActionTiles`): **I'm going** (black) / **WhatsApp group** / **More**.
+  When going, WhatsApp becomes the black tile. At 150% font and above the tiles stack.
+- **More** opens a sheet: **Add to calendar** (a Google Calendar link with the event filled in:
+  no native calendar library), **Share** (the phone's share sheet), **I can't go any more**
+  (then a `ConfirmSheet`), Close. Leaving now takes a deliberate extra step.
+- White cards on the tint: **Location** (place, map preview with one pin via new `PlaceMap`,
+  Open in Maps), **Host** and **"12 going"** with an `AvatarStack`, **About**.
+- "Published." after Start Something is now a **Toast**.
+- **"You're going"** (`going/[id]`) uses the same tint behind the big green tick.
+- On tints, the going line uses the darker badge green (the standard green is 4.4:1 on the
+  pastel tints); tests check text, grey text and green on every tint.
+- **API:** optional `cover_color` on `GET /events/{id}` (app type and backend schema; null until
+  events have photos).

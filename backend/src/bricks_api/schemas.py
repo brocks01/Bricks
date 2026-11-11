@@ -92,6 +92,9 @@ class EventDetail(EventSummary):
     description: str
     lat: float
     lng: float
+    # The cover photo's main colour (#RRGGBB), set when a photo is saved. Tints the
+    # app's event page; null until events have photos (the app uses the category colour).
+    cover_color: str | None = None
     attendees: list[PersonSummary]
     circle: CircleRef | None
 

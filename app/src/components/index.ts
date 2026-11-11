@@ -51,3 +51,6 @@ export { GroupedList, GroupedRow, type GroupedRowProps } from './GroupedList';
 export { SheetHeader, type SheetHeaderProps } from './SheetHeader';
 export { StatusBadge, type BadgeKind } from './StatusBadge';
 export { showToast, ToastHost, TOAST_DURATION_MS, useToast } from './Toast';
+export { ActionTiles, type ActionTile } from './ActionTiles';
+export { PlaceMap, type PlaceMapProps } from './PlaceMap';
+export { TintBackdrop } from './TintBackdrop';

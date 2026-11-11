@@ -36,6 +36,9 @@ describe('colour contrast', () => {
     (_k, c) => {
       expect(contrastRatio(c.fg, c.bg)).toBeGreaterThanOrEqual(AA);
       expect(contrastRatio(color.text, c.bg)).toBeGreaterThanOrEqual(AAA);
+      // The event page is tinted with it: its grey and green text must still read well.
+      expect(contrastRatio(color.textSecondary, c.bg)).toBeGreaterThanOrEqual(AA);
+      expect(contrastRatio(color.badgeGoingText, c.bg)).toBeGreaterThanOrEqual(AA);
     },
   );
 

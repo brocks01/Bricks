@@ -296,7 +296,14 @@
     "notFound": "இந்த நிகழ்வைக் காணவில்லை. இது ரத்து செய்யப்பட்டிருக்கலாம்.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
     "readoutJoin": "சேர நான் வருகிறேன் என்பதைத் தொடுங்கள்.",
-    "readoutGoing": "நீங்கள் வருகிறீர்கள்."
+    "readoutGoing": "நீங்கள் வருகிறீர்கள்.",
+    "whatsapp": "WhatsApp குழு",
+    "more": "மேலும்",
+    "addToCalendar": "நாட்காட்டியில் சேர்",
+    "share": "பகிர்",
+    "shareMessage": "{{title}}: {{when}}, {{place}}. வாருங்கள்!",
+    "location": "இடம்",
+    "mapOf": "{{place}} வரைபடம்"
   },
   "going": {
     "title": "நீங்கள் வருகிறீர்கள்.",

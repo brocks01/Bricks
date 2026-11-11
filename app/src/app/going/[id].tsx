@@ -12,6 +12,7 @@ import {
   Text,
   WhatsappLogoIcon,
 } from '@/components';
+import { pageTint } from '@/features/events/tint';
 import { rsvpUndoKey } from '@/features/events/useJoinEvent';
 import { formatTime, formatWhen } from '@/lib/format';
 import { openExternal } from '@/lib/openExternal';
@@ -22,7 +23,7 @@ import { useTypography } from '@/theme/TypographyProvider';
 const REMIND_BEFORE_MS = 60 * 60 * 1000;
 
 /**
- * S16 You're going (Monzo-style calm confirmation): a tick, one sentence, when
+ * S16 You're going (Luma's "You're In", on the event's tint): a big tick, one sentence, when
  * we'll remind them, the WhatsApp group, and Done. Undo stays available for 8 s
  * in the bar at the bottom; if they undo, this screen closes by itself.
  */
@@ -56,6 +57,7 @@ export default function GoingScreen() {
         event ? t('going.readout', { title: event.title, when, time: remindAt }) : t('going.title')
       }
       testID="screen-going"
+      tint={event ? pageTint(event) : undefined}
       standalone
       footer={
         event ? (
