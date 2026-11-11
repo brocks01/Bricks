@@ -233,7 +233,7 @@ const agent = createAgentTools({
   setPanelRatio(0.5);
   check('the sheet stays at whatever height the person leaves it', surfaceStore.get().ratio === 0.5, String(surfaceStore.get().ratio));
   hideSurface();
-  check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 20000);
+  check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 60000);
   // the talk ends by itself: the agent can hang up, and a quiet talk is cut rather than listening forever
   check('an end tool exists so the agent can hang up', !!toolSpecs.find((s) => s.name === 'end'));
   const ended = (await agent.call('end', {})) as { ended?: boolean };
@@ -280,6 +280,17 @@ const agent = createAgentTools({
   check('area: the keyboard button turns the one-line field on and off', st().typing === true && (setTyping(false), st().typing === false));
   hideSurface();
   check('area: closing for good clears everything', st().open === false && st().surface === null && st().typing === false && st().ratio === SHEET_RATIO);
+
+
+  // ---- the build tool: the agent writes a whole working page and it lands in the chat as one of its screens ----
+  hideSurface();
+  check('build: the tool is declared, needs a title and the html', (() => { const b = toolSpecs.find((x) => x.name === 'build'); const req = (b?.inputSchema as { required?: string[] } | undefined)?.required ?? []; return !!b && req.includes('title') && req.includes('html'); })());
+  check('build: an empty page is refused with a hint', 'error' in ((await agent.call('build', { title: 'Calculator', html: '  ' })) as object));
+  const pageHtml = '<div id="d">0</div><button onclick="calc()">=</button><script>function calc(){d.textContent=12+30}</script><!-- ' + 'x'.repeat(30000) + ' -->';
+  await agent.call('build', { title: 'Calculator', message: 'Tap the buttons.', html: pageHtml });
+  check('build: a long page (30,000 characters) is accepted whole and shown', surfaceStore.get().surface?.html === pageHtml && surfaceStore.get().open === true);
+  check('build: a page past the limit is cut, never crashes', (() => { hideSurface(); void agent.call('build', { title: 'Big', html: 'y'.repeat(LIMITS.html + 500) }); return (surfaceStore.get().surface?.html.length ?? 0) <= LIMITS.html; })());
+  hideSurface();
 
   // the server copies each description into the Gemini declaration and cuts it at 1000 characters (declarations.py): a longer one loses its tail in silence
   check('every tool description fits the server limit of 1000 characters', toolSpecs.every((s) => s.description.length <= 1000), toolSpecs.filter((s) => s.description.length > 1000).map((s) => `${s.name}:${s.description.length}`).join(', '));

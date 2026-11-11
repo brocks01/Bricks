@@ -48,7 +48,7 @@ export const FULL_AT = 0.95;
 export const LIMITS = {
   title: 120, message: 1500, question: 200, hint: 400,
   steps: 8, stepChars: 220, // stepChars = the most characters in one numbered step
-  options: 6, option: 60, html: 20000,
+  options: 6, option: 60, html: 60000,
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 

@@ -42,7 +42,7 @@ export const toolSpecs: ToolSpec[] = [
   {
     name: 'show',
     description:
-      'Show something in a panel: a question with choices or tiles, numbered steps, or a small screen you wrote. Write ALL text in the person\'s language, plain and large. Always give a title and a message; html is optional (headings, lists, tables, cards, inline SVG, and inline <script> so a calculator, converter or quiz really works when tapped; no links, no network, under 20000 characters). For plain sums just do the arithmetic. Display order: question, tiles, options, typed-answer box, hint, steps, html. tiles are up to 12, each {id, label, icon}, icon an Ionicons name such as "heart", "walk", "calculator"; the person taps them and Next returns the labels they chose. step and step_count light up to 10 step dots; next shows a Next button. With options, allow_text, tiles or next it WAITS and returns their answer; otherwise it returns at once and stays open until they close it or you call hide. Never repeat the open screen in a panel: act on the app instead, or call hide.',
+      'Show something in the chat: a question with choices or tiles, numbered steps, or a short explanation. Write ALL text in the person\'s language, plain and large. Always give a title and a message; html is optional for a table or diagram. For anything the person wants to USE (a calculator, converter, planner, quiz), call build instead. Display order: question, tiles, options, typed-answer box, hint, steps, html. tiles are up to 12, each {id, label, icon}, icon an Ionicons name such as "heart", "walk", "calculator"; the person taps them and Next returns the labels they chose. step and step_count light up to 10 step dots; next shows a Next button. With options, allow_text, tiles or next it WAITS and returns their answer; otherwise it returns at once and stays open until they close it or you call hide. Never repeat the open screen in a panel: act on the app instead, or call hide.',
     inputSchema: obj(
       {
         title: { type: 'string', description: 'The heading of the panel, short.' },
@@ -78,6 +78,12 @@ export const toolSpecs: ToolSpec[] = [
       },
       []
     ),
+  },
+  {
+    name: 'build',
+    description:
+      'Build a small working page for the person inside the chat, from your own HTML, CSS and JavaScript: a calculator, converter, budget, planner, quiz, chart, checklist, form, timer, game - anything they ask for. It runs for real in a locked box (no network, no links, no outside files), so put everything inline and make it fully work by itself. Make it for an older person: large text (20px or more), big buttons (56px or more), high contrast, plain words in THEIR language, one clear result, a Clear button, no jargon. It can be long (up to 60000 characters). Give a title and one short message. Never tell the person it is code or a page: just hand them the thing.',
+    inputSchema: obj({ title: { type: 'string', description: 'A short heading.' }, message: { type: 'string', description: 'One short sentence under the heading.' }, html: { type: 'string', description: 'The whole working page: HTML with inline CSS and JavaScript.' } }, ['title', 'html']),
   },
   { name: 'hide', description: 'Close the panel you opened with show.', inputSchema: obj({}) },
   { name: 'end', description: 'End this conversation and let the microphone go. Call it the moment the person says goodbye or that they are finished, so the talk does not keep listening after they have gone. Then say nothing more.', inputSchema: obj({}) },
@@ -191,6 +197,11 @@ export function createAgentTools(host: AgentHost) {
 
       // The live client does the actual hanging up once this answer has been sent back (see onToolCall in live.ts),
       // so the agent is never left holding a microphone after the person has said it is over.
+      case 'build': {
+        if (!String(args.html ?? '').trim()) return { error: 'nothing_to_build', hint: 'Give the whole page in html.' };
+        return showSurface({ title: args.title, message: args.message, html: args.html });
+      }
+
       case 'end':
         return { ended: true, summary: 'The conversation is over.' };
 
