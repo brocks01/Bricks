@@ -26,9 +26,9 @@
   },
   "tabs": {
     "home": "Utama",
-    "passItOn": "Kongsi Ilmu",
-    "kampung": "Kampung",
-    "thrive": "Sihat"
+    "passItOn": "Aktiviti Saya",
+    "kampung": "Komuniti",
+    "thrive": "Kesihatan"
   },
   "home": {
     "greeting": {
@@ -43,19 +43,19 @@
     },
     "section": {
       "passItOn": {
-        "title": "Kongsi Ilmu",
+        "title": "Aktiviti Saya",
         "description": "Kongsi apa yang anda tahu dan bantu orang lain."
       },
       "kampung": {
-        "title": "Kampung",
+        "title": "Komuniti",
         "description": "Sertai jalan kaki, kelas dan pertemuan berdekatan."
       },
       "thrive": {
-        "title": "Sihat",
+        "title": "Kesihatan",
         "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
       }
     },
-    "readout": "{{greeting}}. {{today}}Kongsi Ilmu: kongsi apa yang anda tahu. Kampung: sertai aktiviti berdekatan. Sihat: kekal aktif dan selamat. Ketik satu untuk membukanya.",
+    "readout": "{{greeting}}. {{today}}Aktiviti Saya: kongsi apa yang anda tahu. Komuniti: sertai aktiviti berdekatan. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
     "today": "Hari ini",
     "comingUp": "Akan datang",
     "explore": "Apa yang anda mahu buat?",
@@ -75,7 +75,7 @@
     }
   },
   "passItOn": {
-    "title": "Kongsi Ilmu",
+    "title": "Aktiviti Saya",
     "myStory": "Kisah saya",
     "noIntro": "Belum ada pengenalan suara.",
     "recordIntro": "Rakam salam ringkas",
@@ -125,9 +125,9 @@
     }
   },
   "kampung": {
-    "title": "Kampung",
+    "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
-    "readout": "Kampung. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
+    "readout": "Komuniti. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
     "happenings": "Aktiviti",
     "myCircles": {
       "title": "Bulatan Saya",
@@ -149,7 +149,7 @@
     "readoutNone": "Belum ada aktiviti."
   },
   "thrive": {
-    "title": "Sihat",
+    "title": "Kesihatan",
     "startWalk": "Mula jalan kaki",
     "thisWeek": "Minggu ini",
     "kmWalked": "km berjalan",
@@ -164,7 +164,7 @@
     "unfinished": "Anda mula berjalan tadi tetapi belum selesai.",
     "saveWalk": "Simpan jalan kaki itu",
     "discardWalk": "Jangan simpan",
-    "readout": "Sihat. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
+    "readout": "Kesihatan. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
     "readoutWeek": "Minggu ini anda berjalan {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
     "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
@@ -418,7 +418,7 @@
     "serviceBody": "Ketik untuk buka",
     "finishConfirm": "Selesaikan jalan kaki anda?",
     "saving": "Menyimpan jalan kaki anda…",
-    "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Sihat.",
+    "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Kesihatan.",
     "readout": "Sedang berjalan. {{time}}, {{distance}}, {{steps}} langkah.",
     "readoutPaused": "Dijeda. {{time}}, {{distance}}, {{steps}} langkah.",
     "title": {
@@ -520,7 +520,7 @@
     "todayEvent": "Akan datang: {{title}}, {{when}}.",
     "todayReminder": "Peringatan pada {{time}}: {{text}}.",
     "todayNothing": "Tiada apa-apa lagi hari ini. Selamat menikmati hari anda.",
-    "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Kampung.",
+    "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Komuniti.",
     "alreadyGoing": "Anda sudah pergi ke {{title}}, {{when}}.",
     "joinConfirm": "Sertai {{title}}, {{when}}?",
     "checkinConfirm": {
@@ -761,8 +761,14 @@
     "anywhere": "Di mana-mana yang sesuai",
     "free": "Percuma: orang tidak perlu bayar.",
     "paidLater": "Sesi berbayar akan datang.",
-    "alsoEvent": "Ia juga akan muncul di Kampung, supaya orang boleh sertai.",
+    "alsoEvent": "Ia juga akan muncul di Komuniti, supaya orang boleh sertai.",
     "published": "Dikongsi. Orang kini boleh melihatnya.",
-    "publishedWithEvent": "Dikongsi. Ia juga ada di Kampung sekarang."
+    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang."
+  },
+  "badge": {
+    "going": "Hadir",
+    "hosting": "Penganjur",
+    "full": "Penuh",
+    "new": "Baharu"
   }
 }

@@ -122,6 +122,8 @@ export function ReminderAlarms() {
   });
 
   useEffect(() => {
+    // Notification taps only exist on phones (the web preview has none).
+    if (!platform.canScheduleNotifications) return;
     // Tapped while the app was closed: the tap that opened the app.
     const launch = Notifications.getLastNotificationResponse();
     if (launch) {

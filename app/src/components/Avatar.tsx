@@ -9,7 +9,8 @@ import { Text } from './primitives/Text';
 export interface AvatarProps {
   name: string;
   photoUrl?: string | null;
-  size?: 48 | 64;
+  /** 32 sits next to a host's name in a row; 48 in lists; 64 for profiles. */
+  size?: 32 | 48 | 64;
 }
 
 /** First letters of the first two words: "Raj Kumar" → "RK", "Lim" → "L". */
@@ -49,7 +50,13 @@ export function Avatar({ name, photoUrl, size = 48 }: AvatarProps) {
       accessible={false}
       importantForAccessibility="no-hide-descendants"
     >
-      <Text variant={size === 64 ? 'heading' : 'bodyStrong'} color="primary" weight="bold">
+      <Text
+        variant={size === 64 ? 'heading' : size === 32 ? 'caption' : 'bodyStrong'}
+        color="primary"
+        weight="bold"
+        // Decorative (the name is written beside it): stays inside its circle at any font size.
+        maxFontSizeMultiplier={size === 32 ? 1 : undefined}
+      >
         {initials(name)}
       </Text>
     </View>

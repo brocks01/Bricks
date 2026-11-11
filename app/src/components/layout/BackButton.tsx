@@ -9,7 +9,8 @@ import { CaretLeftIcon } from '../primitives/icons';
 import { Text } from '../primitives/Text';
 
 /**
- * "‹ Back" on its own row above the title (the GOV.UK / SGDS back-link pattern).
+ * "‹ Back" as a grey pill on its own row above the title (Luma's round back button,
+ * with the word kept: never icon-only).
  * Keeping it off the top bar means Read it out and Help never move between screens.
  */
 export function BackButton({ onPress }: { onPress?: () => void }) {
@@ -31,13 +32,8 @@ export function BackButton({ onPress }: { onPress?: () => void }) {
       }}
       style={({ pressed }) => [styles.base, pressed && styles.pressed]}
     >
-      <CaretLeftIcon size={iconSize.inline} color={color.primary} weight="bold" />
-      <Text
-        variant="bodyStrong"
-        color="primary"
-        maxFontSizeMultiplier={maxChromeFontScale}
-        style={styles.label}
-      >
+      <CaretLeftIcon size={iconSize.inline} color={color.text} weight="bold" />
+      <Text variant="bodyStrong" color="text" maxFontSizeMultiplier={maxChromeFontScale}>
         {label}
       </Text>
     </Pressable>
@@ -50,14 +46,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     alignSelf: 'flex-start',
     minHeight: touch.min,
+    paddingLeft: space.sm,
     paddingRight: space.md,
     gap: space.xxs,
     borderRadius: radius.button,
+    backgroundColor: color.bgSubtle,
   },
   pressed: {
     backgroundColor: color.primarySubtle,
-  },
-  label: {
-    textDecorationLine: 'underline',
   },
 });

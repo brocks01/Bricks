@@ -63,7 +63,7 @@ describe('app shell', () => {
     await renderApp('/kampung');
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(
-      expect.stringContaining('Kampung'),
+      expect.stringContaining('Community'),
       expect.objectContaining({ language: 'en-SG', rate: 0.85 }),
     );
     // Tapping again stops it.
@@ -104,7 +104,7 @@ describe('app shell', () => {
     useSettings.setState({ language: 'ta' });
     await renderApp('/home');
     // Tab label and Home card both say "Kampung" in Tamil.
-    expect(screen.getAllByText('கம்போங்').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('சமூகம்').length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText('நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(

@@ -47,12 +47,14 @@ const PALETTE: Record<
 > = {
   primary: { bg: 'primary', pressed: 'primaryPressed', text: 'textOnColor', border: 'primary' },
   success: { bg: 'success', pressed: 'successPressed', text: 'textOnColor', border: 'success' },
-  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'primary', border: 'primary' },
+  // Secondary actions: a grey pill (Luma). Its dark label carries the meaning.
+  outline: { bg: 'primarySubtle', pressed: 'neutral', text: 'text', border: 'primarySubtle' },
   sos: { bg: 'sos', pressed: 'sosPressed', text: 'textOnColor', border: 'sos' },
 };
 
 /**
- * The main button: big, icon + word, full width by default (Be My Eyes style).
+ * The main button: a big pill with icon + word, full width by default. Black for the
+ * main action, grey for the rest, green for done, red only for emergencies.
  * Labels wrap rather than truncate, and the button grows with them.
  */
 export function BigButton({

@@ -107,7 +107,7 @@ export function sampleContent(lang: GalleryLanguage) {
       : 'No events near you yet. Start one?',
     emptyAction: ta ? 'ஒன்றைத் தொடங்கு' : 'Start something',
     section: {
-      title: ta ? 'கம்போங்' : 'Kampung',
+      title: ta ? 'சமூகம்' : 'Community',
       description: ta
         ? 'அருகிலுள்ள நடைப்பயிற்சி, வகுப்புகள், சந்திப்புகளில் சேருங்கள்.'
         : 'Join walks, classes and meet-ups near you.',

@@ -7,18 +7,20 @@
 
 export const color = {
   bg: '#FFFFFF',
-  bgSubtle: '#F7F8FA',
-  border: '#E6E8EC',
+  /** Soft grey panels (cards, grouped lists, secondary buttons). */
+  bgSubtle: '#F2F2F5',
+  border: '#E3E3E8',
   /** Stronger border for controls (outline buttons, inputs) so their edges are easy to see. */
   borderStrong: '#5F6368',
   text: '#111111',
   /** Never use anything lighter than this for text. */
   textSecondary: '#3C4043',
   textOnColor: '#FFFFFF',
-  /** The single accent: buttons, links, active tab, routes, charts. */
-  primary: '#1557B0',
-  primaryPressed: '#0F428A',
-  primarySubtle: '#E8F0FB',
+  /** The single accent, ink black (Luma-style): buttons, links, active tab, routes, charts. */
+  primary: '#111111',
+  primaryPressed: '#3A3A3C',
+  /** Grey pills: secondary buttons, the selected tab, chips. */
+  primarySubtle: '#E9E9EE',
   /** Only for "done" / "going" / completed days. */
   success: '#1E7B34',
   successPressed: '#165C27',
@@ -35,9 +37,38 @@ export const color = {
   scrim: 'rgba(17, 17, 17, 0.6)',
   /** The undo bar: dark so it stands apart from the white screen without a shadow. */
   snackbar: '#111111',
+  /** Status badges over photos and after titles (StatusBadge). */
+  badgeGoingBg: '#DDF3E2',
+  badgeGoingText: '#14632A',
+  badgeHostingBg: '#EEE5FB',
+  badgeHostingText: '#5B2A9E',
+  badgeFullBg: '#E9E9EE',
+  badgeFullText: '#3C4043',
+  /** Confirmation toast: a green pill at the top. */
+  toastBg: '#1E7B34',
 } as const;
 
 export type ColorToken = keyof typeof color;
+
+/**
+ * Category art: a soft tile with the category icon in a deep shade, used where an
+ * event or Circle has no photo, and to tint the event page (Luma's cover colour).
+ * Keys match the API's event categories.
+ */
+export const categoryColor = {
+  walk: { bg: '#DCEFE3', fg: '#1E6B3A' },
+  exercise: { bg: '#E3E9FB', fg: '#2F4FA8' },
+  class: { bg: '#FDEBD3', fg: '#8A4500' },
+  games: { bg: '#EEE5FB', fg: '#5B2A9E' },
+  music: { bg: '#FBE3EC', fg: '#A3264F' },
+  cooking: { bg: '#FDE6DA', fg: '#A13A12' },
+  gardening: { bg: '#E4F2D9', fg: '#3F6B14' },
+  kids: { bg: '#FFF1C9', fg: '#6E5100' },
+  meetup: { bg: '#DFF1F5', fg: '#136271' },
+  other: { bg: '#ECECF0', fg: '#3C4043' },
+} as const;
+
+export type CategoryColorKey = keyof typeof categoryColor;
 
 export type FontWeightToken = 'regular' | 'semibold' | 'bold';
 
@@ -65,9 +96,25 @@ export type TypeVariant = keyof typeof typeScale;
 export const lineHeightRatio = 1.4;
 
 export const radius = {
-  card: 16,
-  button: 14,
+  card: 20,
+  /** Every button is a pill. */
+  button: 999,
+  /** Icon tiles, photos in rows. */
+  tile: 14,
+  /** Bottom sheets float as rounded panels. */
+  sheet: 28,
   avatar: 999,
+} as const;
+
+/** One soft shadow, only for things that float (tab bar, sheets, toasts). */
+export const shadow = {
+  floating: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
 } as const;
 
 /** Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. */

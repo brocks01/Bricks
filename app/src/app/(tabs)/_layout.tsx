@@ -13,11 +13,12 @@ import {
 } from '@/components';
 import { tapFeedback } from '@/lib/haptics';
 import {
-  borderWidth,
   color,
   iconSize,
   lineHeightRatio,
   maxChromeFontScale,
+  radius,
+  shadow,
   space,
   touch,
   typeScale,
@@ -45,7 +46,7 @@ function tabIcon(IconComponent: Icon) {
     return (
       <IconComponent
         size={iconSize.inline}
-        color={focused ? color.primary : color.textSecondary}
+        color={focused ? color.text : color.textSecondary}
         weight={focused ? 'fill' : 'bold'}
       />
     );
@@ -62,7 +63,7 @@ function tabLabel(label: string) {
       <Text
         variant="caption"
         weight={focused ? 'bold' : 'regular'}
-        color={focused ? 'primary' : 'textSecondary'}
+        color={focused ? 'text' : 'textSecondary'}
         align="center"
         numberOfLines={oneWord ? 1 : 2}
         adjustsFontSizeToFit={oneWord}
@@ -76,8 +77,10 @@ function tabLabel(label: string) {
 }
 
 /**
- * Home · Pass It On · Kampung · Thrive. Home is first and the default; the three
- * pillars follow in the same order as the cards on Home.
+ * Home · Community · Activity · Health, on a floating white pill with the selected
+ * tab in a grey pill (Luma). Home is first and the default; the three pillars follow
+ * in the same order as the cards on Home. The bar stays in the layout (it doesn't
+ * overlap the screen), so footers and the last list item are never hidden under it.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
@@ -91,14 +94,19 @@ export default function TabsLayout() {
       screenListeners={{ tabPress: () => tapFeedback() }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: color.primary,
+        tabBarActiveTintColor: color.text,
         tabBarInactiveTintColor: color.textSecondary,
         tabBarActiveBackgroundColor: color.primarySubtle,
         tabBarStyle: {
-          height: tabBarHeight(fontScale) + insets.bottom,
-          paddingBottom: insets.bottom,
-          borderTopWidth: borderWidth.hairline,
-          borderTopColor: color.border,
+          ...shadow.floating,
+          height: tabBarHeight(fontScale) + space.xs * 2,
+          marginHorizontal: space.xs,
+          marginBottom: insets.bottom + space.xs,
+          paddingHorizontal: space.xxs,
+          paddingTop: space.xs,
+          paddingBottom: space.xs,
+          borderTopWidth: 0,
+          borderRadius: radius.button,
           backgroundColor: color.bg,
         },
         tabBarItemStyle: styles.item,
@@ -115,21 +123,21 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="pass-it-on"
-        options={{
-          title: t('tabs.passItOn'),
-          tabBarIcon: tabIcon(HandHeartIcon),
-          tabBarLabel: tabLabel(t('tabs.passItOn')),
-          tabBarButtonTestID: 'tab-pass-it-on',
-        }}
-      />
-      <Tabs.Screen
         name="kampung"
         options={{
           title: t('tabs.kampung'),
           tabBarIcon: tabIcon(UsersThreeIcon),
           tabBarLabel: tabLabel(t('tabs.kampung')),
           tabBarButtonTestID: 'tab-kampung',
+        }}
+      />
+      <Tabs.Screen
+        name="pass-it-on"
+        options={{
+          title: t('tabs.passItOn'),
+          tabBarIcon: tabIcon(HandHeartIcon),
+          tabBarLabel: tabLabel(t('tabs.passItOn')),
+          tabBarButtonTestID: 'tab-pass-it-on',
         }}
       />
       <Tabs.Screen
@@ -147,8 +155,10 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   item: {
-    minHeight: touch.large,
+    minHeight: touch.min,
     paddingVertical: space.xxs,
     gap: space.xxs,
+    borderRadius: radius.button,
+    overflow: 'hidden',
   },
 });

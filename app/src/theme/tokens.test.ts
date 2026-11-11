@@ -1,5 +1,5 @@
 import { contrastRatio } from './contrast';
-import { color, maxFontScale, radius, touch, typeScale } from './tokens';
+import { categoryColor, color, maxFontScale, radius, touch, typeScale } from './tokens';
 
 /** docs/02 §5.2: text contrast target 7:1 (AAA), never below 4.5:1. */
 describe('colour contrast', () => {
@@ -22,9 +22,22 @@ describe('colour contrast', () => {
     ['text on success tint', color.text, color.successSubtle, AAA],
     ['white on the undo bar', color.textOnColor, color.snackbar, AAA],
     ['primary on primarySubtle tab', color.primary, color.primarySubtle, AA],
+    ['text on the grey pill', color.text, color.primarySubtle, AAA],
+    ['Going badge', color.badgeGoingText, color.badgeGoingBg, AA],
+    ['Hosting badge', color.badgeHostingText, color.badgeHostingBg, AA],
+    ['Full badge', color.badgeFullText, color.badgeFullBg, AA],
+    ['white on the toast', color.textOnColor, color.toastBg, AA],
   ])('%s meets %s:1', (_name, fg, bg, minimum) => {
     expect(contrastRatio(fg, bg)).toBeGreaterThanOrEqual(minimum);
   });
+
+  it.each(Object.entries(categoryColor))(
+    '%s category art is readable (text on its tint)',
+    (_k, c) => {
+      expect(contrastRatio(c.fg, c.bg)).toBeGreaterThanOrEqual(AA);
+      expect(contrastRatio(color.text, c.bg)).toBeGreaterThanOrEqual(AAA);
+    },
+  );
 
   it('control borders are visible (WCAG 1.4.11, 3:1)', () => {
     expect(contrastRatio(color.borderStrong, color.bg)).toBeGreaterThanOrEqual(3);
@@ -54,8 +67,8 @@ describe('senior-friendly sizing', () => {
     expect(touch.sos).toBeGreaterThan(touch.large);
   });
 
-  it('only the three agreed radii exist', () => {
-    expect(radius).toEqual({ card: 16, button: 14, avatar: 999 });
+  it('only the agreed radii exist (Luma-style: pill buttons, rounded panels)', () => {
+    expect(radius).toEqual({ card: 20, button: 999, tile: 14, sheet: 28, avatar: 999 });
   });
 
   it('supports 200% system font', () => {

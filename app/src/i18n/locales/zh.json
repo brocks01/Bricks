@@ -26,8 +26,8 @@
   },
   "tabs": {
     "home": "首页",
-    "passItOn": "传承分享",
-    "kampung": "甘榜",
+    "passItOn": "我的活动",
+    "kampung": "社区",
     "thrive": "健康"
   },
   "home": {
@@ -43,11 +43,11 @@
     },
     "section": {
       "passItOn": {
-        "title": "传承分享",
+        "title": "我的活动",
         "description": "分享您的所长，帮助他人。"
       },
       "kampung": {
-        "title": "甘榜",
+        "title": "社区",
         "description": "参加附近的步行、课程和聚会。"
       },
       "thrive": {
@@ -55,7 +55,7 @@
         "description": "保持活跃，设置提醒，注意安全。"
       }
     },
-    "readout": "{{greeting}}。{{today}}传承分享：分享您的所长。甘榜：参加附近的活动。健康：保持活跃和安全。点一下就能打开。",
+    "readout": "{{greeting}}。{{today}}我的活动：分享您的所长。社区：参加附近的活动。健康：保持活跃和安全。点一下就能打开。",
     "today": "今天",
     "comingUp": "即将举行",
     "explore": "您想做什么？",
@@ -75,7 +75,7 @@
     }
   },
   "passItOn": {
-    "title": "传承分享",
+    "title": "我的活动",
     "myStory": "我的故事",
     "noIntro": "还没有语音介绍。",
     "recordIntro": "录一段简短的问候",
@@ -125,9 +125,9 @@
     }
   },
   "kampung": {
-    "title": "甘榜",
+    "title": "社区",
     "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
-    "readout": "甘榜。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
+    "readout": "社区。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
     "happenings": "活动",
     "myCircles": {
       "title": "我的圈子",
@@ -520,7 +520,7 @@
     "todayEvent": "接下来：{{title}}，{{when}}。",
     "todayReminder": "{{time}} 的提醒：{{text}}。",
     "todayNothing": "今天没有别的事了。祝您愉快。",
-    "nothingToJoin": "现在没有新的活动可以参加。去甘榜看看吧。",
+    "nothingToJoin": "现在没有新的活动可以参加。去社区看看吧。",
     "alreadyGoing": "您已经报名参加 {{title}}，{{when}}。",
     "joinConfirm": "参加 {{title}}，{{when}}？",
     "checkinConfirm": {
@@ -761,8 +761,14 @@
     "anywhere": "哪里方便都可以",
     "free": "免费：大家不用付钱。",
     "paidLater": "收费课程即将推出。",
-    "alsoEvent": "它也会出现在甘榜里，大家可以报名参加。",
+    "alsoEvent": "它也会出现在社区里，大家可以报名参加。",
     "published": "已分享，大家现在可以看到了。",
-    "publishedWithEvent": "已分享，现在也在甘榜里了。"
+    "publishedWithEvent": "已分享，现在也在社区里了。"
+  },
+  "badge": {
+    "going": "参加",
+    "hosting": "主办",
+    "full": "已满",
+    "new": "新"
   }
 }

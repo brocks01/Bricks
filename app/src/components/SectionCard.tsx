@@ -20,7 +20,7 @@ export interface SectionCardProps {
 }
 
 /**
- * One big tappable card per pillar on Home (Grab-style large tiles, but one per row
+ * A grey panel with a white icon tile (Luma). One big tappable card per pillar on Home (Grab-style large tiles, but one per row
  * so long Tamil text never gets squeezed). The whole card is the button.
  */
 export function SectionCard({
@@ -45,12 +45,7 @@ export function SectionCard({
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [
-        styles.card,
-        selected && styles.selected,
-        disabled && styles.disabled,
-        pressed && styles.pressed,
-      ]}
+      style={({ pressed }) => [styles.card, selected && styles.selected, pressed && styles.pressed]}
     >
       <View style={[styles.iconWell, disabled && styles.iconWellDisabled]}>
         <IconComponent size={iconSize.hero} color={fg} weight="bold" />
@@ -85,21 +80,17 @@ const styles = StyleSheet.create({
     minHeight: touch.min * 2,
     padding: space.md,
     borderRadius: radius.card,
-    borderWidth: borderWidth.hairline,
-    borderColor: color.border,
-    backgroundColor: color.bg,
+    borderWidth: borderWidth.control,
+    borderColor: color.bgSubtle,
+    backgroundColor: color.bgSubtle,
   },
   pressed: {
-    backgroundColor: color.bgSubtle,
-    borderColor: color.primary,
+    backgroundColor: color.primarySubtle,
+    borderColor: color.primarySubtle,
   },
   selected: {
-    borderWidth: borderWidth.control,
     borderColor: color.primary,
-    backgroundColor: color.primarySubtle,
-  },
-  disabled: {
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
   },
   iconWellDisabled: {
     backgroundColor: color.border,
@@ -107,8 +98,8 @@ const styles = StyleSheet.create({
   iconWell: {
     width: ICON_WELL,
     height: ICON_WELL,
-    borderRadius: radius.button,
-    backgroundColor: color.primarySubtle,
+    borderRadius: radius.tile,
+    backgroundColor: color.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },

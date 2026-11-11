@@ -26,9 +26,9 @@
   },
   "tabs": {
     "home": "Home",
-    "passItOn": "Pass It On",
-    "kampung": "Kampung",
-    "thrive": "Thrive"
+    "passItOn": "Activity",
+    "kampung": "Community",
+    "thrive": "Health"
   },
   "home": {
     "greeting": {
@@ -43,19 +43,19 @@
     },
     "section": {
       "passItOn": {
-        "title": "Pass It On",
+        "title": "Activity",
         "description": "Share what you know and help others."
       },
       "kampung": {
-        "title": "Kampung",
+        "title": "Community",
         "description": "Join walks, classes and meet-ups near you."
       },
       "thrive": {
-        "title": "Thrive",
+        "title": "Health",
         "description": "Stay active, set reminders and stay safe."
       }
     },
-    "readout": "{{greeting}}. {{today}}Pass It On: share what you know. Kampung: join activities near you. Thrive: stay active and safe. Tap one to open it.",
+    "readout": "{{greeting}}. {{today}}Activity: share what you know. Community: join activities near you. Health: stay active and safe. Tap one to open it.",
     "today": "Today",
     "comingUp": "Coming up",
     "explore": "What would you like to do?",
@@ -75,7 +75,7 @@
     }
   },
   "passItOn": {
-    "title": "Pass It On",
+    "title": "Activity",
     "myStory": "My story",
     "noIntro": "No voice intro yet.",
     "recordIntro": "Record a short hello",
@@ -128,9 +128,9 @@
     }
   },
   "kampung": {
-    "title": "Kampung",
+    "title": "Community",
     "comingSoon": "Here you will find walks, classes and meet-ups near you.",
-    "readout": "Kampung. {{summary}} Tap I'm going to join, or Start something to create your own.",
+    "readout": "Community. {{summary}} Tap I'm going to join, or Start something to create your own.",
     "happenings": "Happenings",
     "myCircles": {
       "title": "My Circles",
@@ -154,7 +154,7 @@
     "readoutNone": "There are no happenings yet."
   },
   "thrive": {
-    "title": "Thrive",
+    "title": "Health",
     "startWalk": "Start walk",
     "thisWeek": "This week",
     "kmWalked": "km walked",
@@ -171,7 +171,7 @@
     "unfinished": "You started a walk earlier and didn't finish it.",
     "saveWalk": "Save that walk",
     "discardWalk": "Don't save it",
-    "readout": "Thrive. {{week}} {{last}} {{reminder}} Tap Start walk to go for a walk.",
+    "readout": "Health. {{week}} {{last}} {{reminder}} Tap Start walk to go for a walk.",
     "readoutWeek": "This week you walked {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Your last walk: {{place}}, {{distance}}, {{time}}.",
     "readoutReminder": "Next reminder at {{time}}: {{text}}."
@@ -430,7 +430,7 @@
     "serviceBody": "Tap to open",
     "finishConfirm": "Finish your walk?",
     "saving": "Saving your walk…",
-    "saveFailed": "We couldn't save your walk yet. It's kept on your phone; we'll try again from Thrive.",
+    "saveFailed": "We couldn't save your walk yet. It's kept on your phone; we'll try again from Health.",
     "readout": "Walking. {{time}}, {{distance}}, {{steps}} steps.",
     "readoutPaused": "Paused. {{time}}, {{distance}}, {{steps}} steps.",
     "title": {
@@ -532,7 +532,7 @@
     "todayEvent": "Coming up: {{title}}, {{when}}.",
     "todayReminder": "Reminder at {{time}}: {{text}}.",
     "todayNothing": "Nothing else today. Enjoy your day.",
-    "nothingToJoin": "There's nothing new to join right now. Have a look at Kampung.",
+    "nothingToJoin": "There's nothing new to join right now. Have a look at Community.",
     "alreadyGoing": "You're already going to {{title}}, {{when}}.",
     "joinConfirm": "Join {{title}}, {{when}}?",
     "checkinConfirm": {
@@ -776,8 +776,14 @@
     "anywhere": "Wherever suits us",
     "free": "Free: people don't pay.",
     "paidLater": "Paid sessions are coming soon.",
-    "alsoEvent": "It will also appear in Kampung, so people can join.",
+    "alsoEvent": "It will also appear in Community, so people can join.",
     "published": "Shared. People can now see it.",
-    "publishedWithEvent": "Shared. It's also in Kampung now."
+    "publishedWithEvent": "Shared. It's also in Community now."
+  },
+  "badge": {
+    "going": "Going",
+    "hosting": "Hosting",
+    "full": "Full",
+    "new": "New"
   }
 }

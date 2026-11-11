@@ -185,7 +185,7 @@ describe('Read It Out (S37)', () => {
       act(async () => {
         speak.mock.calls.at(-1)![1].onDone();
       });
-    expect(speak.mock.calls[0]![0]).toBe('Pass It On.');
+    expect(speak.mock.calls[0]![0]).toBe('Activity.');
     expect(screen.queryByTestId(/^readout-target-.*-active$/)).toBeNull();
     await finishSentence();
     expect(screen.getByTestId('readout-target-prompt-active')).toBeTruthy();
@@ -204,7 +204,7 @@ describe('Read It Out (S37)', () => {
     await act(async () => {
       jest.advanceTimersByTime(1000);
     });
-    expect(Speech.speak).toHaveBeenCalledWith(expect.stringMatching(/^Thrive/), expect.anything());
+    expect(Speech.speak).toHaveBeenCalledWith(expect.stringMatching(/^Health/), expect.anything());
   });
 });
 
@@ -240,10 +240,10 @@ describe('Pass It On (S31)', () => {
     expect(screen.getByText("Free: people don't pay.")).toBeTruthy();
     await press('share-next');
     expect(screen.getByTestId('share-preview')).toBeTruthy();
-    expect(screen.getByText(/also appear in Kampung/)).toBeTruthy();
+    expect(screen.getByText(/also appear in Community/)).toBeTruthy();
     await press('share-next');
 
-    expect(await screen.findByText("Shared. It's also in Kampung now.")).toBeTruthy();
+    expect(await screen.findByText("Shared. It's also in Community now.")).toBeTruthy();
     expect(await screen.findByText('Cooking with me')).toBeTruthy();
     expect(
       mockDb()
@@ -352,7 +352,7 @@ describe('T1: Tamil at 200% text on every new screen', () => {
   afterEach(() => setFontScale(1));
 
   it.each([
-    ['/pass-it-on', 'பகிர்ந்து கொடு'],
+    ['/pass-it-on', 'என் செயல்பாடு'],
     ['/pass-it-on/share', 'ஒரு திறமையைப் பகிர்'],
     ['/profile', 'என் சுயவிவரம்'],
     ['/thank/e_past_kueh', 'நன்றி சொல்லுங்கள்'],

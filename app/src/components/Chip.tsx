@@ -16,8 +16,8 @@ export interface ChipProps {
 }
 
 /**
- * A large choice button for filters and one-question steps. Selected shows a tick
- * and a filled blue background, so the choice is clear without relying on colour.
+ * A large grey pill for filters and one-question steps (Luma). Selected turns black
+ * with a tick, so the choice is clear without relying on colour.
  */
 export function Chip({ label, selected, onPress, icon: IconComponent, testID }: ChipProps) {
   const fg = selected ? color.textOnColor : color.text;
@@ -65,8 +65,8 @@ const styles = StyleSheet.create({
     paddingVertical: space.xs,
     borderRadius: radius.button,
     borderWidth: borderWidth.control,
-    borderColor: color.borderStrong,
-    backgroundColor: color.bg,
+    borderColor: color.primarySubtle,
+    backgroundColor: color.primarySubtle,
     maxWidth: '100%',
   },
   selected: {
@@ -74,7 +74,8 @@ const styles = StyleSheet.create({
     backgroundColor: color.primary,
   },
   pressed: {
-    backgroundColor: color.primarySubtle,
+    borderColor: color.neutral,
+    backgroundColor: color.neutral,
   },
   label: {
     flexShrink: 1,

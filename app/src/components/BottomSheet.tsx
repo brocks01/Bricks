@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { color, radius, screenPadding, space } from '@/theme';
+import { color, radius, screenPadding, shadow, space } from '@/theme';
 
 export interface BottomSheetProps {
   visible: boolean;
@@ -13,7 +13,7 @@ export interface BottomSheetProps {
 }
 
 /**
- * A panel that rises from the bottom over a dimmed screen, for one focused task
+ * A rounded panel that floats just above the bottom edge (Luma) over a dimmed screen, for one focused task
  * (listening, confirming). It only closes through its own clearly labelled
  * buttons or the Android back button, never by an accidental tap outside.
  */
@@ -32,7 +32,7 @@ export function BottomSheet({ visible, onRequestClose, children, testID }: Botto
       <View style={styles.scrim}>
         <View
           accessibilityViewIsModal
-          style={[styles.sheet, { paddingBottom: insets.bottom + space.lg }]}
+          style={[styles.sheet, { marginBottom: insets.bottom + space.xs }]}
           testID={testID}
         >
           {children}
@@ -49,11 +49,12 @@ const styles = StyleSheet.create({
     backgroundColor: color.scrim,
   },
   sheet: {
+    ...shadow.floating,
+    marginHorizontal: space.xs,
     backgroundColor: color.bg,
-    borderTopLeftRadius: radius.card,
-    borderTopRightRadius: radius.card,
+    borderRadius: radius.sheet,
     paddingHorizontal: screenPadding,
-    paddingTop: space.lg,
+    paddingVertical: space.lg,
     gap: space.md,
   },
 });
