@@ -3,6 +3,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getCommunity, setGoing, type CommunityDetail } from '../../../../api/communities';
+import { SkeletonPage } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
@@ -67,7 +68,7 @@ export default function CommunityHome() {
   if (!data) {
     return (
       <Screen title={w('heading')} back>
-        <Text style={[type.body, { color: colors.muted }]}>{w('loading')}</Text>
+        <SkeletonPage banner tiles cards={3} />
       </Screen>
     );
   }

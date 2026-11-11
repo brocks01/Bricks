@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
+import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
@@ -75,6 +76,8 @@ export default function ConnectIndex() {
           </El>
         </View>
       ) : null}
+
+      {mine === null ? <SkeletonList count={3} /> : null}
 
       {mine && mine.length ? (
         <>
