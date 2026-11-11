@@ -15,7 +15,7 @@ export const connectIndex = definePage({
     noCommunity: { kind: 'text', summary: 'Says the person is not in a community yet.' },
     join: { kind: 'action', summary: 'Join a community with an invite code. Coming soon.' },
     create: { kind: 'action', summary: 'Create a community. Coming soon.' },
-    explore: { kind: 'action', summary: 'Opens the Connect hub: the kinds of things a community can do.' },
+    yourCommunities: { kind: 'text', summary: 'The title above the list of communities the person belongs to.' },
   },
   strings,
 });

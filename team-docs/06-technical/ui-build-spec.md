@@ -27,13 +27,11 @@ Guard rules (`AuthGate`): signed out on a private page goes to Welcome; signed i
 **Connect tab (landing, "Home" content)** `connect.index` `/`
 - Greeting from the account: "Good morning, <first name>" (time-of-day word in the person's language; the waving emoji is decoration).
 - Community selector: "<community name> · <n> members" with a dropdown to switch communities (shown only if the person belongs to one; otherwise an invitation card: join or create).
-- A community card "<community name> / Our Community" that opens the **Connect hub** (below).
-- **Today for you:** a list built from real data: today's activities the person joined (title, time, place) and today's goal progress (for example "Walk 5 km today, 3.2 / 5 km" with a bar). Empty state when there is nothing.
-- Agent bar hint: "Listening…" while talking, otherwise "Ask about events, create an activity…".
-
-**Connect hub** `connect.hub` `/connect` (back arrow; title "Connect", subtitle "Your Community & Activities"). A 3 by 3 grid of tiles, each opening its own list page:
-Communities · Events · Clubs & Groups · Competitions · Training & Workshops · Services · Opportunities (Jobs & Work) · Contributions & Earnings · Governance & Roles.
-All of these are **activity kinds or views over the one flexible activity system**, not separate modules (see D). Build the hub first with every tile "Coming soon", then fill tiles in the order of the build list at the end.
+- A community card "<community name> / Our Community" that opens the **Connect = communities only (owner's decision, 11 Nov 2026).** There are NO tiles and NO clubs or groups (those already run on WhatsApp; the college club was only inspiration). The Connect tab shows:
+- a person with no community: a card with **Join a community** (invite code, link, QR, nearby) and **Create a community**;
+- a person with communities: **Your communities** (a card each: name, area, members, my role) and the same Join and Create buttons below. If there is only one, open it directly.
+- **Inside a community** (`connect.community`, built next): announcements, events and activities (competitions, workshops and training are kinds of activity), members, roles and leadership, contributions and recognition, opportunities (jobs, services, referrals). Sponsors and funds come later.
+Built today: the landing with the list (reads `GET /v1/communities/mine`); Join and Create are disabled "Coming soon". Backend ready: create, join by code, community detail, "I'm going" to an activity.
 
 **Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your Goals, Health & Learning")
 - A goal card: "My Goal: <title> / <period> / <done> of <target> <unit> (<percent>%)" with a progress bar (from the person's active goal; empty state "Set your first goal" when none).

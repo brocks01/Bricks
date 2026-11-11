@@ -1,6 +1,7 @@
 """Launcher that works from any Python build.
   python backend/run.py            start the API on http://0.0.0.0:8800
   python backend/run.py migrate    apply new SQL migrations
+  python backend/run.py seed-demo [emails...] [--reset]   one full demo community (see app/seed_demo.py)
 """
 import runpy
 import sys
@@ -10,6 +11,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 if len(sys.argv) > 1 and sys.argv[1] == "migrate":
     runpy.run_module("app.migrate", run_name="__main__")
+elif len(sys.argv) > 1 and sys.argv[1] == "seed-demo":
+    from app.seed_demo import main as seed_main
+
+    seed_main(sys.argv[2:])
 else:
     import uvicorn
 

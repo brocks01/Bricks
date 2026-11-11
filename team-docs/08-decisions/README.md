@@ -29,3 +29,8 @@ Short, dated records. Newest last.
 - Stack for it is ours (Expo, FastAPI, PostgreSQL), not the Next.js/Node/Mongo stack in the original proposal.
 - A canvas is temporary and never authoritative data; real records are created only through authorised backend calls, with confirmation for sensitive actions.
 - First slice to build (when the owner agrees): canvas label and close, selection tiles, step dots and Next, on top of `show`. The full event-creation MVP waits for the activity and community backend.
+
+## 2026-11-11 (night): Connect is communities only; media; demo data
+- **Connect shows communities, nothing else on its first screen**: new person sees Join and Create; a member sees their communities; everything else (announcements, events and activities, members, roles, contributions, opportunities) is **inside** a community. **No clubs and groups, no nine-tile grid** (the earlier 100-screen proposal listed a clubs module; the owner rejected it: groups already run on WhatsApp).
+- Media: one basic module (`backend/app/modules/media`), signed Cloudinary uploads over REST, images only, 5 MB, file type checked from the bytes. The Jambagrad media module is NOT copied. Cloudinary credentials are not in the Jambagrad env files (they live in its database): the owner adds `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET` (or `CLOUDINARY_URL`) to `backend/.env`.
+- Demo data: `python backend/run.py seed-demo [emails]` creates one full community (Lakeview Residency, join code LAKE-DEMO) marked `is_demo`; `--reset` removes it.

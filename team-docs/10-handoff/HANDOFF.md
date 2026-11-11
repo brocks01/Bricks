@@ -46,8 +46,11 @@ backend/               Python 3.11+ FastAPI. Start: python backend/run.py (port 
   app/modules/identity sign-in, sessions, profile
   app/modules/agent    the in-app agent socket (WS /v1/agent/live)
   app/modules/voice    the phone agent (Twilio + Gemini Live): webhooks, audio socket, call rules
-  migrations/          SQL files applied in order (0001 identity, 0002 token state)
-  tests/               pytest (50 tests, real local database, fakes for phone/model/mail)
+  app/modules/communities  communities, membership, roles with terms, announcements, activities, contributions, opportunities (migration 0003)
+  app/modules/media    basic picture upload to Cloudinary
+  app/seed_demo.py     `python backend/run.py seed-demo [emails] [--reset]`: one full demo community
+  migrations/          SQL files applied in order (0001 identity, 0002 token state, 0003 communities)
+  tests/               pytest (61 tests, real local database, fakes for phone/model/mail)
 team-docs/             our docs (vision, product, design samples, technical, decisions). 10-handoff = this folder
 platform-docs/         public docs (about, FAQ ...). master-docs/ is an OLD generated all-in-one copy: stale, ignore
 ```
@@ -76,10 +79,11 @@ very long bash heredocs sometimes fail to parse: write files with the editor too
 **`BREVO_API_KEY` (NOT SET YET: needed for real email codes)**, `EMAIL_FROM` (optional), `EMAIL_DAILY_LIMIT` (default 300), `SMTP_*` (fallback),
 `CORS_ORIGINS` (extra allowed website origins; any `*.vercel.app` is already allowed), voice: `VOICE_PROVIDER`, `VOICE_PUBLIC_URL`, `VOICE_ALLOWED_NUMBERS`,
 `VOICE_ADMIN_KEY`, `VOICE_*_SECONDS`, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_FROM_NUMBER`, `GEMINI_API_KEY`, `GEMINI_LIVE_MODEL`,
-`PARALLEL_API_KEY` (web search), `PARALLEL_SEARCH_MODE`. `app/.env`: `EXPO_PUBLIC_GOOGLE_CLIENT_ID`, optional `EXPO_PUBLIC_API_URL`.
+`PARALLEL_API_KEY` (web search), `PARALLEL_SEARCH_MODE`, **`CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` (NOT SET YET: media uploads answer 503 until the owner adds them)**. `app/.env`: `EXPO_PUBLIC_GOOGLE_CLIENT_ID`, optional `EXPO_PUBLIC_API_URL`.
 The voice and Google values were copied (blind, never displayed) from the owner's older Jambagrad project.
 
 ## 5. Current state (what works)
+- **Communities backend and demo data (new):** `GET /v1/communities/mine`, `GET /v1/communities/{id}` (members only), `POST /v1/communities` (creator becomes Community Lead), `POST /v1/communities/join` (invite code), `POST /v1/communities/activities/{id}/going`; `POST /v1/media/upload` (Cloudinary, needs the three env names). Seeded demo: Lakeview Residency, 12 demo people, 4 activities, 3 announcements, 6 contributions, 3 opportunities; the test account ui-check@example.com is Secretary there. The Connect tab lists a person's communities (Join and Create are disabled "Coming soon"); the community page itself is NOT built yet.
 Everything below was tested unless marked.
 - **Sign-in:** email code (6 digits, 5 per hour per email, 30 s apart, 5 wrong tries, HMAC-hashed), Google ID-token sign-in (works on `localhost:3000`),
   Singpass and DigiLocker buttons present but **off** ("Not available yet"; they need registered credentials and are not implemented server-side).

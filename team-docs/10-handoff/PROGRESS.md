@@ -92,3 +92,9 @@ Did: checked the other agent's commits (canvas phase 1, plain transcript wording
 Tested: type-check and self-test pass; in the browser the landing shows "Good morning, <name>" and the card, and the hub opens with all nine tiles.
 Not done: Join, Create, Discover community and everything behind the tiles need the community and activity backend (`ui-build-spec.md` section D); the onboarding Language, Interests and Start screens; Grow content.
 Next: community backend (create, join by code, discover), then make Join and Create real and the first tile (Events) on the activity system.
+
+## 2026-11-11 (Claude Code, Sonnet 5.5): communities backend, media module, demo seed, Connect simplified
+Did: removed the nine-tile grid and any clubs and groups (owner: Connect is communities only); migration 0003 (communities, memberships, role definitions and terms, announcements, activities, participants, contributions, opportunities, media assets); communities API (mine, detail, create, join by code, going); one basic media module (signed Cloudinary upload, images only, 5 MB, type from bytes); `seed_demo.py` with one full demo community; the Connect tab now lists the person's communities, or shows the join/create card to a new person.
+Tested: 61 backend tests pass (communities, capacity, membership privacy, media with a fake Cloudinary, off without settings); app type-check and self-test pass; in the browser Connect shows "Your communities: Lakeview Residency, 13 members, Secretary" for the test account.
+Not done: **Cloudinary credentials are not set** (not in the Jambagrad env files; the owner must add them), so real uploads are untested; the community page, Join and Create screens, the activity "I'm going" button in the app; all other modules.
+Next: build `connect.community` (dashboard from `GET /v1/communities/{id}`), then Join by code and Create screens, then upload of a community logo and cover.

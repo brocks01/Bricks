@@ -10,6 +10,8 @@ from sqlalchemy import text
 from .core.db import engine
 from .modules.identity.router import router as identity_router
 from .modules.agent.router import router as agent_router
+from .modules.communities.router import router as communities_router
+from .modules.media.router import router as media_router
 from .modules.voice.router import router as voice_router
 
 app = FastAPI(title="Bricks API", version="0.1.0")
@@ -28,6 +30,8 @@ app.add_middleware(
 app.include_router(identity_router)
 app.include_router(voice_router)
 app.include_router(agent_router)
+app.include_router(communities_router)
+app.include_router(media_router)
 
 
 @app.get("/v1/health")
