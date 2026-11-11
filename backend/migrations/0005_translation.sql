@@ -33,7 +33,7 @@ create table if not exists translation_usage (
   user_id     uuid,
   chars       int not null default 0,
   created_at  timestamptz not null default now(),
-  unique (day, provider, user_id) nulls not distinct
+  unique nulls not distinct (day, provider, user_id)
 );
 create index if not exists translation_usage_day_idx on translation_usage (day, provider);
 

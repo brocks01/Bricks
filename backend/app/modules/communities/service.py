@@ -30,6 +30,13 @@ def _member(conn: Connection, user_id: str, community_id: str):
         raise CommunityError("not_a_member", 403)
 
 
+def is_member(conn: Connection, user_id: str, community_id: str) -> None:
+    """The one membership check, public so that anything derived from community content (today: a translation)
+    inherits the original's permission instead of getting a second, weaker path of its own. Raises
+    CommunityError("not_a_member", 403)."""
+    _member(conn, user_id, community_id)
+
+
 def _my_role(conn: Connection, user_id: str, community_id: str) -> tuple[str, bool]:
     """The person's current role name and whether it may manage the community. A plain member has no role."""
     r = conn.execute(

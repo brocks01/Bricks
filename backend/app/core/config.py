@@ -37,6 +37,16 @@ class Settings:
     singpass_client_id: str  # empty until Bricks is registered with Singpass; sign-in stays off
     digilocker_client_id: str  # empty until Bricks is registered with DigiLocker (API Setu); sign-in stays off
 
+    # Translation of member-written content. The provider KEYS are not here: GEMINI_API_KEY is read by the
+    # provider module itself, exactly like the voice module reads it, and GOOGLE_TRANSLATE_API_KEY below is
+    # the only one of these that can hold a secret (empty = Google Cloud Translation stays off).
+    translate_providers: str  # ordered, comma separated: which providers to try, and in what order
+    translate_daily_chars_per_user: int
+    translate_daily_chars_total: int
+    google_translate_api_key: str  # optional; empty = the Google provider is skipped
+    local_translate_url: str  # optional; empty = the self-hosted provider is skipped
+    translate_timeout_seconds: float
+
     @property
     def is_dev(self) -> bool:
         return self.app_env != "prod"
@@ -62,4 +72,10 @@ def get_settings() -> Settings:
         google_client_id=os.environ.get("GOOGLE_CLIENT_ID", ""),
         singpass_client_id=os.environ.get("SINGPASS_CLIENT_ID", ""),
         digilocker_client_id=os.environ.get("DIGILOCKER_CLIENT_ID", ""),
+        translate_providers=os.environ.get("TRANSLATE_PROVIDERS", "gemini,google,local"),
+        translate_daily_chars_per_user=int(os.environ.get("TRANSLATE_DAILY_CHARS_PER_USER", "20000")),
+        translate_daily_chars_total=int(os.environ.get("TRANSLATE_DAILY_CHARS_TOTAL", "500000")),
+        google_translate_api_key=os.environ.get("GOOGLE_TRANSLATE_API_KEY", "").strip(),
+        local_translate_url=os.environ.get("LOCAL_TRANSLATE_URL", "").strip(),
+        translate_timeout_seconds=float(os.environ.get("TRANSLATE_TIMEOUT_SECONDS", "15")),
     )
