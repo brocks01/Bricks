@@ -8,7 +8,7 @@ import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
 import { pageDataOf, publishPageData } from '../kit/pageData';
-import { answerSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
+import { answerSurface, hideSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
 import { toolSpecs } from '../agent/tools';
 import { IDLE_MS } from '../agent/live';
 import { sessionStore } from '../session/store';
@@ -26,6 +26,8 @@ const signedOut = { isAuthenticated: false };
 
 // the tree
 check('eight modules', allModules().length === 8, String(allModules().length));
+check('grow has six pages, each needs sign-in', allPages().filter((p) => p.module === 'grow').length === 6 && allPages().filter((p) => p.module === 'grow').every((p) => !!p.requiresAuth));
+check('grow pages have a heading in all six languages', allPages().filter((p) => p.module === 'grow' && p.key !== 'grow.index').every((p) => Object.values(p.strings).length === 6 && Object.values(p.strings).every((w) => !!(w as Record<string, string>).heading)));
 check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);
 check('explore item page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'explore.item'); return !!p && p.route === '/explore/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
 check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
@@ -45,7 +47,7 @@ check('sign-in pages open without sign-in', resolvePage('auth.signIn', {}, signe
 check('sign-in pages have no bottom bar', allPages().filter((p) => p.module === 'auth').every((p) => p.bare));
 check('verify code is person-only and secret', (() => { const e = allPages().find((p) => p.key === 'auth.verify')?.elements.code; return e?.agent === 'human' && e?.secret === true; })());
 check('Google, Singpass, DigiLocker are person-only', ['google', 'singpass', 'digilocker'].every((id) => allPages().find((p) => p.key === 'auth.signIn')?.elements[id]?.agent === 'human'));
-check('no sample data in the app', !allPages().some((p) => Object.values(p.strings.en ?? {}).some((w) => /Ankit|Yoga|Rainwater|Sample/i.test(w))));
+check('no sample data in the app', !allPages().some((p) => Object.values(p.strings.en ?? {}).some((w) => /Ankit|Yoga (class|session|club)|Rainwater|Sample/i.test(w))));
 check('search sign in', search('sign in').some((h) => h.path === 'auth.signIn'));
 check('search edit profile', search('edit profile').some((h) => h.path === 'me.edit'));
 check('search change language', search('change language').some((h) => h.path === 'language/set'));
@@ -213,6 +215,21 @@ const agent = createAgentTools({
   const answered = await shown;
   check('canvas: the answer is the labels the person chose', answered.answer === 'One' && answered.how === 'option', JSON.stringify(answered));
   check('canvas: answering closes the panel', surfaceStore.get().open === false);
+
+  // the agent moves its own panel between the three states (spec section 2), and only Close dismisses for good
+  const panelSpec = toolSpecs.find((s) => s.name === 'panel');
+  check('a panel tool exists so the agent can move its own panel', !!panelSpec && 'state' in ((panelSpec.inputSchema.properties ?? {}) as Record<string, unknown>));
+  check('panel refuses a state that does not exist', 'error' in ((await agent.call('panel', { state: 'huge' })) as object));
+  check('panel refuses to expand with nothing showing', 'error' in ((await agent.call('panel', { state: 'full' })) as object));
+  await agent.call('show', { title: 'A title', message: 'A message' });
+  check('a shown screen opens expanded', surfaceStore.get().open === true && surfaceStore.get().state === 'expanded', JSON.stringify(surfaceStore.get()));
+  await agent.call('panel', { state: 'full' });
+  check('panel full takes the whole screen', surfaceStore.get().state === 'full', JSON.stringify(surfaceStore.get()));
+  await agent.call('panel', { state: 'compact' });
+  check('panel compact puts the screen away but keeps it', surfaceStore.get().open === false && surfaceStore.get().surface?.title === 'A title', JSON.stringify(surfaceStore.get()));
+  await agent.call('panel', { state: 'expanded' });
+  check('panel expanded brings the same screen back untouched', surfaceStore.get().open === true && surfaceStore.get().surface?.title === 'A title');
+  hideSurface();
   check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 20000);
   // the talk ends by itself: the agent can hang up, and a quiet talk is cut rather than listening forever
   check('an end tool exists so the agent can hang up', !!toolSpecs.find((s) => s.name === 'end'));

@@ -30,7 +30,7 @@ ITEMS = [
     # Digital skills
     ("digital_skills", I, "easy", "Paying with UPI or PayNow, step by step", "Learn how a QR payment works and practise one safely, with demo money.", 8,
      ["Open your payment app", "Scan the shop's QR code", "Check the name and the amount", "Confirm with your PIN", "Look for the success message"],
-     "A QR payment moves money from your bank account to the shop's. Always check the shop's name and the amount before you confirm. Never share your PIN or an OTP with anyone, not even someone who says they are from the bank.", MENTOR),
+     "A QR payment moves money from your bank account to the shop's. Always check the shop's name and the amount before you confirm. Never share your PIN or an OTP with anyone, not even someone who says they are from the bank.", None),
     ("digital_skills", G, "easy", "Video calling family: a first call", "Set up and make a video call to someone you love, in five steps.", 6,
      ["Open the calling app", "Pick the person", "Tap the camera button", "Hold the phone at eye level", "End the call with the red button"],
      "Sit where there is light in front of you, not behind. Hold the phone steady against something, like a stack of books. If the picture freezes, switch to a voice call and try again later.", None),
@@ -122,7 +122,7 @@ ITEMS = [
      "Tools that talk or answer questions have learned from very large amounts of writing. They are helpful for ideas and explanations, but they can make mistakes, so check important facts with a person or a trusted source.", None),
     ("knowledge", G, "easy", "A short history of the place you live", "Find out who lived here before and what the land was used for.", 10,
      ["Ask the oldest neighbour you know", "Look at old photos or maps online", "Write three things that surprised you"],
-     "Libraries, community centres and the National Archives have photos and maps of old neighbourhoods. Sharing what you find with others is a good activity for a community.", MENTOR),
+     "Libraries, community centres and the National Archives have photos and maps of old neighbourhoods. Sharing what you find with others is a good activity for a community.", None),
 ]
 
 

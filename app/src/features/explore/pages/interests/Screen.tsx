@@ -44,7 +44,7 @@ export default function ExploreInterests() {
       : {
           values: [{ label: w('chosen'), value: chosen.map((c) => w(c)).join(', ') }],
           images: [],
-          lists: [{ label: w('interestsQ'), items: ALL.map((id) => ({ label: w(id), detail: chosen.includes(id) ? w('saved') : undefined, actions: [{ id: `toggle_${id}`, label: w(id), run: () => toggle(id) }] })) }],
+          lists: [{ label: w('interestsQ'), items: ALL.map((id, n) => ({ label: w(id), detail: chosen.includes(id) ? w('saved') : undefined, actions: [{ id: `toggle${n + 1}`, label: w(id), run: () => toggle(id) }] })) }],
           actions: [{ id: 'saveInterests', label: w('saveInterests'), run: () => save() }],
         }
   );

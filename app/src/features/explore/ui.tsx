@@ -22,25 +22,28 @@ export function Pic({ uri, icon, size, i = 0, radiusPx = 14 }: { uri?: string | 
 
 /** One item in a list: a picture, the title, "8 min · Guide", and a bookmark. */
 export function ItemRow({ item, i, meta, onOpen, onSave, saveLabel }: { item: ExploreItem; i: number; meta: string; onOpen: () => void; onSave?: () => void; saveLabel?: string }) {
+  // The row and the bookmark are SIBLINGS (a button inside a button is invalid on the web).
   return (
-    <Pressable onPress={onOpen} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.sm, marginBottom: space.sm }}>
-      <Pic uri={item.image_url} icon={FORMAT_ICON[item.format]} size={64} i={i} />
-      <View style={{ flex: 1 }}>
-        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink }}>{item.title}</Text>
-        <Text style={[type.small, { color: colors.muted, marginTop: 2 }]}>{meta}</Text>
-        {item.percent > 0 && !item.completed ? (
-          <View style={{ height: 6, borderRadius: 3, backgroundColor: colors.accentSoft, marginTop: 6 }}>
-            <View style={{ width: `${item.percent}%`, height: 6, borderRadius: 3, backgroundColor: colors.accent }} />
-          </View>
-        ) : null}
-      </View>
-      {item.completed ? <Ionicons name="checkmark-circle" size={22} color={colors.accent} /> : null}
+    <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, marginBottom: space.sm }}>
+      <Pressable onPress={onOpen} accessibilityRole="button" style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.sm }}>
+        <Pic uri={item.image_url} icon={FORMAT_ICON[item.format]} size={64} i={i} />
+        <View style={{ flex: 1 }}>
+          <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink }}>{item.title}</Text>
+          <Text style={[type.small, { color: colors.muted, marginTop: 2 }]}>{meta}</Text>
+          {item.percent > 0 && !item.completed ? (
+            <View style={{ height: 6, borderRadius: 3, backgroundColor: colors.accentSoft, marginTop: 6 }}>
+              <View style={{ width: `${item.percent}%`, height: 6, borderRadius: 3, backgroundColor: colors.accent }} />
+            </View>
+          ) : null}
+        </View>
+        {item.completed ? <Ionicons name="checkmark-circle" size={22} color={colors.accent} /> : null}
+      </Pressable>
       {onSave ? (
-        <Pressable onPress={onSave} accessibilityRole="button" accessibilityLabel={saveLabel} hitSlop={10}>
+        <Pressable onPress={onSave} accessibilityRole="button" accessibilityLabel={saveLabel} hitSlop={10} style={{ padding: space.md }}>
           <Ionicons name={item.saved ? 'bookmark' : 'bookmark-outline'} size={24} color={colors.accent} />
         </Pressable>
       ) : null}
-    </Pressable>
+    </View>
   );
 }
 

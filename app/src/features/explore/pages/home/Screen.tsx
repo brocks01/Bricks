@@ -37,7 +37,7 @@ export default function ExploreHome() {
       : {
           values: [{ label: w('heading'), value: w('intro') }],
           images: [{ uri: 'explore-banner', alt: w('intro2') }],
-          lists: [{ label: w('categories'), items: home.categories.map((c) => ({ label: w(c.id), detail: `${w(c.id + '_line')} · ${c.items === 1 ? w('itemOne') : w('items', { n: c.items })}`, actions: [{ id: `category_${c.id}`, label: w(c.id), run: () => { navigate('explore.category', { id: c.id }); } }] })) }],
+          lists: [{ label: w('categories'), items: home.categories.map((c, n) => ({ label: w(c.id), detail: `${w(c.id + '_line')} · ${c.items === 1 ? w('itemOne') : w('items', { n: c.items })}`, actions: [{ id: `category${n + 1}`, label: w(c.id), run: () => { navigate('explore.category', { id: c.id }); } }] })) }],
           actions: [
             { id: 'interests', label: w('interests'), run: () => { navigate('explore.interests'); } },
             { id: 'mine', label: w('mine'), run: () => { navigate('explore.mine'); } },
@@ -51,7 +51,7 @@ export default function ExploreHome() {
         <Text style={{ fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#12691F' }}>{w('intro')}</Text>
       </El>
       <Text style={{ fontSize: 15, lineHeight: 21, color: '#1F2A44', marginTop: space.sm, marginBottom: space.md }}>{w('intro2')}</Text>
-      <Hero source={exploreHero} height={150} light={false} />
+      <Hero source={exploreHero} height={120} light={false} />
 
       {failed ? (
         <>
@@ -68,11 +68,11 @@ export default function ExploreHome() {
                 const look = categoryLook[c.id];
                 return (
                   <View key={c.id} style={{ width: '48.5%' }}>
-                    <Pressable onPress={() => navigate('explore.category', { id: c.id })} accessibilityRole="button" style={{ minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, padding: 10 }}>
-                      <Glyph icon={look.icon} lib={look.lib} color={look.color} tint={look.tint} size={44} />
+                    <Pressable onPress={() => navigate('explore.category', { id: c.id })} accessibilityRole="button" style={{ minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 8, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, padding: 8 }}>
+                      <Glyph icon={look.icon} lib={look.lib} color={look.color} tint={look.tint} size={38} />
                       <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 14.5, fontWeight: '800', color: colors.ink }} numberOfLines={2}>{w(c.id)}</Text>
-                        <Text style={{ fontSize: 12.5, lineHeight: 16, color: '#3B4A63' }} numberOfLines={2}>{w(c.id + '_line')}</Text>
+                        <Text style={{ fontSize: 13.5, fontWeight: '800', color: colors.ink }} numberOfLines={2}>{w(c.id)}</Text>
+                        <Text style={{ fontSize: 11.5, lineHeight: 15, color: '#3B4A63' }} numberOfLines={3}>{w(c.id + '_line')}</Text>
                       </View>
                     </Pressable>
                   </View>

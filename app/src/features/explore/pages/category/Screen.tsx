@@ -50,7 +50,7 @@ export default function ExploreCategory() {
   return (
     <Screen title={name} back>
       <El page={page} id="heading">
-        <Hero source={categoryPic[id as keyof typeof categoryPic] ?? categoryPic.digital_skills} title={name} subtitle={w(String(id) + '_line')} height={170} light />
+        <Hero source={categoryPic[id as keyof typeof categoryPic] ?? categoryPic.digital_skills} title={name} subtitle={w(String(id) + '_line')} height={130} light />
       </El>
       {String(id) === 'health_awareness' ? <Text style={[type.small, { color: colors.warn, backgroundColor: colors.warnSoft, padding: space.sm, borderRadius: 10, marginBottom: space.md }]}>{w('notAdvice')}</Text> : null}
       {failed ? (
