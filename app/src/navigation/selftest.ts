@@ -214,13 +214,14 @@ const agent = createAgentTools({
   answerSurface('One', 'option');
   const answered = await shown;
   check('canvas: the answer is the labels the person chose', answered.answer === 'One' && answered.how === 'option', JSON.stringify(answered));
-  check('canvas: answering closes the panel', surfaceStore.get().open === false);
+  check('canvas: answering spends the screen but leaves the chat open', surfaceStore.get().surface === null && surfaceStore.get().open === true);
 
   // the agent moves its own panel between the three states (spec section 2), and only Close dismisses for good
   const panelSpec = toolSpecs.find((s) => s.name === 'panel');
   check('a panel tool exists so the agent can move its own panel', !!panelSpec && 'state' in ((panelSpec.inputSchema.properties ?? {}) as Record<string, unknown>));
   check('panel refuses a state that does not exist', 'error' in ((await agent.call('panel', { state: 'huge' })) as object));
-  check('panel refuses to expand with nothing showing', 'error' in ((await agent.call('panel', { state: 'full' })) as object));
+  check('panel can size the agent area to any height, even with no screen made (the chat can be resized too)', (((await agent.call('panel', { size: 60 })) as { size?: number }).size === 60) && Math.round(surfaceStore.get().ratio * 100) === 60);
+  hideSurface();
   await agent.call('show', { title: 'A title', message: 'A message' });
   check('a shown screen opens as a sheet at the resting size', surfaceStore.get().open === true && surfaceStore.get().ratio === SHEET_RATIO, JSON.stringify(surfaceStore.get()));
   await agent.call('panel', { state: 'full' });

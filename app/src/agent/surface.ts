@@ -52,7 +52,7 @@ export const LIMITS = {
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
-export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number; live: number | null; voice: boolean }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO, live: null, voice: false });
+export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number; live: number | null; manual: boolean; typing: boolean }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO, live: null, manual: false, typing: false });
 
 let waiting: ((r: { answer?: string; how?: 'option' | 'typed'; dismissed?: boolean }) => void) | null = null;
 
@@ -165,7 +165,7 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.
-  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO, live: null, voice: false });
+  surfaceStore.set((s) => ({ ...s, open: true, surface, seq: s.seq + 1, ratio: a.full ? 1 : SHEET_RATIO, live: null, manual: false }));
   const waitsForAPerson = surface.options.length > 0 || surface.allowText || surface.tiles.length > 0 || surface.next;
   if (!waitsForAPerson) return Promise.resolve({ shown: true, note: 'It stays until the person closes it or you call hide.' });
   return new Promise((resolve) => {
@@ -178,7 +178,7 @@ export function answerSurface(answer: string, how: 'option' | 'typed'): void {
   const w = waiting;
   waiting = null;
   w?.({ answer, how });
-  surfaceStore.set((s) => ({ ...s, open: false, surface: null }));
+  surfaceStore.set((s) => ({ ...s, surface: null }));
 }
 
 /** Close it (the person, or the agent's `hide`). A waiting question is answered as dismissed. */
@@ -186,7 +186,7 @@ export function hideSurface(): void {
   const w = waiting;
   waiting = null;
   w?.({ dismissed: true });
-  surfaceStore.set((s) => ({ ...s, open: false, surface: null, ratio: SHEET_RATIO, voice: false }));
+  surfaceStore.set((s) => ({ ...s, open: false, surface: null, ratio: SHEET_RATIO, typing: false }));
 }
 
 /**
@@ -194,7 +194,6 @@ export function hideSurface(): void {
  * the person left it; the agent's `panel` tool writes the two resting sizes through `setPanelState`.
  */
 export function setPanelRatio(ratio: number): void {
-  if (!surfaceStore.get().surface) return;
   const r = Math.min(1, Math.max(MIN_RATIO, ratio));
   surfaceStore.set((s) => ({ ...s, open: true, ratio: r }));
 }
@@ -257,18 +256,37 @@ export function releaseSurface(dy: number): void {
     else surfaceStore.set((s) => ({ ...s, open: false }));
     return;
   }
-  surfaceStore.set((s) => ({ ...s, open: true, ratio: Math.min(1, Math.max(MIN_RATIO, landed)) }));
+  surfaceStore.set((s) => ({ ...s, open: true, manual: true, ratio: Math.min(1, Math.max(MIN_RATIO, landed)) }));
 }
 
-/** Open the agent area at a height (from the peek bar's chevron or mic). `voice` opens it as the full-screen listening view. */
-export function openArea(ratio = 0.5, voice = false): void {
-  surfaceStore.set((s) => ({ ...s, open: true, ratio: voice ? 1 : Math.min(1, Math.max(MIN_RATIO, ratio)), voice }));
+/** Open the agent area at a height (a fraction of the area). */
+export function openArea(ratio = 0.5): void {
+  surfaceStore.set((s) => ({ ...s, open: true, ratio: Math.min(1, Math.max(MIN_RATIO, ratio)) }));
 }
-/** Switch between the chat and the full-screen listening view without losing either. */
-export function setVoiceView(on: boolean): void {
-  surfaceStore.set((s) => ({ ...s, open: true, voice: on }));
+/** Show or hide the one-line typing field above the bottom area (the keyboard button). */
+export function setTyping(on: boolean): void {
+  surfaceStore.set((s) => ({ ...s, typing: on }));
 }
 /** Put the area away WITHOUT losing the conversation or a screen the agent made (tap the dimmed app, or drag all the way down). */
 export function putAway(): void {
-  surfaceStore.set((s) => ({ ...s, open: false, voice: false }));
+  surfaceStore.set((s) => ({ ...s, open: false }));
+}
+
+/**
+ * AUTO-FIT: the sheet grows or shrinks to the room what it shows needs, so a short question does not sit in a huge empty sheet and a long one
+ * does not need scrolling. `contentHeight` is the height of the chat content in px. The person's own drag wins: once they have set a height,
+ * it is left alone until the agent shows a new screen or asks for a size. Never smaller than 30% or taller than 92% of the area.
+ */
+const CHROME_PX = 170; // the handle, header and the control row
+export function fitToContent(contentHeight: number): void {
+  const st = surfaceStore.get();
+  if (!st.open || st.manual || st.live !== null || areaHeight < 200) return;
+  const r = Math.min(0.92, Math.max(0.3, (contentHeight + CHROME_PX) / areaHeight));
+  if (r <= st.ratio + 0.02) return; // grow only: the sheet never shrinks by itself under the person's eyes
+  surfaceStore.set((s) => ({ ...s, ratio: r }));
+}
+/** The agent asks for a size (a percent of the area, 15 to 100); the person's next drag still wins. */
+export function agentSizesPanel(percent: number): void {
+  const r = Math.min(1, Math.max(MIN_RATIO, percent / 100));
+  surfaceStore.set((s) => ({ ...s, open: true, ratio: r, manual: true }));
 }

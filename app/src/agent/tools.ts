@@ -6,7 +6,7 @@ import { findSkill, getModule, search } from '../navigation/registry';
 import { childrenOf, describe, parsePath } from '../navigation/tree';
 import { note } from '../navigation/log';
 import type { AgentPolicy, Decision, SkillResult } from '../navigation/types';
-import { hideSurface, minimiseSurface, setPanelState, showSurface, surfaceStore } from './surface';
+import { agentSizesPanel, hideSurface, minimiseSurface, setPanelState, showSurface } from './surface';
 import { agentSettings, controlsOfPage, fillElement, getControl, pressElement, waitForPage } from './pageControls';
 
 /**
@@ -84,8 +84,8 @@ export const toolSpecs: ToolSpec[] = [
   {
     name: 'panel',
     description:
-      'Move your own panel: "compact" puts it away and leaves the app visible, "expanded" opens it over the content area, "full" takes the whole screen. Use it when you need more or less room for what you are showing - most of the time "expanded" is right. There must be something showing first (call show). The person can always drag it or close it themselves.',
-    inputSchema: obj({ state: { type: 'string', description: 'One of: compact, expanded, full.' } }, ['state']),
+      'Resize your own panel. The panel already fits itself to what you show, so you rarely need this. Give a size in percent of the screen (15 to 100) for any height, or a state: "compact" puts it away and leaves the app visible, "expanded" is about three quarters, "full" takes the whole screen. Use it when you need more or less room for what you are showing. The person can always drag it or close it themselves, and their drag wins.',
+    inputSchema: obj({ size: { type: 'number', description: 'Height in percent of the screen, 15 to 100.' }, state: { type: 'string', description: 'Or one of: compact, expanded, full.' } }),
   },
   { name: 'run', description: 'Run a module skill by "module/skill", for example "events/create". Some skills need the person to approve.', inputSchema: obj({ skill: { type: 'string' }, input: { type: 'object' } }, ['skill']) },
 ];
@@ -197,17 +197,20 @@ export function createAgentTools(host: AgentHost) {
       // The agent's own display state (spec section 2): it moves the panel the same way it opens a page, but it
       // never dismisses the screen behind - only Close does that - so nothing the person was looking at is lost.
       case 'panel': {
+        if (typeof args.size === 'number' && Number.isFinite(args.size)) {
+          agentSizesPanel(args.size);
+          return { size: Math.round(Math.min(100, Math.max(15, args.size))) };
+        }
         const wanted = String(args.state ?? '');
         if (wanted === 'compact') {
           minimiseSurface();
           return { state: 'compact', note: 'The screen is put away but kept; call show or panel expanded to bring it back.' };
         }
         if (wanted === 'expanded' || wanted === 'full') {
-          if (!surfaceStore.get().surface) return { error: 'nothing_to_show', hint: 'Call show first, then move the panel.' };
           setPanelState(wanted);
           return { state: wanted };
         }
-        return { error: 'bad_state', hint: 'state must be compact, expanded or full.' };
+        return { error: 'bad_state', hint: 'Give size (15 to 100) or state: compact, expanded or full.' };
       }
 
       case 'run': {
