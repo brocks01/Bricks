@@ -13,6 +13,12 @@ import { platform } from './platform';
  */
 
 export const REMINDER_CATEGORY = 'reminder';
+export const CHECKIN_CATEGORY = 'checkin';
+export const ACTION_YES = 'yes';
+export const ACTION_NO = 'no';
+const CHECKIN_ID = 'checkin:daily';
+/** The morning question goes out at 8 am (docs/01 TH-1). */
+const CHECKIN_HOUR = 8;
 export const ACTION_DONE = 'done';
 export const ACTION_SNOOZE = 'snooze';
 export const SNOOZE_MINUTES = 10;
@@ -51,6 +57,64 @@ export async function setupNotifications(): Promise<void> {
       options: { opensAppToForeground: false },
     },
   ]);
+  // "Did you move yesterday?" Yes answers from the lock screen; No opens the app
+  // to suggest a walk with company (Walk With Me).
+  await Notifications.setNotificationCategoryAsync(CHECKIN_CATEGORY, [
+    {
+      identifier: ACTION_YES,
+      buttonTitle: i18n.t('common.yes'),
+      options: { opensAppToForeground: false },
+    },
+    {
+      identifier: ACTION_NO,
+      buttonTitle: i18n.t('common.no'),
+      options: { opensAppToForeground: true },
+    },
+  ]);
+}
+
+/**
+ * The 8 am check-in as a local notification, every day. Used wherever the server
+ * can't push to the phone (always in Expo Go on iPhone). Never asks for permission.
+ */
+export async function syncMorningCheckin(enabled: boolean): Promise<void> {
+  if (!(await notificationsAllowed(false))) return;
+  const scheduled = (await Notifications.getAllScheduledNotificationsAsync()).some(
+    (n) => n.identifier === CHECKIN_ID,
+  );
+  if (!enabled) {
+    if (scheduled) await Notifications.cancelScheduledNotificationAsync(CHECKIN_ID);
+    return;
+  }
+  if (scheduled) return;
+  await Notifications.scheduleNotificationAsync({
+    identifier: CHECKIN_ID,
+    content: {
+      // First words say what it is (S38).
+      title: i18n.t('notifications.checkinTitle'),
+      body: i18n.t('notifications.checkinBody'),
+      categoryIdentifier: CHECKIN_CATEGORY,
+      sound: 'default',
+      data: { kind: 'checkin' },
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DAILY,
+      hour: CHECKIN_HOUR,
+      minute: 0,
+      channelId: CHANNEL_ID,
+    },
+  });
+}
+
+/**
+ * The Expo push token for server notifications (our Android build only: Expo Go
+ * on iPhone can't receive them). Null when push isn't possible or not set up.
+ */
+export async function expoPushToken(projectId: string | null): Promise<string | null> {
+  if (!platform.canUseRemotePush || !projectId) return null;
+  if (!(await notificationsAllowed(false))) return null;
+  const { data } = await Notifications.getExpoPushTokenAsync({ projectId });
+  return data;
 }
 
 /** True if we may alert. Asks the phone only when `ask` is true (a member action). */

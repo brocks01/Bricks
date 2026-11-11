@@ -111,12 +111,14 @@ Noto Sans SC would add ~96 MB.
 
 ## Environment
 
-| Variable                | Meaning                                                     |
-| ----------------------- | ----------------------------------------------------------- |
-| `EXPO_PUBLIC_API_URL`   | Backend base URL (ngrok or `demo`). Unset → mocks.          |
-| `EXPO_PUBLIC_USE_MOCKS` | `true` in Phase 1; `false` from iteration 2.1.              |
-| `EXPO_PUBLIC_DEV_TOOLS` | Hidden dev screens. Forced off in preview / production.     |
-| `APP_VARIANT`           | Set by `eas.json`: `development` / `preview` / `production` |
+| Variable                                 | Meaning                                                        |
+| ---------------------------------------- | -------------------------------------------------------------- |
+| `EXPO_PUBLIC_API_URL`                    | Backend base URL (ngrok or `demo`). Unset → mocks.             |
+| `EXPO_PUBLIC_USE_MOCKS`                  | Force mock data even with an API URL. Default `false`.         |
+| `EXPO_PUBLIC_SUPABASE_URL` / `_ANON_KEY` | Supabase Auth. **Publishable key only.** Unset → demo sign-in. |
+| `EXPO_PUBLIC_PHONE_SIGN_IN`              | Show phone-number sign-in (needs a Supabase SMS provider).     |
+| `EXPO_PUBLIC_DEV_TOOLS`                  | Hidden dev screens. Forced off in preview / production.        |
+| `APP_VARIANT`                            | Set by `eas.json`: `development` / `preview` / `production`    |
 
 `EXPO_PUBLIC_*` values are bundled into the app: never put secrets in them.
 
@@ -125,3 +127,17 @@ Noto Sans SC would add ~96 MB.
 All `ms`, `zh`, `ta` strings (0.1 to 1.3) are **drafts** written to test layout and fonts, and need
 native-speaker review (SOS and consent wording first). Buddy's keyword lists
 (`src/features/buddy/intents.ts`) are drafts too, until the Voice track's lists arrive.
+
+## Sign-in (Supabase)
+
+Google sign-in opens Supabase's Google page in the phone's browser and comes back to the app
+(`features/auth/google.ts`, PKCE). No native Google SDK, so it works in Expo Go. The session is
+kept in the phone's secure storage and sent as `Authorization: Bearer …` on every API request.
+
+One-time Supabase set-up:
+
+1. **Authentication → Providers → Google:** turn on, paste a Google Cloud OAuth _Web_ client id
+   and secret. In Google Cloud, the client's redirect URI is
+   `https://<project>.supabase.co/auth/v1/callback`.
+2. **Authentication → URL Configuration → Redirect URLs:** add `exp://**` (Expo Go) and
+   `bricks-development://**`, `bricks-preview://**`, `bricks://**` (our builds).

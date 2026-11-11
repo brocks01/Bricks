@@ -20,7 +20,9 @@
     "couldNotOpen": "打不开。请再试一次。",
     "close": "关闭",
     "comingSoon": "即将推出",
-    "save": "保存"
+    "save": "保存",
+    "offline": "您现在没有联网。恢复联网后，内容会自动更新。",
+    "networkError": "连接不上。请检查网络，再试一次。"
   },
   "tabs": {
     "home": "首页",
@@ -450,7 +452,9 @@
     "channel": "提醒",
     "reminderTitle": "提醒：{{text}}",
     "reminderBody": "做好了就点完成。",
-    "snooze": "{{count}} 分钟后再提醒"
+    "snooze": "{{count}} 分钟后再提醒",
+    "checkinTitle": "问候：您昨天有活动吗？",
+    "checkinBody": "请按“是”或“不是”。"
   },
   "readOutBar": {
     "label": "正在朗读屏幕",
@@ -534,7 +538,9 @@
       "phoneInvalid": "这不像新加坡的手机号码。应该有 8 个数字，比如 9123 4567。",
       "privacy": "没有您的同意，我们绝不分享您的资料。",
       "demoNote": "演示：每个选项都会登录到示例账户，不会使用真实的 Singpass 或 Google 账户。",
-      "readout": "用 Singpass、Google 或手机号码登录。没有您的同意，我们绝不分享您的资料。"
+      "readout": "用 Singpass、Google 或手机号码登录。没有您的同意，我们绝不分享您的资料。",
+      "googleFailed": "Google 登录没有成功。请再试一次，或者用 Singpass。",
+      "demoNoteSingpass": "演示：Singpass 会登录到示例账户，不会使用真实的 Singpass 账户。"
     },
     "about": {
       "readout": "第 {{step}} 步，共 {{total}} 步。{{question}} {{hint}}",

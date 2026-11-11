@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-import { ApiError } from '@/api/errors';
+import { ApiError, NetworkError } from '@/api/errors';
 import { color, space } from '@/theme';
 
 import { EmptyState } from './EmptyState';
@@ -32,7 +32,13 @@ export function QueryState<T>({ query, children, loadingText, notFoundText }: Qu
     const notFound = query.error instanceof ApiError && query.error.status === 404;
     return (
       <EmptyState
-        text={notFound && notFoundText ? notFoundText : t('common.error')}
+        text={
+          notFound && notFoundText
+            ? notFoundText
+            : query.error instanceof NetworkError
+              ? t('common.networkError')
+              : t('common.error')
+        }
         actionLabel={notFound ? undefined : t('common.tryAgain')}
         onAction={notFound ? undefined : () => void query.refetch()}
         testID="query-error"

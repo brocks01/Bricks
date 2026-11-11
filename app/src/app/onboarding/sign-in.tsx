@@ -16,6 +16,7 @@ import {
   Text,
   TextField,
 } from '@/components';
+import { signInWithGoogle } from '@/features/auth/google';
 import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { config } from '@/lib/config';
 import { isSingaporeMobile, normalisePhone } from '@/lib/phone';
@@ -28,7 +29,9 @@ const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? '';
 /**
  * S3 Sign in (Singpass / LifeSG): Singpass first (it fills in their name and
  * area), then Google and phone number as equal big buttons. No passwords.
- * On mock data every option signs in to the sample account, and the screen says so.
+ * Google is real when Supabase is set up (browser sign-in, works in Expo Go);
+ * Singpass stays a mock for the hackathon. Phone-number sign-in shows only once
+ * an SMS provider is configured. On mock data the screen says what's a demo.
  */
 export default function SignInScreen() {
   const { t } = useTranslation();
@@ -40,15 +43,21 @@ export default function SignInScreen() {
   const [phoneMode, setPhoneMode] = useState(false);
   const [phone, setPhone] = useState('');
   const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [googleFailed, setGoogleFailed] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   useResumeHere('/onboarding/sign-in');
+  const realGoogle = config.supabase !== null;
+  const showPhone = !realGoogle || config.phoneSignIn;
+  const busy = signIn.isPending || googleBusy;
 
-  const go = async (method: SignInMethod) => {
+  const go = async (method: SignInMethod, signedInName: string | null = null) => {
     try {
       const result = await signIn.mutateAsync({
         method,
         phone: phone ? normalisePhone(phone) : undefined,
       });
-      const name = result.prefill.name ?? draft.name;
+      // The name on their Google account beats anything prefilled.
+      const name = signedInName ?? result.prefill.name ?? draft.name;
       updateDraft({
         name,
         preferredName: draft.preferredName || firstName(name),
@@ -58,6 +67,21 @@ export default function SignInScreen() {
       router.push(path === 'family' ? '/onboarding/family' : '/onboarding/about');
     } catch {
       // The banner below says it didn't work; the buttons stay for another go.
+    }
+  };
+
+  const google = async () => {
+    if (!realGoogle) return void go('google');
+    setGoogleFailed(false);
+    setGoogleBusy(true);
+    try {
+      const result = await signInWithGoogle();
+      if (result.status === 'signed-in') await go('google', result.name);
+    } catch (error) {
+      if (__DEV__) console.warn('[auth] Google sign-in failed', error);
+      setGoogleFailed(true);
+    } finally {
+      setGoogleBusy(false);
     }
   };
 
@@ -73,7 +97,7 @@ export default function SignInScreen() {
           size="lg"
           icon={IdentificationCardIcon}
           label={t('onboarding.signIn.singpass')}
-          disabled={signIn.isPending}
+          disabled={busy}
           onPress={() => void go('singpass')}
           testID="sign-in-singpass"
         />
@@ -83,11 +107,11 @@ export default function SignInScreen() {
           size="lg"
           icon={GoogleLogoIcon}
           label={t('onboarding.signIn.google')}
-          disabled={signIn.isPending}
-          onPress={() => void go('google')}
+          disabled={busy}
+          onPress={() => void google()}
           testID="sign-in-google"
         />
-        {phoneMode ? (
+        {!showPhone ? null : phoneMode ? (
           <View style={styles.phone}>
             <TextField
               label={t('onboarding.signIn.phoneLabel')}
@@ -103,7 +127,7 @@ export default function SignInScreen() {
             />
             <BigButton
               label={t('common.next')}
-              disabled={signIn.isPending || phone.trim() === ''}
+              disabled={busy || phone.trim() === ''}
               onPress={() => {
                 if (!isSingaporeMobile(phone)) {
                   setPhoneError(t('onboarding.signIn.phoneInvalid'));
@@ -120,7 +144,7 @@ export default function SignInScreen() {
             size="lg"
             icon={DeviceMobileIcon}
             label={t('onboarding.signIn.phone')}
-            disabled={signIn.isPending}
+            disabled={busy}
             onPress={() => setPhoneMode(true)}
             testID="sign-in-phone"
           />
@@ -128,14 +152,22 @@ export default function SignInScreen() {
       </View>
 
       {signIn.isError ? <StatusBanner tone="notice" text={t('common.error')} /> : null}
+      {googleFailed ? (
+        <StatusBanner
+          tone="notice"
+          text={t('onboarding.signIn.googleFailed')}
+          testID="sign-in-google-failed"
+        />
+      ) : null}
 
       <View style={styles.privacy}>
         <ShieldCheckIcon size={iconSize.inline} color={color.success} weight="fill" />
         <Text style={styles.flex}>{t('onboarding.signIn.privacy')}</Text>
       </View>
-      {config.demoVoice ? (
+      {/* Singpass is always a mock in the hackathon; say so. */}
+      {config.demoVoice || realGoogle ? (
         <Text color="textSecondary" testID="sign-in-demo-note">
-          {t('onboarding.signIn.demoNote')}
+          {realGoogle ? t('onboarding.signIn.demoNoteSingpass') : t('onboarding.signIn.demoNote')}
         </Text>
       ) : null}
     </Screen>

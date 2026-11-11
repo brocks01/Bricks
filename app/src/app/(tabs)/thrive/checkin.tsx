@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 
 import { useLastCheckinResult, useToday } from '@/api';
@@ -12,6 +12,8 @@ import { CheckinFlow } from '@/features/checkin/CheckinFlow';
 export default function CheckinScreen() {
   const { t } = useTranslation();
   const router = useRouter();
+  // Opened from the 8 am notification: read the question out straight away (S38).
+  const { read } = useLocalSearchParams<{ read?: string }>();
   const today = useToday();
   const answered = useLastCheckinResult();
   const close = () => (router.canGoBack() ? router.back() : router.replace('/thrive'));
@@ -20,6 +22,7 @@ export default function CheckinScreen() {
     <Screen
       title={t('checkin.title')}
       readOut={() => t('checkin.readout', { question: t('home.checkin.question') })}
+      readOnOpen={read === '1'}
       testID="screen-checkin"
       footer={
         answered || today.data?.checkin.pending === false ? (

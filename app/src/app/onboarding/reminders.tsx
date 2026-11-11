@@ -9,6 +9,7 @@ import { BigButton, Screen, SectionCard, StatusBanner } from '@/components';
 import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { CHANNEL_ICON, CHANNELS } from '@/features/settings/channels';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
+import { notificationsAllowed } from '@/lib/notifications';
 import { useOnboarding } from '@/state/onboarding';
 import { space } from '@/theme';
 
@@ -49,6 +50,8 @@ export default function ChannelScreen() {
           duration_s: draft.intro.durationS,
         });
       }
+      // App notifications need the phone's permission: ask now, right after they chose them.
+      if (channel === 'app') await notificationsAllowed(true).catch(() => false);
       router.push('/onboarding/done');
     } catch {
       setFailed(true);

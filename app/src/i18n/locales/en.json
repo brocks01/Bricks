@@ -20,7 +20,9 @@
     "couldNotOpen": "We couldn't open that. Please try again.",
     "close": "Close",
     "comingSoon": "Coming soon",
-    "save": "Save"
+    "save": "Save",
+    "offline": "You're offline. Things will update when you're back online.",
+    "networkError": "We couldn't connect. Check your internet and try again."
   },
   "tabs": {
     "home": "Home",
@@ -462,7 +464,9 @@
     "channel": "Reminders",
     "reminderTitle": "Reminder: {{text}}",
     "reminderBody": "Tap Done when you have.",
-    "snooze": "Snooze {{count}} min"
+    "snooze": "Snooze {{count}} min",
+    "checkinTitle": "Check-in: did you move yesterday?",
+    "checkinBody": "Tap Yes or No."
   },
   "readOutBar": {
     "label": "Reading the screen out loud",
@@ -546,7 +550,9 @@
       "phoneInvalid": "That doesn't look like a Singapore mobile number. It should have 8 numbers, like 9123 4567.",
       "privacy": "We never share your details without asking you.",
       "demoNote": "Demo: every option signs in to a sample account. No real Singpass or Google account is used.",
-      "readout": "Sign in with Singpass, Google, or your phone number. We never share your details without asking you."
+      "readout": "Sign in with Singpass, Google, or your phone number. We never share your details without asking you.",
+      "googleFailed": "Google sign-in didn't work. Please try again, or use Singpass.",
+      "demoNoteSingpass": "Demo: Singpass signs in to a sample account. No real Singpass account is used."
     },
     "about": {
       "readout": "Step {{step}} of {{total}}. {{question}} {{hint}}",

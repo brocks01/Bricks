@@ -1,4 +1,4 @@
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
@@ -39,6 +39,8 @@ export default function RemindersScreen() {
   const { language } = useTypography();
   const router = useRouter();
   const openBuddy = useBuddy((s) => s.open);
+  // Opened from a reminder notification: read it out straight away (S38).
+  const { read } = useLocalSearchParams<{ read?: string }>();
   const query = useReminders();
   const complete = useCompleteReminder();
   const remove = useDeleteReminder();
@@ -90,6 +92,7 @@ export default function RemindersScreen() {
     <Screen
       title={t('reminders.title')}
       readOut={readOut}
+      readOnOpen={read === '1'}
       testID="screen-reminders"
       footer={
         <>

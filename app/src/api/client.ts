@@ -3,7 +3,9 @@ import { config } from '@/lib/config';
 import type { WalkUpload } from '@/features/walk/engine';
 import type { Language } from '@/i18n/languages';
 
-import { audioFile, formData, request } from './http';
+import { accessToken } from '@/lib/supabase';
+
+import { audioFile, formData, request, setAuthTokenProvider } from './http';
 import { mockApi } from './mock';
 
 import type {
@@ -172,5 +174,8 @@ const httpApi: BricksApi = {
     }),
   tts: (input) => request('/tts', { method: 'POST', body: input }),
 };
+
+// Every API request carries the Supabase access token of the signed-in member.
+setAuthTokenProvider(accessToken);
 
 export const api: BricksApi = config.useMocks || !config.apiUrl ? mockApi : httpApi;

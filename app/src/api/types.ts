@@ -16,7 +16,7 @@ export interface Me {
   name: string;
   /** What we call them in greetings ("Raj", "Uncle Lim"). */
   preferred_name: string | null;
-  phone: string;
+  phone: string | null;
   language: Language;
   channel_pref: ChannelPref;
   area_name: string | null;
@@ -255,6 +255,8 @@ export interface MeUpdate {
   interests?: Interest[];
   channel_pref?: ChannelPref;
   language?: Language;
+  /** Expo push token from our Android build (2.1). */
+  push_token?: string;
 }
 
 /** GET/PUT /safe-circle: who we tell if the member needs help, in order. */

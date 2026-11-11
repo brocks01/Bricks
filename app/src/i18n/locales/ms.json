@@ -20,7 +20,9 @@
     "couldNotOpen": "Kami tidak dapat membukanya. Sila cuba lagi.",
     "close": "Tutup",
     "comingSoon": "Akan datang",
-    "save": "Simpan"
+    "save": "Simpan",
+    "offline": "Anda di luar talian. Semuanya akan dikemas kini apabila anda kembali dalam talian.",
+    "networkError": "Kami tidak dapat menyambung. Semak internet anda dan cuba lagi."
   },
   "tabs": {
     "home": "Utama",
@@ -450,7 +452,9 @@
     "channel": "Peringatan",
     "reminderTitle": "Peringatan: {{text}}",
     "reminderBody": "Ketik Selesai apabila sudah.",
-    "snooze": "Tunda {{count}} min"
+    "snooze": "Tunda {{count}} min",
+    "checkinTitle": "Daftar masuk: adakah anda bergerak semalam?",
+    "checkinBody": "Tekan Ya atau Tidak."
   },
   "readOutBar": {
     "label": "Membaca skrin dengan kuat",
@@ -534,7 +538,9 @@
       "phoneInvalid": "Itu bukan nombor telefon bimbit Singapura. Ia patut ada 8 nombor, seperti 9123 4567.",
       "privacy": "Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu.",
       "demoNote": "Demo: setiap pilihan log masuk ke akaun contoh. Tiada akaun Singpass atau Google sebenar digunakan.",
-      "readout": "Log masuk dengan Singpass, Google, atau nombor telefon anda. Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu."
+      "readout": "Log masuk dengan Singpass, Google, atau nombor telefon anda. Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu.",
+      "googleFailed": "Log masuk Google tidak berjaya. Sila cuba lagi, atau guna Singpass.",
+      "demoNoteSingpass": "Demo: Singpass log masuk ke akaun contoh. Tiada akaun Singpass sebenar digunakan."
     },
     "about": {
       "readout": "Langkah {{step}} daripada {{total}}. {{question}} {{hint}}",

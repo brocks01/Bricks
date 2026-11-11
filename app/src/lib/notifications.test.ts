@@ -2,7 +2,13 @@ import * as Notifications from 'expo-notifications';
 
 import type { Reminder } from '@/api/types';
 
-import { notificationsAllowed, snoozeReminder, syncReminderAlarms } from './notifications';
+import {
+  expoPushToken,
+  notificationsAllowed,
+  snoozeReminder,
+  syncMorningCheckin,
+  syncReminderAlarms,
+} from './notifications';
 
 const scheduled = (jest.requireMock('expo-notifications') as { __scheduled: Map<string, any> })
   .__scheduled;
@@ -87,4 +93,31 @@ it('snooze rings again in 10 minutes', async () => {
   await snoozeReminder({ id: 'r1', text: 'Take medicine' });
   const req = [...scheduled.values()][0];
   expect(req.trigger).toMatchObject({ type: 'timeInterval', seconds: 600 });
+});
+
+describe('8 am check-in (2.1, iPhone Expo Go)', () => {
+  it('schedules one daily 8 am check-in with Yes / No, and cancels it when not needed', async () => {
+    await syncMorningCheckin(true);
+    await syncMorningCheckin(true);
+    const checkins = [...scheduled.entries()].filter(([id]) => id === 'checkin:daily');
+    expect(checkins).toHaveLength(1);
+    expect(checkins[0]![1]).toMatchObject({
+      content: { title: 'Check-in: did you move yesterday?', categoryIdentifier: 'checkin' },
+      trigger: { type: 'daily', hour: 8, minute: 0 },
+    });
+    await syncMorningCheckin(false);
+    expect(scheduled.has('checkin:daily')).toBe(false);
+  });
+
+  it('reminder syncing leaves the check-in alone', async () => {
+    await syncMorningCheckin(true);
+    await syncReminderAlarms([]);
+    expect(scheduled.has('checkin:daily')).toBe(true);
+  });
+
+  it('no push token without our own build or an EAS project', async () => {
+    expect(await expoPushToken(null)).toBeNull();
+    // Tests run as Expo Go, which can't receive server push.
+    expect(await expoPushToken('project-1')).toBeNull();
+  });
 });

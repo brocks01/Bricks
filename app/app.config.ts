@@ -104,6 +104,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       { androidGoogleMapsApiKey: process.env.GOOGLE_MAPS_ANDROID_API_KEY ?? '' },
     ],
     'expo-notifications',
+    // Google sign-in opens in the phone's browser and comes back to the app.
+    'expo-web-browser',
   ],
   experiments: {
     typedRoutes: true,

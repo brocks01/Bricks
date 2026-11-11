@@ -25,6 +25,7 @@ import {
   UserCircleIcon,
   UsersThreeIcon,
 } from '@/components';
+import { signOutOfSupabase } from '@/features/auth/google';
 import { useReadOut } from '@/features/readout/ReadOutProvider';
 import { CHANNEL_ICON, CHANNELS } from '@/features/settings/channels';
 import { LANGUAGE_INFO } from '@/i18n/languages';
@@ -87,6 +88,7 @@ export default function SettingsScreen() {
 
   const signOut = () => {
     setConfirmSignOut(false);
+    void signOutOfSupabase();
     // On mock data, signing out also starts the demo again from fresh data.
     if (config.demoVoice) resetMockDb();
     client.clear();

@@ -6,12 +6,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ReadOutBar } from '@/features/readout/ReadOutBar';
 import { useReadOut, type ReadOutScript } from '@/features/readout/ReadOutProvider';
+import { config } from '@/lib/config';
+import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
 import { borderWidth, color, screenPadding, space } from '@/theme';
 
 import { Text } from '../primitives/Text';
 
+import { StatusBanner } from '../StatusBanner';
 import { TellMeButton } from '../TellMeButton';
 import { UndoHost } from '../UndoHost';
 
@@ -70,6 +73,7 @@ export function Screen({
   children,
   testID,
 }: ScreenProps) {
+  const offline = useIsOffline();
   const openBuddy = useBuddy((s) => s.open);
   const buddyListening = useBuddy((s) => s.listening);
   const showTellMe = tellMe ?? (!footer && !standalone && showHelp);
@@ -99,6 +103,10 @@ export function Screen({
 
   const body = (
     <>
+      {/* Mock data works offline, so the banner only shows on the real API. */}
+      {offline && !config.demoVoice ? (
+        <StatusBanner tone="notice" text={t('common.offline')} testID="offline-banner" />
+      ) : null}
       {showBack ? <BackButton onPress={onBack} /> : null}
       {title ? (
         <Text variant="title" style={styles.title}>

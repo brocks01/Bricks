@@ -349,9 +349,17 @@ export function useSkipThanks() {
   });
 }
 
+/** While anyone hasn't said yes yet, check every 10 s, so "Dad joined" shows soon after his Yes on WhatsApp. */
 export function useFamilyInvites() {
-  return useQuery({ queryKey: queryKeys13.familyInvites, queryFn: () => api.getFamilyInvites() });
+  return useQuery({
+    queryKey: queryKeys13.familyInvites,
+    queryFn: () => api.getFamilyInvites(),
+    refetchInterval: (query) =>
+      query.state.data?.some((i) => i.status === 'invited') ? FAMILY_POLL_MS : false,
+  });
 }
+
+const FAMILY_POLL_MS = 10_000;
 
 export function useCreateFamilyInvite() {
   const client = useQueryClient();

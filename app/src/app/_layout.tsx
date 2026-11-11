@@ -16,6 +16,8 @@ import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
 import { setLanguage } from '@/i18n';
 import type { Language } from '@/i18n/languages';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
+// Imported for its effect: React Query follows the phone's network status.
+import '@/lib/online';
 import { createQueryClient, useAppStateFocus } from '@/lib/queryClient';
 import { useOnboardingHydrated } from '@/state/onboarding';
 import { useSettingsHydrated } from '@/state/settings';

@@ -30,7 +30,10 @@ function readApiUrl(value: string | undefined): string | null {
 
 const variant = readVariant();
 const apiUrl = readApiUrl(process.env.EXPO_PUBLIC_API_URL);
-const useMocks = readBoolean(process.env.EXPO_PUBLIC_USE_MOCKS, true);
+// From 2.1 the real API is the default; with no API URL the app still runs on mock data.
+const useMocks = readBoolean(process.env.EXPO_PUBLIC_USE_MOCKS, false);
+const supabaseUrl = readApiUrl(process.env.EXPO_PUBLIC_SUPABASE_URL);
+const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY?.trim() || null;
 
 export const config = {
   variant,
@@ -42,6 +45,13 @@ export const config = {
    * labelled "Demo: tap what was said" list, and demo-only controls appear.
    */
   demoVoice: useMocks || !apiUrl,
+  /**
+   * Supabase Auth (Google sign-in, sessions). Only the publishable (anon) key belongs
+   * here: it ships inside the app. Null when not set up: sign-in stays on the demo account.
+   */
+  supabase: supabaseUrl && supabaseAnonKey ? { url: supabaseUrl, anonKey: supabaseAnonKey } : null,
+  /** Phone-number sign-in needs an SMS provider in Supabase; off until one is set up. */
+  phoneSignIn: readBoolean(process.env.EXPO_PUBLIC_PHONE_SIGN_IN, false),
   /** Hidden developer screens (component gallery, account switcher). */
   devTools: readBoolean(process.env.EXPO_PUBLIC_DEV_TOOLS, __DEV__) && variant !== 'production',
   /** Emergency number shown on the SOS screen. 995 in Singapore; 112 for India later. */
