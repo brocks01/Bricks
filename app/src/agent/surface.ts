@@ -28,8 +28,10 @@ export interface Surface {
   step: number; // which step dot is lit, 0 for none
   stepTotal: number; // how many step dots, 0 for none
   next: boolean; // show the Next button
-  full: boolean; // the agent asked for the whole content area; otherwise the panel opens compact and floats
 }
+
+/** How much of the screen the panel is taking (spec section 2). 'compact' is open:false with the surface kept. */
+export type PanelState = 'expanded' | 'full';
 
 export const LIMITS = {
   title: 120, message: 1500, question: 200, hint: 400,
@@ -38,7 +40,7 @@ export const LIMITS = {
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
-export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number }>({ open: false, surface: null, seq: 0 });
+export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; state: PanelState }>({ open: false, surface: null, seq: 0, state: 'expanded' });
 
 let waiting: ((r: { answer?: string; how?: 'option' | 'typed'; dismissed?: boolean }) => void) | null = null;
 
@@ -145,14 +147,13 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
     step: stepTotal ? Math.min(a.step || 1, stepTotal) : 0,
     stepTotal,
     next: a.next,
-    full: a.full,
   };
   const empty = !surface.title && !surface.message && !surface.question && !surface.steps.length && !surface.html && !surface.options.length && !surface.tiles.length && !surface.hint;
   if (empty) return Promise.resolve({ error: 'nothing_to_show', hint: 'Give a title, a message, a question, steps, tiles, html or options.' });
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.
-  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1 });
+  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, state: a.full ? 'full' : 'expanded' });
   const waitsForAPerson = surface.options.length > 0 || surface.allowText || surface.tiles.length > 0 || surface.next;
   if (!waitsForAPerson) return Promise.resolve({ shown: true, note: 'It stays until the person closes it or you call hide.' });
   return new Promise((resolve) => {
@@ -173,5 +174,29 @@ export function hideSurface(): void {
   const w = waiting;
   waiting = null;
   w?.({ dismissed: true });
-  surfaceStore.set((s) => ({ ...s, open: false, surface: null }));
+  surfaceStore.set((s) => ({ ...s, open: false, surface: null, state: 'expanded' }));
+}
+
+/**
+ * Move the panel between States B (expanded) and C (full) - design rule 5: the agent may request a state,
+ * and the person's own drag always wins. There is nothing to move if no screen is showing.
+ */
+export function setPanelState(state: PanelState): void {
+  if (!surfaceStore.get().surface) return;
+  surfaceStore.set((s) => ({ ...s, open: true, state }));
+}
+
+/**
+ * State A: put the panel away WITHOUT losing it (design rule 3 - expanding or collapsing never resets the
+ * conversation or the screen). Only the Close button dismisses for good. The person or the agent drags it back.
+ */
+export function minimiseSurface(): void {
+  if (!surfaceStore.get().surface) return;
+  surfaceStore.set((s) => ({ ...s, open: false }));
+}
+
+/** A -> B: bring the screen back exactly as it was. */
+export function restoreSurface(): void {
+  if (!surfaceStore.get().surface) return;
+  surfaceStore.set((s) => ({ ...s, open: true }));
 }

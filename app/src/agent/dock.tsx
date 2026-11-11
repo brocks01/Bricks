@@ -1,12 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { DragHandle } from '../components/DragHandle';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
 import { glowStore } from '../kit/glow';
 import { colors, radius, space } from '../theme/tokens';
 import { audioAvailable } from './audio';
 import { agentUi, clearNotice, end, sendText, startTalk, togglePanel } from './live';
+import { restoreSurface, surfaceStore } from './surface';
 
 /**
  * The Bricks Agent bar, always at the very bottom (under the tab bar) as in the UI samples:
@@ -17,6 +19,7 @@ export function AgentDock() {
   const t = useT();
   const ui = useStore(agentUi);
   const glow = useStore(glowStore);
+  const { open: canvasOpen, surface: canvas } = useStore(surfaceStore);
   const [text, setText] = useState('');
   const talking = ui.phase !== 'idle';
   const acting = !!glow.key;
@@ -30,6 +33,13 @@ export function AgentDock() {
 
   return (
     <View style={{ backgroundColor: colors.accentSoft, borderTopWidth: 1, borderColor: colors.accentLine }}>
+      {/* State A's dragger: pull up to bring the screen back, or to open the transcript when there is none.
+          While the panel is open it has its own handle on the sheet, so this one steps aside. */}
+      {canvasOpen ? null : (
+        <View style={{ alignItems: 'center', paddingTop: 3 }}>
+          <DragHandle label={t('common.agent.canvas.grow')} onUp={() => (canvas ? restoreSurface() : togglePanel())} />
+        </View>
+      )}
       {ui.open ? (
         <View style={{ paddingHorizontal: space.lg, paddingTop: space.sm }}>
           <ScrollView style={{ maxHeight: 160 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>

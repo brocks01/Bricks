@@ -6,7 +6,7 @@ import { findSkill, getModule, search } from '../navigation/registry';
 import { childrenOf, describe, parsePath } from '../navigation/tree';
 import { note } from '../navigation/log';
 import type { AgentPolicy, Decision, SkillResult } from '../navigation/types';
-import { hideSurface, showSurface } from './surface';
+import { hideSurface, minimiseSurface, setPanelState, showSurface, surfaceStore } from './surface';
 import { agentSettings, controlsOfPage, fillElement, getControl, pressElement, waitForPage } from './pageControls';
 
 /**
@@ -81,6 +81,12 @@ export const toolSpecs: ToolSpec[] = [
   },
   { name: 'hide', description: 'Close the panel you opened with show.', inputSchema: obj({}) },
   { name: 'end', description: 'End this conversation and let the microphone go. Call it the moment the person says goodbye or that they are finished, so the talk does not keep listening after they have gone. Then say nothing more.', inputSchema: obj({}) },
+  {
+    name: 'panel',
+    description:
+      'Move your own panel: "compact" puts it away and leaves the app visible, "expanded" opens it over the content area, "full" takes the whole screen. Use it when you need more or less room for what you are showing - most of the time "expanded" is right. There must be something showing first (call show). The person can always drag it or close it themselves.',
+    inputSchema: obj({ state: { type: 'string', description: 'One of: compact, expanded, full.' } }, ['state']),
+  },
   { name: 'run', description: 'Run a module skill by "module/skill", for example "events/create". Some skills need the person to approve.', inputSchema: obj({ skill: { type: 'string' }, input: { type: 'object' } }, ['skill']) },
 ];
 
@@ -187,6 +193,22 @@ export function createAgentTools(host: AgentHost) {
       // so the agent is never left holding a microphone after the person has said it is over.
       case 'end':
         return { ended: true, summary: 'The conversation is over.' };
+
+      // The agent's own display state (spec section 2): it moves the panel the same way it opens a page, but it
+      // never dismisses the screen behind - only Close does that - so nothing the person was looking at is lost.
+      case 'panel': {
+        const wanted = String(args.state ?? '');
+        if (wanted === 'compact') {
+          minimiseSurface();
+          return { state: 'compact', note: 'The screen is put away but kept; call show or panel expanded to bring it back.' };
+        }
+        if (wanted === 'expanded' || wanted === 'full') {
+          if (!surfaceStore.get().surface) return { error: 'nothing_to_show', hint: 'Call show first, then move the panel.' };
+          setPanelState(wanted);
+          return { state: wanted };
+        }
+        return { error: 'bad_state', hint: 'state must be compact, expanded or full.' };
+      }
 
       case 'run': {
         const [moduleId, skillName] = String(args.skill ?? '').split('/');

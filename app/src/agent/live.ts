@@ -103,7 +103,7 @@ const fixArgs = (a: Record<string, unknown>) => {
 const TOOL_WORD: Record<string, 'lookup' | 'screen' | 'show'> = {
   tree: 'lookup', search: 'lookup', docs: 'lookup', read: 'lookup', web_search: 'lookup', read_page: 'lookup',
   open: 'screen', fill: 'screen', press: 'screen', run: 'screen',
-  show: 'show', hide: 'show',
+  show: 'show', hide: 'show', panel: 'show',
 };
 const toolWord = (name: string) => t(`common.agent.tool.${TOOL_WORD[name] ?? 'screen'}`);
 

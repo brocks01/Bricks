@@ -2,11 +2,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { askAgent } from '../agent/live';
-import { answerSurface, hideSurface, surfaceStore, type Surface } from '../agent/surface';
+import { answerSurface, hideSurface, minimiseSurface, setPanelState, surfaceStore, type PanelState, type Surface } from '../agent/surface';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
 import { useCurrentPage } from '../navigation';
 import { colors, radius, space, type } from '../theme/tokens';
+import { DragHandle } from './DragHandle';
 import { HtmlFrame } from './HtmlFrame';
 import { Button, type IconName } from './ui';
 
@@ -26,29 +27,36 @@ const iconFor = (name: string): IconName => (name && name in (Ionicons.glyphMap 
  * All words come from i18n/common.ts under agent.canvas.
  */
 export function AgentSurface() {
-  const { open, surface, seq } = useStore(surfaceStore);
+  const { open, surface, seq, state } = useStore(surfaceStore);
   const page = useCurrentPage();
+  const t = useT();
+  const [dragY, setDragY] = useState(0); // how far the person has pulled the sheet, so it follows their finger
   // Moving to another screen closes it. A question asked for the old screen is answered as "closed", so the agent is never left waiting.
   useEffect(() => {
     hideSurface();
   }, [page?.key]);
   if (!open || !surface) return null;
+  const full = state === 'full';
   return (
-    // No backdrop colour and no full-height fill: the card floats, so the page behind stays visible around it.
-    <View accessibilityViewIsModal style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, padding: space.md, justifyContent: 'flex-start' }}>
-      {/* Keyed on seq: every screen the agent shows starts with nothing typed, nothing picked and the about line closed. */}
-      <Canvas key={seq} surface={surface} />
+    <View accessibilityViewIsModal style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: full ? 'flex-start' : 'flex-end' }}>
+      {/* State B: a sheet over the content with the app still visible above it. Tapping the dimmed part puts
+          it away (never submits anything); the drag handle and the Close button do the same, deliberately. */}
+      {full ? null : (
+        <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15,20,18,0.30)' }} />
+      )}
+      <View style={{ height: full ? '100%' : '74%', maxHeight: '100%', transform: [{ translateY: dragY }] }}>
+        {/* Keyed on seq: every screen the agent shows starts with nothing typed, nothing picked and the about line closed. */}
+        <Canvas key={seq} surface={surface} state={state} onDrag={setDragY} />
+      </View>
     </View>
   );
 }
 
-function Canvas({ surface }: { surface: Surface }) {
+function Canvas({ surface, state, onDrag }: { surface: Surface; state: PanelState; onDrag: (dy: number) => void }) {
   const t = useT();
   const [typed, setTyped] = useState('');
   const [about, setAbout] = useState(false);
   const [picked, setPicked] = useState<string[]>([]);
-  // Compact by default (the screen behind stays visible); the person or the agent can open it over the whole area.
-  const [full, setFull] = useState(surface.full);
 
   const toggle = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const chosen = surface.tiles.filter((x) => picked.includes(x.id)).map((x) => x.label);
@@ -61,11 +69,25 @@ function Canvas({ surface }: { surface: Surface }) {
   };
 
   return (
-    <View style={{ flex: 1, maxHeight: full ? '100%' : '60%', backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
-      {/* header: ONE compact row. The AI label keeps its full width and is never allowed to cut off - it is the
-          line that says a machine wrote this - then the small controls. The title is the first line of the body. */}
+    <View style={{ flex: 1, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
       <View style={{ backgroundColor: colors.accentSoft }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingVertical: space.sm }}>
+        {/* The dragger, the way Instagram's comment sheet has one: up expands, down puts it away. */}
+        <View style={{ paddingTop: space.xs }}>
+          <DragHandle
+            label={t(state === 'full' ? 'agent.canvas.shrink' : 'agent.canvas.grow')}
+            onMove={onDrag}
+            onUp={() => {
+              if (state === 'expanded') setPanelState('full');
+            }}
+            onDown={() => {
+              if (state === 'full') setPanelState('expanded');
+              else minimiseSurface();
+            }}
+          />
+        </View>
+        {/* header: ONE compact row. The AI label keeps its full width and is never allowed to cut off - it is the
+            line that says a machine wrote this - then the small controls. The title is the first line of the body. */}
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg, paddingBottom: space.sm }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 5 }}>
             <Ionicons name="sparkles" size={14} color={colors.accent} />
             <Text style={{ fontSize: 12, fontWeight: '700', color: colors.ink }} numberOfLines={1}>
@@ -76,8 +98,14 @@ function Canvas({ surface }: { surface: Surface }) {
           <Pressable onPress={() => setAbout((v) => !v)} accessibilityRole="button" accessibilityLabel={t('common.agent.canvas.info')} accessibilityState={{ expanded: about }} hitSlop={10}>
             <Ionicons name="information-circle-outline" size={22} color={colors.accent} />
           </Pressable>
-          <Pressable onPress={() => setFull((v) => !v)} accessibilityRole="button" accessibilityLabel={full ? t('common.agent.canvas.shrink') : t('common.agent.canvas.grow')} accessibilityState={{ expanded: full }} hitSlop={10}>
-            <Ionicons name={full ? 'contract' : 'expand'} size={20} color={colors.ink} />
+          <Pressable
+            onPress={() => setPanelState(state === 'full' ? 'expanded' : 'full')}
+            accessibilityRole="button"
+            accessibilityLabel={t(state === 'full' ? 'agent.canvas.shrink' : 'agent.canvas.grow')}
+            accessibilityState={{ expanded: state === 'full' }}
+            hitSlop={10}
+          >
+            <Ionicons name={state === 'full' ? 'contract' : 'expand'} size={20} color={colors.ink} />
           </Pressable>
           <Pressable onPress={() => void askAgent('Show that screen again, with improvements.')} accessibilityRole="button" accessibilityLabel={t('common.agent.canvas.again')} hitSlop={10}>
             <Ionicons name="refresh" size={21} color={colors.ink} />
