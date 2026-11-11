@@ -10,13 +10,12 @@ export function Hero({ source, title, subtitle, height = 180, light = true }: { 
   return (
     <View style={{ height, borderRadius: radius.card, overflow: 'hidden', backgroundColor: colors.accentSoft, marginBottom: space.md }}>
       <Image source={source} accessibilityIgnoresInvertColors resizeMode="cover" style={{ position: 'absolute', width: '100%', height: '100%' }} />
-      {light ? (
-        <>
-          <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '78%', backgroundColor: 'rgba(255,255,255,0.28)' }} />
-          <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '60%', backgroundColor: 'rgba(255,255,255,0.28)' }} />
-          <View style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: '42%', backgroundColor: 'rgba(255,255,255,0.28)' }} />
-        </>
-      ) : null}
+      {light
+        ? Array.from({ length: 14 }, (_, i) => (
+            // Many thin washes of white, widest first, make a smooth fade from the left edge without needing a gradient library.
+            <View key={i} pointerEvents="none" style={{ position: 'absolute', top: 0, bottom: 0, left: 0, width: `${80 - i * 4.5}%`, backgroundColor: 'rgba(255,255,255,0.055)' }} />
+          ))
+        : null}
       <View style={{ flex: 1, justifyContent: 'flex-start', padding: space.lg, maxWidth: '62%' }}>
         {title ? <Text accessibilityRole="header" style={{ fontSize: 32, fontWeight: '800', color: colors.ink }}>{title}</Text> : null}
         {subtitle ? <Text style={{ fontSize: 15, lineHeight: 21, color: '#1F2A44', marginTop: 4 }}>{subtitle}</Text> : null}

@@ -48,7 +48,7 @@ export default function ExploreHome() {
   return (
     <Screen title={w('heading')} back>
       <El page={page} id="heading">
-        <Text style={{ fontSize: 28, lineHeight: 33, fontWeight: '800', color: '#12691F' }}>{w('intro')}</Text>
+        <Text style={{ fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#12691F' }}>{w('intro')}</Text>
       </El>
       <Text style={{ fontSize: 15, lineHeight: 21, color: '#1F2A44', marginTop: space.sm, marginBottom: space.md }}>{w('intro2')}</Text>
       <Hero source={exploreHero} height={150} light={false} />

@@ -47,7 +47,7 @@ export default function GrowIndex() {
               <Pressable onPress={() => press(c)} accessibilityRole="button" style={{ minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: 10, borderRadius: radius.card, borderWidth: 1, borderColor: c.built ? '#BFE0C7' : colors.line, backgroundColor: c.built ? '#EEF8F0' : colors.card, padding: 10 }}>
                 <Glyph icon={c.icon} lib={c.lib} color={G} tint="#E3F1E7" size={44} />
                 <View style={{ flex: 1 }}>
-                  <Text style={{ fontSize: 15, fontWeight: '800', color: colors.ink }} numberOfLines={1}>{w(c.id)}</Text>
+                  <Text style={{ fontSize: 14.5, fontWeight: '800', color: colors.ink }} numberOfLines={2}>{w(c.id)}</Text>
                   <Text style={{ fontSize: 12.5, lineHeight: 16, color: '#3B4A63' }} numberOfLines={2}>{w(c.id + '_line')}</Text>
                 </View>
               </Pressable>
