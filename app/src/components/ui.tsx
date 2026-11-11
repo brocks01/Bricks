@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { KeyboardTypeOptions, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { colors, radius, space, type } from '../theme/tokens';
 import { AppHeader, BackHeader } from './headers';
@@ -60,10 +60,11 @@ export function Button({ label, onPress, kind = 'primary', icon, disabled }: { l
 }
 
 export function Field({ label, value, onChangeText, placeholder, icon, error, keyboardType, autoCapitalize, maxLength, big }: { label: string; value: string; onChangeText: (v: string) => void; placeholder?: string; icon?: IconName; error?: string | null; keyboardType?: KeyboardTypeOptions; autoCapitalize?: 'none' | 'sentences' | 'words'; maxLength?: number; big?: boolean }) {
+  const [focused, setFocused] = useState(false); // the green border on the whole field shows focus; the browser's own outline is switched off
   return (
     <View style={{ marginBottom: space.md }}>
       <Text style={[type.small, { color: colors.ink, fontWeight: '700', marginBottom: space.xs }]}>{label}</Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: error ? 2 : 1, borderColor: error ? colors.danger : colors.line, borderRadius: radius.button, paddingHorizontal: space.md }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: error || focused ? 2 : 1, borderColor: error ? colors.danger : focused ? colors.accent : colors.line, borderRadius: radius.button, paddingHorizontal: space.md, minHeight: 56 }}>
         {icon ? <Ionicons name={icon} size={20} color={colors.muted} style={{ marginRight: 10 }} /> : null}
         <TextInput
           value={value}
@@ -75,7 +76,9 @@ export function Field({ label, value, onChangeText, placeholder, icon, error, ke
           autoCapitalize={autoCapitalize}
           autoCorrect={false}
           maxLength={maxLength}
-          style={{ flex: 1, fontSize: big ? 28 : 17, letterSpacing: big ? 8 : 0, fontWeight: big ? '700' : '400', paddingVertical: 14, color: colors.ink }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          style={[{ flex: 1, fontSize: big ? 28 : 17, letterSpacing: big ? 8 : 0, fontWeight: big ? '700' : '400', paddingVertical: 14, paddingHorizontal: 0, color: colors.ink }, { outlineStyle: 'none' } as object]}
         />
       </View>
       {error ? <Text style={[type.small, { color: colors.danger, marginTop: 4 }]}>{error}</Text> : null}

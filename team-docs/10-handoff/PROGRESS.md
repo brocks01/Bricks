@@ -121,3 +121,9 @@ Did: Connect dashboard now matches the locked scope and the owner's sample (head
 Tested: 62 backend tests, app type-check and self-test pass. Not checked in the browser with the owner's own account (he signs in with Google); the sample picture itself was not available as a file, so no `09` sample was stored.
 Not done: cover pictures (needs the Cloudinary keys), View all, favourites and sorting, Discover, working Join and Create, the community page.
 Next: community page, then Join and Create.
+
+## 2026-11-13 - Claude Code (Sonnet 5.5)
+Done: fixed the blank-app crash (Connect page declared a Filter button with no English word; words added in six languages); sign-in field padding and focus border (components/ui.tsx Field); Community Home screen (app/src/features/community, route /community/[id], opened from the Connect cards, data from GET /v1/communities/{id}); community sample saved as ui-samples/10-community-screens.webp; selftest now expects seven modules.
+Tested: app type-check and self-test pass; backend 62 tests pass. NOT tested: Community Home was never seen on screen (the browser pane stayed black after the dev server rebuild, cause unknown); Events, Activities, People, Initiatives, Event detail, Update detail, Invite screens (samples 2-10) are not built.
+Note: the ngrok URL is unchanged (shale-overgrown-buggy.ngrok-free.dev -> localhost:8093); after a power cut restart the backend (PORT=8093 python backend/run.py).
+Next: translation backend (spec given to another agent), then the other community screens.

@@ -6,6 +6,7 @@ import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
 import { El, useField, usePageWords } from '../../../../kit';
+import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import { connectIndex as page } from './page';
@@ -26,6 +27,7 @@ function Thumb({ icon, size, i }: { icon: string; size: number; i: number }) {
 
 export default function ConnectIndex() {
   const w = usePageWords(page);
+  const navigate = useNavigate();
   const t = useT();
   const lang = useLanguage();
   const { status } = useStore(sessionStore);
@@ -81,7 +83,7 @@ export default function ConnectIndex() {
           </View>
           {list.length ? (
             list.map((c, i) => (
-              <View key={c.id} style={card}>
+              <Pressable key={c.id} onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={card}>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
                   <Thumb icon={c.icon} size={64} i={i} />
                   <View style={{ flex: 1 }}>
@@ -93,7 +95,7 @@ export default function ConnectIndex() {
                   </View>
                   <Ionicons name="chevron-forward" size={22} color={colors.ink} />
                 </View>
-              </View>
+              </Pressable>
             ))
           ) : (
             <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('noMatch')}</Text>

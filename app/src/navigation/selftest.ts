@@ -1,4 +1,4 @@
-// Plain-Node self-test of the tree, the agent tools, the page controls, the glow, the policies and the words of every page.
+﻿// Plain-Node self-test of the tree, the agent tools, the page controls, the glow, the policies and the words of every page.
 // Run from bricks/app:  npx tsx src/navigation/selftest.ts
 import '../features';
 import { createAgentTools } from '../agent/tools';
@@ -23,7 +23,7 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('six modules', allModules().length === 6, String(allModules().length));
+check('seven modules', allModules().length === 7, String(allModules().length));
 check('two tabs: Connect and Grow', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index', tabPages().map((p) => p.key).join(','));
 check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
