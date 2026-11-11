@@ -11,20 +11,24 @@ import {
   Chip,
   ChipGroup,
   ClockIcon,
+  CoverArt,
   DayAdjuster,
-  EventCard,
+  GroupedList,
+  GroupedRow,
+  TimeAdjuster,
   MapPinIcon,
   Screen,
   StatusBanner,
   StepProgress,
+  EventCard,
+  WhatsappLogoIcon,
   Text,
   TextField,
-  TimeAdjuster,
 } from '@/components';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
 import { isWhatsAppGroupLink } from '@/lib/openExternal';
-import { space } from '@/theme';
+import { borderWidth, color, radius, shadow, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const STEPS = ['what', 'day', 'time', 'where', 'link', 'preview'] as const;
@@ -202,7 +206,7 @@ export default function CreateEventScreen() {
           place_name: placeName,
           photo_url: null,
           going_count: 1,
-          my_rsvp: null,
+          my_rsvp: 'going',
           language,
           whatsapp_link: link.trim() || null,
           host: { id: me?.id ?? '', name: me?.name ?? '', photo_url: null },
@@ -402,16 +406,52 @@ export default function CreateEventScreen() {
 
       {step === 'preview' && preview ? (
         <>
+          {/* Luma's create screen: the cover, the name, then When / Where / WhatsApp as rows. */}
+          <View style={styles.cover}>
+            <CoverArt
+              photoUrl={null}
+              icon={CATEGORY_ICON[preview.category]}
+              tint={preview.category}
+              size={PREVIEW_COVER}
+              rounded="card"
+            />
+          </View>
           <TextField
             label={t('create.nameLabel')}
             value={title || shownTitle}
             onChangeText={setTitle}
             testID="create-title"
           />
+          <GroupedList>
+            <GroupedRow
+              icon={ClockIcon}
+              tint="exercise"
+              title={t('create.whenRow')}
+              value={start ? formatWhen(start, language, t) : ''}
+              onPress={() => setStep('day')}
+              testID="create-edit-when"
+            />
+            <GroupedRow
+              icon={MapPinIcon}
+              tint="cooking"
+              title={t('create.whereRow')}
+              value={placeName}
+              onPress={() => setStep('where')}
+              testID="create-edit-where"
+            />
+            <GroupedRow
+              icon={WhatsappLogoIcon}
+              tint="walk"
+              title={t('create.linkRow')}
+              value={link.trim() ? t('create.linkAdded') : t('create.linkNone')}
+              onPress={() => setStep('link')}
+              testID="create-edit-link"
+            />
+          </GroupedList>
           <Text color="textSecondary">{t('create.previewHint')}</Text>
           {/* Exactly the card others will see; not tappable here. */}
           <View pointerEvents="none" style={styles.preview}>
-            <EventCard event={preview} onOpen={() => {}} onGoing={() => {}} />
+            <EventCard event={preview} hosting onOpen={() => {}} onGoing={() => {}} />
           </View>
         </>
       ) : null}
@@ -419,7 +459,17 @@ export default function CreateEventScreen() {
   );
 }
 
+const PREVIEW_COVER = 160;
+
 const styles = StyleSheet.create({
+  cover: {
+    ...shadow.floating,
+    alignSelf: 'center',
+    borderRadius: radius.card,
+    borderWidth: borderWidth.control * 2,
+    borderColor: color.bg,
+    backgroundColor: color.bg,
+  },
   preview: {
     marginTop: space.xs,
   },

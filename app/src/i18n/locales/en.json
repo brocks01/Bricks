@@ -136,7 +136,6 @@
     "title": "Community",
     "comingSoon": "Here you will find walks, classes and meet-ups near you.",
     "readout": "Community. {{summary}} Tap I'm going to join, or Start something to create your own.",
-    "happenings": "Happenings",
     "myCircles": {
       "title": "My Circles",
       "count_one": "You're in {{count}} Circle",
@@ -145,10 +144,7 @@
     },
     "filter": {
       "today": "Today",
-      "week": "This week",
-      "walk": "Walking",
-      "class": "Classes",
-      "kids": "Kids"
+      "week": "This week"
     },
     "startSomething": "Start something",
     "empty": "No happenings near you yet. Start one?",
@@ -156,7 +152,26 @@
     "showEverything": "Show everything",
     "readoutSummary_one": "There is {{count}} happening. First: {{first}}.",
     "readoutSummary_other": "There are {{count}} happenings. First: {{first}}.",
-    "readoutNone": "There are no happenings yet."
+    "readoutNone": "There are no happenings yet.",
+    "list": "List",
+    "map": "Map",
+    "nearYou": "Near you",
+    "moreKinds": "More kinds",
+    "fewerKinds": "Fewer kinds",
+    "mapLabel_one": "Map of {{count}} happening near you. It is also listed below.",
+    "mapLabel_other": "Map of {{count}} happenings near you. They are also listed below.",
+    "kind": {
+      "walk": "Walks",
+      "exercise": "Tai chi",
+      "games": "Games",
+      "music": "Music",
+      "cooking": "Cooking",
+      "gardening": "Gardening",
+      "class": "Classes",
+      "meetup": "Coffee",
+      "kids": "With children",
+      "other": "Something else"
+    }
   },
   "thrive": {
     "title": "Health",
@@ -349,7 +364,12 @@
       "park": "Park",
       "voidDeck": "Void deck near my block",
       "hawker": "Hawker centre"
-    }
+    },
+    "whenRow": "When",
+    "whereRow": "Where",
+    "linkRow": "WhatsApp group",
+    "linkAdded": "Added",
+    "linkNone": "None"
   },
   "category": {
     "walk": {

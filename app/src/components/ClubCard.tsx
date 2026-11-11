@@ -4,13 +4,12 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import type { CircleSummary } from '@/api/types';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { color, space } from '@/theme';
+import { color, radius, space, type CategoryColorKey } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { BigButton } from './BigButton';
-import { Card } from './Card';
+import { CoverArt } from './CoverArt';
 import { InfoRow } from './InfoRow';
-import { PhotoHeader } from './PhotoHeader';
 import { CalendarBlankIcon, UsersIcon, UsersThreeIcon, WhatsappLogoIcon } from './primitives/icons';
 import { Text } from './primitives/Text';
 
@@ -25,9 +24,16 @@ export interface ClubCardProps {
   now?: Date;
 }
 
+/** A Circle's cover colour when it has no photo, by kind of Circle. */
+export const CIRCLE_TINT: Record<CircleSummary['type'], CategoryColorKey> = {
+  neighbourhood: 'meetup',
+  interest: 'exercise',
+  org: 'class',
+};
+
 /**
- * Strava-Clubs-style Circle card: banner, name, members, the next activity, and
- * at most two actions. Members get "Join WhatsApp group" + "See events";
+ * A Circle as a Luma calendar row: a square cover, the name, members and the next
+ * activity, then at most two actions. Members get "Join WhatsApp group" + "See events";
  * everyone else gets one "Join this Circle" button. No rankings or leaderboards.
  */
 export function ClubCard({ circle, onOpen, onJoin, onWhatsApp, now }: ClubCardProps) {
@@ -42,7 +48,7 @@ export function ClubCard({ circle, onOpen, onJoin, onWhatsApp, now }: ClubCardPr
     : t('circle.noNext');
 
   return (
-    <Card padded={false} testID={`club-card-${circle.id}`}>
+    <View style={styles.card} testID={`club-card-${circle.id}`}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${circle.name}. ${members}. ${next}.`}
@@ -50,10 +56,15 @@ export function ClubCard({ circle, onOpen, onJoin, onWhatsApp, now }: ClubCardPr
           tapFeedback();
           onOpen();
         }}
-        style={({ pressed }) => pressed && styles.pressed}
+        style={({ pressed }) => [styles.body, pressed && styles.pressed]}
         testID={`club-card-${circle.id}-open`}
       >
-        <PhotoHeader photoUrl={circle.photo_url} fallbackIcon={UsersThreeIcon} aspectRatio={2} />
+        <CoverArt
+          photoUrl={circle.photo_url}
+          icon={UsersThreeIcon}
+          tint={CIRCLE_TINT[circle.type]}
+          size={COVER}
+        />
         <View style={styles.info}>
           <Text variant="heading">{circle.name}</Text>
           <InfoRow icon={UsersIcon} text={members} textColor="textSecondary" />
@@ -88,22 +99,33 @@ export function ClubCard({ circle, onOpen, onJoin, onWhatsApp, now }: ClubCardPr
           />
         )}
       </View>
-    </Card>
+    </View>
   );
 }
 
+const COVER = 96;
+
 const styles = StyleSheet.create({
+  card: {
+    gap: space.sm,
+    paddingVertical: space.sm,
+  },
+  body: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: space.sm,
+    borderRadius: radius.tile,
+  },
   pressed: {
     backgroundColor: color.bgSubtle,
   },
   info: {
-    paddingHorizontal: space.md,
-    paddingTop: space.sm,
-    gap: space.xs,
+    flex: 1,
+    minWidth: 180,
+    gap: space.xxs,
   },
   actions: {
-    padding: space.md,
-    paddingTop: space.sm,
-    gap: space.sm,
+    gap: space.xs,
   },
 });

@@ -66,6 +66,9 @@ export interface EventSummary {
   language: Language;
   whatsapp_link: string | null;
   host: PersonSummary;
+  /** Where it is, for the Community map view (older servers may leave these out). */
+  lat?: number;
+  lng?: number;
 }
 
 /** GET /circles items. Proposed shape; confirm in 1.1. */

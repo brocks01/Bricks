@@ -82,3 +82,24 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
   pastel tints); tests check text, grey text and green on every tint.
 - **API:** optional `cover_color` on `GET /events/{id}` (app type and backend schema; null until
   events have photos).
+
+### UI step 4: Community tab
+- **Community** (`kampung/index`): a **List / Map** switch, My Circles, then **"Near you"**:
+  Today, This week and the four busiest **kinds** (Walks, Tai chi, Games, Music, Cooking,
+  Gardening, Classes, Coffee, With children), plus **"More kinds"** to show the rest in place.
+  Happenings are grouped under `DateHeader`s. Kinds filter what's coming up on the phone.
+- **Map view** (new `EventsMap`): one pin per happening; tapping a pin shows its name and time,
+  and tapping that opens it. The same happenings stay listed below, so the map is never the only
+  way in. Web shows the pins without map tiles.
+- **Circles** (`ClubCard`, `circle/[id]`): Luma calendar rows and pages: a square cover coloured
+  by the kind of Circle, the name, members, next activity; the Circle page is tinted, with a
+  raised cover, the captain on a white card and an `AvatarStack` of members.
+- **Start Something → Check and publish**: Luma's create screen: the cover, the name, then
+  **When / Where / WhatsApp group** as `GroupedRow`s (each goes back to that question), then the
+  card exactly as others will see it, now saying **"You're hosting"** (it said "I'm going").
+- `GroupedRow` titles always keep 40% of the row (a long value wraps instead of squeezing them).
+- **API:** event summaries now include `lat` / `lng` (for the map). Optional in the app type, so
+  older servers still work; the backend and the mock data send them.
+- **Rule over screenshot:** the brief asks for a sideways-scrolling chip strip. Hidden content you
+  must swipe to find breaks docs/02 rule 6 (no hidden gestures), so chips wrap, and "More kinds"
+  is a labelled button instead.

@@ -63,8 +63,6 @@ async def event_detail(ctx: Ctx, event_id: str) -> EventDetail:
     return EventDetail(
         **event_summary(row).model_dump(),
         description=row["description"],
-        lat=row["lat"],
-        lng=row["lng"],
         attendees=await people(ctx.conn, [g["user_id"] for g in going]),
         circle=circle,
     )

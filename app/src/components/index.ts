@@ -54,3 +54,4 @@ export { showToast, ToastHost, TOAST_DURATION_MS, useToast } from './Toast';
 export { ActionTiles, type ActionTile } from './ActionTiles';
 export { PlaceMap, type PlaceMapProps } from './PlaceMap';
 export { TintBackdrop } from './TintBackdrop';
+export { EventsMap, type EventsMapPin, type EventsMapProps } from './EventsMap';

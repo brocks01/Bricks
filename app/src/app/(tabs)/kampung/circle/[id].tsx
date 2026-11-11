@@ -5,31 +5,31 @@ import { StyleSheet, View } from 'react-native';
 import { useCircle, useJoinCircle, useLeaveCircle } from '@/api';
 import {
   Avatar,
+  AvatarStack,
   BigButton,
   Card,
+  CoverArt,
   EventCard,
-  InfoRow,
-  PeopleRow,
-  PhotoHeader,
   QueryState,
   Screen,
   SealCheckIcon,
   Text,
-  UsersIcon,
   UsersThreeIcon,
   WhatsappLogoIcon,
 } from '@/components';
+import { CIRCLE_TINT } from '@/components/ClubCard';
 import { speakEvent } from '@/features/events/readout';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { openExternal } from '@/lib/openExternal';
 import { useUndo } from '@/state/undo';
-import { color, iconSize, space } from '@/theme';
+import { borderWidth, categoryColor, color, iconSize, radius, shadow, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 /**
- * S19 Circle page (Strava club page): banner, name, members, the captain, one
- * main action (WhatsApp group for members, Join for everyone else), what's
- * coming up, and who's in it. Group-walk feed and Cheers arrive in 3.2.
+ * S19 Circle page (Luma's calendar page): tinted in the Circle's colour, a square
+ * cover, the name, members, description and captain; one main action (WhatsApp
+ * group for members, Join for everyone else); what's coming up; who's in it.
+ * Group-walk feed and Cheers arrive in 3.2.
  */
 export default function CircleScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -79,24 +79,37 @@ export default function CircleScreen() {
   ) : undefined;
 
   return (
-    <Screen readOut={readOut} footer={footer} testID="screen-circle">
+    <Screen
+      readOut={readOut}
+      footer={footer}
+      tint={circle ? categoryColor[CIRCLE_TINT[circle.type]].bg : undefined}
+      testID="screen-circle"
+    >
       <QueryState query={query} notFoundText={t('circlePage.notFound')}>
         {(c) => (
           <>
-            <Card padded={false}>
-              <PhotoHeader photoUrl={c.photo_url} fallbackIcon={UsersThreeIcon} aspectRatio={2} />
-            </Card>
-            <Text variant="title">{c.name}</Text>
-            <InfoRow icon={UsersIcon} text={members} textColor="textSecondary" />
+            <View style={styles.cover}>
+              <CoverArt
+                photoUrl={c.photo_url}
+                icon={UsersThreeIcon}
+                tint={CIRCLE_TINT[c.type]}
+                size={COVER}
+                rounded="card"
+              />
+            </View>
+            <Text variant="display">{c.name}</Text>
+            <Text variant="bodyStrong" color="textSecondary">
+              {members}
+            </Text>
             <Text>{c.description}</Text>
 
-            <View style={styles.captain}>
+            <Card tone="plain" style={styles.captain}>
               <Avatar name={c.captain.name} photoUrl={c.captain.photo_url} />
               <SealCheckIcon size={iconSize.inline} color={color.primary} weight="fill" />
               <Text variant="bodyStrong" style={styles.flex}>
                 {t('circlePage.captain', { name: c.captain.name })}
               </Text>
-            </View>
+            </Card>
 
             <Text variant="heading" style={styles.heading}>
               {t('circlePage.comingUp')}
@@ -121,7 +134,10 @@ export default function CircleScreen() {
             <Text variant="heading" style={styles.heading}>
               {t('circlePage.members')}
             </Text>
-            <PeopleRow people={c.members} label={members} />
+            <View style={styles.members} accessible accessibilityLabel={members}>
+              <AvatarStack people={c.members} total={c.member_count} />
+              <Text style={styles.flex}>{members}</Text>
+            </View>
           </>
         )}
       </QueryState>
@@ -129,19 +145,36 @@ export default function CircleScreen() {
   );
 }
 
+const COVER = 128;
+
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
+  },
+  cover: {
+    ...shadow.floating,
+    alignSelf: 'flex-start',
+    marginTop: space.xs,
+    borderRadius: radius.card,
+    borderWidth: borderWidth.control * 2,
+    borderColor: color.bg,
+    backgroundColor: color.bg,
   },
   captain: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.xs,
   },
+  members: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: space.sm,
+  },
   heading: {
     marginTop: space.lg,
   },
   list: {
-    gap: space.lg,
+    gap: space.xs,
   },
 });

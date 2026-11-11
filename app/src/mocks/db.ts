@@ -346,6 +346,8 @@ export function createMockDb(now: () => Date = () => new Date()) {
     language: 'en',
     whatsapp_link: e.whatsapp,
     host: person(e.host),
+    lat: e.lat,
+    lng: e.lng,
   });
 
   const upcoming = () =>

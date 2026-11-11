@@ -132,7 +132,6 @@
     "title": "社区",
     "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
     "readout": "社区。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
-    "happenings": "活动",
     "myCircles": {
       "title": "我的圈子",
       "count_other": "您加入了 {{count}} 个圈子",
@@ -140,17 +139,32 @@
     },
     "filter": {
       "today": "今天",
-      "week": "本周",
-      "walk": "步行",
-      "class": "课程",
-      "kids": "儿童"
+      "week": "本周"
     },
     "startSomething": "发起活动",
     "empty": "附近还没有活动。要发起一个吗？",
     "emptyFiltered": "这个选项下没有活动。",
     "showEverything": "显示全部",
     "readoutSummary_other": "共有 {{count}} 个活动。第一个：{{first}}。",
-    "readoutNone": "还没有活动。"
+    "readoutNone": "还没有活动。",
+    "list": "列表",
+    "map": "地图",
+    "nearYou": "您附近",
+    "moreKinds": "更多类别",
+    "fewerKinds": "收起类别",
+    "mapLabel_other": "附近 {{count}} 个活动的地图。下面也列出了这些活动。",
+    "kind": {
+      "walk": "步行",
+      "exercise": "太极",
+      "games": "游戏",
+      "music": "音乐",
+      "cooking": "烹饪",
+      "gardening": "园艺",
+      "class": "课程",
+      "meetup": "喝咖啡",
+      "kids": "亲子",
+      "other": "其他"
+    }
   },
   "thrive": {
     "title": "健康",
@@ -338,7 +352,12 @@
       "park": "公园",
       "voidDeck": "我家附近的组屋楼下",
       "hawker": "小贩中心"
-    }
+    },
+    "whenRow": "时间",
+    "whereRow": "地点",
+    "linkRow": "WhatsApp 群组",
+    "linkAdded": "已添加",
+    "linkNone": "无"
   },
   "category": {
     "walk": {

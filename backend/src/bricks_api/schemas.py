@@ -81,6 +81,9 @@ class EventSummary(Wire):
     language: Language
     whatsapp_link: str | None
     host: PersonSummary
+    # Where it is, for the Community map view.
+    lat: float
+    lng: float
 
 
 class CircleRef(Wire):
@@ -90,8 +93,6 @@ class CircleRef(Wire):
 
 class EventDetail(EventSummary):
     description: str
-    lat: float
-    lng: float
     # The cover photo's main colour (#RRGGBB), set when a photo is saved. Tints the
     # app's event page; null until events have photos (the app uses the category colour).
     cover_color: str | None = None

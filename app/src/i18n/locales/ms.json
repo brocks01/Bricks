@@ -132,7 +132,6 @@
     "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
     "readout": "Komuniti. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
-    "happenings": "Aktiviti",
     "myCircles": {
       "title": "Bulatan Saya",
       "count_other": "Anda dalam {{count}} Bulatan",
@@ -140,17 +139,32 @@
     },
     "filter": {
       "today": "Hari ini",
-      "week": "Minggu ini",
-      "walk": "Jalan kaki",
-      "class": "Kelas",
-      "kids": "Kanak-kanak"
+      "week": "Minggu ini"
     },
     "startSomething": "Mulakan sesuatu",
     "empty": "Belum ada aktiviti berdekatan. Mahu mulakan satu?",
     "emptyFiltered": "Tiada apa-apa untuk pilihan ini.",
     "showEverything": "Tunjukkan semua",
     "readoutSummary_other": "Ada {{count}} aktiviti. Yang pertama: {{first}}.",
-    "readoutNone": "Belum ada aktiviti."
+    "readoutNone": "Belum ada aktiviti.",
+    "list": "Senarai",
+    "map": "Peta",
+    "nearYou": "Berdekatan",
+    "moreKinds": "Lagi jenis",
+    "fewerKinds": "Kurang jenis",
+    "mapLabel_other": "Peta {{count}} aktiviti berdekatan. Ia juga disenaraikan di bawah.",
+    "kind": {
+      "walk": "Jalan kaki",
+      "exercise": "Tai chi",
+      "games": "Permainan",
+      "music": "Muzik",
+      "cooking": "Memasak",
+      "gardening": "Berkebun",
+      "class": "Kelas",
+      "meetup": "Kopi",
+      "kids": "Bersama kanak-kanak",
+      "other": "Lain-lain"
+    }
   },
   "thrive": {
     "title": "Kesihatan",
@@ -338,7 +352,12 @@
       "park": "Taman",
       "voidDeck": "Kolong blok berdekatan rumah saya",
       "hawker": "Pusat penjaja"
-    }
+    },
+    "whenRow": "Bila",
+    "whereRow": "Di mana",
+    "linkRow": "Kumpulan WhatsApp",
+    "linkAdded": "Ditambah",
+    "linkNone": "Tiada"
   },
   "category": {
     "walk": {

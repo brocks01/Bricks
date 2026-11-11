@@ -152,12 +152,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  // The title always keeps room (never squeezed to a letter per line); a long value wraps.
   words: {
     flex: 1,
+    minWidth: '40%',
     gap: space.xxs,
   },
   value: {
     flexShrink: 1,
+    maxWidth: '50%',
     textAlign: 'right',
   },
 });
