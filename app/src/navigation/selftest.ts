@@ -7,7 +7,7 @@ import { languagesMissing, t } from '../i18n/tables';
 import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
-import { answerSurface, LIMITS, surfaceStore } from '../agent/surface';
+import { answerSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
 import { toolSpecs } from '../agent/tools';
 import { sessionStore } from '../session/store';
 import { allModules, allPages, defineModule, pageForPath, search, tabPages } from './registry';
@@ -50,7 +50,7 @@ for (const p of allPages()) {
   if (p.module === 'dev') continue; // developer page is English only on purpose
   for (const id of Object.keys(p.strings.en ?? {})) for (const l of languagesMissing(`${p.key}.${id}`)) gaps.push(`${p.key}.${id}:${l}`);
 }
-const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'agent.tool.lookup', 'agent.tool.screen', 'agent.tool.show', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy', 'agent.close', 'agent.type'];
+const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'agent.tool.lookup', 'agent.tool.screen', 'agent.tool.show', 'agent.canvas.badge', 'agent.canvas.info', 'agent.canvas.about', 'agent.canvas.again', 'agent.canvas.next', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy', 'agent.close', 'agent.type'];
 for (const id of commonIds) for (const l of languagesMissing(`common.${id}`)) gaps.push(`common.${id}:${l}`);
 check('every word exists in all six languages', gaps.length === 0, gaps.slice(0, 8).join(', '));
 
@@ -145,6 +145,32 @@ const agent = createAgentTools({
   check('choice refuses a value that is not an option', bad.ok === false);
   await agent.call('fill', { path: 'language.pick.language', value: 'ta' });
   check('choice fill by key changes the language', t('connect.index.tab') === 'இணை');
+
+  // the agent canvas: what the model sends is validated before anything can be shown
+  const showSpec = toolSpecs.find((s) => s.name === 'show');
+  check('canvas: show accepts tiles, question, hint, step and next', !!showSpec && ['tiles', 'question', 'hint', 'step', 'step_count', 'next'].every((k) => k in (showSpec.inputSchema.properties as Record<string, unknown>)));
+  const spec = parseShow({
+    title: '  A title  ', message: ' Hello ', question: 'Pick one', hint: '  A hint ', steps: [' one ', '', 'two'], options: ['Yes', 'No'],
+    tiles: [{ id: 'a', label: 'Health', icon: 'heart' }, { id: 'a', label: 'Sports', icon: 'not an icon' }, { label: 'Other' }, 7],
+    step: 2, step_count: 4, next: true, evil: '<script>alert(1)</script>',
+  });
+  check('canvas: strings are trimmed, lists capped, unknown fields dropped', spec?.title === 'A title' && spec?.message === 'Hello' && spec?.hint === 'A hint' && spec?.steps.join(',') === 'one,two' && spec?.options.length === 2 && !('evil' in (spec ?? {})), JSON.stringify(spec));
+  check('canvas: tiles get a unique id and a checked icon', spec?.tiles.map((x) => x.id).join(',') === 'a,a_2,t3' && spec?.tiles.map((x) => x.label).join(',') === 'Health,Sports,Other' && spec?.tiles[0].icon === 'heart' && spec?.tiles[1].icon === '' && spec?.tiles[2].icon === '' && spec?.tiles.length === 3, JSON.stringify(spec?.tiles));
+  check('canvas: step dots are clamped to the count', spec?.step === 2 && spec?.step_count === 4, JSON.stringify([spec?.step, spec?.step_count]));
+  const wrong = parseShow({ title: 12, message: null, steps: 'not a list', options: 5, tiles: 'x', step: 'many', step_count: -3, next: 'true' });
+  check('canvas: a wrong type falls back instead of blanking the screen', wrong?.title === '' && wrong?.message === '' && wrong?.steps.length === 0 && wrong?.options.length === 0 && wrong?.tiles.length === 0 && wrong?.step === 0 && wrong?.step_count === 0 && wrong?.next === true, JSON.stringify(wrong));
+  const nothing = (await agent.call('show', { evil: true })) as object;
+  check('canvas: a show with nothing to show is refused', 'error' in nothing, JSON.stringify(nothing));
+  const shown = agent.call('show', { title: 'T', question: 'Q', step_count: 4, step: 2, tiles: [{ id: 'x', label: 'One', icon: 'heart' }] }) as Promise<Record<string, unknown>>;
+  const s = surfaceStore.get().surface;
+  check('canvas: a tile question opens and waits', surfaceStore.get().open === true && s?.title === 'T' && s?.tiles.length === 1 && s?.stepTotal === 4 && s?.step === 2, JSON.stringify(surfaceStore.get()));
+  answerSurface('One', 'option');
+  const answered = await shown;
+  check('canvas: the answer is the labels the person chose', answered.answer === 'One' && answered.how === 'option', JSON.stringify(answered));
+  check('canvas: answering closes the panel', surfaceStore.get().open === false);
+  check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 20000);
+  // the server copies each description into the Gemini declaration and cuts it at 1000 characters (declarations.py): a longer one loses its tail in silence
+  check('every tool description fits the server limit of 1000 characters', toolSpecs.every((s) => s.description.length <= 1000), toolSpecs.filter((s) => s.description.length > 1000).map((s) => `${s.name}:${s.description.length}`).join(', '));
 
   console.log(failed ? `\n${failed} FAILED` : '\nall passed');
   process.exit(failed ? 1 : 0);

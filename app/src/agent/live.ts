@@ -185,6 +185,20 @@ export async function sendText(text: string): Promise<void> {
   else queued.push(t);
 }
 
+/**
+ * A message sent by a button in the app instead of by the person (the canvas's Regenerate). It opens the talk if it is not
+ * open yet, and deliberately adds no line to the transcript: the person pressed a button, they did not say anything.
+ */
+export async function askAgent(text: string): Promise<void> {
+  const m = text.trim();
+  if (!m) return;
+  if (!ws) {
+    queued.push(m);
+    await startTalk({ mic: false });
+  } else if (ready) send({ type: 'text', text: m });
+  else queued.push(m);
+}
+
 export function end(): void {
   const s = ws;
   ws = null;

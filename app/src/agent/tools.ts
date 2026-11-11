@@ -41,15 +41,34 @@ export const toolSpecs: ToolSpec[] = [
   {
     name: 'show',
     description:
-      'Show something to the person in a panel over the app: a question with choices, a short explanation in steps, or a small visual page. Write ALL text in the language the person speaks. Use it to ask one clear question, to explain how something works, or to show a summary. Give title, message and steps in plain words (always include them: some devices cannot show html). html is optional extra: simple HTML and CSS only (headings, lists, tables, cards, inline SVG), no scripts, no links, no external images, under 20000 characters. With options or allow_text it WAITS for the person and returns their answer; otherwise it returns at once and stays open until the person closes it or you call hide.',
+      'Show something in a panel that fills the content area: a question with choices or tiles, numbered steps, or a small screen you wrote (a calculation, table, checklist or lesson). Write ALL text in the person\'s language, plain and large. Always give a title and a message; html is optional extra (headings, lists, tables, cards, inline SVG, no scripts, no links, under 20000 characters) and you do the arithmetic and show the result. Display order: question, tiles, options, typed-answer box, hint, steps, html. tiles are up to 12, each {id, label, icon}, icon an Ionicons name such as "heart", "walk", "calculator"; the person taps them and Next returns the labels they chose. step and step_count light up to 10 step dots; next shows a Next button. With options, allow_text, tiles or next it WAITS and returns their answer; otherwise it returns at once and stays open until they close it or you call hide. Never show a panel that repeats the open screen: act on the app instead, or call hide.',
     inputSchema: obj(
       {
-        title: { type: 'string' },
-        message: { type: 'string' },
-        steps: { type: 'array', items: { type: 'string' } },
+        title: { type: 'string', description: 'The heading of the panel, short.' },
+        message: { type: 'string', description: 'One or two plain sentences under the heading.' },
+        question: { type: 'string', description: 'The bold question above the choices.' },
+        hint: { type: 'string', description: 'A short helpful note shown in a card.' },
+        steps: { type: 'array', items: { type: 'string' }, description: 'Up to 8 short numbered steps.' },
         html: { type: 'string' },
         options: { type: 'array', items: { type: 'string' }, description: 'Up to 6 short choices; the person taps one.' },
         allow_text: { type: 'boolean', description: 'Let the person type an answer.' },
+        tiles: {
+          type: 'array',
+          description: 'Up to 12 selectable tiles in a grid. The person taps them and Next returns the labels they chose.',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string', description: 'A short unique id, letters, digits, "-" or "_", up to 40 characters.' },
+              label: { type: 'string', description: 'What the person reads, in their language, up to 40 characters.' },
+              icon: { type: 'string', description: 'An Ionicons name, for example "heart", "people", "trophy", "walk", "leaf", "calculator".' },
+            },
+            required: ['label'],
+            additionalProperties: false,
+          },
+        },
+        step: { type: 'number', description: 'Which step dot is lit, counting from 1.' },
+        step_count: { type: 'number', description: 'How many step dots to show, up to 10. 0 for none.' },
+        next: { type: 'boolean', description: 'Show a Next button that waits for the person.' },
       },
       []
     ),
