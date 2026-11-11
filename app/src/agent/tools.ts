@@ -1,5 +1,6 @@
 import { t } from '../i18n/tables';
 import { glow } from '../kit/glow';
+import { pageDataOf } from '../kit/pageData';
 import { elementKey } from '../kit/page';
 import { findSkill, getModule, search } from '../navigation/registry';
 import { childrenOf, describe, parsePath } from '../navigation/tree';
@@ -35,7 +36,7 @@ export const toolSpecs: ToolSpec[] = [
   { name: 'search', description: 'Search every level by plain words, for example "create event" or "change language". Returns paths to use next.', inputSchema: obj({ query: { type: 'string' } }, ['query']) },
   { name: 'docs', description: 'Read the description of one node: a module, a page or an element, with its inputs and who may use it.', inputSchema: obj({ path: { type: 'string' } }, ['path']) },
   { name: 'open', description: 'Open a page by its key (or the page that holds an element).', inputSchema: obj({ path: { type: 'string' }, data: { type: 'object' } }, ['path']) },
-  { name: 'read', description: 'Read the page that is open now: its elements with current values.', inputSchema: obj({}) },
+  { name: 'read', description: 'Read the page that is open now: its elements with current values, plus its data - the text, pictures, lists and actions the screen is actually showing. Describe the screen from that data only; if there is no data, say you cannot see what is on it.', inputSchema: obj({}) },
   { name: 'fill', description: 'Fill a field by its element key, for example "events.new.title". Opens its page first if needed. The person sees it glow.', inputSchema: obj({ path: { type: 'string' }, value: {} }, ['path', 'value']) },
   { name: 'press', description: 'Press a button by its element key, for example "events.new.create". Opens its page first if needed.', inputSchema: obj({ path: { type: 'string' } }, ['path']) },
   {
@@ -132,12 +133,16 @@ export function createAgentTools(host: AgentHost) {
         if (!p || p.level !== 'page') return { error: 'unknown_page' };
         await waitForPage(pageKey, 800);
         const live = new Map(controlsOfPage(pageKey).map((c) => [c.id, c]));
+        // `data` is what the screen published about itself (usePageData). Absent means the screen has not
+        // published anything - still loading, or gone - and that is exactly what the agent must say.
+        const data = pageDataOf(pageKey);
         return {
           page: pageKey,
           elements: Object.entries(p.page.elements).map(([id, el]) => {
             const c = live.get(id);
             return { path: `${pageKey}.${id}`, kind: el.kind, label: t(`${pageKey}.${id}`), required: !!el.required, agent: el.agent ?? 'free', value: el.secret ? undefined : c?.get?.() };
           }),
+          ...(data ? { data } : {}),
         };
       }
 
@@ -145,13 +150,20 @@ export function createAgentTools(host: AgentHost) {
       case 'press': {
         const path = String(args.path ?? '');
         const p = parsePath(path);
-        if (!p || p.level !== 'element') return { error: 'not_an_element', hint: 'Give an element key like "events.new.title". Use tree on a page to list its elements.' };
+        const el = p && p.level === 'element' ? p : null;
+        // A listed item's action ("open community X") is not in page.ts - the screen publishes it with
+        // usePageData - so it resolves from the controls the open screen registered. Everything else is
+        // unchanged: the page declaration still decides what exists and who may use it.
+        const listed = el ? undefined : getControl(path);
+        if (!el && !listed) return { error: 'not_an_element', hint: 'Give an element key like "events.new.title". Use tree on a page to list its elements, or read to see what the open screen is showing.' };
+        const kind = el ? el.element.kind : (listed as NonNullable<typeof listed>).kind;
         const wanted = name === 'fill' ? ['field', 'choice'] : ['action'];
-        if (!wanted.includes(p.element.kind)) return { error: 'wrong_kind', hint: `${path} is a ${p.element.kind}; use ${p.element.kind === 'action' ? 'press' : 'fill'}.` };
+        if (!wanted.includes(kind)) return { error: 'wrong_kind', hint: `${path} is a ${kind}; use ${kind === 'action' ? 'press' : 'fill'}.` };
+        const policy = (el ? el.element.agent : listed!.agent) ?? 'free';
         // The approval title is for the person: a plain label in their language, never the element key.
-        const blocked = await allowed(p.element.agent, t(path), { value: args.value });
+        const blocked = await allowed(policy, el ? t(path) : listed!.label, { value: args.value });
         if (blocked) return blocked;
-        const refused = await ensureOpen(p.page.key);
+        const refused = await ensureOpen(el ? el.page.key : listed!.page);
         if (refused) return { error: 'could_not_open_page' };
         // The glow and the pause happen inside fillElement / pressElement, so skills glow exactly the same way.
         const result = name === 'fill' ? await fillElement(path, args.value) : await pressElement(path);

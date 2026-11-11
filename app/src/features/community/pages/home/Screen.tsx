@@ -7,7 +7,7 @@ import { SkeletonPage } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
-import { El, usePageWords } from '../../../../kit';
+import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import { communityHome as page } from './page';
@@ -56,6 +56,45 @@ export default function CommunityHome() {
     return abs < 60 ? rtf.format(mins, 'minute') : abs < 1440 ? rtf.format(Math.round(mins / 60), 'hour') : rtf.format(Math.round(mins / 1440), 'day');
   };
   const card = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.sm } as const;
+
+  // What the agent may read and press: this community as it is really showing - its name and members, what
+  // is happening and the latest updates. Published only once the community has loaded, so `read` has no data
+  // (and says so) instead of reporting an empty screen while it is still coming in. Every action here runs
+  // this screen's own handler, so the agent acts through the screen.
+  const shown: PageDataInput | null = data
+    ? {
+        values: [
+          { label: w('heading'), value: data.community.name },
+          { label: w('people'), value: t('common.members', { n: data.community.member_count }) },
+        ],
+        images: data.community.cover_url ? [{ uri: data.community.cover_url, alt: data.community.name }] : [],
+        lists: [
+          {
+            label: w('happening'),
+            items: data.activities.slice(0, 3).map((a, i) => ({
+              label: a.title,
+              detail: [when(a.starts_at), a.location].filter(Boolean).join(' · '),
+              image: a.image_url ? { uri: a.image_url, alt: a.title } : undefined,
+              actions: [{ id: `going${i + 1}`, label: a.title, run: () => toggle(a.id, a.i_going) }],
+            })),
+          },
+          {
+            label: w('updates'),
+            items: data.announcements.slice(0, 3).map((u) => ({
+              label: u.title,
+              detail: [u.author, ago(u.created_at)].filter(Boolean).join(' · '),
+            })),
+          },
+        ],
+        actions: [
+          { id: 'events', label: w('events'), run: () => setShowSoon(true) },
+          { id: 'activities', label: w('activities'), run: () => setShowSoon(true) },
+          { id: 'people', label: w('people'), run: () => setShowSoon(true) },
+          { id: 'initiatives', label: w('initiatives'), run: () => setShowSoon(true) },
+        ],
+      }
+    : null;
+  usePageData(page, shown);
 
   if (failed) {
     return (
@@ -106,7 +145,7 @@ export default function CommunityHome() {
       {showSoon ? <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginTop: space.xs }]}>{w('soon')}</Text> : null}
 
       <El page={page} id="happening"><Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('happening')}</Text></El>
-      {next.length ? next.map((a) => (
+      {next.length ? next.map((a, i) => (
         <View key={a.id} style={[card, { flexDirection: 'row', alignItems: 'center', gap: space.md }]}>
           {a.image_url ? (
             <Image source={{ uri: a.image_url }} accessibilityIgnoresInvertColors style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.accentSoft }} />
@@ -120,9 +159,11 @@ export default function CommunityHome() {
             <Text style={[type.small, { color: colors.muted }]}>{when(a.starts_at)}</Text>
             {a.location ? <Text style={[type.small, { color: colors.muted }]}>{a.location}</Text> : null}
           </View>
-          <Pressable onPress={() => void toggle(a.id, a.i_going)} accessibilityRole="button" style={{ minWidth: 72, minHeight: 44, borderRadius: radius.button, backgroundColor: a.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
-            <Text style={{ fontSize: 15, fontWeight: '700', color: a.i_going ? '#FFFFFF' : colors.accent }}>{a.i_going ? w('going') : w('join')}</Text>
-          </Pressable>
+          <El page={page} id={`going${i + 1}`}>
+            <Pressable onPress={() => void toggle(a.id, a.i_going)} accessibilityRole="button" style={{ minWidth: 72, minHeight: 44, borderRadius: radius.button, backgroundColor: a.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
+              <Text style={{ fontSize: 15, fontWeight: '700', color: a.i_going ? '#FFFFFF' : colors.accent }}>{a.i_going ? w('going') : w('join')}</Text>
+            </Pressable>
+          </El>
         </View>
       )) : <Text style={[type.body, { color: colors.muted, marginBottom: space.sm }]}>{w('noHappening')}</Text>}
 

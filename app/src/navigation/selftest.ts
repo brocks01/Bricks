@@ -7,6 +7,7 @@ import { languagesMissing, t } from '../i18n/tables';
 import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
+import { pageDataOf, publishPageData } from '../kit/pageData';
 import { answerSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
 import { toolSpecs } from '../agent/tools';
 import { sessionStore } from '../session/store';
@@ -115,6 +116,45 @@ const agent = createAgentTools({
   current = 'me.edit';
   const read = (await agent.call('read', {})) as { elements: { path: string; value?: unknown }[] };
   check('read lists elements with values', read.elements.some((e) => e.path === 'me.edit.displayName' && e.value === 'Test Person'));
+
+  // what a screen publishes about itself (usePageData -> publishPageData), so read can describe it
+  current = 'connect.index';
+  const noData = (await agent.call('read', {})) as { data?: unknown };
+  check('read has no data until a screen publishes some', !('data' in noData), JSON.stringify(noData.data));
+  let opened = '';
+  const stopData = publishPageData('connect.index', {
+    values: [{ label: 'Find your community', value: 'bedok' }],
+    images: [],
+    lists: [
+      {
+        label: 'My communities',
+        items: [
+          { label: 'Bedok Heritage Kakis', detail: '128 members', actions: [{ id: 'community1', label: 'Bedok Heritage Kakis', run: () => { opened = 'Bedok Heritage Kakis'; } }] },
+          { label: 'Toa Payoh Silver Mentors', detail: '340 members' },
+        ],
+      },
+      { label: 'Coming up', items: [{ label: 'Tai Chi in the Park', detail: 'Tampines Kampung Spirit' }] },
+    ],
+    actions: [],
+  });
+  const screen = pageDataOf('connect.index');
+  check('page data is published for its own page', screen?.page === 'connect.index' && screen?.values[0].value === 'bedok');
+  check('a list keeps the labels that are on screen', screen?.lists[0].items.map((i) => i.label).join(',') === 'Bedok Heritage Kakis,Toa Payoh Silver Mentors', JSON.stringify(screen?.lists));
+  check('a listed item keeps its short detail', screen?.lists[0].items[0].detail === '128 members');
+  check('a listed action carries a pressable key', screen?.lists[0].items[0].actions?.[0].key === 'connect.index.community1' && screen?.lists[0].items[1].actions === undefined);
+  const withData = (await agent.call('read', {})) as { data?: { lists: { items: { label: string }[] }[] }; elements: { path: string }[] };
+  check('read returns the screen data alongside the elements', withData.data?.lists[0].items.length === 2 && withData.elements.length > 0, JSON.stringify(withData.data));
+  const openIt = (await agent.call('press', { path: 'connect.index.community1' })) as { ok?: boolean };
+  check('press runs a listed item action through the screen', openIt.ok === true && opened === 'Bedok Heritage Kakis', JSON.stringify(openIt));
+  check('a listed action glows its own key', glowStore.get().key === 'connect.index.community1', JSON.stringify(glowStore.get()));
+  const noRun = (await agent.call('press', { path: 'connect.index.community2' })) as object;
+  check('a listed item with nothing to press is refused', 'error' in noRun, JSON.stringify(noRun));
+  check('an action id that is not letters and digits is refused', throws(() => publishPageData('zz.test', { values: [], images: [], lists: [], actions: [{ id: 'not an id', label: 'x', run: () => undefined }] })));
+  stopData();
+  check('page data clears when the screen unmounts', pageDataOf('connect.index') === null);
+  const gone = (await agent.call('read', {})) as { data?: unknown };
+  check('read has no data once the screen has gone', !('data' in gone), JSON.stringify(gone.data));
+  current = 'me.edit';
 
   // policy tiers per element
   const fh = (await agent.call('press', { path: 'zz.test.forbidden' })) as { refused?: string };

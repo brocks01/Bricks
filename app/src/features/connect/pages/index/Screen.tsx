@@ -6,7 +6,7 @@ import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
-import { El, useField, usePageWords } from '../../../../kit';
+import { El, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
@@ -57,6 +57,43 @@ export default function ConnectIndex() {
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const card = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.sm, marginBottom: space.sm } as const;
 
+  // What the agent may read and press: the communities and the events really on this screen. page.ts cannot
+  // know how many there are, and until this loads `read` has no data at all - which is why the agent used to
+  // claim there were no communities while four were on screen. The actions run this screen's own handlers.
+  usePageData(
+    page,
+    mine === null
+      ? null
+      : {
+          values: [
+            { label: w('find'), value: q },
+            { label: w('mine'), value: mine.length === 1 ? w('countOne') : w('countMany', { n: mine.length }) },
+          ],
+          images: [],
+          lists: [
+            {
+              label: w('mine'),
+              items: list.map((c, i) => ({
+                label: c.name,
+                detail: t('common.members', { n: c.member_count }),
+                image: c.cover_url ? { uri: c.cover_url, alt: c.name } : undefined,
+                actions: [{ id: `community${i + 1}`, label: c.name, run: () => { navigate('community.home', { id: c.id }); } }],
+              })),
+            },
+            {
+              label: w('comingUp'),
+              items: soon.map((e, i) => ({
+                label: e.title,
+                detail: `${e.community_name} · ${when(e.starts_at)}`,
+                image: e.image_url ? { uri: e.image_url, alt: e.title } : undefined,
+                actions: [{ id: `rsvpEvent${i + 1}`, label: e.title, run: () => toggle(e) }],
+              })),
+            },
+          ],
+          actions: [],
+        }
+  );
+
   return (
     <Screen title={w('heading')} subtitle={w('intro')}>
       {mine && mine.length ? (
@@ -87,19 +124,21 @@ export default function ConnectIndex() {
           </View>
           {list.length ? (
             list.map((c, i) => (
-              <Pressable key={c.id} onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={card}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                  <Thumb icon={c.icon} size={64} i={i} uri={c.cover_url} />
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{c.name}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                      <Ionicons name="people-outline" size={16} color={colors.muted} />
-                      <Text style={[type.small, { color: colors.muted }]}>{t('common.members', { n: c.member_count })}</Text>
+              <El key={c.id} page={page} id={`community${i + 1}`}>
+                <Pressable onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={card}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+                    <Thumb icon={c.icon} size={64} i={i} uri={c.cover_url} />
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{c.name}</Text>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
+                        <Ionicons name="people-outline" size={16} color={colors.muted} />
+                        <Text style={[type.small, { color: colors.muted }]}>{t('common.members', { n: c.member_count })}</Text>
+                      </View>
                     </View>
+                    <Ionicons name="chevron-forward" size={22} color={colors.ink} />
                   </View>
-                  <Ionicons name="chevron-forward" size={22} color={colors.ink} />
-                </View>
-              </Pressable>
+                </Pressable>
+              </El>
             ))
           ) : (
             <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('noMatch')}</Text>
@@ -133,9 +172,11 @@ export default function ConnectIndex() {
                     <Text style={[type.small, { color: colors.ink }]}>{when(e.starts_at)}</Text>
                   </View>
                 </View>
-                <Pressable onPress={() => void toggle(e)} accessibilityRole="button" style={{ minWidth: 76, minHeight: 44, borderRadius: radius.button, backgroundColor: e.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
-                  <Text style={{ fontSize: 16, fontWeight: '700', color: e.i_going ? '#FFFFFF' : colors.accent }}>{e.i_going ? w('rsvpGoing') : w('rsvpJoin')}</Text>
-                </Pressable>
+                <El page={page} id={`rsvpEvent${i + 1}`}>
+                  <Pressable onPress={() => void toggle(e)} accessibilityRole="button" style={{ minWidth: 76, minHeight: 44, borderRadius: radius.button, backgroundColor: e.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: e.i_going ? '#FFFFFF' : colors.accent }}>{e.i_going ? w('rsvpGoing') : w('rsvpJoin')}</Text>
+                  </Pressable>
+                </El>
               </View>
             </View>
           ))}

@@ -1,7 +1,7 @@
 import { t } from '../i18n/tables';
 import { glow } from '../kit/glow';
 import { note } from '../navigation/log';
-import type { FieldType, Origin } from '../navigation/types';
+import type { AgentPolicy, FieldType, Origin } from '../navigation/types';
 
 // What is ON the open page that the agent may read, fill or press. A page registers its fields and buttons by element key
 // (for example 'events.new.title'). The agent sees words and keys, never code.
@@ -13,6 +13,8 @@ export interface Control {
   label: string; // in the person's language
   type?: FieldType;
   options?: string[];
+  /** Who may use it. A listed item's action carries the tier the screen chose; a declared element uses page.ts's. */
+  agent?: AgentPolicy;
   get?: () => unknown;
   set?: (value: unknown) => void;
   run?: () => void | Promise<void>;
