@@ -37,7 +37,7 @@ export function AgentDock() {
           While the panel is open it has its own handle on the sheet, so this one steps aside. */}
       {canvasOpen ? null : (
         <View style={{ alignItems: 'center', paddingTop: 3 }}>
-          <DragHandle label={t('common.agent.canvas.grow')} onUp={() => (canvas ? restoreSurface() : togglePanel())} />
+          <DragHandle label={t('common.agent.canvas.grow')} onRelease={(dy) => { if (dy <= -40) (canvas ? restoreSurface() : togglePanel()); }} />
         </View>
       )}
       {ui.open ? (

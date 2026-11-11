@@ -30,8 +30,20 @@ export interface Surface {
   next: boolean; // show the Next button
 }
 
-/** How much of the screen the panel is taking (spec section 2). 'compact' is open:false with the surface kept. */
+/**
+ * How much of the area the panel takes, as a fraction (0..1) - the person drags it wherever they want and
+ * it STAYS there, the way Instagram's comment sheet does, instead of snapping back to a fixed size.
+ * The agent asks for a state instead: 'compact' puts it away, 'expanded' the resting sheet, 'full' the screen.
+ */
 export type PanelState = 'expanded' | 'full';
+
+/** State B at rest: how much of the area the sheet takes when it is first shown or reset. */
+export const SHEET_RATIO = 0.74;
+/** The floor while dragging. Let go at or below this and the panel is put away (that is how you close it by hand). */
+export const MIN_RATIO = 0.16;
+export const CLOSED_BELOW = 0.2;
+/** At or above this fraction the panel counts as full screen (State C). */
+export const FULL_AT = 0.95;
 
 export const LIMITS = {
   title: 120, message: 1500, question: 200, hint: 400,
@@ -40,7 +52,7 @@ export const LIMITS = {
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
-export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; state: PanelState }>({ open: false, surface: null, seq: 0, state: 'expanded' });
+export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO });
 
 let waiting: ((r: { answer?: string; how?: 'option' | 'typed'; dismissed?: boolean }) => void) | null = null;
 
@@ -153,7 +165,7 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.
-  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, state: a.full ? 'full' : 'expanded' });
+  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO });
   const waitsForAPerson = surface.options.length > 0 || surface.allowText || surface.tiles.length > 0 || surface.next;
   if (!waitsForAPerson) return Promise.resolve({ shown: true, note: 'It stays until the person closes it or you call hide.' });
   return new Promise((resolve) => {
@@ -174,7 +186,17 @@ export function hideSurface(): void {
   const w = waiting;
   waiting = null;
   w?.({ dismissed: true });
-  surfaceStore.set((s) => ({ ...s, open: false, surface: null, state: 'expanded' }));
+  surfaceStore.set((s) => ({ ...s, open: false, surface: null, ratio: SHEET_RATIO }));
+}
+
+/**
+ * Put the sheet at a height (0..1). This is what a released drag writes, so the panel stays exactly where
+ * the person left it; the agent's `panel` tool writes the two resting sizes through `setPanelState`.
+ */
+export function setPanelRatio(ratio: number): void {
+  if (!surfaceStore.get().surface) return;
+  const r = Math.min(1, Math.max(MIN_RATIO, ratio));
+  surfaceStore.set((s) => ({ ...s, open: true, ratio: r }));
 }
 
 /**
@@ -182,8 +204,7 @@ export function hideSurface(): void {
  * and the person's own drag always wins. There is nothing to move if no screen is showing.
  */
 export function setPanelState(state: PanelState): void {
-  if (!surfaceStore.get().surface) return;
-  surfaceStore.set((s) => ({ ...s, open: true, state }));
+  setPanelRatio(state === 'full' ? 1 : SHEET_RATIO);
 }
 
 /**

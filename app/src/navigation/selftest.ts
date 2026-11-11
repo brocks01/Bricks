@@ -8,7 +8,7 @@ import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
 import { pageDataOf, publishPageData } from '../kit/pageData';
-import { answerSurface, hideSurface, LIMITS, parseShow, surfaceStore } from '../agent/surface';
+import { answerSurface, hideSurface, LIMITS, parseShow, setPanelRatio, SHEET_RATIO, surfaceStore } from '../agent/surface';
 import { toolSpecs } from '../agent/tools';
 import { IDLE_MS } from '../agent/live';
 import { sessionStore } from '../session/store';
@@ -222,13 +222,15 @@ const agent = createAgentTools({
   check('panel refuses a state that does not exist', 'error' in ((await agent.call('panel', { state: 'huge' })) as object));
   check('panel refuses to expand with nothing showing', 'error' in ((await agent.call('panel', { state: 'full' })) as object));
   await agent.call('show', { title: 'A title', message: 'A message' });
-  check('a shown screen opens expanded', surfaceStore.get().open === true && surfaceStore.get().state === 'expanded', JSON.stringify(surfaceStore.get()));
+  check('a shown screen opens as a sheet at the resting size', surfaceStore.get().open === true && surfaceStore.get().ratio === SHEET_RATIO, JSON.stringify(surfaceStore.get()));
   await agent.call('panel', { state: 'full' });
-  check('panel full takes the whole screen', surfaceStore.get().state === 'full', JSON.stringify(surfaceStore.get()));
+  check('panel full takes the whole screen', surfaceStore.get().ratio === 1, JSON.stringify(surfaceStore.get()));
   await agent.call('panel', { state: 'compact' });
   check('panel compact puts the screen away but keeps it', surfaceStore.get().open === false && surfaceStore.get().surface?.title === 'A title', JSON.stringify(surfaceStore.get()));
   await agent.call('panel', { state: 'expanded' });
-  check('panel expanded brings the same screen back untouched', surfaceStore.get().open === true && surfaceStore.get().surface?.title === 'A title');
+  check('panel expanded brings the same screen back untouched', surfaceStore.get().open === true && surfaceStore.get().ratio === SHEET_RATIO && surfaceStore.get().surface?.title === 'A title');
+  setPanelRatio(0.5);
+  check('the sheet stays at whatever height the person leaves it', surfaceStore.get().ratio === 0.5, String(surfaceStore.get().ratio));
   hideSurface();
   check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120 && LIMITS.html <= 20000);
   // the talk ends by itself: the agent can hang up, and a quiet talk is cut rather than listening forever
