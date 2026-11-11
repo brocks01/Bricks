@@ -16,13 +16,13 @@ describe('app shell', () => {
     await resetAppState();
   });
 
-  it('opens on Home with skills, community and health sections in that order', async () => {
+  it('opens on Home with community, activity and health sections in that order', async () => {
     await renderApp();
     expect(screen).toHavePathname('/home');
     const order = screen
       .getAllByTestId(/^home-section-/)
       .map((node) => node.props.testID as string);
-    expect(order).toEqual(['home-section-passItOn', 'home-section-kampung', 'home-section-thrive']);
+    expect(order).toEqual(['home-section-kampung', 'home-section-passItOn', 'home-section-thrive']);
   });
 
   it('greets the member by their preferred name', async () => {
@@ -63,7 +63,7 @@ describe('app shell', () => {
     await renderApp('/kampung');
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(
-      expect.stringContaining('Kampung'),
+      expect.stringContaining('Community'),
       expect.objectContaining({ language: 'en-SG', rate: 0.85 }),
     );
     // Tapping again stops it.
@@ -104,7 +104,7 @@ describe('app shell', () => {
     useSettings.setState({ language: 'ta' });
     await renderApp('/home');
     // Tab label and Home card both say "Kampung" in Tamil.
-    expect(screen.getAllByText('கம்போங்').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getAllByText('சமூகம்').length).toBeGreaterThanOrEqual(2);
     expect(screen.getByText('நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?')).toBeTruthy();
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(

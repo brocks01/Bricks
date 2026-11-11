@@ -53,7 +53,7 @@ describe('Onboarding: Myself (S1 → S8)', () => {
 
     // S4: Singpass filled in the name and area.
     expect(await screen.findByTestId('screen-onboarding-about')).toBeTruthy();
-    expect(screen.getByText('படி 1 / 3')).toBeTruthy();
+    expect(screen.getByText('படி 1, மொத்தம் 3')).toBeTruthy();
     expect(screen.getByTestId('about-name').props.value).toBe('Raj');
     await press('about-next');
     expect(screen.getByTestId('about-area-Bishan').props.accessibilityState).toMatchObject({

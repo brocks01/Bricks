@@ -74,12 +74,12 @@ describe('Home', () => {
     await screen.findByText('Did you move yesterday?');
     await press('topbar-readout');
     // Read sentence by sentence: wait for the last part, then check the whole script.
-    await waitFor(() => expect(spokenText()).toContain('Kampung: join activities near you.'));
+    await waitFor(() => expect(spokenText()).toContain('Community: join walks and meet-ups near you.'));
     const spoken = spokenText();
     expect(spoken).toMatch(/^Good (morning|afternoon|evening), Raj\./);
     expect(spoken).toContain('did you move yesterday?');
     expect(spoken).toMatch(/Reminder at (8 am: Take medicine|8 pm: Blood pressure tablet)\./);
-    expect(spoken).toContain('Kampung: join activities near you.');
+    expect(spoken).toContain('Community: join walks and meet-ups near you.');
   });
 });
 

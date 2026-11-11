@@ -127,7 +127,7 @@ describe('EventCard', () => {
       />,
       { language: 'ta' },
     );
-    expect(screen.getByText('1 பேர் வருகிறார்')).toBeTruthy();
+    expect(screen.getByText('1 நபர் வருகிறார்')).toBeTruthy();
     expect(screen.getByText('நாளை, 7 AM')).toBeTruthy();
   });
 });

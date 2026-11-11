@@ -19,7 +19,7 @@ import {
 } from '@/components';
 import { clearUnfinishedWalk, useActiveWalk } from '@/features/walk/activeWalk';
 import { prepareWalkLocation } from '@/features/walk/gpsTrack';
-import { formatClock, formatCount, formatDistance, formatMinutes } from '@/lib/format';
+import { formatClock, formatCount, formatDistance, sayDistance, sayMinutes } from '@/lib/format';
 import { platform } from '@/lib/platform';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
@@ -134,8 +134,8 @@ export default function WalkRecordScreen() {
 
   const readOut = () =>
     t(paused ? 'walk.readoutPaused' : 'walk.readout', {
-      time: formatMinutes(progress?.active_s ?? 0, t),
-      distance,
+      time: sayMinutes(progress?.active_s ?? 0, t),
+      distance: sayDistance(progress?.distance_m ?? 0, language, t),
       steps,
     });
 

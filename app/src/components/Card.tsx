@@ -1,19 +1,19 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
-import { borderWidth, color, radius, space } from '@/theme';
+import { color, radius, space } from '@/theme';
 
 export interface CardProps extends ViewProps {
-  /** `subtle` sits on white as a light-grey panel (voice notes, placeholders). */
-  tone?: 'default' | 'subtle';
+  /** `plain` is white (for cards that sit on a grey panel); default is the grey panel. */
+  tone?: 'default' | 'subtle' | 'plain';
   /** False for cards with edge-to-edge photos; the content adds its own padding. */
   padded?: boolean;
 }
 
-/** The one card style: flat, 1px border, 16dp corners, no shadow (docs/02 §5.3). */
+/** The one card style (Luma): a soft grey panel, no border, no shadow, 20dp corners. */
 export function Card({ tone = 'default', padded = true, style, ...rest }: CardProps) {
   return (
     <View
-      style={[styles.card, tone === 'subtle' && styles.subtle, padded && styles.padded, style]}
+      style={[styles.card, tone === 'plain' && styles.plain, padded && styles.padded, style]}
       {...rest}
     />
   );
@@ -22,13 +22,11 @@ export function Card({ tone = 'default', padded = true, style, ...rest }: CardPr
 const styles = StyleSheet.create({
   card: {
     borderRadius: radius.card,
-    borderWidth: borderWidth.hairline,
-    borderColor: color.border,
-    backgroundColor: color.bg,
+    backgroundColor: color.bgSubtle,
     overflow: 'hidden',
   },
-  subtle: {
-    backgroundColor: color.bgSubtle,
+  plain: {
+    backgroundColor: color.bg,
   },
   padded: {
     padding: space.md,

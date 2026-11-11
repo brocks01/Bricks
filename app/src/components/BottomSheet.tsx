@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Modal, StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { color, radius, screenPadding, space } from '@/theme';
+import { color, radius, screenPadding, shadow, space } from '@/theme';
 
 export interface BottomSheetProps {
   visible: boolean;
@@ -32,7 +32,7 @@ export function BottomSheet({ visible, onRequestClose, children, testID }: Botto
       <View style={styles.scrim}>
         <View
           accessibilityViewIsModal
-          style={[styles.sheet, { paddingBottom: insets.bottom + space.lg }]}
+          style={[styles.sheet, { marginBottom: insets.bottom + space.xs }]}
           testID={testID}
         >
           {children}
@@ -48,12 +48,15 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: color.scrim,
   },
+  // Luma: the sheet floats as a rounded panel, inset from the screen edges.
   sheet: {
     backgroundColor: color.bg,
-    borderTopLeftRadius: radius.card,
-    borderTopRightRadius: radius.card,
+    borderRadius: radius.sheet,
+    marginHorizontal: space.xs,
     paddingHorizontal: screenPadding,
     paddingTop: space.lg,
+    paddingBottom: space.lg,
     gap: space.md,
+    ...shadow.floating,
   },
 });

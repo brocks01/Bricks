@@ -1,3 +1,5 @@
+import { Image } from 'expo-image';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -5,14 +7,18 @@ import type { EventSummary } from '@/api/types';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { color, iconSize, radius, space, touch } from '@/theme';
+import { color, iconSize, motion, radius, space, touch } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { BigButton } from './BigButton';
-import { Card } from './Card';
 import { InfoRow } from './InfoRow';
-import { PhotoHeader } from './PhotoHeader';
-import { CalendarBlankIcon, CheckCircleIcon, MapPinIcon, UsersIcon } from './primitives/icons';
+import {
+  CalendarBlankIcon,
+  CheckCircleIcon,
+  MapPinIcon,
+  UsersIcon,
+  type Icon,
+} from './primitives/icons';
 import { Text } from './primitives/Text';
 
 export interface EventCardProps {
@@ -27,12 +33,40 @@ export interface EventCardProps {
   compact?: boolean;
 }
 
+const THUMB = 96;
+
+/** The event's square photo, or its category icon on a grey tile. */
+function Thumb({
+  photoUrl,
+  fallbackIcon: FallbackIcon,
+}: {
+  photoUrl: string | null;
+  fallbackIcon: Icon;
+}) {
+  const [failed, setFailed] = useState(false);
+  if (photoUrl && !failed) {
+    return (
+      <Image
+        source={{ uri: photoUrl }}
+        style={styles.thumb}
+        contentFit="cover"
+        transition={motion.base}
+        accessible={false}
+        onError={() => setFailed(true)}
+      />
+    );
+  }
+  return (
+    <View style={[styles.thumb, styles.thumbFallback]} accessible={false}>
+      <FallbackIcon size={iconSize.hero} color={color.primary} weight="regular" />
+    </View>
+  );
+}
+
 /**
- * Luma-style event card: one photo, the title, when, where, who's going and one
- * button. Facts sit on separate lines with icons instead of a dense "·" line.
- *
- * The photo + facts area and the button are separate touch targets (never nested),
- * so screen readers can reach both.
+ * Luma-style event row: a square photo on the left; who's hosting, the title, when and
+ * where on the right; then one button. The row and the button are separate touch targets
+ * (never nested), so screen readers can reach both.
  */
 export function EventCard({ event, onOpen, onGoing, now, compact = false }: EventCardProps) {
   const { t } = useTranslation();
@@ -42,7 +76,7 @@ export function EventCard({ event, onOpen, onGoing, now, compact = false }: Even
   const isGoing = event.my_rsvp === 'going';
 
   return (
-    <Card padded={false} testID={`event-card-${event.id}`}>
+    <View style={styles.card} testID={`event-card-${event.id}`}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={`${event.title}. ${when}. ${event.place_name}. ${going}.`}
@@ -51,13 +85,16 @@ export function EventCard({ event, onOpen, onGoing, now, compact = false }: Even
           tapFeedback();
           onOpen();
         }}
-        style={({ pressed }) => pressed && styles.pressed}
+        style={({ pressed }) => [styles.row, pressed && styles.pressed]}
         testID={`event-card-${event.id}-open`}
       >
         {compact ? null : (
-          <PhotoHeader photoUrl={event.photo_url} fallbackIcon={CATEGORY_ICON[event.category]} />
+          <Thumb photoUrl={event.photo_url} fallbackIcon={CATEGORY_ICON[event.category]} />
         )}
         <View style={styles.info}>
+          <Text variant="caption" color="textSecondary" numberOfLines={1}>
+            {event.host.name}
+          </Text>
           <Text variant="heading">{event.title}</Text>
           <InfoRow icon={CalendarBlankIcon} text={when} />
           <InfoRow icon={MapPinIcon} text={event.place_name} />
@@ -85,29 +122,49 @@ export function EventCard({ event, onOpen, onGoing, now, compact = false }: Even
           />
         )}
       </View>
-    </Card>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  pressed: {
+  card: {
+    borderRadius: radius.card,
     backgroundColor: color.bgSubtle,
+    overflow: 'hidden',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: space.sm,
+    padding: space.sm,
+    paddingBottom: 0,
+  },
+  pressed: {
+    backgroundColor: color.primarySubtle,
+  },
+  thumb: {
+    width: THUMB,
+    height: THUMB,
+    borderRadius: radius.tile,
+    backgroundColor: color.bg,
+  },
+  thumbFallback: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   info: {
-    paddingHorizontal: space.md,
-    paddingTop: space.sm,
-    gap: space.xs,
+    flex: 1,
+    gap: space.xxs,
   },
   action: {
-    padding: space.md,
-    paddingTop: space.sm,
+    padding: space.sm,
   },
   goingRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.xs,
     minHeight: touch.min,
-    paddingHorizontal: space.sm,
+    paddingHorizontal: space.md,
     borderRadius: radius.button,
     backgroundColor: color.successSubtle,
   },

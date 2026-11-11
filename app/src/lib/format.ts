@@ -98,6 +98,46 @@ export function formatMinutes(totalSeconds: number, t: TFunction): string {
   return t('units.hoursMinutes', { hours: h, minutes: m });
 }
 
+/**
+ * For read-outs: "32 minutes", "1 hour and 5 minutes". Speech engines read "min" and "h"
+ * oddly (or letter by letter), so anything spoken uses whole words.
+ */
+export function sayMinutes(totalSeconds: number, t: TFunction): string {
+  const minutes = Math.max(0, Math.round(totalSeconds / 60));
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  if (h === 0) return t('units.spoken.minutes', { count: m });
+  const hours = t('units.spoken.hours', { count: h });
+  if (m === 0) return hours;
+  return t('units.spoken.hoursMinutes', {
+    hours,
+    minutes: t('units.spoken.minutes', { count: m }),
+  });
+}
+
+/** For read-outs: "850 metres", "2.4 kilometres", "2 kilometres" (never "km", read letter by letter). */
+export function sayDistance(metres: number, language: Language, t: TFunction): string {
+  const locale = LANGUAGE_INFO[language].intlLocale;
+  if (metres < 1000) {
+    const value = Math.round(metres / 10) * 10;
+    return t('units.spoken.metres', {
+      count: value,
+      value: new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(value),
+    });
+  }
+  const km = Math.round(metres / 100) / 10;
+  return t('units.spoken.km', {
+    count: km,
+    // "2 kilometres", not "2.0 kilometres".
+    value: new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(km),
+  });
+}
+
+/** Phone numbers for read-outs, digit by digit: "995" → "9 9 5" (not "nine hundred…"). */
+export function sayDigits(number: string): string {
+  return number.replace(/\s+/g, '').split('').join(' ');
+}
+
 /** Average pace in words: "13 min 20 s per km". */
 export function formatPace(secondsPerKm: number, t: TFunction): string {
   const safe = Math.max(0, Math.round(secondsPerKm));

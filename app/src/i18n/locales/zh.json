@@ -10,7 +10,7 @@
     "loading": "正在准备…",
     "error": "没有成功。我们再试一次。",
     "yes": "是",
-    "no": "不是",
+    "no": "否",
     "undo": "撤销",
     "done": "完成",
     "play": "播放",
@@ -26,8 +26,8 @@
   },
   "tabs": {
     "home": "首页",
-    "passItOn": "传承分享",
-    "kampung": "甘榜",
+    "passItOn": "动态",
+    "kampung": "社区",
     "thrive": "健康"
   },
   "home": {
@@ -43,11 +43,11 @@
     },
     "section": {
       "passItOn": {
-        "title": "传承分享",
+        "title": "动态",
         "description": "分享您的所长，帮助他人。"
       },
       "kampung": {
-        "title": "甘榜",
+        "title": "社区",
         "description": "参加附近的步行、课程和聚会。"
       },
       "thrive": {
@@ -55,15 +55,15 @@
         "description": "保持活跃，设置提醒，注意安全。"
       }
     },
-    "readout": "{{greeting}}。{{today}}传承分享：分享您的所长。甘榜：参加附近的活动。健康：保持活跃和安全。点一下就能打开。",
+    "readout": "{{greeting}}。{{today}}社区：参加附近的活动。动态：分享您的所长。健康：保持活跃和安全。点一下就能打开。",
     "today": "今天",
     "comingUp": "即将举行",
     "explore": "您想做什么？",
-    "readoutCheckin": "有一个问题要您回答：您昨天有活动身体吗？",
+    "readoutCheckin": "有一个问题要您回答：您昨天有没有活动一下身体？",
     "readoutEvent": "即将举行：{{title}}，{{when}}。",
     "readoutReminder": "{{time}} 的提醒：{{text}}。",
     "checkin": {
-      "question": "您昨天有活动身体吗？",
+      "question": "您昨天有没有活动一下身体？",
       "thanks": "做得好。已经连续 {{count}} 天了。",
       "company": "没关系。今天想找人一起吗？附近有一个步行活动。",
       "rest": "没关系。好好休息，我们明天再问您。"
@@ -75,7 +75,7 @@
     }
   },
   "passItOn": {
-    "title": "传承分享",
+    "title": "动态",
     "myStory": "我的故事",
     "noIntro": "还没有语音介绍。",
     "recordIntro": "录一段简短的问候",
@@ -125,9 +125,9 @@
     }
   },
   "kampung": {
-    "title": "甘榜",
+    "title": "社区",
     "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
-    "readout": "甘榜。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
+    "readout": "社区。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
     "happenings": "活动",
     "myCircles": {
       "title": "我的圈子",
@@ -152,7 +152,7 @@
     "title": "健康",
     "startWalk": "开始步行",
     "thisWeek": "本周",
-    "kmWalked": "公里",
+    "kmWalked": "公里（已走）",
     "walks_other": "走了 {{count}} 次",
     "streak_other": "连续 {{count}} 天",
     "lastWalk": "上一次步行",
@@ -262,7 +262,7 @@
     "demoTitle": "演示：点一下说了什么"
   },
   "stat": {
-    "daysActive": "{{total}} 天中有 {{done}} 天活动"
+    "daysActive": "{{total}} 天里有 {{done}} 天有活动"
   },
   "tellMe": {
     "hint": "点一下，说出您想做什么"
@@ -297,7 +297,7 @@
     "where": "在哪里？",
     "placeOther": "输入地点",
     "whatOther": "是什么活动？",
-    "whatOtherHint": "例如：麻将下午或蜡染绘画",
+    "whatOtherHint": "例如：下午打麻将，或者学画蜡染",
     "anotherDay": "其他日子",
     "anotherTime": "其他时间",
     "somewhereElse": "其他地点",
@@ -351,7 +351,7 @@
     },
     "gardening": {
       "name": "园艺",
-      "title": "一起种菜"
+      "title": "一起种花种菜"
     },
     "class": {
       "name": "课程或讲座",
@@ -363,7 +363,7 @@
     },
     "kids": {
       "name": "和孩子们一起",
-      "title": "和孩子们讲故事"
+      "title": "给孩子们讲故事"
     },
     "other": {
       "name": "其他",
@@ -380,23 +380,30 @@
     "readout": "我的圈子。您加入了 {{mine}}。附近还有 {{near}} 个。点一个圈子就能查看。"
   },
   "circlePage": {
-    "captain": "队长：{{name}}",
+    "captain": "组长：{{name}}",
     "comingUp": "即将举行",
     "members": "成员",
     "noUpcoming": "还没有安排活动。您可以发起一个。",
     "notFound": "找不到这个圈子。",
-    "readout": "{{name}}。{{members}}。队长 {{captain}}。{{next}}"
+    "readout": "{{name}}。{{members}}。组长 {{captain}}。{{next}}"
   },
   "units": {
     "minutes_other": "{{count}} 分钟",
     "hours_other": "{{count}} 小时",
     "hoursMinutes": "{{hours}} 小时 {{minutes}} 分钟",
-    "pace": "每公里 {{minutes}} 分 {{seconds}} 秒"
+    "pace": "每公里 {{minutes}} 分 {{seconds}} 秒",
+    "spoken": {
+      "minutes_other": "{{count}} 分钟",
+      "hours_other": "{{count}} 个小时",
+      "hoursMinutes": "{{hours}}{{minutes}}",
+      "km_other": "{{value}} 公里",
+      "metres_other": "{{value}} 米"
+    }
   },
   "checkin": {
     "title": "早上问候",
-    "maybeLater": "以后再说",
-    "readout": "早上问候。{{question}}请点是或不是。",
+    "maybeLater": "晚点再说",
+    "readout": "早上问候。{{question}}请点是或否。",
     "alreadyAnswered": "您今天已经回答过了。谢谢。"
   },
   "walk": {
@@ -424,7 +431,7 @@
     "title": {
       "morning": "早上步行",
       "afternoon": "下午步行",
-      "evening": "傍晚步行"
+      "evening": "晚间步行"
     },
     "titleAt": "{{title}} · {{place}}",
     "avgPace": "平均配速",
@@ -460,7 +467,7 @@
     "readoutNone": "您没有提醒。",
     "new": {
       "title": "添加提醒",
-      "what": "这是关于什么的？",
+      "what": "要提醒什么？",
       "kind": {
         "medicine": "吃药",
         "doctor": "看医生",
@@ -478,8 +485,8 @@
       "anotherTime": "其他时间",
       "earlier": "早一点",
       "later": "晚一点",
-      "hourLabel": "小时",
-      "minuteLabel": "分钟",
+      "hourLabel": "点",
+      "minuteLabel": "分",
       "repeatTitle": "多久一次？",
       "summary": "{{repeat}} {{time}}：{{text}}",
       "save": "保存提醒",
@@ -493,8 +500,8 @@
     "reminderTitle": "提醒：{{text}}",
     "reminderBody": "做好了就点完成。",
     "snooze": "{{count}} 分钟后再提醒",
-    "checkinTitle": "问候：您昨天有活动吗？",
-    "checkinBody": "请按“是”或“不是”。",
+    "checkinTitle": "早上问候：您昨天有没有活动一下身体？",
+    "checkinBody": "请按“是”或“否”。",
     "alertsChannel": "紧急提醒",
     "areYouOkTitle": "您还好吗？",
     "areYouOkBody": "今天早上我们没有收到您的回复。点一下回答。",
@@ -520,7 +527,7 @@
     "todayEvent": "接下来：{{title}}，{{when}}。",
     "todayReminder": "{{time}} 的提醒：{{text}}。",
     "todayNothing": "今天没有别的事了。祝您愉快。",
-    "nothingToJoin": "现在没有新的活动可以参加。去甘榜看看吧。",
+    "nothingToJoin": "现在没有新的活动可以参加。去社区看看吧。",
     "alreadyGoing": "您已经报名参加 {{title}}，{{when}}。",
     "joinConfirm": "参加 {{title}}，{{when}}？",
     "checkinConfirm": {
@@ -761,8 +768,8 @@
     "anywhere": "哪里方便都可以",
     "free": "免费：大家不用付钱。",
     "paidLater": "收费课程即将推出。",
-    "alsoEvent": "它也会出现在甘榜里，大家可以报名参加。",
+    "alsoEvent": "它也会出现在社区里，大家可以报名参加。",
     "published": "已分享，大家现在可以看到了。",
-    "publishedWithEvent": "已分享，现在也在甘榜里了。"
+    "publishedWithEvent": "已分享，现在也在社区里了。"
   }
 }

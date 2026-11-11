@@ -1,5 +1,5 @@
 import type { ReminderKind, ReminderRepeat } from '@/api/types';
-import type { Language } from '@/i18n/languages';
+import { LANGUAGES, type Language } from '@/i18n/languages';
 
 /**
  * Mock Buddy (S36): what did they ask for? Keyword matching in each language,
@@ -60,8 +60,8 @@ const NAV_WORDS: Record<Language, [NavTarget, string[]][]> = {
     ['circles', ['my circles', 'circles', 'groups']],
     ['checkin', ['check-in', 'check in', 'checkin', 'morning question', 'morning check']],
     ['reminders', ['reminders', 'my reminders', 'reminder list']],
-    ['passItOn', ['pass it on', 'share a skill', 'share my skill', 'teach']],
-    ['kampung', ['kampung', 'happenings', 'events', 'activities']],
+    ['passItOn', ['activity', 'pass it on', 'share a skill', 'share my skill', 'teach']],
+    ['kampung', ['community', 'kampung', 'happenings', 'events', 'activities']],
     ['thrive', ['thrive', 'my health', 'health']],
     ['language', ['language', 'languages']],
     ['settings', ['settings', 'setting']],
@@ -69,13 +69,13 @@ const NAV_WORDS: Record<Language, [NavTarget, string[]][]> = {
     ['home', ['home', 'home page', 'main page', 'start page']],
   ],
   ms: [
-    ['safeCircle', ['bulatan selamat']],
+    ['safeCircle', ['kumpulan selamat', 'bulatan selamat']],
     ['create', ['mulakan sesuatu', 'buat acara', 'acara baru']],
     ['circles', ['bulatan saya', 'bulatan', 'kumpulan']],
     ['checkin', ['soalan pagi', 'daftar masuk']],
     ['reminders', ['peringatan saya', 'senarai peringatan']],
-    ['passItOn', ['kongsi ilmu', 'kongsi kemahiran']],
-    ['kampung', ['kampung', 'aktiviti', 'acara']],
+    ['passItOn', ['aktiviti', 'kongsi ilmu', 'kongsi kemahiran']],
+    ['kampung', ['komuniti', 'kampung', 'acara']],
     ['thrive', ['sihat', 'kesihatan']],
     ['language', ['bahasa']],
     ['settings', ['tetapan']],
@@ -88,8 +88,8 @@ const NAV_WORDS: Record<Language, [NavTarget, string[]][]> = {
     ['circles', ['我的圈子', '圈子', '小组']],
     ['checkin', ['早上问候', '签到']],
     ['reminders', ['我的提醒', '提醒列表']],
-    ['passItOn', ['传承分享', '传承', '分享技能']],
-    ['kampung', ['甘榜', '活动']],
+    ['passItOn', ['动态', '传承分享', '传承', '分享技能']],
+    ['kampung', ['社区', '甘榜', '活动']],
     ['thrive', ['健康']],
     ['language', ['语言']],
     ['settings', ['设置']],
@@ -103,8 +103,8 @@ const NAV_WORDS: Record<Language, [NavTarget, string[]][]> = {
     ['circles', ['என் வட்ட', 'வட்டங்க']],
     ['checkin', ['காலை விசாரிப்ப', 'செக் இன்']],
     ['reminders', ['நினைவூட்டல்க']],
-    ['passItOn', ['பகிர்ந்து கொ', 'திறமை']],
-    ['kampung', ['கம்போங்', 'நிகழ்வுக', 'நிகழ்ச்சிக']],
+    ['passItOn', ['செயல்பாடு', 'பகிர்ந்து கொ', 'திறமை']],
+    ['kampung', ['சமூகம்', 'கம்போங்', 'நிகழ்வுக', 'நிகழ்ச்சிக']],
     ['thrive', ['நலம்', 'நலத்', 'ஆரோக்கிய']],
     ['language', ['மொழி']],
     ['settings', ['அமைப்பு']],
@@ -176,7 +176,28 @@ interface Words {
 /** Lower-case keywords. Latin-script words match whole words; others match anywhere. */
 const WORDS: Record<Language, Words> = {
   en: {
-    help: ['help', 'emergency', 'ambulance', 'i fell', 'i have fallen', 'save me'],
+    // help: the backend's distress list (backend/src/bricks_api/assistant/distress.json),
+    // kept in step by distress-sync.test.ts. SOS never waits for the server.
+    help: [
+      'help',
+      'help me',
+      'save me',
+      'i fell',
+      "i've fallen",
+      'i have fallen',
+      'fell down',
+      'fallen down',
+      'pain',
+      'hurt',
+      'chest pain',
+      'heart attack',
+      'stroke',
+      "can't breathe",
+      'cannot breathe',
+      'emergency',
+      'ambulance',
+      'call 995',
+    ],
     remind: ['remind', 'reminder'],
     yesterday: ['yesterday'],
     negation: ['not', "didn't", 'didnt', 'no', 'never'],
@@ -195,7 +216,23 @@ const WORDS: Record<Language, Words> = {
     half: ['half past'],
   },
   ms: {
-    help: ['tolong', 'bantuan', 'kecemasan', 'saya jatuh', 'ambulans'],
+    help: [
+      'tolong',
+      'tolong saya',
+      'bantu saya',
+      'bantuan',
+      'saya jatuh',
+      'terjatuh',
+      'sakit',
+      'sakit dada',
+      'sesak nafas',
+      'tak boleh bernafas',
+      'kecemasan',
+      'ambulans',
+      'serangan jantung',
+      'strok',
+      'panggil 995',
+    ],
     remind: ['ingatkan', 'peringatan'],
     yesterday: ['semalam', 'kelmarin'],
     negation: ['tidak', 'tak', 'belum', 'bukan'],
@@ -214,7 +251,24 @@ const WORDS: Record<Language, Words> = {
     half: ['setengah', 'stengah'],
   },
   zh: {
-    help: ['救命', '帮帮我', '帮忙', '紧急', '摔倒', '叫救护车'],
+    help: [
+      '救命',
+      '帮帮我',
+      '救救我',
+      '帮忙',
+      '我摔倒了',
+      '摔倒',
+      '跌倒',
+      '好痛',
+      '很痛',
+      '胸口痛',
+      '喘不过气',
+      '呼吸困难',
+      '紧急',
+      '救护车',
+      '心脏病',
+      '中风',
+    ],
     remind: ['提醒'],
     yesterday: ['昨天'],
     negation: ['没', '不'],
@@ -233,7 +287,21 @@ const WORDS: Record<Language, Words> = {
     half: ['半'],
   },
   ta: {
-    help: ['உதவி', 'காப்பாற்று', 'அவசரம்', 'விழுந்து'],
+    help: [
+      'உதவி',
+      'உதவுங்கள்',
+      'காப்பாற்று',
+      'நான் விழுந்துவிட்டேன்',
+      'விழுந்து',
+      'வலி',
+      'நெஞ்சு வலி',
+      'மூச்சு விட முடியவில்லை',
+      'மூச்சுத் திணறல்',
+      'அவசரம்',
+      'ஆம்புலன்ஸ்',
+      'மாரடைப்பு',
+      'பக்கவாதம்',
+    ],
     remind: ['நினைவூட்டு', 'ஞாபகப்படுத்து', 'நினைவு'],
     yesterday: ['நேற்று'],
     negation: ['இல்லை', 'வில்லை', 'மாட்டேன்'],
@@ -321,7 +389,8 @@ export function matchIntent(said: string, language: Language): Intent {
   if (!text) return { kind: 'unknown' };
 
   // Help always wins: it must never be mistaken for anything else.
-  if (has(text, w.help) || has(text, WORDS.en.help)) return { kind: 'help' };
+  // Every language, whatever the app's language: people switch languages under stress.
+  if (LANGUAGES.some((l) => has(text, WORDS[l].help))) return { kind: 'help' };
 
   // "Open settings", "go to my reminders": a screen named with a verb is a place to go.
   const target = navTarget(text, language);

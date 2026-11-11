@@ -31,7 +31,14 @@ import {
 } from '@/features/walk/activeWalk';
 import { config } from '@/lib/config';
 import { platform } from '@/lib/platform';
-import { formatDistance, formatMinutes, formatTime, weekdayLabels } from '@/lib/format';
+import {
+  formatDistance,
+  formatMinutes,
+  formatTime,
+  sayDistance,
+  sayMinutes,
+  weekdayLabels,
+} from '@/lib/format';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
@@ -88,7 +95,7 @@ export default function ThriveScreen() {
     const weekText =
       s && w
         ? t('thrive.readoutWeek', {
-            distance: formatDistance(s.distance_m, language),
+            distance: sayDistance(s.distance_m, language, t),
             walks: t('thrive.walks', { count: s.walks }),
             streak: t('thrive.streak', { count: w.streak }),
           })
@@ -96,8 +103,8 @@ export default function ThriveScreen() {
     const last = s?.last_walk
       ? t('thrive.readoutLast', {
           place: s.last_walk.start_place_name,
-          distance: formatDistance(s.last_walk.distance_m, language),
-          time: formatMinutes(s.last_walk.moving_s, t),
+          distance: sayDistance(s.last_walk.distance_m, language, t),
+          time: sayMinutes(s.last_walk.moving_s, t),
         })
       : '';
     const r = today.data?.next_reminder;

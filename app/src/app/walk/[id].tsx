@@ -24,6 +24,8 @@ import {
   formatMinutes,
   formatPace,
   formatTime,
+  sayDistance,
+  sayMinutes,
 } from '@/lib/format';
 import { decodePath } from '@/lib/geo';
 import { space } from '@/theme';
@@ -53,7 +55,7 @@ export default function WalkSummaryScreen() {
   );
 }
 
-function usePraise(praise: WalkPraise): string {
+function usePraise(praise: WalkPraise, spoken = false): string {
   const { t } = useTranslation();
   const { language } = useTypography();
   const { data: me } = useMe();
@@ -61,7 +63,9 @@ function usePraise(praise: WalkPraise): string {
   if (praise.kind === 'more_than_last') {
     return t('walk.praise.more_than_last', {
       name,
-      extra: formatDistance(praise.extra_m, language),
+      extra: spoken
+        ? sayDistance(praise.extra_m, language, t)
+        : formatDistance(praise.extra_m, language),
     });
   }
   return t(`walk.praise.${praise.kind}`, { name });
@@ -71,6 +75,7 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
   const { t } = useTranslation();
   const { language } = useTypography();
   const praise = usePraise(walk.praise);
+  const praiseSpoken = usePraise(walk.praise, true);
   const started = new Date(walk.started_at);
   const title = t('walk.titleAt', {
     title: t(`walk.title.${walk.time_of_day}`),
@@ -87,7 +92,15 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
 
   return (
     <Screen
-      readOut={() => t('walk.summaryReadout', { title, distance, time, steps, praise })}
+      readOut={() =>
+        t('walk.summaryReadout', {
+          title,
+          distance: sayDistance(walk.distance_m, language, t),
+          time: sayMinutes(walk.moving_s, t),
+          steps,
+          praise: praiseSpoken,
+        })
+      }
       testID="screen-walk"
       footer={footer}
     >
@@ -128,7 +141,7 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
                 label,
                 time: formatClock(seconds),
                 pace_s: s.pace_s,
-                spoken: `${label}: ${formatMinutes(seconds, t)}`,
+                spoken: `${sayDistance(s.distance_m >= 1000 ? s.km * 1000 : s.distance_m, language, t)}: ${sayMinutes(seconds, t)}`,
               };
             })}
           />

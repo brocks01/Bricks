@@ -111,4 +111,20 @@ describe('walk formats', () => {
     expect(formatMinutes(120 * 60, en)).toBe('2 h');
     expect(formatPace(800, en)).toBe('13 min 20 s per km');
   });
+
+  // Read-outs never contain "km", "m", "min" or "h": speech engines read them letter by letter.
+  it('read-outs say units in whole words', () => {
+    const { sayDigits, sayDistance, sayMinutes } =
+      jest.requireActual<typeof import('./format')>('./format');
+    expect(sayMinutes(32 * 60, en)).toBe('32 minutes');
+    expect(sayMinutes(60, en)).toBe('1 minute');
+    expect(sayMinutes(65 * 60, en)).toBe('1 hour and 5 minutes');
+    expect(sayMinutes(120 * 60, en)).toBe('2 hours');
+    expect(sayDistance(854, 'en', en)).toBe('850 metres');
+    expect(sayDistance(2412, 'en', en)).toBe('2.4 kilometres');
+    expect(sayDistance(1000, 'en', en)).toBe('1 kilometre');
+    expect(sayDistance(2412, 'ta', ta)).toBe('2.4 கிலோமீட்டர்');
+    expect(sayMinutes(32 * 60, ta)).toBe('32 நிமிடங்கள்');
+    expect(sayDigits('995')).toBe('9 9 5');
+  });
 });

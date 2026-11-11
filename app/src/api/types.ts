@@ -413,3 +413,68 @@ export interface Transcript {
 export interface SpokenAudio {
   audio_url: string;
 }
+
+/**
+ * POST /assistant/turn: one thing the member said to Buddy (voice iteration 0.2,
+ * shared contract). The backend's copy is backend/src/bricks_api/assistant/contract.py:
+ * change both together. Send exactly one of `audio` (base64) or `text`, or only
+ * `confirm` to answer a Yes / No.
+ */
+export interface AssistantTurnIn {
+  language: Language;
+  channel?: ChannelPref;
+  audio?: string;
+  audio_mime?: string;
+  text?: string;
+  /** The screen they're on and its Read It Out script, so "join that one" works. */
+  screen?: string;
+  screen_script?: string;
+  /** The form on screen and what it holds now, so Buddy keeps what they typed by hand. */
+  screen_fields?: ScreenField[];
+  platform?: 'android' | 'ios';
+  confirm?: { tool: string; args: Record<string, unknown>; answer: 'yes' | 'no' };
+  conversation_id?: string;
+}
+
+/** One field of the form on screen (voice: show, don't tell). */
+export interface ScreenField {
+  id: string;
+  label: string;
+  kind: 'text' | 'choice' | 'date' | 'time' | 'number';
+  value?: string | null;
+  /** For a choice: the option ids it can take. */
+  options?: string[];
+}
+
+/**
+ * What the app does with Buddy's answer, played in order, one visible step at a time.
+ * Show, don't tell: everything Buddy does must show on screen.
+ */
+export type UiAction =
+  /** Ask first: Yes sends `confirm` back with this tool and args. */
+  | { type: 'confirm'; tool: string; args: Record<string, unknown>; summary: string }
+  | { type: 'navigate'; screen: string; id?: string | null }
+  /** Scroll to and point at something on screen. */
+  | { type: 'highlight'; target: string }
+  /**
+   * Put a value into a field, visibly (scroll to it, type or pick it, glow). Saves nothing.
+   * value: text, option id, YYYY-MM-DD or HH:MM.
+   */
+  | { type: 'fill'; target: string; value: string }
+  | { type: 'start_walk' }
+  | { type: 'finish_walk' }
+  | { type: 'start_warmup'; exercise?: string | null }
+  | { type: 'open_sos'; reason?: string | null }
+  /** Not understood twice: 2-3 big buttons; tapping one sends `say` as the next turn. */
+  | { type: 'choices'; options: { label: string; say: string }[] };
+
+export interface AssistantTurnOut {
+  transcript: string;
+  reply_text: string;
+  /** Null: read reply_text with the phone's own voice. */
+  reply_audio_url: string | null;
+  ui_actions: UiAction[];
+  /** False while Buddy waits for an answer (a confirmation or a choice). */
+  done: boolean;
+  conversation_id?: string | null;
+}

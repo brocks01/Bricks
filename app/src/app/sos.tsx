@@ -7,7 +7,7 @@ import { useResolveSos, useSos, useTriggerSos } from '@/api';
 import type { SosAlert } from '@/api/types';
 import { BigButton, ConfirmSheet, PhoneIcon, Screen, StatusBanner, Text } from '@/components';
 import { config } from '@/lib/config';
-import { formatDistance } from '@/lib/format';
+import { formatDistance, sayDigits, sayDistance } from '@/lib/format';
 import { warningFeedback } from '@/lib/haptics';
 import { currentLocation } from '@/lib/location';
 import { platform } from '@/lib/platform';
@@ -74,12 +74,14 @@ export default function SosScreen() {
     }
   };
 
-  const helperLine = (h: SosAlert['helpers'][number]) => {
+  const helperLine = (h: SosAlert['helpers'][number], spoken = false) => {
     const name =
       h.distance_m !== null
         ? t('sos.away', {
             name: h.name.split(' ')[0],
-            distance: formatDistance(h.distance_m, language),
+            distance: spoken
+              ? sayDistance(h.distance_m, language, t)
+              : formatDistance(h.distance_m, language),
           })
         : h.name.split(' ')[0]!;
     return t(`sos.helper.${h.status}`, { name });
@@ -87,8 +89,10 @@ export default function SosScreen() {
 
   const readOut = () =>
     alert
-      ? t('sos.readoutSent', { statuses: alert.helpers.map(helperLine).join('. ') + '.' })
-      : t('sos.readout', { number, count: secondsLeft });
+      ? t('sos.readoutSent', {
+          statuses: alert.helpers.map((h) => helperLine(h, true)).join('. ') + '.',
+        })
+      : t('sos.readout', { number: sayDigits(number), count: secondsLeft });
 
   return (
     <Screen

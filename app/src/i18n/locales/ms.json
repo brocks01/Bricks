@@ -13,7 +13,7 @@
     "no": "Tidak",
     "undo": "Batal",
     "done": "Selesai",
-    "play": "Main",
+    "play": "Mainkan",
     "pause": "Jeda",
     "stop": "Berhenti",
     "next": "Seterusnya",
@@ -26,9 +26,9 @@
   },
   "tabs": {
     "home": "Utama",
-    "passItOn": "Kongsi Ilmu",
-    "kampung": "Kampung",
-    "thrive": "Sihat"
+    "passItOn": "Aktiviti",
+    "kampung": "Komuniti",
+    "thrive": "Kesihatan"
   },
   "home": {
     "greeting": {
@@ -43,19 +43,19 @@
     },
     "section": {
       "passItOn": {
-        "title": "Kongsi Ilmu",
+        "title": "Aktiviti",
         "description": "Kongsi apa yang anda tahu dan bantu orang lain."
       },
       "kampung": {
-        "title": "Kampung",
+        "title": "Komuniti",
         "description": "Sertai jalan kaki, kelas dan pertemuan berdekatan."
       },
       "thrive": {
-        "title": "Sihat",
+        "title": "Kesihatan",
         "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
       }
     },
-    "readout": "{{greeting}}. {{today}}Kongsi Ilmu: kongsi apa yang anda tahu. Kampung: sertai aktiviti berdekatan. Sihat: kekal aktif dan selamat. Ketik satu untuk membukanya.",
+    "readout": "{{greeting}}. {{today}}Komuniti: sertai acara berdekatan. Aktiviti: kongsi apa yang anda tahu. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
     "today": "Hari ini",
     "comingUp": "Akan datang",
     "explore": "Apa yang anda mahu buat?",
@@ -65,7 +65,7 @@
     "checkin": {
       "question": "Adakah anda bergerak semalam?",
       "thanks": "Syabas. Sudah {{count}} hari berturut-turut.",
-      "company": "Tidak mengapa. Mahu berteman hari ini? Ini jalan kaki berdekatan.",
+      "company": "Tidak mengapa. Mahu berteman hari ini? Ada jalan kaki berdekatan.",
       "rest": "Tidak mengapa. Berehatlah, kami akan bertanya lagi esok."
     },
     "reminder": {
@@ -75,7 +75,7 @@
     }
   },
   "passItOn": {
-    "title": "Kongsi Ilmu",
+    "title": "Aktiviti",
     "myStory": "Kisah saya",
     "noIntro": "Belum ada pengenalan suara.",
     "recordIntro": "Rakam salam ringkas",
@@ -125,13 +125,13 @@
     }
   },
   "kampung": {
-    "title": "Kampung",
+    "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
-    "readout": "Kampung. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
-    "happenings": "Aktiviti",
+    "readout": "Komuniti. {{summary}} Ketik Saya ikut untuk menyertai, atau Mulakan sesuatu untuk membuat acara anda sendiri.",
+    "happenings": "Acara",
     "myCircles": {
-      "title": "Bulatan Saya",
-      "count_other": "Anda dalam {{count}} Bulatan",
+      "title": "Kumpulan Saya",
+      "count_other": "Anda menyertai {{count}} Kumpulan",
       "none": "Cari kumpulan berdekatan"
     },
     "filter": {
@@ -149,7 +149,7 @@
     "readoutNone": "Belum ada aktiviti."
   },
   "thrive": {
-    "title": "Sihat",
+    "title": "Kesihatan",
     "startWalk": "Mula jalan kaki",
     "thisWeek": "Minggu ini",
     "kmWalked": "km berjalan",
@@ -164,7 +164,7 @@
     "unfinished": "Anda mula berjalan tadi tetapi belum selesai.",
     "saveWalk": "Simpan jalan kaki itu",
     "discardWalk": "Jangan simpan",
-    "readout": "Sihat. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
+    "readout": "Kesihatan. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
     "readoutWeek": "Minggu ini anda berjalan {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
     "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
@@ -192,19 +192,19 @@
       "closed": "Amaran ini telah tamat. {{name}} selamat, atau orang lain sudah membantu.",
       "failed": "Itu tidak berjaya. Sila cuba lagi, atau telefon {{name}}.",
       "call": "Telefon {{name}}",
-      "readout": "{{name}} perlukan bantuan. Dia meminta {{time}}. Ketik Saya dalam perjalanan, atau telefon dia."
+      "readout": "{{name}} perlukan bantuan. Dia meminta bantuan {{time}}. Ketik Saya dalam perjalanan, atau telefon dia."
     }
   },
   "sos": {
-    "title": "Mendapatkan bantuan",
+    "title": "Sedang meminta bantuan",
     "call": "Hubungi {{number}} sekarang",
     "callHint": "Ini akan menghubungi nombor kecemasan.",
-    "countdown_other": "Memberitahu Bulatan Selamat anda dalam {{count}} saat…",
-    "cancel": "Batal, saya OK",
-    "sending": "Memberitahu Bulatan Selamat anda…",
-    "sent": "Bulatan Selamat anda telah diberitahu.",
+    "countdown_other": "Memberitahu Kumpulan Selamat anda dalam {{count}} saat…",
+    "cancel": "Batal, saya okey",
+    "sending": "Memberitahu Kumpulan Selamat anda…",
+    "sent": "Kumpulan Selamat anda telah diberitahu.",
     "helper": {
-      "on_way": "{{name}} sedang datang",
+      "on_way": "{{name}} dalam perjalanan",
       "notified": "{{name}} telah diberitahu",
       "arrived": "{{name}} sudah sampai"
     },
@@ -212,9 +212,9 @@
     "safeNow": "Saya selamat sekarang",
     "safeConfirm": "Beritahu semua orang anda selamat sekarang?",
     "resolved": "Terima kasih. Kami telah memberitahu semua orang anda selamat.",
-    "failed": "Kami tidak dapat menghubungi Bulatan Selamat anda. Sila hubungi {{number}}.",
-    "readout": "Mendapatkan bantuan. Ketik Hubungi {{number}} sekarang, atau Batal jika anda OK. Memberitahu Bulatan Selamat anda dalam {{count}} saat.",
-    "readoutSent": "Mendapatkan bantuan. {{statuses}} Ketik Saya selamat sekarang apabila anda OK."
+    "failed": "Kami tidak dapat menghubungi Kumpulan Selamat anda. Sila hubungi {{number}}.",
+    "readout": "Sedang meminta bantuan. Ketik Hubungi {{number}} sekarang, atau Batal jika anda okey. Memberitahu Kumpulan Selamat anda dalam {{count}} saat.",
+    "readoutSent": "Sedang meminta bantuan. {{statuses}} Ketik Saya selamat sekarang apabila anda okey."
   },
   "notFound": {
     "title": "Kami tidak menemui halaman itu",
@@ -227,8 +227,8 @@
     "dayAndTime": "{{day}}, {{time}}"
   },
   "event": {
-    "going_other": "{{count}} akan pergi",
-    "imGoing": "Saya pergi",
+    "going_other": "{{count}} orang ikut",
+    "imGoing": "Saya ikut",
     "youreGoing": "Anda akan pergi",
     "joinWhatsApp": "Sertai kumpulan WhatsApp",
     "openHint": "Buka butiran"
@@ -238,7 +238,7 @@
     "next": "Seterusnya: {{title}}, {{when}}",
     "noNext": "Belum ada aktiviti dirancang",
     "seeEvents": "Lihat aktiviti",
-    "join": "Sertai Bulatan ini"
+    "join": "Sertai Kumpulan ini"
   },
   "voice": {
     "playFrom": "Main mesej suara daripada {{name}}",
@@ -273,13 +273,13 @@
     "hostedBy": "Dianjurkan oleh {{name}}",
     "youHost": "Anda penganjurnya",
     "about": "Tentang",
-    "cantGo": "Saya tidak dapat pergi lagi",
+    "cantGo": "Saya tidak jadi pergi",
     "cancelConfirm": "Lepaskan tempat anda di {{title}}?",
-    "cancelled": "Anda tidak lagi akan pergi.",
+    "cancelled": "Anda tidak jadi pergi.",
     "published": "Sudah diterbitkan. Orang lain kini boleh melihat dan menyertainya.",
     "notFound": "Kami tidak menemui aktiviti ini. Mungkin sudah dibatalkan.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
-    "readoutJoin": "Ketik Saya pergi untuk menyertai.",
+    "readoutJoin": "Ketik Saya ikut untuk menyertai.",
     "readoutGoing": "Anda akan pergi."
   },
   "going": {
@@ -297,7 +297,7 @@
     "where": "Di mana?",
     "placeOther": "Taip nama tempat",
     "whatOther": "Apa aktivitinya?",
-    "whatOtherHint": "Contohnya: Petang mahjong atau melukis batik",
+    "whatOtherHint": "Contohnya: Main mahjong petang atau melukis batik",
     "anotherDay": "Hari lain",
     "anotherTime": "Masa lain",
     "somewhereElse": "Tempat lain",
@@ -305,7 +305,7 @@
     "byWeek": "Satu minggu",
     "tooSoon": "Itu terlalu awal. Sila pilih masa sekurang-kurangnya 30 minit dari sekarang.",
     "link": "Tambah pautan kumpulan WhatsApp?",
-    "linkHint": "Tampal pautan jemputan kumpulan supaya orang boleh menegur. Anda boleh langkau.",
+    "linkHint": "Tampal pautan jemputan kumpulan supaya orang boleh bertegur sapa. Anda boleh langkau.",
     "linkLabel": "Pautan kumpulan WhatsApp",
     "linkInvalid": "Itu bukan pautan kumpulan WhatsApp. Ia patut bermula dengan https://chat.whatsapp.com/",
     "linkSkip": "Langkau, saya tiada pautan",
@@ -371,27 +371,34 @@
     }
   },
   "circles": {
-    "title": "Bulatan Saya",
-    "yours": "Bulatan anda",
-    "near": "Bulatan berdekatan",
-    "noneYours": "Anda belum menyertai mana-mana Bulatan. Ini beberapa yang berdekatan.",
-    "noneNear": "Anda sudah dalam semua Bulatan berdekatan.",
+    "title": "Kumpulan Saya",
+    "yours": "Kumpulan anda",
+    "near": "Kumpulan berdekatan",
+    "noneYours": "Anda belum menyertai mana-mana Kumpulan. Ini beberapa yang berdekatan.",
+    "noneNear": "Anda sudah menyertai semua Kumpulan berdekatan.",
     "joined": "Anda menyertai {{name}}.",
-    "readout": "Bulatan Saya. Anda dalam {{mine}}. {{near}} lagi berdekatan. Ketik satu Bulatan untuk melihatnya."
+    "readout": "Kumpulan Saya. Anda menyertai {{mine}}. {{near}} lagi berdekatan. Ketik satu Kumpulan untuk melihatnya."
   },
   "circlePage": {
     "captain": "Kapten: {{name}}",
     "comingUp": "Akan datang",
     "members": "Ahli",
     "noUpcoming": "Belum ada apa-apa dirancang. Anda boleh memulakan sesuatu.",
-    "notFound": "Kami tidak menemui Bulatan ini.",
+    "notFound": "Kami tidak menemui Kumpulan ini.",
     "readout": "{{name}}. {{members}}. Kapten {{captain}}. {{next}}"
   },
   "units": {
     "minutes_other": "{{count}} min",
-    "hours_other": "{{count}} j",
-    "hoursMinutes": "{{hours}} j {{minutes}} min",
-    "pace": "{{minutes}} min {{seconds}} s setiap km"
+    "hours_other": "{{count}} jam",
+    "hoursMinutes": "{{hours}} jam {{minutes}} min",
+    "pace": "{{minutes}} min {{seconds}} saat setiap km",
+    "spoken": {
+      "minutes_other": "{{count}} minit",
+      "hours_other": "{{count}} jam",
+      "hoursMinutes": "{{hours}} {{minutes}}",
+      "km_other": "{{value}} kilometer",
+      "metres_other": "{{value}} meter"
+    }
   },
   "checkin": {
     "title": "Soalan pagi",
@@ -411,14 +418,14 @@
     "autoPaused": "Anda telah berhenti. Masa akan diteruskan apabila anda berjalan semula.",
     "keepOpen": "Biarkan skrin ini terbuka semasa anda berjalan.",
     "findingYou": "Mencari lokasi anda…",
-    "locationOff": "Lokasi telefon anda dimatikan. Hidupkan dalam Tetapan untuk merekod perjalanan anda.",
-    "locationDenied": "Untuk merekod perjalanan anda, Bricks perlu menggunakan lokasi anda. Anda boleh membenarkannya dalam Tetapan.",
+    "locationOff": "Lokasi telefon anda dimatikan. Hidupkan dalam Tetapan untuk merekod jalan kaki anda.",
+    "locationDenied": "Untuk merekod jalan kaki anda, Bricks perlu menggunakan lokasi anda. Anda boleh membenarkannya dalam Tetapan.",
     "openSettings": "Buka Tetapan",
-    "serviceTitle": "Merekod perjalanan anda",
+    "serviceTitle": "Merekod jalan kaki anda",
     "serviceBody": "Ketik untuk buka",
     "finishConfirm": "Selesaikan jalan kaki anda?",
     "saving": "Menyimpan jalan kaki anda…",
-    "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Sihat.",
+    "saveFailed": "Kami belum dapat menyimpan jalan kaki anda. Ia disimpan dalam telefon anda; kami akan cuba lagi dari Kesihatan.",
     "readout": "Sedang berjalan. {{time}}, {{distance}}, {{steps}} langkah.",
     "readoutPaused": "Dijeda. {{time}}, {{distance}}, {{steps}} langkah.",
     "title": {
@@ -435,7 +442,7 @@
       "first_walk": "Syabas atas jalan kaki pertama anda, {{name}}!",
       "longest_month": "Syabas, {{name}}. Itu jalan kaki terpanjang anda bulan ini.",
       "more_than_last": "Syabas, {{name}}. Itu {{extra}} lebih jauh daripada kali lepas.",
-      "steady": "Syabas, {{name}}. Perlahan dan stabil."
+      "steady": "Syabas, {{name}}. Mantap dan stabil."
     },
     "notFound": "Kami tidak menemui jalan kaki ini.",
     "summaryReadout": "{{title}}. {{distance}} dalam {{time}}, {{steps}} langkah. {{praise}}"
@@ -492,9 +499,9 @@
     "channel": "Peringatan",
     "reminderTitle": "Peringatan: {{text}}",
     "reminderBody": "Ketik Selesai apabila sudah.",
-    "snooze": "Tunda {{count}} min",
-    "checkinTitle": "Daftar masuk: adakah anda bergerak semalam?",
-    "checkinBody": "Tekan Ya atau Tidak.",
+    "snooze": "Tunda {{count}} minit",
+    "checkinTitle": "Soalan pagi: adakah anda bergerak semalam?",
+    "checkinBody": "Ketik Ya atau Tidak.",
     "alertsChannel": "Amaran penting",
     "areYouOkTitle": "Anda okey?",
     "areYouOkBody": "Kami tidak mendengar khabar daripada anda pagi ini. Ketik untuk menjawab.",
@@ -502,7 +509,7 @@
     "sosBody": "Ketik untuk melihat lokasinya."
   },
   "readOutBar": {
-    "label": "Membaca skrin dengan kuat",
+    "label": "Sedang membacakan skrin",
     "resume": "Teruskan",
     "repeat": "Ulang",
     "slower": "Lebih perlahan"
@@ -520,7 +527,7 @@
     "todayEvent": "Akan datang: {{title}}, {{when}}.",
     "todayReminder": "Peringatan pada {{time}}: {{text}}.",
     "todayNothing": "Tiada apa-apa lagi hari ini. Selamat menikmati hari anda.",
-    "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Kampung.",
+    "nothingToJoin": "Tiada acara baharu untuk disertai sekarang. Lihat Komuniti.",
     "alreadyGoing": "Anda sudah pergi ke {{title}}, {{when}}.",
     "joinConfirm": "Sertai {{title}}, {{when}}?",
     "checkinConfirm": {
@@ -642,15 +649,15 @@
     "family": "Keluarga",
     "remove": "Buang",
     "removed": "{{name}} dibuang.",
-    "already": "{{name}} sudah ada dalam Bulatan Selamat anda.",
+    "already": "{{name}} sudah ada dalam Kumpulan Selamat anda.",
     "noName": "Tiada nama",
     "contactsDenied": "Kami tidak dapat melihat kenalan anda. Anda boleh taip nama dan nombor.",
     "full_other": "Itu {{count}} orang, paling ramai yang dibenarkan.",
-    "saved": "Bulatan Selamat disimpan."
+    "saved": "Kumpulan Selamat disimpan."
   },
   "settings": {
     "title": "Tetapan",
-    "readout": "Tetapan. Bahasa: {{language}}. Kami ingatkan anda melalui {{channel}}. Anda juga boleh ubah Baca dengan kuat, Bulatan Selamat dan Keluarga.",
+    "readout": "Tetapan. Bahasa: {{language}}. Kami ingatkan anda melalui {{channel}}. Anda juga boleh ubah Baca dengan kuat, Kumpulan Selamat dan Keluarga.",
     "language": "Bahasa",
     "languageReadout": "Bahasa. Pilih bahasa anda.",
     "languageChanged": "Bahasa ditukar kepada {{language}}.",
@@ -669,7 +676,7 @@
     "remindTitle": "Cara kami ingatkan anda",
     "channelChanged": "Kami akan ingatkan anda melalui {{channel}}.",
     "people": "Orang dan keselamatan",
-    "safeCircle": "Bulatan Selamat",
+    "safeCircle": "Kumpulan Selamat",
     "peopleCount_other": "{{count}} orang",
     "nobodyYet": "Belum ada sesiapa",
     "family": "Keluarga",
@@ -692,7 +699,7 @@
     "waiting": "Menunggu {{name}} bersetuju",
     "waitingHint": "Kami telah hantar mesej WhatsApp kepada {{name}}. Tiada apa-apa disediakan sehingga mereka bersetuju.",
     "joined": "{{name}} sudah menyertai",
-    "inSafeCircle": "Anda dalam Bulatan Selamat {{name}}.",
+    "inSafeCircle": "Anda dalam Kumpulan Selamat {{name}}.",
     "setReminder": "Tetapkan peringatan untuk {{name}}",
     "simpleMode": "Hidupkan Mod Mudah",
     "simpleModeLater": "Mod Mudah akan datang.",
@@ -719,7 +726,7 @@
       "relation": "Siapa {{name}} kepada anda?",
       "language": "Bahasa apa yang {{name}} suka?",
       "interests": "Apa yang {{name}} suka?",
-      "safeCircle": "Tambah anda ke Bulatan Selamat {{name}}?",
+      "safeCircle": "Tambah anda ke Kumpulan Selamat {{name}}?",
       "nameLabel": "Nama mereka",
       "phoneLabel": "Nombor telefon bimbit mereka",
       "phoneHint": "Kami akan hantar jemputan kepada {{name}} di sini.",
@@ -731,7 +738,7 @@
       "reviewRelation": "Hubungan dengan anda",
       "reviewLanguage": "Bahasa",
       "reviewInterests": "Suka",
-      "reviewSafeCircle": "Anda dalam Bulatan Selamat mereka",
+      "reviewSafeCircle": "Anda dalam Kumpulan Selamat mereka",
       "notChosen": "Belum dipilih",
       "change": "Ubah",
       "consent": "Kami akan hantar jemputan WhatsApp kepada {{name}}. Tiada apa-apa disediakan sehingga {{name}} bersetuju.",
@@ -761,8 +768,8 @@
     "anywhere": "Di mana-mana yang sesuai",
     "free": "Percuma: orang tidak perlu bayar.",
     "paidLater": "Sesi berbayar akan datang.",
-    "alsoEvent": "Ia juga akan muncul di Kampung, supaya orang boleh sertai.",
+    "alsoEvent": "Ia juga akan muncul di Komuniti, supaya orang boleh sertai.",
     "published": "Dikongsi. Orang kini boleh melihatnya.",
-    "publishedWithEvent": "Dikongsi. Ia juga ada di Kampung sekarang."
+    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang."
   }
 }

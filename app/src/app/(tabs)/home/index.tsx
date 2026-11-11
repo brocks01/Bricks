@@ -32,8 +32,8 @@ interface Section {
 
 /** Same order as the tab bar: skills, community, health. */
 const SECTIONS: readonly Section[] = [
-  { key: 'passItOn', href: '/pass-it-on', icon: HandHeartIcon },
   { key: 'kampung', href: '/kampung', icon: UsersThreeIcon },
+  { key: 'passItOn', href: '/pass-it-on', icon: HandHeartIcon },
   { key: 'thrive', href: '/thrive', icon: HeartbeatIcon },
 ];
 

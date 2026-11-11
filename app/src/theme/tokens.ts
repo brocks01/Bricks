@@ -3,22 +3,27 @@
  * Source of truth: docs/02_DESIGN_PRINCIPLES.md §5. Change both together.
  *
  * Seniors first: "minimal" means fewer things on screen, never small or grey text.
+ *
+ * Look: Luma-style (2026-11 redesign). Ink-black actions on white, soft grey panels
+ * instead of borders, pill buttons, a floating tab bar. Light mode only for now: every
+ * colour lives here, so a dark palette can be added later in one place.
  */
 
 export const color = {
   bg: '#FFFFFF',
-  bgSubtle: '#F7F8FA',
-  border: '#E6E8EC',
+  /** Grey panels (cards, grouped lists, secondary buttons): Luma's soft grey. */
+  bgSubtle: '#F2F2F5',
+  border: '#E3E3E8',
   /** Stronger border for controls (outline buttons, inputs) so their edges are easy to see. */
   borderStrong: '#5F6368',
   text: '#111111',
   /** Never use anything lighter than this for text. */
   textSecondary: '#3C4043',
   textOnColor: '#FFFFFF',
-  /** The single accent: buttons, links, active tab, routes, charts. */
-  primary: '#1557B0',
-  primaryPressed: '#0F428A',
-  primarySubtle: '#E8F0FB',
+  /** The single accent: ink black, as in Luma. Buttons, links, active tab, routes. */
+  primary: '#111111',
+  primaryPressed: '#3A3A3C',
+  primarySubtle: '#E9E9EE',
   /** Only for "done" / "going" / completed days. */
   success: '#1E7B34',
   successPressed: '#165C27',
@@ -65,8 +70,14 @@ export type TypeVariant = keyof typeof typeScale;
 export const lineHeightRatio = 1.4;
 
 export const radius = {
-  card: 16,
-  button: 14,
+  /** Cards, grouped lists, sheets' inner panels. */
+  card: 20,
+  /** Pills: every button, chip and the tab bar. */
+  button: 999,
+  /** Photo thumbnails and icon squares. */
+  tile: 14,
+  /** Bottom sheets float as rounded panels. */
+  sheet: 28,
   avatar: 999,
 } as const;
 
@@ -105,6 +116,17 @@ export const iconSize = {
   hero: 40,
   /** The single big tick on success screens. */
   celebrate: 96,
+} as const;
+
+/** The one shadow, for things that float over content (tab bar, sheets, Buddy). */
+export const shadow = {
+  floating: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.12,
+    shadowRadius: 20,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 10,
+  },
 } as const;
 
 /** 150–200 ms fades and slides only. No bounce, no confetti. */

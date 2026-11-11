@@ -7,3 +7,6 @@
 
 # Python caches anywhere in the repo
 __pycache__/
+
+# Luma design screenshots (not ours, 292 MB): kept locally, never committed
+/Luma ios Sep 2026/

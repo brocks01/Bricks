@@ -13,11 +13,12 @@ import {
 } from '@/components';
 import { tapFeedback } from '@/lib/haptics';
 import {
-  borderWidth,
   color,
   iconSize,
   lineHeightRatio,
   maxChromeFontScale,
+  radius,
+  shadow,
   space,
   touch,
   typeScale,
@@ -76,8 +77,8 @@ function tabLabel(label: string) {
 }
 
 /**
- * Home · Pass It On · Kampung · Thrive. Home is first and the default; the three
- * pillars follow in the same order as the cards on Home.
+ * Home · Community · Activity · Health (routes kampung, pass-it-on, thrive). Home is
+ * first and the default; the three pillars follow in the same order as the cards on Home.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
@@ -94,12 +95,18 @@ export default function TabsLayout() {
         tabBarActiveTintColor: color.primary,
         tabBarInactiveTintColor: color.textSecondary,
         tabBarActiveBackgroundColor: color.primarySubtle,
+        // Luma: a white pill floating above the content, clear of the home indicator.
         tabBarStyle: {
-          height: tabBarHeight(fontScale) + insets.bottom,
-          paddingBottom: insets.bottom,
-          borderTopWidth: borderWidth.hairline,
-          borderTopColor: color.border,
+          height: tabBarHeight(fontScale) + space.xs * 2,
+          marginHorizontal: space.sm,
+          marginBottom: insets.bottom + space.xs,
+          paddingTop: space.xs,
+          paddingBottom: space.xs,
+          paddingHorizontal: space.xs,
+          borderRadius: radius.button,
+          borderTopWidth: 0,
           backgroundColor: color.bg,
+          ...shadow.floating,
         },
         tabBarItemStyle: styles.item,
         sceneStyle: { backgroundColor: color.bg },
@@ -115,21 +122,21 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="pass-it-on"
-        options={{
-          title: t('tabs.passItOn'),
-          tabBarIcon: tabIcon(HandHeartIcon),
-          tabBarLabel: tabLabel(t('tabs.passItOn')),
-          tabBarButtonTestID: 'tab-pass-it-on',
-        }}
-      />
-      <Tabs.Screen
         name="kampung"
         options={{
           title: t('tabs.kampung'),
           tabBarIcon: tabIcon(UsersThreeIcon),
           tabBarLabel: tabLabel(t('tabs.kampung')),
           tabBarButtonTestID: 'tab-kampung',
+        }}
+      />
+      <Tabs.Screen
+        name="pass-it-on"
+        options={{
+          title: t('tabs.passItOn'),
+          tabBarIcon: tabIcon(HandHeartIcon),
+          tabBarLabel: tabLabel(t('tabs.passItOn')),
+          tabBarButtonTestID: 'tab-pass-it-on',
         }}
       />
       <Tabs.Screen
@@ -146,9 +153,13 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
+  // The selected tab sits in its own grey pill.
   item: {
     minHeight: touch.large,
     paddingVertical: space.xxs,
     gap: space.xxs,
+    marginHorizontal: space.xxs,
+    borderRadius: radius.button,
+    overflow: 'hidden',
   },
 });

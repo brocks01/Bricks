@@ -54,8 +54,8 @@ describe('senior-friendly sizing', () => {
     expect(touch.sos).toBeGreaterThan(touch.large);
   });
 
-  it('only the three agreed radii exist', () => {
-    expect(radius).toEqual({ card: 16, button: 14, avatar: 999 });
+  it('only the agreed radii exist (Luma redesign: pills, rounder cards)', () => {
+    expect(radius).toEqual({ card: 20, button: 999, tile: 14, sheet: 28, avatar: 999 });
   });
 
   it('supports 200% system font', () => {

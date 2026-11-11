@@ -47,7 +47,8 @@ const PALETTE: Record<
 > = {
   primary: { bg: 'primary', pressed: 'primaryPressed', text: 'textOnColor', border: 'primary' },
   success: { bg: 'success', pressed: 'successPressed', text: 'textOnColor', border: 'success' },
-  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'primary', border: 'primary' },
+  // Luma's secondary button: a grey pill, no outline.
+  outline: { bg: 'bgSubtle', pressed: 'primarySubtle', text: 'primary', border: 'bgSubtle' },
   sos: { bg: 'sos', pressed: 'sosPressed', text: 'textOnColor', border: 'sos' },
 };
 
@@ -87,7 +88,7 @@ export function BigButton({
         {
           minHeight: MIN_HEIGHT[size],
           backgroundColor: color[disabled ? 'bgSubtle' : pressed ? palette.pressed : palette.bg],
-          borderColor: color[disabled ? 'border' : palette.border],
+          borderColor: color[disabled ? 'bgSubtle' : pressed ? palette.pressed : palette.border],
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
       ]}
@@ -115,7 +116,7 @@ const styles = StyleSheet.create({
   base: {
     borderRadius: radius.button,
     borderWidth: borderWidth.control,
-    paddingHorizontal: space.md,
+    paddingHorizontal: space.lg,
     paddingVertical: space.xs,
     justifyContent: 'center',
   },
