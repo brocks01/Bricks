@@ -1,17 +1,19 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { BackHandler } from 'react-native';
+import { BackHandler, StyleSheet, View } from 'react-native';
 
 import { useCreateSkill, useDeleteSkill, useMe } from '@/api';
 import type { Interest } from '@/api/types';
 import {
   BigButton,
-  CalendarBlankIcon,
-  Card,
   Chip,
   ChipGroup,
-  InfoRow,
+  ClockIcon,
+  CoverArt,
+  GroupedList,
+  GroupedRow,
+  HandHeartIcon,
   MapPinIcon,
   MicrophoneIcon,
   Screen,
@@ -22,10 +24,13 @@ import {
   Tile,
   TileGrid,
 } from '@/components';
+import { CATEGORY_ICON } from '@/features/events/categories';
+import { skillCategory } from '@/features/passItOn/parts';
 import { INTEREST_ICON, INTERESTS, interestsIn } from '@/features/profile/interests';
 import { VoiceInputSheet } from '@/features/voice/VoiceInputSheet';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
 import { useUndo } from '@/state/undo';
+import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const STEPS = ['what', 'when', 'where', 'price', 'preview'] as const;
@@ -146,6 +151,7 @@ export default function ShareSkillScreen() {
 
   const question = step === 'preview' ? t('share.preview') : t(`share.${step}`);
   const when = start ? formatWhen(start, language, t) : t('passItOn.skill.anyTime');
+  const category = skillCategory({ tags: tag ? [tag] : [] });
 
   return (
     <Screen
@@ -291,13 +297,44 @@ export default function ShareSkillScreen() {
 
       {step === 'preview' ? (
         <>
+          {/* Like Start Something's check step: the cover and title, then the answers as rows. */}
+          <View style={styles.previewHead} testID="share-preview">
+            <CoverArt
+              photoUrl={null}
+              icon={CATEGORY_ICON[category]}
+              tint={category}
+              size={PREVIEW_COVER}
+              rounded="card"
+            />
+            <Text variant="title" style={styles.flex}>
+              {shownTitle}
+            </Text>
+          </View>
+          <GroupedList>
+            <GroupedRow
+              icon={ClockIcon}
+              tint="exercise"
+              title={t('create.whenRow')}
+              value={when}
+              onPress={() => setStep('when')}
+              testID="share-edit-when"
+            />
+            <GroupedRow
+              icon={MapPinIcon}
+              tint="cooking"
+              title={t('create.whereRow')}
+              value={placeName || t('share.anywhere')}
+              onPress={() => setStep('where')}
+              testID="share-edit-where"
+            />
+            <GroupedRow
+              icon={HandHeartIcon}
+              tint="walk"
+              title={t('share.priceRow')}
+              value={t('passItOn.skill.free')}
+            />
+          </GroupedList>
           <Text color="textSecondary">{t('create.previewHint')}</Text>
-          <Card testID="share-preview">
-            <Text variant="heading">{shownTitle}</Text>
-            <InfoRow icon={CalendarBlankIcon} text={when} />
-            <InfoRow icon={MapPinIcon} text={placeName || t('share.anywhere')} />
-            <Text color="textSecondary">{t('passItOn.skill.free')}</Text>
-          </Card>
           {start ? <StatusBanner text={t('share.alsoEvent')} /> : null}
           {create.isError ? <StatusBanner tone="notice" text={t('common.error')} /> : null}
         </>
@@ -315,3 +352,18 @@ export default function ShareSkillScreen() {
     </Screen>
   );
 }
+
+const PREVIEW_COVER = 96;
+
+const styles = StyleSheet.create({
+  previewHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: space.sm,
+  },
+  flex: {
+    flex: 1,
+    minWidth: 160,
+  },
+});

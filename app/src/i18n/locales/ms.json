@@ -794,7 +794,8 @@
     "paidLater": "Sesi berbayar akan datang.",
     "alsoEvent": "Ia juga akan muncul di Komuniti, supaya orang boleh sertai.",
     "published": "Dikongsi. Orang kini boleh melihatnya.",
-    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang."
+    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang.",
+    "priceRow": "Harga"
   },
   "badge": {
     "going": "Hadir",

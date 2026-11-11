@@ -103,3 +103,14 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - **Rule over screenshot:** the brief asks for a sideways-scrolling chip strip. Hidden content you
   must swipe to find breaks docs/02 rule 6 (no hidden gestures), so chips wrap, and "More kinds"
   is a labelled button instead.
+
+### UI step 5: Activity tab
+- **Skills** ("What I can share") are event-style rows with a square cover coloured by the
+  skill's first tag (chess = games, cooking = cooking…).
+- **Thank-yous:** thumbs-ups are plain rows (face, "Siti said thank you", thumbs-up); voice
+  thank-yous stay on grey cards with the black **Play** pill.
+- **What I've given:** each number on its own grey panel (`BigStatsRow`, also used by Health);
+  **badges** as a `GroupedList` with coloured icons (never a trophy wall).
+- Section headings are larger (Luma's section style).
+- **Share a skill → check step:** the cover and title, then **When / Where / Price** as
+  `GroupedRow`s (When and Where go back to that question; Price is always "Free" for now).

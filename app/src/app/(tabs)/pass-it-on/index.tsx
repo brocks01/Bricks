@@ -160,7 +160,7 @@ function PassItOnBody({ profile: p }: { profile: Profile }) {
       </Card>
 
       <ReadOutTarget id="share">
-        <Text variant="heading" style={styles.heading}>
+        <Text variant="title" style={styles.heading}>
           {t('passItOn.canShare')}
         </Text>
         <View style={styles.list}>
@@ -179,14 +179,14 @@ function PassItOnBody({ profile: p }: { profile: Profile }) {
       </ReadOutTarget>
 
       <ReadOutTarget id="given">
-        <Text variant="heading" style={styles.heading}>
+        <Text variant="title" style={styles.heading}>
           {t('passItOn.given.title')}
         </Text>
         <GivenStats given={p.given} />
         <BadgeList badges={p.badges} />
       </ReadOutTarget>
 
-      <Text variant="heading" style={styles.heading}>
+      <Text variant="title" style={styles.heading}>
         {t('passItOn.wall')}
       </Text>
       <View style={styles.list}>

@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { borderWidth, color, space } from '@/theme';
+import { borderWidth, color, radius, space } from '@/theme';
 import { useEffectiveFontScale } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
@@ -72,9 +72,13 @@ const styles = StyleSheet.create({
   stacked: {
     flexDirection: 'column',
   },
+  // Each number sits on its own grey panel (Luma / Apple Health).
   cell: {
     flex: 1,
     gap: space.xxs,
+    padding: space.sm,
+    borderRadius: radius.tile,
+    backgroundColor: color.bgSubtle,
   },
   cellStacked: {
     flexDirection: 'row',

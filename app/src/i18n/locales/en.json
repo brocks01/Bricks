@@ -811,7 +811,8 @@
     "paidLater": "Paid sessions are coming soon.",
     "alsoEvent": "It will also appear in Community, so people can join.",
     "published": "Shared. People can now see it.",
-    "publishedWithEvent": "Shared. It's also in Community now."
+    "publishedWithEvent": "Shared. It's also in Community now.",
+    "priceRow": "Price"
   },
   "badge": {
     "going": "Going",

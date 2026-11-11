@@ -794,7 +794,8 @@
     "paidLater": "收费课程即将推出。",
     "alsoEvent": "它也会出现在社区里，大家可以报名参加。",
     "published": "已分享，大家现在可以看到了。",
-    "publishedWithEvent": "已分享，现在也在社区里了。"
+    "publishedWithEvent": "已分享，现在也在社区里了。",
+    "priceRow": "价格"
   },
   "badge": {
     "going": "参加",
