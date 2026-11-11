@@ -19,6 +19,23 @@ Source: `docs/06_WHATSAPP_PLAN.md`
 | 3.3 | [Rehearse + backup recording](3.3-rehearse-backup.md) | H20–H30 | ~1 h | Backup recording of the WhatsApp flows; freeze H30 |
 | 3.4 | [Q&A slide: WhatsApp communities](3.4-qa-slide.md) | H30–H36 | ~0.5 h | Slide: existing communities come over with no migration |
 
+## Status (11 Nov 2026)
+
+Code: `backend/src/bricks_api/whatsapp/` (layout and setup in `backend/README.md` → WhatsApp).
+
+| Iteration | State |
+|---|---|
+| 0.1 Access | Meta test number + token + WABA verified against the API. Twilio credentials in. To do: sandbox join code; business verification |
+| 0.2 Webhook + router | Done: signature-checked Meta and Twilio webhooks, idempotency, sessions, `messages_log` |
+| 1.1 Templates (en) | Done: 11 templates (the progress card waits for 3.2's image) + every free-form message |
+| 1.2 Translate + submit | 43 / 44 submitted (ms / zh_CN / ta written by us; **native-speaker review still needed**). `ta` of `event_reminder`: rerun the submit script once Meta settles its category |
+| 1.3 Onboarding + invites | Done: buttons-only join in 4 languages; family invite Yes / No |
+| 2.1 Check-in + events | Done: Yes / No → walk → join → group link; invites, "tell me more", "starts in an hour" |
+| 2.2 Reminders, SOS, family, voice | Done: Done / Snooze, SOS by word / button / voice note with concurrent fan-out, location, ladder (call step is the voice lane's hook), voice notes in (Gemini). Voice-note **replies** (TTS) not yet |
+| 2.3 Tests, STOP / START | Done: `tests/test_whatsapp*.py`; STOP / START in 4 languages |
+| 3.1 Judge path | Demo mode sends the check-in right after joining. QR images still to make |
+| 3.2 Cards, menu, location | Menu, SOS location and the walk summary text done. Image cards (weekly progress, walk) not yet |
+
 ## Principles (`06` §1)
 - **Buttons first**: every question has reply buttons (max 3) or a short list. Never ask people to type commands.
 - **Voice notes both ways.**

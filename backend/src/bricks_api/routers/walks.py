@@ -4,7 +4,7 @@ import json
 from datetime import timedelta
 from typing import Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from psycopg.types.json import Jsonb
 
 from ..deps import Ctx, CtxDep, not_found
@@ -112,7 +112,7 @@ async def save_walk(ctx: Ctx, upload: WalkUpload, walked_with: list[str]) -> dic
 
 
 @router.post("/walks", status_code=201)
-async def upload_walk(body: WalkUpload, ctx: CtxDep) -> WalkSummary:
+async def upload_walk(body: WalkUpload, ctx: CtxDep, request: Request) -> WalkSummary:
     walked_with: list[str] = []
     if body.event_id:
         exists = await (
@@ -129,7 +129,12 @@ async def upload_walk(body: WalkUpload, ctx: CtxDep) -> WalkSummary:
                 )
             ).fetchall()
             walked_with = [r["user_id"] for r in rows]
-    return await _summary(ctx, await save_walk(ctx, body, walked_with))
+    summary = await _summary(ctx, await save_walk(ctx, body, walked_with))
+    # WhatsApp members hear "well done" there too (never fails the upload).
+    from ..whatsapp.flows.walks import send_walk_summary
+
+    await send_walk_summary(request.app.state.wa, ctx.conn, ctx.user_id, summary)
+    return summary
 
 
 @router.get("/walks/stats")

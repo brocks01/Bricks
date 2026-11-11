@@ -14,6 +14,7 @@ from datetime import UTC, datetime, timedelta
 import httpx
 import jwt
 import pytest
+from fastapi import FastAPI
 from psycopg import AsyncConnection, sql
 from psycopg.rows import dict_row
 
@@ -21,6 +22,9 @@ from bricks_api.config import Settings
 from bricks_api.db import loop_factory, migrate
 from bricks_api.main import create_app
 from bricks_api.seed import seed
+from bricks_api.whatsapp.models import Outbound, SendResult
+from bricks_api.whatsapp.providers import Meta, Twilio
+from bricks_api.whatsapp.speech import Intent, Speech
 
 TEST_SCHEMA = "bricks_test"
 
@@ -65,9 +69,74 @@ class FakeStorage:
         return f"https://storage.test/{path}"
 
 
+class Outbox:
+    """Everything "sent" on WhatsApp in tests: (route, to, message)."""
+
+    def __init__(self) -> None:
+        self.sent: list[tuple[str, str, Outbound]] = []
+
+    def to(self, phone: str) -> list[Outbound]:
+        return [m for _, p, m in self.sent if p == phone]
+
+
+class FakeMeta(Meta):
+    def __init__(self, base: Meta, outbox: Outbox) -> None:
+        super().__init__(base.settings, base.client)
+        self.outbox = outbox
+
+    async def send(self, to: str, msg: Outbound) -> SendResult:
+        self.outbox.sent.append(("meta", to, msg))
+        return SendResult(ok=True, provider_id=f"wamid.{len(self.outbox.sent)}")
+
+    async def download(self, media_id: str) -> tuple[bytes, str]:
+        return b"OggS fake audio", "audio/ogg"
+
+
+class FakeTwilio(Twilio):
+    def __init__(self, base: Twilio, outbox: Outbox) -> None:
+        super().__init__(base.settings, base.client)
+        self.outbox = outbox
+
+    async def send(self, to: str, msg: Outbound) -> SendResult:
+        self.outbox.sent.append(("twilio", to, msg))
+        return SendResult(ok=True, provider_id=f"SM{len(self.outbox.sent)}")
+
+
+class FakeSpeech(Speech):
+    """Voice notes say `heard`; free text means `intent`."""
+
+    heard: str | None = None
+    intent: Intent = Intent("unknown")
+
+    @property
+    def configured(self) -> bool:
+        return True
+
+    async def transcribe(self, audio: bytes, mime_type: str, lang: str) -> str | None:
+        return self.heard
+
+    async def understand(self, text: str, lang: str, now: datetime) -> Intent:
+        return self.intent
+
+
 @pytest.fixture(scope="session")
 def settings() -> Settings:
-    return Settings(db_schema=TEST_SCHEMA, demo_mode=True)
+    # Made-up WhatsApp credentials: tests never reach Meta, Twilio or Gemini.
+    return Settings(
+        db_schema=TEST_SCHEMA,
+        demo_mode=True,
+        public_base_url="https://bricks.test",
+        meta_wa_token="test-token",
+        meta_wa_phone_number_id="100200300",
+        meta_app_secret="test-app-secret",
+        meta_wa_verify_token="test-verify",
+        twilio_account_sid="ACtest",
+        twilio_auth_token="test-twilio-token",
+        twilio_validate_signature=True,
+        wa_scheduler=False,
+        demo_fast_escalation=True,
+        gemini_api_key=None,
+    )
 
 
 @pytest.fixture(scope="session")
@@ -89,6 +158,9 @@ class Api:
     clock: Clock
     storage: FakeStorage
     settings: Settings
+    outbox: Outbox
+    speech: FakeSpeech
+    app: FastAPI
 
     def token(self, name: str = "Test Member", sub: str | None = None) -> str:
         """A Supabase-style access token, signed with the project's legacy HS256 secret."""
@@ -123,10 +195,23 @@ async def api(settings: Settings, seeded: None) -> AsyncIterator[Api]:
     clock = Clock()
     app = create_app(settings, clock=clock)
     storage = FakeStorage()
+    outbox = Outbox()
     async with app.router.lifespan_context(app):
         app.state.storage = storage
+        app.state.wa.meta = FakeMeta(app.state.wa.meta, outbox)
+        app.state.wa.twilio = FakeTwilio(app.state.wa.twilio, outbox)
+        speech = FakeSpeech(settings, app.state.wa.meta.client)
+        app.state.speech = speech
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(
             transport=transport, base_url="http://test", timeout=60
         ) as client:
-            yield Api(client=client, clock=clock, storage=storage, settings=settings)
+            yield Api(
+                client=client,
+                clock=clock,
+                storage=storage,
+                settings=settings,
+                outbox=outbox,
+                speech=speech,
+                app=app,
+            )
