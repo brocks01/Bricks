@@ -44,3 +44,6 @@ Short, dated records. Newest last.
 - **No separate Elderly Welfare section.** Seniors teach, mentor, tell stories, lead and decide inside the normal community screens (intergenerational value creation).
 - Success is **Community Vitality**, not registrations or engagement.
 - Master documentation folder rebuilt flat for sharing (`../../master-docs/`, rebuilt with `scripts/build_master_docs.py`).
+
+## 2026-11-12 (later): Connect dashboard scope locked
+- Connect = entry point only: find, My communities, one Join-or-create entry, a compact Coming up (next 2 to 3 events across joined communities). Nothing from inside a community appears on it. Add nothing until the owner reopens the scope. Next: design Grow separately, then the community pages one by one. Details in `../06-technical/ui-build-spec.md`.

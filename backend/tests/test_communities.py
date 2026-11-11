@@ -95,6 +95,17 @@ def test_outsiders_cannot_say_they_are_going():
     assert client.post(f"/v1/communities/activities/{aid}/going", json={"going": True}, headers=outsider["h"]).status_code == 403
 
 
+def test_upcoming_lists_the_next_events_across_my_communities():
+    owner, other = person(), person()
+    a, b = make(owner, name="Alpha Court"), make(owner, name="Beta Court")
+    with engine().begin() as conn:
+        for cid, title, hrs in ((a, "Second", 30), (b, "First", 5), (a, "Third", 60), (a, "Fourth", 90), (a, "Past", -48)):
+            conn.execute(text("insert into activities (community_id, title, starts_at) values (:c, :t, now() + make_interval(hours => :h))"), {"c": cid, "t": title, "h": hrs})
+    got = client.get("/v1/communities/upcoming?limit=3", headers=owner["h"]).json()["activities"]
+    assert [x["title"] for x in got] == ["First", "Second", "Third"] and got[0]["community_name"] == "Beta Court"
+    assert client.get("/v1/communities/upcoming", headers=other["h"]).json() == {"activities": []}  # nothing from communities I am not in
+
+
 # ---- media (fake Cloudinary) ----
 @pytest.fixture
 def cloud(monkeypatch):

@@ -45,7 +45,7 @@ def _my_role(conn: Connection, user_id: str, community_id: str) -> tuple[str, bo
 def my_communities(conn: Connection, user_id: str) -> list[dict]:
     rows = conn.execute(
         text(
-            "select c.id, c.name, c.kind, c.area_name, c.description, c.logo_url, c.cover_url, c.is_demo, "
+            "select c.id, c.name, c.kind, c.icon, c.area_name, c.description, c.logo_url, c.cover_url, c.is_demo, "
             "(select count(*) from memberships m2 where m2.community_id = c.id and m2.status = 'active') as member_count "
             "from communities c join memberships m on m.community_id = c.id "
             "where m.user_id = :u and m.status = 'active' and c.status = 'active' order by m.joined_at"
@@ -55,7 +55,7 @@ def my_communities(conn: Connection, user_id: str) -> list[dict]:
     out = []
     for r in rows:
         role, _ = _my_role(conn, user_id, str(r.id))
-        out.append({"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "logo_url": r.logo_url,
+        out.append({"id": str(r.id), "name": r.name, "kind": r.kind, "icon": r.icon, "area_name": r.area_name, "description": r.description, "logo_url": r.logo_url,
                     "cover_url": r.cover_url, "member_count": r.member_count, "my_role": role, "is_demo": r.is_demo})
     return out
 
@@ -148,3 +148,15 @@ def rsvp(conn: Connection, user_id: str, activity_id: str, going: bool) -> dict:
         {"a": activity_id, "u": user_id, "s": "going" if going else "cancelled"})
     n = conn.execute(text("select count(*) from activity_participants where activity_id = :a and status = 'going'"), {"a": activity_id}).scalar_one()
     return {"going": going, "going_count": n}
+
+
+def upcoming(conn: Connection, user_id: str, limit: int = 3) -> list[dict]:
+    """The next few activities across ALL the communities the person belongs to (for the Connect screen's "Coming up")."""
+    rows = conn.execute(
+        text("select x.id, x.title, x.starts_at, x.location, x.image_url, c.id as community_id, c.name as community_name, c.icon as community_icon, "
+             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going "
+             "from activities x join communities c on c.id = x.community_id join memberships m on m.community_id = c.id "
+             "where m.user_id = :u and m.status = 'active' and c.status = 'active' and x.status = 'scheduled' and x.starts_at >= now() - interval '3 hours' "
+             "order by x.starts_at limit :n"), {"u": user_id, "n": max(1, min(limit, 10))}).all()
+    return [{"id": str(r.id), "title": r.title, "starts_at": r.starts_at.isoformat(), "location": r.location, "image_url": r.image_url,
+             "community_id": str(r.community_id), "community_name": r.community_name, "community_icon": r.community_icon, "i_going": r.i_going} for r in rows]

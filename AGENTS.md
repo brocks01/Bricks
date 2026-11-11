@@ -18,6 +18,7 @@ agents, so the next one must be able to continue from the files alone. Never cla
 - **ngrok belongs to the owner**: never start, stop or reconfigure it. **Do not kill running services** (API, dev server, tunnel) unless the owner
   tells you to in that moment; start your own on another port if you need one.
 - **Discuss before building** anything the owner did not ask for. No extra features, no extra docs, no invented content or sample data in the app.
+- **Real names and realistic data only** in anything the owner sees (demo people, accounts, labels, greetings): never "test", "UI Check", "Neighbour 7" or similar. Use his real account for his own testing.
 - **No hard-coded sample data** in the app: every tab that is not built shows "Coming soon".
 - Work on a branch (see `CONTRIBUTING.md`), never on `main`. Open a pull request.
 - Say plainly what was tested and what was not. Short, solution-first answers.

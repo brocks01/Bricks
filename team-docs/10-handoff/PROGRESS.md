@@ -115,3 +115,9 @@ Next: owner shares master-docs to generate UI samples; then extend the demo comm
 Did: master-docs now holds only 00_ALL_IN_ONE.md (the small copies and picture copies are gone); the build script was simplified. Pictures stay in team-docs/05-design/ui-samples/.
 Tested: script ran; one file in master-docs.
 
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): Connect dashboard built to the owner's sample; demo data uses real names
+Did: Connect dashboard now matches the locked scope and the owner's sample (heading and intro; Find your community with a filter button; My communities with a symbol tile, name and members; one green Join-or-create entry (disabled, "Coming soon"); Coming up with a working Join/Going button using `POST /v1/communities/activities/{id}/going`). Backend: `GET /v1/communities/upcoming`, community `icon` (migration 0004). Demo seed now has the four communities of the sample (Lakeview Residency 128, Heritage Alumni 340, Green Kolkata 86, Weekend Readers 42 members) with REAL-sounding people (no more "Neighbour N"); the owner's real accounts are members; the throw-away `ui-check@example.com` / "UI Check" account was deleted. New rule in AGENTS.md: real names and realistic data only.
+Tested: 62 backend tests, app type-check and self-test pass. Not checked in the browser with the owner's own account (he signs in with Google); the sample picture itself was not available as a file, so no `09` sample was stored.
+Not done: cover pictures (needs the Cloudinary keys), View all, favourites and sorting, Discover, working Join and Create, the community page.
+Next: community page, then Join and Create.

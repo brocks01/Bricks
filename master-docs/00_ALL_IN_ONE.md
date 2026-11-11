@@ -126,6 +126,7 @@ agents, so the next one must be able to continue from the files alone. Never cla
 - **ngrok belongs to the owner**: never start, stop or reconfigure it. **Do not kill running services** (API, dev server, tunnel) unless the owner
   tells you to in that moment; start your own on another port if you need one.
 - **Discuss before building** anything the owner did not ask for. No extra features, no extra docs, no invented content or sample data in the app.
+- **Real names and realistic data only** in anything the owner sees (demo people, accounts, labels, greetings): never "test", "UI Check", "Neighbour 7" or similar. Use his real account for his own testing.
 - **No hard-coded sample data** in the app: every tab that is not built shows "Coming soon".
 - Work on a branch (see `CONTRIBUTING.md`), never on `main`. Open a pull request.
 - Say plainly what was tested and what was not. Short, solution-first answers.
@@ -846,11 +847,10 @@ Guard rules (`AuthGate`): signed out on a private page goes to Welcome; signed i
 **Connect tab (landing, "Home" content)** `connect.index` `/`
 - Greeting from the account: "Good morning, <first name>" (time-of-day word in the person's language; the waving emoji is decoration).
 - Community selector: "<community name> · <n> members" with a dropdown to switch communities (shown only if the person belongs to one; otherwise an invitation card: join or create).
-- A community card "<community name> / Our Community" that opens the **Connect = communities only (owner's decision, 11 Nov 2026).** There are NO tiles and NO clubs or groups (those already run on WhatsApp; the college club was only inspiration). The Connect tab shows:
-- a person with no community: a card with **Join a community** (invite code, link, QR, nearby) and **Create a community**;
-- a person with communities: **Your communities** (a card each: name, area, members, my role) and the same Join and Create buttons below. If there is only one, open it directly.
-- **Inside a community** (`connect.community`, built next): announcements, events and activities (competitions, workshops and training are kinds of activity), members, roles and leadership, contributions and recognition, opportunities (jobs, services, referrals). Sponsors and funds come later.
-Built today: the landing with the list (reads `GET /v1/communities/mine`); Join and Create are disabled "Coming soon". Backend ready: create, join by code, community detail, "I'm going" to an activity.
+- A community card "<community name> / Our Community" that opens the **CONNECT DASHBOARD: SCOPE LOCKED by the owner (12 Nov 2026). Add nothing else until the owner reopens it.** It is an **entry point to the person's communities, not a management dashboard.** Members, events, resources, governance, roles, contributions, sponsorships, settings and clubs/programmes appear ONLY after opening a community (no cards for them on Connect).
+Structure, top to bottom: 1. Bricks header (logo, bell, avatar). 2. Heading **Connect** with the line "Your communities, all in one place." 3. **Find your community** (search among the person's communities). 4. **My communities**: "N communities", a card each (name, members). 5. **Join or create a community**: ONE clear entry point. 6. **Coming up** (optional, compact): the next two or three events across all joined communities: event name, community name, date and time, small image, with a "View all" link; creating, registering and managing events stay inside the community. 7. Connect / Grow tabs. 8. The Bricks Agent bar.
+Behaviour: no communities gives a welcoming empty state with Discover and Create; one community gives one prominent card; several give searchable, scrollable cards; many add sorting, favourites and filters without crowding.
+Built today (`connect.index`): everything above except community images, favourites and sorting, the "View all" link, Discover, and the working Join and Create (the button is disabled "Coming soon"). Backend: `GET /v1/communities/mine` and `GET /v1/communities/upcoming`. **Inside a community** (`connect.community`, next): announcements, events and activities, members, roles and leadership, contributions and recognition, opportunities; sponsors and funds later. **Next design step: Grow, separately; then each community page, one by one.**
 
 **Grow tab** `grow.index` `/grow` (title "Grow", subtitle "Your Goals, Health & Learning")
 - A goal card: "My Goal: <title> / <period> / <done> of <target> <unit> (<percent>%)" with a progress bar (from the person's active goal; empty state "Set your first goal" when none).
@@ -982,6 +982,9 @@ Short, dated records. Newest last.
 - Success is **Community Vitality**, not registrations or engagement.
 - Master documentation folder rebuilt flat for sharing (`../../master-docs/`, rebuilt with `scripts/build_master_docs.py`).
 
+## 2026-11-12 (later): Connect dashboard scope locked
+- Connect = entry point only: find, My communities, one Join-or-create entry, a compact Coming up (next 2 to 3 events across joined communities). Nothing from inside a community appears on it. Add nothing until the owner reopens the scope. Next: design Grow separately, then the community pages one by one. Details in `../06-technical/ui-build-spec.md`.
+
 
 ---
 
@@ -1054,7 +1057,7 @@ backend/               Python 3.11+ FastAPI. Start: python backend/run.py (port 
   migrations/          SQL files applied in order (0001 identity, 0002 token state, 0003 communities)
   tests/               pytest (61 tests, real local database, fakes for phone/model/mail)
 team-docs/             our docs (vision, product, design samples, technical, decisions). 10-handoff = this folder
-platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: every document in one flat folder plus 00_ALL_IN_ONE.md, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
+platform-docs/         public docs (about, FAQ ...). master-docs/ is GENERATED: ONE file, 00_ALL_IN_ONE.md, holding every document, for sharing (rebuild with python scripts/build_master_docs.py after editing docs; never edit it by hand)
 ```
 
 ## 4. How to run it (local)
@@ -1287,6 +1290,17 @@ Did: wrote the six pillars, the "no separate Elderly Welfare section" decision a
 Tested: the script ran; master-docs has 0 sub-folders and 52 files; no code change.
 Not done: demo data does not yet show the pillars; the app has no Community Vitality view.
 Next: owner shares master-docs to generate UI samples; then extend the demo community and build the community page.
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): master-docs is one file
+Did: master-docs now holds only 00_ALL_IN_ONE.md (the small copies and picture copies are gone); the build script was simplified. Pictures stay in team-docs/05-design/ui-samples/.
+Tested: script ran; one file in master-docs.
+
+
+## 2026-11-12 (Claude Code, Sonnet 5.5): Connect dashboard built to the owner's sample; demo data uses real names
+Did: Connect dashboard now matches the locked scope and the owner's sample (heading and intro; Find your community with a filter button; My communities with a symbol tile, name and members; one green Join-or-create entry (disabled, "Coming soon"); Coming up with a working Join/Going button using `POST /v1/communities/activities/{id}/going`). Backend: `GET /v1/communities/upcoming`, community `icon` (migration 0004). Demo seed now has the four communities of the sample (Lakeview Residency 128, Heritage Alumni 340, Green Kolkata 86, Weekend Readers 42 members) with REAL-sounding people (no more "Neighbour N"); the owner's real accounts are members; the throw-away `ui-check@example.com` / "UI Check" account was deleted. New rule in AGENTS.md: real names and realistic data only.
+Tested: 62 backend tests, app type-check and self-test pass. Not checked in the browser with the owner's own account (he signs in with Google); the sample picture itself was not available as a file, so no `09` sample was stored.
+Not done: cover pictures (needs the Cloudinary keys), View all, favourites and sorting, Discover, working Join and Create, the community page.
+Next: community page, then Join and Create.
 
 
 ---

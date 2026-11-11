@@ -97,7 +97,78 @@ def seed(extra_emails: list[str]) -> str:
                     conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
                                  {"c": cid, "d": d, "u": u.id})
             print(f"added {email} as a member" + (" and Secretary" if n == 0 else ""))
+        lead = conn.execute(text("select created_by from communities where slug = :s"), {"s": SLUG}).one().created_by
+        seed_others(conn, lead)
+        real = [e.strip().lower() for e in extra_emails]
+        reserve = len(real)
+        for slug, target in ((SLUG, 128), *((o[1], o[4]) for o in OTHERS)):
+            c = conn.execute(text("select id from communities where slug = :s"), {"s": slug}).one().id
+            for e in real:  # real accounts belong to all four demo communities
+                u = conn.execute(text("select id from users where email = :e"), {"e": e}).first()
+                if u:
+                    conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active'"), {"c": c, "u": u.id})
+            fill(conn, c, target, 0)  # real accounts are already members, so they count toward the target
+        print("demo communities ready: Lakeview Residency 128, Heritage Alumni 340, Green Kolkata 86, Weekend Readers 42 members (real accounts included)")
     return CODE
+
+
+# The other three communities of the Connect sample (ui-samples/09). Each: name, slug, kind, icon, members, description, one activity (title, category, days ahead, place).
+OTHERS = [
+    ("Heritage Alumni", "heritage-alumni-demo", "club", "school", 340, "Old classmates keeping in touch, mentoring the young and organising reunions.",
+     ("Alumni Mentoring Evening", "Workshop", 5, "College Auditorium"), "HERI-DEMO"),
+    ("Green Kolkata", "green-kolkata-demo", "neighbourhood", "leaf", 86, "Neighbours growing trees, composting and cleaning up the city together.",
+     ("Tree Planting Drive", "Environment Drive", 4, "Maidan Gate 3"), "GREE-DEMO"),
+    ("Weekend Readers", "weekend-readers-demo", "other", "book", 42, "A reading circle that meets every weekend to share books and stories.",
+     ("Storytelling Circle", "Cultural Event", 3, "Public Library Hall"), "READ-DEMO"),
+]
+
+
+FIRST = ["Aarav", "Ananya", "Arjun", "Aisha", "Amit", "Anjali", "Ben", "Chen", "Daniel", "Deepa", "Divya", "Farhan", "Fatima", "Gita", "Hui Min", "Imran", "Ishaan", "Jia Wei",
+         "Kavita", "Kiran", "Lakshmi", "Mei Ling", "Meera", "Mohan", "Nadia", "Nikhil", "Noor", "Omar", "Pooja", "Priya", "Rahul", "Rajesh", "Ravi", "Rohan", "Sanjay", "Sara", "Shreya",
+         "Sneha", "Sunita", "Suresh", "Tan", "Uma", "Vikram", "Wei", "Yusuf", "Zara", "Abdul", "Bala", "Carmen", "David"]
+LAST = ["Nair", "Rao", "Sheikh", "Tan", "Menon", "Kulkarni", "Khan", "Wei", "Iyer", "Fernandes", "Das", "Hassan", "Sharma", "Banerjee", "Chatterjee", "Lim", "Ng", "Ismail", "Rahman",
+        "Pillai", "Reddy", "Singh", "Gupta", "Mukherjee", "Ong", "Lee", "Abdullah", "Kapoor", "Joshi", "Bose", "Ghosh", "Wong", "Krishnan", "D'Souza", "Verma", "Mehta", "Chowdhury", "Goh"]
+AREAS = ["Block A", "Block B", "Block C", "Block D"]
+
+
+def real_people(n: int) -> list[tuple[str, str, str]]:
+    """n people with real-sounding, distinct names (first and last names from the communities Bricks serves), their email-like handle and an area."""
+    out = []
+    for i in range(n):
+        f, l = FIRST[i % len(FIRST)], LAST[(i * 7 + i // len(FIRST)) % len(LAST)]
+        handle = f"{f}.{l}".lower().replace(" ", "").replace("'", "") + f".{i + 1}@{DOMAIN}"
+        out.append((f"{f} {l}", handle, AREAS[i % len(AREAS)]))
+    return out
+
+
+def fill(conn, cid, target: int, reserve: int) -> None:
+    """Brings the member count of a community up to `target` with demo people who have real names (shared across communities), leaving `reserve` seats for real accounts."""
+    have = conn.execute(text("select count(*) from memberships where community_id = :c and status = 'active'"), {"c": cid}).scalar_one()
+    need = max(0, target - reserve - have)
+    if need:
+        for name, email, area in real_people(400):
+            conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, '40to59') on conflict (email) do nothing"), {"e": email, "n": name, "a": area})
+        conn.execute(text("insert into memberships (community_id, user_id) select :c, u.id from users u where u.email like :d "
+                          "and u.email not like 'meera.%' and not exists (select 1 from memberships m where m.community_id = :c and m.user_id = u.id) order by u.email limit :n"),
+                     {"c": cid, "n": need, "d": f"%@{DOMAIN}"})
+
+
+def seed_others(conn, lead_id) -> None:
+    now = datetime.now(timezone.utc)
+    for name, slug, kind, icon, members, desc, act, code in OTHERS:
+        if conn.execute(text("select 1 from communities where slug = :s"), {"s": slug}).first():
+            continue
+        cid = conn.execute(text("insert into communities (name, slug, kind, icon, description, privacy, invite_code, is_demo, created_by) "
+                                "values (:n, :s, :k, :i, :d, 'invite', :c, true, :u) returning id"), {"n": name, "s": slug, "k": kind, "i": icon, "d": desc, "c": code, "u": lead_id}).one().id
+        d = conn.execute(text("insert into role_definitions (community_id, key, name, can_manage) values (:c, 'lead', 'Community Lead', true) returning id"), {"c": cid}).one().id
+        conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": lead_id})
+        conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
+                     {"c": cid, "d": d, "u": lead_id})
+        title, cat, days, place = act
+        conn.execute(text("insert into activities (community_id, organiser_id, title, category, starts_at, ends_at, location) values (:c, :o, :t, :cat, :s, :e, :l)"),
+                     {"c": cid, "o": lead_id, "t": title, "cat": cat, "s": now + timedelta(days=days, hours=2), "e": now + timedelta(days=days, hours=4), "l": place})
+        conn.execute(text("insert into announcements (community_id, author_id, title, body, pinned) values (:c, :a, :t, :b, true)"),
+                     {"c": cid, "a": lead_id, "t": f"Welcome to {name}", "b": desc})
 
 
 def main(argv: list[str]) -> None:

@@ -38,6 +38,11 @@ def mine(user_id: str = Depends(current_user_id), conn: Connection = Depends(get
     return {"communities": service.my_communities(conn, user_id)}
 
 
+@router.get("/upcoming")
+def upcoming(limit: int = 3, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return {"activities": service.upcoming(conn, user_id, limit)}
+
+
 @router.post("")
 def create(body: CreateIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return service.create(conn, user_id, body.model_dump())
