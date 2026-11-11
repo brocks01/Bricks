@@ -8,11 +8,14 @@ export const connectIndex = definePage({
   tab: 1,
   icon: 'people',
   requiresAuth: true,
-  summary: 'Your community and everything happening in it. Coming soon.',
-  keywords: ['community', 'activities', 'events', 'people', 'home'],
+  summary: 'Connect: your community and everything happening in it. Shows a greeting and, until you belong to a community, a card to join or create one.',
+  keywords: ['community', 'activities', 'events', 'people', 'home', 'join', 'create'],
   elements: {
-    heading: { kind: 'text' },
-    soon: { kind: 'text', summary: 'A note that this part is coming soon.' },
+    heading: { kind: 'text', summary: "A greeting with the person's first name." },
+    noCommunity: { kind: 'text', summary: 'Says the person is not in a community yet.' },
+    join: { kind: 'action', summary: 'Join a community with an invite code. Coming soon.' },
+    create: { kind: 'action', summary: 'Create a community. Coming soon.' },
+    explore: { kind: 'action', summary: 'Opens the Connect hub: the kinds of things a community can do.' },
   },
   strings,
 });
