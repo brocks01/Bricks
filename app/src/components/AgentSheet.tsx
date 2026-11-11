@@ -109,10 +109,16 @@ export function SurfaceMessage({ surface }: { surface: Surface }) {
   const toggle = (id: string) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]));
   const chosen = surface.tiles.filter((x) => picked.includes(x.id)).map((x) => x.label);
   const showNext = surface.next || surface.tiles.length > 0;
+  // The agent is told the answer through the call. If the call has ended meanwhile (it cuts itself after a quiet spell) the answer would go nowhere,
+  // so it is sent as a message instead, which brings the agent back.
+  const answer = (a: string, how: 'option' | 'typed') => {
+    answerSurface(a, how);
+    if (agentUi.get().phase === 'idle') void sendText(a);
+  };
   const submit = () => {
-    if (chosen.length) answerSurface(chosen.join(', '), 'option');
-    else if (typed.trim()) answerSurface(typed.trim(), 'typed');
-    else answerSurface('next', 'option');
+    if (chosen.length) answer(chosen.join(', '), 'option');
+    else if (typed.trim()) answer(typed.trim(), 'typed');
+    else answer('next', 'option');
   };
   return (
     <View style={{ alignSelf: 'stretch', gap: space.md, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.md }}>
@@ -135,13 +141,13 @@ export function SurfaceMessage({ surface }: { surface: Surface }) {
       ) : null}
 
       {surface.options.map((o) => (
-        <Button key={o} kind="plain" label={o} onPress={() => answerSurface(o, 'option')} />
+        <Button key={o} kind="plain" label={o} onPress={() => answer(o, 'option')} />
       ))}
 
       {surface.allowText ? (
         <View style={{ flexDirection: 'row', gap: 8, alignItems: 'center' }}>
-          <TextInput value={typed} onChangeText={setTyped} onSubmitEditing={() => typed.trim() && answerSurface(typed.trim(), 'typed')} placeholder={t('common.agent.type')} placeholderTextColor={colors.muted} accessibilityLabel={t('common.agent.type')} style={{ flex: 1, fontSize: 16, color: colors.ink, backgroundColor: colors.bg, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 9, borderWidth: 1, borderColor: colors.line }} />
-          <Pressable onPress={() => typed.trim() && answerSurface(typed.trim(), 'typed')} accessibilityRole="button" accessibilityLabel="Send" style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: G, alignItems: 'center', justifyContent: 'center' }}>
+          <TextInput value={typed} onChangeText={setTyped} onSubmitEditing={() => typed.trim() && answer(typed.trim(), 'typed')} placeholder={t('common.agent.type')} placeholderTextColor={colors.muted} accessibilityLabel={t('common.agent.type')} style={{ flex: 1, fontSize: 16, color: colors.ink, backgroundColor: colors.bg, borderRadius: radius.pill, paddingHorizontal: 16, paddingVertical: 9, borderWidth: 1, borderColor: colors.line }} />
+          <Pressable onPress={() => typed.trim() && answer(typed.trim(), 'typed')} accessibilityRole="button" accessibilityLabel="Send" style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: G, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="arrow-forward" size={20} color="#FFFFFF" />
           </Pressable>
         </View>
