@@ -114,3 +114,14 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - Section headings are larger (Luma's section style).
 - **Share a skill → check step:** the cover and title, then **When / Where / Price** as
   `GroupedRow`s (When and Where go back to that question; Price is always "Free" for now).
+
+### UI step 6: Health tab and walks
+- **Health** keeps its layout; the week bar chart is black (the accent), stats sit on grey panels.
+- **Reminders** (`thrive/reminders`): one grouped grey panel, a coloured icon square per kind
+  (medicine, doctor, event, other), with Done / Remove buttons in each row.
+- **Walk summary** (`walk/[id]`): map card, three stats on grey panels (three side by side use the
+  28 pt title size so "3,000" never breaks or is cut off), and the **praise as a solid green
+  panel** (new `StatusBanner` tone `celebrate`, white on green, 4.5:1+).
+- **Recording** keeps a grey **Pause** and a black **Finish**.
+- **Rule over screenshot:** the brief asks for a red Finish pill. Red stays only for Help and
+  emergencies, so Finish is black.

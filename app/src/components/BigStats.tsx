@@ -28,7 +28,8 @@ export function BigStatsRow({ stats, testID }: { stats: BigStat[]; testID?: stri
           accessible
           accessibilityLabel={`${s.label}: ${s.value}`}
         >
-          <Text variant="stat" style={styles.value}>
+          {/* Three side by side use the title size, so "3,000" fits its panel without breaking. */}
+          <Text variant={stacked || stats.length < 3 ? 'stat' : 'title'} style={styles.value}>
             {s.value}
           </Text>
           <Text color="textSecondary">{s.label}</Text>
@@ -76,7 +77,8 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     gap: space.xxs,
-    padding: space.sm,
+    paddingHorizontal: space.xs,
+    paddingVertical: space.sm,
     borderRadius: radius.tile,
     backgroundColor: color.bgSubtle,
   },

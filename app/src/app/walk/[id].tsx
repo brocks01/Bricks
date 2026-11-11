@@ -111,7 +111,7 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
         {formatPace(walk.avg_pace_s_per_km, t)}
       </Text>
 
-      <StatusBanner tone="success" text={praise} testID="walk-praise" />
+      <StatusBanner tone="celebrate" text={praise} testID="walk-praise" />
 
       {walk.splits.length > 1 ? (
         <View style={styles.section}>
