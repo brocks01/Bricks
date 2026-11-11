@@ -1,0 +1,14 @@
+.env
+*.local
+.secrets/
+node_modules/
+__pycache__/
+.expo/
+dist/
+
+.pytest_cache/
+*.pyc
+.vercel/
+.DS_Store
+Thumbs.db
+*.log
