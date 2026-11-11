@@ -14,3 +14,12 @@ Short, dated records. Newest last.
 - Database is ready (11 Nov): database `bricks` with an app role `bricks_app` (random password in `backend/.env`, never shared) on the local PostgreSQL 16, with PostGIS 3.6, pgcrypto and pg_trgm. pgkit is not needed; we use the installed Postgres directly.
 - Do not use the MongoDB or other Jambagrad databases. Never open files holding credentials; the user puts secrets in `.env` himself.
 
+## 2026-11-11 (later): product architecture locked
+- **Two domains: Connect (what people do together) and Grow (what one person develops).** Thrive is removed. Tagline: **Connect. Grow. Participate.** Full page: `../02-product/product-architecture.md`.
+- Jobs, referrals, local work, sponsors, earnings, training and community services belong to Connect. Personal fitness, learning goals and skill progress belong to Grow. The same activity can show in both.
+- No third domain for now. A **flexible activity system** (title, category, organiser, time, place, participants, registration, attendance, goals, contributions, optional sponsorship) lets each community build its own clubs, leagues, classes and programmes without a new module each time.
+- A person can use Bricks without joining a community; four starting paths: Join, Create, Start personally, Explore. Profile and settings open from the avatar. The Bricks Agent bar is global.
+- This replaces the earlier proposals (Connect / Grow / Thrive, and four tabs Community / Activities / My Life / Profile).
+- **Still open (owner to decide):** is Home its own tab, or the landing view of Connect? The app currently has five placeholder tabs from the older samples and must be changed to match.
+- The agent can show **smart UI** (questions, visual explanations, generated pages in the person's language) in a surface over the app. Decision to build the tool is recorded in `../10-handoff/PROGRESS.md`.
+

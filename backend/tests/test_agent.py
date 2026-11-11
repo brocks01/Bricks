@@ -159,3 +159,12 @@ def test_web_tools_run_on_the_server_and_are_not_relayed(monkeypatch):
 def test_declarations_include_the_web_tools():
     names = [d["name"] for d in agent_router.web.declarations(agent_router.SERVER_TOOLS)]
     assert names == ["web_search", "read_page"]
+
+
+def test_show_tool_declares_cleanly_for_gemini():
+    show = {"name": "show", "description": "Show", "inputSchema": {"type": "object", "properties": {
+        "title": {"type": "string"}, "steps": {"type": "array", "items": {"type": "string"}},
+        "options": {"type": "array", "items": {"type": "string"}, "description": "choices"}, "allow_text": {"type": "boolean"}}, "required": [], "additionalProperties": False}}
+    d = declarations([show])[0]["parameters"]["properties"]
+    assert d["steps"] == {"type": "ARRAY", "items": {"type": "STRING"}} and d["allow_text"]["type"] == "BOOLEAN" and d["options"]["description"] == "choices"
+    assert "show the person something" in system_prompt(language="en", name=None, page=None).lower()

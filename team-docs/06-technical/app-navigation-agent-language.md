@@ -1,3 +1,5 @@
+> **Read first (11 Nov 2026):** the code is the truth for how navigation, the agent and languages work. This page still lists the removed sample modules (events, goals, mock data) and the old five tabs. The final product architecture (two domains, Connect and Grow) is in `../02-product/product-architecture.md` (FINAL ARCHITECTURE), and the current technical state is in `../10-handoff/HANDOFF.md`.
+
 # App tree: modules, pages, elements; agent tools; language (built 12 Nov 2026)
 
 Code: `bricks/app/src`. Inspired by the idea of one registry that decides where every screen lives and what every module can do; no code was copied.

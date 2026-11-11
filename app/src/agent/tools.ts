@@ -5,6 +5,7 @@ import { findSkill, getModule, search } from '../navigation/registry';
 import { childrenOf, describe, parsePath } from '../navigation/tree';
 import { note } from '../navigation/log';
 import type { AgentPolicy, Decision, SkillResult } from '../navigation/types';
+import { hideSurface, showSurface } from './surface';
 import { agentSettings, controlsOfPage, fillElement, getControl, pressElement, waitForPage } from './pageControls';
 
 /**
@@ -37,6 +38,23 @@ export const toolSpecs: ToolSpec[] = [
   { name: 'read', description: 'Read the page that is open now: its elements with current values.', inputSchema: obj({}) },
   { name: 'fill', description: 'Fill a field by its element key, for example "events.new.title". Opens its page first if needed. The person sees it glow.', inputSchema: obj({ path: { type: 'string' }, value: {} }, ['path', 'value']) },
   { name: 'press', description: 'Press a button by its element key, for example "events.new.create". Opens its page first if needed.', inputSchema: obj({ path: { type: 'string' } }, ['path']) },
+  {
+    name: 'show',
+    description:
+      'Show something to the person in a panel over the app: a question with choices, a short explanation in steps, or a small visual page. Write ALL text in the language the person speaks. Use it to ask one clear question, to explain how something works, or to show a summary. Give title, message and steps in plain words (always include them: some devices cannot show html). html is optional extra: simple HTML and CSS only (headings, lists, tables, cards, inline SVG), no scripts, no links, no external images, under 20000 characters. With options or allow_text it WAITS for the person and returns their answer; otherwise it returns at once and stays open until the person closes it or you call hide.',
+    inputSchema: obj(
+      {
+        title: { type: 'string' },
+        message: { type: 'string' },
+        steps: { type: 'array', items: { type: 'string' } },
+        html: { type: 'string' },
+        options: { type: 'array', items: { type: 'string' }, description: 'Up to 6 short choices; the person taps one.' },
+        allow_text: { type: 'boolean', description: 'Let the person type an answer.' },
+      },
+      []
+    ),
+  },
+  { name: 'hide', description: 'Close the panel you opened with show.', inputSchema: obj({}) },
   { name: 'run', description: 'Run a module skill by "module/skill", for example "events/create". Some skills need the person to approve.', inputSchema: obj({ skill: { type: 'string' }, input: { type: 'object' } }, ['skill']) },
 ];
 
@@ -119,6 +137,13 @@ export function createAgentTools(host: AgentHost) {
         const result = name === 'fill' ? await fillElement(path, args.value) : await pressElement(path);
         return { ...result, path };
       }
+
+      case 'show':
+        return showSurface(args);
+
+      case 'hide':
+        hideSurface();
+        return { hidden: true };
 
       case 'run': {
         const [moduleId, skillName] = String(args.skill ?? '').split('/');

@@ -7,6 +7,8 @@ import { languagesMissing, t } from '../i18n/tables';
 import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
+import { answerSurface, LIMITS, surfaceStore } from '../agent/surface';
+import { toolSpecs } from '../agent/tools';
 import { sessionStore } from '../session/store';
 import { allModules, allPages, defineModule, pageForPath, search, tabPages } from './registry';
 import { resolvePage } from './resolve';
@@ -47,7 +49,7 @@ for (const p of allPages()) {
   if (p.module === 'dev') continue; // developer page is English only on purpose
   for (const id of Object.keys(p.strings.en ?? {})) for (const l of languagesMissing(`${p.key}.${id}`)) gaps.push(`${p.key}.${id}:${l}`);
 }
-const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy'];
+const commonIds = ['members', 'onlyYou', 'agentFilling', 'agentPressing', 'agentOpening', 'comingSoon', 'comingSoonBody', 'ageBand.under40', 'ageBand.40to59', 'ageBand.60plus', 'notSet', 'saved', 'loading', 'error.invalidEmail', 'error.required', 'error.rateLimited', 'error.network', 'error.codeInvalid', 'error.tooManyAttempts', 'error.generic', 'error.emailFailed', 'error.emailBusy', 'agent.close', 'agent.type'];
 for (const id of commonIds) for (const l of languagesMissing(`common.${id}`)) gaps.push(`common.${id}:${l}`);
 check('every word exists in all six languages', gaps.length === 0, gaps.slice(0, 8).join(', '));
 

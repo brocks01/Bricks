@@ -19,6 +19,13 @@ Built for the **Singapore-India Hackathon 2026** (raiSE Social Innovation track;
   are AI drafts that need native-speaker review); member-written content is shown as written (a Translate button comes later, translate on read, cached);
   risk-based authorization; the platform never holds money.
 
+## 2b. Product architecture (FINAL, 11 Nov 2026)
+Two domains: **Connect** (what people do together: communities, activities, governance, sponsors, earnings, jobs and referrals) and **Grow** (personal goals, health, learning).
+**Thrive was removed**; tagline "Connect. Grow. Participate."; a flexible activity system instead of one module per activity type; profile and settings open from the avatar;
+the Bricks Agent bar is global. Full page: `team-docs/02-product/product-architecture.md`; samples `team-docs/05-design/ui-samples/` (03 to 05 pre-date the Thrive removal).
+**The app still has the older five placeholder tabs (Home, Community, Events, Goals, Me): changing them to Connect and Grow, and building the new onboarding
+(language, interests, four-path start), are the next UI tasks. Open question for the owner: is Home its own tab or the landing view of Connect?**
+
 ## 3. Repository map
 ```
 AGENTS.md              rules for any agent (read first)
@@ -88,6 +95,12 @@ Everything below was tested unless marked.
   Tap to talk; the microphone starts at once and audio is held until the connection is ready. Browser voice tested once (works); typing tested; **iPhone
   Safari and Expo Go are untested**. Tools (open, fill, press, run, tree, search, docs, read) run **in the app** (so the person sees the glow and gives
   approvals); `web_search` and `read_page` run on the **server** (key stays there; 20 lookups per talk). Newest talk replaces an older one for the same person.
+- **Agent surface (smart UI):** the agent can show a panel over the top of the app (the tab bar and agent bar stay below it) with a title, message, numbered steps, an optional
+  generated HTML page, and either choices or a typed answer. Tools `show` (a question WAITS for the person's tap or typing and returns it; anything else returns at once) and `hide`.
+  Files: `app/src/agent/surface.ts` (store, limits: title 120, message 1500, 8 steps, 6 options, html 20000 characters), `app/src/components/AgentSurface.tsx`, `HtmlFrame.web.tsx`.
+  The HTML runs in an iframe with `sandbox=""` (no scripts, no forms, no navigation, no access to the app) and a Content-Security-Policy that blocks every network request;
+  on phones (no web view in Expo Go) only the title, message, steps and options show. The agent writes everything in the person's language (system prompt in
+  `backend/app/modules/agent/declarations.py`). Tested in the browser: a visual page with a card, steps and two choices; tapping a choice returned the answer to the agent.
 - **Phone agent:** `backend/app/modules/voice` places a real Twilio call to an allow-listed number; Gemini Live speaks; tools web search, read page, end call,
   extend call; transcript kept in memory. One real call tested (35 s, Hindi/English). Twilio is a **trial** account (callee must be verified and press a key).
 - **Web hosting:** the backend serves `app/dist`; the owner's ngrok tunnel (his static domain `shale-overgrown-buggy.ngrok-free.dev`) points at port 8093

@@ -3,6 +3,7 @@ import type { PageStrings } from '../navigation/types';
 // Words shared by several pages. All six languages are first drafts written by an AI assistant and need review by native speakers.
 export const common: PageStrings = {
   en: {
+    'agent.close': 'Close',
     'error.emailFailed': 'We could not send the email. Please try again in a minute.', 'error.emailBusy': 'Too many sign-ins today. Please try again tomorrow.',
     'agent.tap': 'Tap to talk', 'agent.connecting': 'Connecting…', 'agent.listening': 'Listening…', 'agent.speaking': 'Speaking…', 'agent.working': 'Working on it…', 'agent.type': 'Type a message…', 'agent.end': 'End', 'agent.talk': 'Talk', 'agent.nomic': 'Voice needs a browser for now. You can type to the agent.', 'agent.micdenied': 'The microphone is blocked. Allow it in your browser, or type.', 'agent.busy': 'The agent is already talking with you on another screen.', 'agent.signin': 'Please sign in again to talk to the agent.', 'agent.failed': 'The agent could not connect. Please try again.',
     members: '{n} members', onlyYou: 'Only you can see this.',
@@ -16,6 +17,7 @@ export const common: PageStrings = {
     'error.generic': 'Something went wrong. Please try again.',
   },
   hi: {
+    'agent.close': 'बंद करें',
     'error.emailFailed': 'ईमेल नहीं भेज सके। कृपया एक मिनट बाद फिर कोशिश करें।', 'error.emailBusy': 'आज बहुत साइन-इन हो गए। कृपया कल फिर कोशिश करें।',
     'agent.tap': 'बात करने के लिए दबाएँ', 'agent.connecting': 'जुड़ रहा है…', 'agent.listening': 'सुन रहा है…', 'agent.speaking': 'बोल रहा है…', 'agent.working': 'काम कर रहा है…', 'agent.type': 'संदेश लिखें…', 'agent.end': 'खत्म', 'agent.talk': 'बोलें', 'agent.nomic': 'अभी आवाज़ के लिए ब्राउज़र चाहिए। आप एजेंट को लिख सकते हैं।', 'agent.micdenied': 'माइक्रोफ़ोन बंद है। ब्राउज़र में अनुमति दें, या लिखें।', 'agent.busy': 'एजेंट पहले से दूसरी स्क्रीन पर आपसे बात कर रहा है।', 'agent.signin': 'एजेंट से बात करने के लिए फिर से साइन इन करें।', 'agent.failed': 'एजेंट से जुड़ नहीं सके। कृपया दोबारा कोशिश करें।',
     members: '{n} सदस्य', onlyYou: 'इसे केवल आप देख सकते हैं।',
@@ -29,6 +31,7 @@ export const common: PageStrings = {
     'error.generic': 'कुछ गड़बड़ हो गई। कृपया दोबारा कोशिश करें।',
   },
   bn: {
+    'agent.close': 'বন্ধ করুন',
     'error.emailFailed': 'ইমেইল পাঠানো যায়নি। এক মিনিট পরে আবার চেষ্টা করুন।', 'error.emailBusy': 'আজ অনেক সাইন-ইন হয়েছে। কাল আবার চেষ্টা করুন।',
     'agent.tap': 'কথা বলতে চাপুন', 'agent.connecting': 'যুক্ত হচ্ছে…', 'agent.listening': 'শুনছে…', 'agent.speaking': 'বলছে…', 'agent.working': 'কাজ করছে…', 'agent.type': 'বার্তা লিখুন…', 'agent.end': 'শেষ', 'agent.talk': 'বলুন', 'agent.nomic': 'এখন কণ্ঠের জন্য ব্রাউজার লাগবে। আপনি এজেন্টকে লিখতে পারেন।', 'agent.micdenied': 'মাইক্রোফোন বন্ধ। ব্রাউজারে অনুমতি দিন, অথবা লিখুন।', 'agent.busy': 'এজেন্ট ইতিমধ্যে অন্য স্ক্রিনে আপনার সঙ্গে কথা বলছে।', 'agent.signin': 'এজেন্টের সঙ্গে কথা বলতে আবার সাইন ইন করুন।', 'agent.failed': 'এজেন্টের সঙ্গে যুক্ত হওয়া যায়নি। আবার চেষ্টা করুন।',
     members: '{n} জন সদস্য', onlyYou: 'শুধু আপনিই এটি দেখতে পারেন।',
@@ -42,6 +45,7 @@ export const common: PageStrings = {
     'error.generic': 'কিছু একটা ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।',
   },
   ta: {
+    'agent.close': 'மூடு',
     'error.emailFailed': 'மின்னஞ்சலை அனுப்ப முடியவில்லை. ஒரு நிமிடம் கழித்து மீண்டும் முயலவும்.', 'error.emailBusy': 'இன்று அதிக உள்நுழைவுகள். நாளை மீண்டும் முயலவும்.',
     'agent.tap': 'பேச அழுத்தவும்', 'agent.connecting': 'இணைகிறது…', 'agent.listening': 'கேட்கிறது…', 'agent.speaking': 'பேசுகிறது…', 'agent.working': 'செய்கிறது…', 'agent.type': 'செய்தியை எழுதுங்கள்…', 'agent.end': 'முடி', 'agent.talk': 'பேசு', 'agent.nomic': 'இப்போது குரலுக்கு உலாவி தேவை. நீங்கள் எழுதலாம்.', 'agent.micdenied': 'ஒலிவாங்கி தடுக்கப்பட்டுள்ளது. உலாவியில் அனுமதியுங்கள், அல்லது எழுதுங்கள்.', 'agent.busy': 'முகவர் ஏற்கனவே வேறு திரையில் உங்களுடன் பேசுகிறது.', 'agent.signin': 'முகவருடன் பேச மீண்டும் உள்நுழையுங்கள்.', 'agent.failed': 'முகவருடன் இணைக்க முடியவில்லை. மீண்டும் முயலவும்.',
     members: '{n} உறுப்பினர்கள்', onlyYou: 'இதை நீங்கள் மட்டுமே பார்க்கலாம்.',
@@ -55,6 +59,7 @@ export const common: PageStrings = {
     'error.generic': 'ஏதோ தவறு நடந்தது. மீண்டும் முயலவும்.',
   },
   zh: {
+    'agent.close': '关闭',
     'error.emailFailed': '无法发送邮件，请一分钟后重试。', 'error.emailBusy': '今天登录次数过多，请明天再试。',
     'agent.tap': '点按说话', 'agent.connecting': '连接中…', 'agent.listening': '正在聆听…', 'agent.speaking': '正在说话…', 'agent.working': '处理中…', 'agent.type': '输入消息…', 'agent.end': '结束', 'agent.talk': '说话', 'agent.nomic': '语音目前需要使用浏览器。你可以直接打字。', 'agent.micdenied': '麦克风被禁用。请在浏览器中允许，或打字。', 'agent.busy': '助手正在另一个屏幕上和你交谈。', 'agent.signin': '请重新登录后再和助手交谈。', 'agent.failed': '无法连接助手，请重试。',
     members: '{n} 名成员', onlyYou: '只有你能看到这些。',
@@ -68,6 +73,7 @@ export const common: PageStrings = {
     'error.generic': '出了点问题，请重试。',
   },
   ms: {
+    'agent.close': 'Tutup',
     'error.emailFailed': 'E-mel tidak dapat dihantar. Sila cuba lagi dalam seminit.', 'error.emailBusy': 'Terlalu banyak log masuk hari ini. Sila cuba lagi esok.',
     'agent.tap': 'Tekan untuk bercakap', 'agent.connecting': 'Menyambung…', 'agent.listening': 'Mendengar…', 'agent.speaking': 'Bercakap…', 'agent.working': 'Sedang diusahakan…', 'agent.type': 'Taip mesej…', 'agent.end': 'Tamat', 'agent.talk': 'Cakap', 'agent.nomic': 'Suara memerlukan pelayar buat masa ini. Anda boleh menaip.', 'agent.micdenied': 'Mikrofon disekat. Benarkan dalam pelayar, atau taip.', 'agent.busy': 'Ejen sudah bercakap dengan anda di skrin lain.', 'agent.signin': 'Sila log masuk semula untuk bercakap dengan ejen.', 'agent.failed': 'Ejen tidak dapat disambungkan. Sila cuba lagi.',
     members: '{n} ahli', onlyYou: 'Hanya anda boleh melihat ini.',
