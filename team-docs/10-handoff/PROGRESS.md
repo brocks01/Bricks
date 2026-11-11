@@ -127,3 +127,8 @@ Done: fixed the blank-app crash (Connect page declared a Filter button with no E
 Tested: app type-check and self-test pass; backend 62 tests pass. NOT tested: Community Home was never seen on screen (the browser pane stayed black after the dev server rebuild, cause unknown); Events, Activities, People, Initiatives, Event detail, Update detail, Invite screens (samples 2-10) are not built.
 Note: the ngrok URL is unchanged (shale-overgrown-buggy.ngrok-free.dev -> localhost:8093); after a power cut restart the backend (PORT=8093 python backend/run.py).
 Next: translation backend (spec given to another agent), then the other community screens.
+
+## 2026-11-13 (later) - Claude Code (Sonnet 5.5)
+Done: demo seed rewritten for the Singapore hackathon (backend/app/seed_demo.py): four Singapore communities led by seniors - Bedok Heritage Kakis (heritage, storytelling), Toa Payoh Silver Mentors (mentoring, paid part-time work, CV help), Tampines Kampung Spirit (child care by grandparents, tai chi), Jurong Green Gardeners (sustainability). Singapore names (Chinese, Malay, Indian, Eurasian), HDB blocks, paid opportunities in S$. Old Lakeview/Kolkata data removed (--reset now removes every is_demo community). Join codes BEDK-DEMO, TOAP-DEMO, TAMP-DEMO, JURO-DEMO. Local database reseeded; the six real accounts are members of all four.
+Tested: reseed ran and counts checked (214/168/96/58 members, 3 activities each); backend 62 tests pass. NOT tested: the app screens against the new data (the app was not viewed).
+Next: community screens 2-10, translation backend.

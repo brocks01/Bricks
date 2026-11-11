@@ -1,11 +1,13 @@
-"""Seeds ONE full demo community so the whole Connect UI can be tried before real data exists.
+"""Seeds four Singapore demo communities, run by seniors, so the whole Connect UI can be tried before real data exists.
 
-  python backend/run.py seed-demo                      # create it (if it is not there)
-  python backend/run.py seed-demo you@example.com ...  # also add these existing accounts as members (the first one becomes Secretary, who can manage)
-  python backend/run.py seed-demo --reset              # delete the demo community and the demo people again
+  python backend/run.py seed-demo                      # create them (if they are not there)
+  python backend/run.py seed-demo you@example.com ...  # also add these existing accounts as members (the first one becomes Secretary of each)
+  python backend/run.py seed-demo --reset              # delete the demo communities and the demo people again
 
-Everything here is marked `is_demo` (the community) or uses the address domain @demo.bricks.test (the people), so it can always be removed with
---reset. The demo people cannot sign in (their addresses do not exist). Join code of the demo community: LAKE-DEMO."""
+The demo communities cover the social purpose of Bricks: seniors as leaders and contributors (heritage, storytelling), earning and employability
+(paid part-time work, mentoring), child care by the community, sustainability and culture. Everything is marked `is_demo` (the community) or uses the
+address domain @demo.bricks.test (the people), so it can always be removed with --reset. The demo people cannot sign in. Join codes: BEDK-DEMO,
+TOAP-DEMO, TAMP-DEMO, JURO-DEMO."""
 import sys
 from datetime import date, datetime, timedelta, timezone
 
@@ -13,169 +15,214 @@ from sqlalchemy import text
 
 from .core.db import engine
 
-SLUG = "lakeview-residency-demo"
-CODE = "LAKE-DEMO"
 DOMAIN = "demo.bricks.test"
-PEOPLE = [  # name, area
-    ("Meera Nair", "Block A"), ("Arjun Rao", "Block B"), ("Fatima Sheikh", "Block A"), ("Daniel Tan", "Block C"), ("Priya Menon", "Block D"),
-    ("Ravi Kulkarni", "Block B"), ("Aisha Khan", "Block C"), ("Chen Wei", "Block A"), ("Lakshmi Iyer", "Block D"), ("Tom Fernandes", "Block B"),
-    ("Sunita Das", "Block C"), ("Omar Hassan", "Block A"),
+LEAD, SECRETARY, TREASURER, EVENTS = "lead", "secretary", "treasurer", "events"
+ROLE_NAMES = {LEAD: ("Community Lead", True), SECRETARY: ("Secretary", True), TREASURER: ("Treasurer", False), EVENTS: ("Events Coordinator", True)}
+
+# Each community: name, slug, kind, icon, member target, area, description, join code, core people, announcements, activities, contributions, opportunities.
+# People are (name, area, age_band, role or None). The first four hold the roles; the lead is always a senior.
+COMMUNITIES = [
+    {
+        "name": "Bedok Heritage Kakis", "slug": "bedok-heritage-kakis-demo", "kind": "neighbourhood", "icon": "book", "target": 214, "code": "BEDK-DEMO",
+        "area": "Bedok North, Singapore",
+        "desc": "Stories from Bedok's kampung days, told by the people who lived them, and passed on to the young.",
+        "people": [("Lim Kok Leong", "Blk 78 Bedok North", "60plus", LEAD), ("Rahmah binte Ismail", "Blk 82 Bedok North", "60plus", SECRETARY),
+                   ("Gerard D'Cruz", "Blk 75 Bedok North", "60plus", TREASURER), ("Wong Siew Lan", "Blk 80 Bedok North", "60plus", EVENTS),
+                   ("Subramaniam Pillai", "Blk 78 Bedok North", "60plus", None), ("Ng Mei Hwa", "Blk 84 Bedok North", "60plus", None),
+                   ("Yusof bin Hamid", "Blk 75 Bedok North", "60plus", None), ("Chua Bee Choo", "Blk 82 Bedok North", "60plus", None),
+                   ("Priya Nambiar", "Blk 90 Bedok North", "under40", None), ("Jonathan Teo", "Blk 88 Bedok North", "under40", None)],
+        "announcements": [("Welcome to Bedok Heritage Kakis", "Our stories, our recipes and our old photographs, kept safe for the next generation. Everyone is welcome, young and old.", True, 0, 30),
+                          ("Old photographs of Bedok wanted", "Do you have photographs of the old Bedok market, the kampung or the sea before reclamation? Bring them on Saturday and we will scan them for the archive.", False, 1, 6),
+                          ("Kopi and stories every Thursday", "Join us at the community club at 9.30 am. One elder tells a story, then everyone shares a cup of kopi.", False, 3, 2)],
+        "activities": [("Kopitiam Storytelling Morning", "An elder tells a story from the kampung days, then the floor is open.", "Cultural Event", 1, 2, "Bedok North Community Club", 40),
+                       ("Old Photographs Scanning Day", "Bring your family photographs. Volunteers scan them for the Bedok heritage archive.", "Workshop", 6, 4, "Blk 78 Void Deck", None),
+                       ("Hari Raya Kuih with Rahmah", "Learn to make traditional kuih with Rahmah and take some home.", "Cultural Event", 12, 3, "Bedok North Community Club", 25)],
+        "contributions": [(0, "time", "Recorded five kampung stories for the oral-history archive", 3.0), (1, "skill", "Taught twelve residents to make kuih", 4.0),
+                          (2, "goods", "Donated forty old photographs of Bedok to the archive", None), (3, "time", "Welcomed newcomers at the Thursday storytelling morning", 2.0)],
+        "opportunities": [(0, "job", "Heritage walk guide for school groups", "Paid S$20 per walk, about twice a month. Training given.", "Message Lim Kok Leong (Blk 78)"),
+                          (1, "service", "Kuih orders for Hari Raya", "Order from Rahmah's kuih group. Income goes to the members who bake.", "Message Rahmah (Blk 82)")],
+    },
+    {
+        "name": "Toa Payoh Silver Mentors", "slug": "toa-payoh-silver-mentors-demo", "kind": "club", "icon": "school", "target": 168, "code": "TOAP-DEMO",
+        "area": "Toa Payoh, Singapore",
+        "desc": "Retired professionals and skilled seniors mentoring children and job seekers, and earning a little for their time.",
+        "people": [("Chandran Nair", "Blk 126 Toa Payoh Lorong 1", "60plus", LEAD), ("Teo Hwee Lian", "Blk 130 Toa Payoh Lorong 2", "60plus", SECRETARY),
+                   ("Mohamed Faizal bin Rahim", "Blk 124 Toa Payoh Lorong 1", "60plus", TREASURER), ("Sharon Ong", "Blk 140 Toa Payoh Lorong 5", "40to59", EVENTS),
+                   ("Tan Boon Hock", "Blk 126 Toa Payoh Lorong 1", "60plus", None), ("Kamala Devi", "Blk 132 Toa Payoh Lorong 2", "60plus", None),
+                   ("Loh Yoke Mei", "Blk 128 Toa Payoh Lorong 1", "60plus", None), ("Ahmad Zulkifli", "Blk 142 Toa Payoh Lorong 5", "40to59", None),
+                   ("Rachel Sim", "Blk 138 Toa Payoh Lorong 4", "under40", None)],
+        "announcements": [("Welcome to Toa Payoh Silver Mentors", "Thirty years of work experience is worth sharing. Mentor a child, review a CV or teach a skill, and be paid fairly when the work is paid.", True, 0, 28),
+                          ("Homework Buddies are looking for more mentors", "Primary school pupils need a patient adult for one hour after school. Training and a short briefing are provided.", False, 1, 5),
+                          ("Free CV clinic for mid-career job seekers", "Our mentors from HR, engineering and banking will review your CV and practise interviews with you.", False, 3, 2)],
+        "activities": [("Homework Buddies for Primary Pupils", "One hour of reading and maths help with a senior mentor, after school.", "Education", 2, 1, "Toa Payoh Community Library", 20),
+                       ("CV Clinic for Mid-career Job Seekers", "One-to-one CV reviews and interview practice with retired professionals.", "Workshop", 7, 3, "Toa Payoh Community Club", 30),
+                       ("Digital Skills with Silver Mentors", "Learn to use your phone for banking, video calls and healthcare appointments.", "Workshop", 13, 2, "Blk 126 Void Deck", 25)],
+        "contributions": [(0, "skill", "Mentored three pupils in maths for a full term", 12.0), (1, "time", "Ran the registration desk at the CV clinic", 3.0),
+                          (2, "skill", "Reviewed the community's yearly accounts", 5.0), (4, "skill", "Reviewed eleven CVs for mid-career job seekers", 6.0)],
+        "opportunities": [(0, "job", "Part-time tuition mentor, primary school", "Paid S$18 per hour, two afternoons a week. Seniors with teaching or work experience are welcome.", "Message Chandran Nair (Blk 126)"),
+                          (3, "service", "Free CV review for job seekers", "One-to-one, 45 minutes, with a retired HR professional.", "Message Sharon Ong (Blk 140)")],
+    },
+    {
+        "name": "Tampines Kampung Spirit", "slug": "tampines-kampung-spirit-demo", "kind": "neighbourhood", "icon": "people", "target": 96, "code": "TAMP-DEMO",
+        "area": "Tampines, Singapore",
+        "desc": "Neighbours looking after each other's children and elders, the way the kampung used to.",
+        "people": [("Hajah Zainab binte Salleh", "Blk 455 Tampines Street 42", "60plus", LEAD), ("Goh Lay Hoon", "Blk 457 Tampines Street 42", "60plus", SECRETARY),
+                   ("Krishnan Muthu", "Blk 453 Tampines Street 41", "60plus", TREASURER), ("Aisyah Rahman", "Blk 460 Tampines Street 44", "under40", EVENTS),
+                   ("Lee Choon Kiat", "Blk 455 Tampines Street 42", "60plus", None), ("Margaret Pereira", "Blk 458 Tampines Street 42", "60plus", None),
+                   ("Salmah binte Yaakob", "Blk 453 Tampines Street 41", "60plus", None), ("Daniel Chan", "Blk 462 Tampines Street 44", "40to59", None)],
+        "announcements": [("Welcome to Tampines Kampung Spirit", "Parents who work late, grandparents who love company: we mind each other's families. Everyone is welcome.", True, 0, 25),
+                          ("Grandparents' storytime for children is back", "Every Wednesday after school, a grandparent reads or tells a story in their own language. Parents can drop in.", False, 1, 4),
+                          ("Tai chi at the void deck, Saturday mornings", "Gentle exercise for all ages, led by Mr Lee. No experience needed.", False, 3, 1)],
+        "activities": [("Tai Chi at the Void Deck", "Gentle morning exercise for all ages, led by a senior member.", "Fitness", 1, 1, "Blk 455 Void Deck", None),
+                       ("Grandparents' Storytime for Children", "A grandparent tells a story in their own language, then the children draw it.", "Cultural Event", 3, 1, "Tampines Community Library", 20),
+                       ("Kampung Potluck Lunch", "Everyone brings a dish from home. Meet the neighbours who live on your floor.", "Social", 10, 3, "Blk 453 Void Deck", 60)],
+        "contributions": [(0, "time", "Minded six children while their parents attended a workshop", 4.0), (1, "skill", "Taught a sewing class for beginners", 3.0),
+                          (4, "time", "Led the Saturday tai chi group for a month", 4.0), (5, "goods", "Donated children's storybooks to the library corner", None)],
+        "opportunities": [(0, "service", "After-school care helpers", "Seniors are welcome. Small allowance, two afternoons a week, training given.", "Message Hajah Zainab (Blk 455)"),
+                          (5, "referral", "Trusted home-based caregiver", "Experienced and kind. Ask for Margaret's recommendation.", "Message Margaret (Blk 458)")],
+    },
+    {
+        "name": "Jurong Green Gardeners", "slug": "jurong-green-gardeners-demo", "kind": "neighbourhood", "icon": "leaf", "target": 58, "code": "JURO-DEMO",
+        "area": "Jurong West, Singapore",
+        "desc": "Seniors and neighbours growing vegetables, composting and keeping the estate green together.",
+        "people": [("Leong Chee Keong", "Blk 646 Jurong West Street 61", "60plus", LEAD), ("Fatimah binte Osman", "Blk 648 Jurong West Street 61", "60plus", SECRETARY),
+                   ("Ravi Shankar", "Blk 650 Jurong West Street 64", "60plus", TREASURER), ("Tan Mei Xin", "Blk 652 Jurong West Street 64", "under40", EVENTS),
+                   ("Ong Ah Lian", "Blk 646 Jurong West Street 61", "60plus", None), ("Hassan bin Abdullah", "Blk 654 Jurong West Street 65", "60plus", None),
+                   ("Vivian Koh", "Blk 650 Jurong West Street 64", "40to59", None)],
+        "announcements": [("Welcome to Jurong Green Gardeners", "Our community garden feeds the neighbourhood and keeps seniors active. Come and get your hands dirty.", True, 0, 26),
+                          ("Composting workshop this month", "Learn to turn kitchen waste into soil. Free for residents, led by our senior gardeners.", False, 1, 5),
+                          ("Spinach and kangkong ready to harvest", "Take what you need and leave a few leaves for the next person.", False, 3, 1)],
+        "activities": [("Community Garden Planting Morning", "Plant chilli, kangkong and lemongrass with our senior gardeners.", "Environment Drive", 2, 3, "Jurong West Community Garden", 30),
+                       ("Composting Workshop", "Turn kitchen waste into soil. Take a small bin home.", "Workshop", 8, 2, "Blk 646 Void Deck", 25),
+                       ("Herb and Seedling Swap", "Bring a cutting or seedling, take one home.", "Social", 14, 2, "Jurong West Community Garden", None)],
+        "contributions": [(0, "skill", "Built six raised beds for the community garden", 8.0), (1, "time", "Watered and weeded the garden for the whole month", 6.0),
+                          (4, "goods", "Donated seedlings and soil for the new beds", None), (5, "skill", "Showed 15 neighbours how to start a compost bin", 2.0)],
+        "opportunities": [(0, "job", "Garden workshop facilitator", "Paid S$25 per session, once or twice a month. Seniors with gardening experience welcome.", "Message Leong Chee Keong (Blk 646)"),
+                          (3, "service", "Volunteers to water the garden on weekdays", "Pick your own day. Fresh vegetables to take home.", "Message Tan Mei Xin (Blk 652)")],
+    },
 ]
 
-
-def reset(conn) -> None:
-    conn.execute(text("delete from communities where slug = :s"), {"s": SLUG})  # cascades to everything inside it
-    conn.execute(text("delete from users where email like :d"), {"d": f"%@{DOMAIN}"})
-
-
-def seed(extra_emails: list[str]) -> str:
-    now = datetime.now(timezone.utc)
-    with engine().begin() as conn:
-        if conn.execute(text("select 1 from communities where slug = :s"), {"s": SLUG}).first():
-            print("demo community already exists (use --reset to remove it first)")
-        else:
-            ids = []
-            for name, area in PEOPLE:
-                email = f"{name.split()[0].lower()}.{name.split()[1].lower()}@{DOMAIN}"
-                ids.append(conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, '40to59') returning id"),
-                                        {"e": email, "n": name, "a": area}).one().id)
-            cid = conn.execute(
-                text("insert into communities (name, slug, kind, description, area_name, privacy, invite_code, is_demo, created_by) values "
-                     "('Lakeview Residency', :s, 'apartment', 'A friendly apartment community: walks, yoga, health camps and neighbours helping neighbours.', "
-                     "'Lakeview Road', 'invite', :c, true, :u) returning id"), {"s": SLUG, "c": CODE, "u": ids[0]}).one().id
-            for u in ids:
-                conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": u})
-            roles = {}
-            for key, name, manage in (("lead", "Community Lead", True), ("secretary", "Secretary", True), ("treasurer", "Treasurer", False), ("events", "Events Coordinator", True)):
-                roles[key] = conn.execute(text("insert into role_definitions (community_id, key, name, can_manage) values (:c, :k, :n, :m) returning id"),
-                                          {"c": cid, "k": key, "n": name, "m": manage}).one().id
-            for key, user in (("lead", ids[0]), ("secretary", ids[1]), ("treasurer", ids[2]), ("events", ids[3])):
-                conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, :s, :e)"),
-                             {"c": cid, "d": roles[key], "u": user, "s": date.today() - timedelta(days=90), "e": date.today() + timedelta(days=275)})
-            for title, body, pinned, author, days_ago in (
-                ("Welcome to Lakeview Residency on Bricks", "This is our community space. Join activities, see who does what, and help each other.", True, ids[0], 20),
-                ("Water tank cleaning on Saturday", "Water will be off from 10 am to 1 pm on Saturday. Please store water in advance.", False, ids[1], 3),
-                ("Yoga sessions are starting in the community hall", "Every Friday evening at 6 pm. All ages welcome. Bring your own mat.", False, ids[3], 1)):
-                conn.execute(text("insert into announcements (community_id, author_id, title, body, pinned, created_at) values (:c, :a, :t, :b, :p, :d)"),
-                             {"c": cid, "a": author, "t": title, "b": body, "p": pinned, "d": now - timedelta(days=days_ago)})
-            acts = []
-            for title, desc, cat, offset, hours, place, cap in (
-                ("Evening Walk", "A relaxed walk around the garden. All ages.", "Fitness", timedelta(hours=3), 1, "Block A Garden", None),
-                ("Yoga Session", "Gentle yoga with a trained volunteer. Bring a mat.", "Fitness", timedelta(days=2, hours=1), 1, "Community Hall", 30),
-                ("Community Health Camp", "Free check-ups, eye screening and a short talk on healthy habits.", "Health Camp", timedelta(days=8), 5, "Community Hall", 60),
-                ("Cultural Evening", "Songs, stories and food from every region our neighbours come from.", "Cultural Event", timedelta(days=20), 3, "Clubhouse Lawn", None)):
-                start = now + offset
-                acts.append(conn.execute(
-                    text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity) values "
-                         "(:c, :o, :t, :d, :cat, :s, :e, :l, :cap) returning id"),
-                    {"c": cid, "o": ids[3], "t": title, "d": desc, "cat": cat, "s": start, "e": start + timedelta(hours=hours), "l": place, "cap": cap}).one().id)
-            for i, a in enumerate(acts):
-                for u in ids[: 4 + i * 2]:
-                    conn.execute(text("insert into activity_participants (activity_id, user_id) values (:a, :u)"), {"a": a, "u": u})
-            for user, kind, desc, hours in ((ids[4], "time", "Set up chairs for the yoga session", 1.5), (ids[5], "skill", "Fixed the garden lights", 2), (ids[6], "time", "Led the evening walk", 1),
-                                            (ids[7], "goods", "Donated 20 folding chairs", None), (ids[8], "time", "Helped with the health camp registration desk", 4), (ids[9], "skill", "Painted the notice board", 3)):
-                conn.execute(text("insert into contributions (community_id, user_id, kind, description, hours, verified_by) values (:c, :u, :k, :d, :h, :v)"),
-                             {"c": cid, "u": user, "k": kind, "d": desc, "h": hours, "v": ids[1]})
-            for user, kind, title, desc, contact in (
-                (ids[5], "referral", "Reliable electrician for the blocks", "Fast and fair. Ask for Suresh.", "Message Ravi (Block B)"),
-                (ids[8], "service", "Maths and science tuition, classes 6 to 10", "Evenings, small groups in the clubhouse.", "Message Lakshmi (Block D)"),
-                (ids[7], "job", "Part-time library helper wanted", "Two afternoons a week at the community library.", "Message Chen (Block A)")):
-                conn.execute(text("insert into opportunities (community_id, posted_by, kind, title, description, contact) values (:c, :u, :k, :t, :d, :ct)"),
-                             {"c": cid, "u": user, "k": kind, "t": title, "d": desc, "ct": contact})
-            print(f"demo community created: Lakeview Residency (join code {CODE}), {len(ids)} demo members, 4 activities, 3 announcements, 6 contributions, 3 opportunities")
-        # real accounts: join as members; the first one becomes Secretary so the manager view can be tried
-        cid = conn.execute(text("select id from communities where slug = :s"), {"s": SLUG}).one().id
-        for n, email in enumerate(extra_emails):
-            u = conn.execute(text("select id from users where email = :e"), {"e": email.strip().lower()}).first()
-            if not u:
-                print(f"no account for {email}: sign in once first, then run this again")
-                continue
-            conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active'"), {"c": cid, "u": u.id})
-            if n == 0:
-                d = conn.execute(text("select id from role_definitions where community_id = :c and key = 'secretary'"), {"c": cid}).one().id
-                if not conn.execute(text("select 1 from role_terms where community_id = :c and user_id = :u and role_definition_id = :d"), {"c": cid, "u": u.id, "d": d}).first():
-                    conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
-                                 {"c": cid, "d": d, "u": u.id})
-            print(f"added {email} as a member" + (" and Secretary" if n == 0 else ""))
-        lead = conn.execute(text("select created_by from communities where slug = :s"), {"s": SLUG}).one().created_by
-        seed_others(conn, lead)
-        real = [e.strip().lower() for e in extra_emails]
-        reserve = len(real)
-        for slug, target in ((SLUG, 128), *((o[1], o[4]) for o in OTHERS)):
-            c = conn.execute(text("select id from communities where slug = :s"), {"s": slug}).one().id
-            for e in real:  # real accounts belong to all four demo communities
-                u = conn.execute(text("select id from users where email = :e"), {"e": e}).first()
-                if u:
-                    conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active'"), {"c": c, "u": u.id})
-            fill(conn, c, target, 0)  # real accounts are already members, so they count toward the target
-        print("demo communities ready: Lakeview Residency 128, Heritage Alumni 340, Green Kolkata 86, Weekend Readers 42 members (real accounts included)")
-    return CODE
+# Names for the rest of each community (Singapore's Chinese, Malay, Indian and Eurasian communities). Mostly seniors, as in the communities themselves.
+FIRST = ["Ah Hock", "Ai Ling", "Beng Huat", "Bee Lian", "Cheng Hock", "Chin Siong", "Siew Mei", "Eng Kiat", "Geok Eng", "Hock Seng", "Kim Hwa", "Lay Choo", "Mei Lan", "Poh Choo",
+         "Swee Lian", "Teck Kiong", "Yoke Lin", "Zainal", "Aminah", "Ismail", "Halimah", "Kamarudin", "Rosnah", "Salleh", "Normah", "Osman", "Sulaiman", "Zubaidah", "Kumar", "Devi",
+         "Muthu", "Selvi", "Rajan", "Shanti", "Balakrishnan", "Meenakshi", "Gopal", "Parvathy", "Anthony", "Cecilia", "Francis", "Joyce", "Raymond", "Theresa", "Vincent", "Winnie"]
+LAST = ["Tan", "Lim", "Lee", "Ng", "Ong", "Wong", "Goh", "Chua", "Teo", "Koh", "Yeo", "Sim", "Chan", "Ho", "Low", "Ismail", "Rahman", "Hassan", "Abdullah", "Yusof", "Osman", "Salleh",
+        "Pillai", "Nair", "Krishnan", "Muthu", "Subramaniam", "Rajan", "Pereira", "D'Cruz", "De Souza", "Oliveiro"]
 
 
-# The other three communities of the Connect sample (ui-samples/09). Each: name, slug, kind, icon, members, description, one activity (title, category, days ahead, place).
-OTHERS = [
-    ("Heritage Alumni", "heritage-alumni-demo", "club", "school", 340, "Old classmates keeping in touch, mentoring the young and organising reunions.",
-     ("Alumni Mentoring Evening", "Workshop", 5, "College Auditorium"), "HERI-DEMO"),
-    ("Green Kolkata", "green-kolkata-demo", "neighbourhood", "leaf", 86, "Neighbours growing trees, composting and cleaning up the city together.",
-     ("Tree Planting Drive", "Environment Drive", 4, "Maidan Gate 3"), "GREE-DEMO"),
-    ("Weekend Readers", "weekend-readers-demo", "other", "book", 42, "A reading circle that meets every weekend to share books and stories.",
-     ("Storytelling Circle", "Cultural Event", 3, "Public Library Hall"), "READ-DEMO"),
-]
-
-
-FIRST = ["Aarav", "Ananya", "Arjun", "Aisha", "Amit", "Anjali", "Ben", "Chen", "Daniel", "Deepa", "Divya", "Farhan", "Fatima", "Gita", "Hui Min", "Imran", "Ishaan", "Jia Wei",
-         "Kavita", "Kiran", "Lakshmi", "Mei Ling", "Meera", "Mohan", "Nadia", "Nikhil", "Noor", "Omar", "Pooja", "Priya", "Rahul", "Rajesh", "Ravi", "Rohan", "Sanjay", "Sara", "Shreya",
-         "Sneha", "Sunita", "Suresh", "Tan", "Uma", "Vikram", "Wei", "Yusuf", "Zara", "Abdul", "Bala", "Carmen", "David"]
-LAST = ["Nair", "Rao", "Sheikh", "Tan", "Menon", "Kulkarni", "Khan", "Wei", "Iyer", "Fernandes", "Das", "Hassan", "Sharma", "Banerjee", "Chatterjee", "Lim", "Ng", "Ismail", "Rahman",
-        "Pillai", "Reddy", "Singh", "Gupta", "Mukherjee", "Ong", "Lee", "Abdullah", "Kapoor", "Joshi", "Bose", "Ghosh", "Wong", "Krishnan", "D'Souza", "Verma", "Mehta", "Chowdhury", "Goh"]
-AREAS = ["Block A", "Block B", "Block C", "Block D"]
-
-
-def real_people(n: int) -> list[tuple[str, str, str]]:
-    """n people with real-sounding, distinct names (first and last names from the communities Bricks serves), their email-like handle and an area."""
-    out = []
-    for i in range(n):
-        f, l = FIRST[i % len(FIRST)], LAST[(i * 7 + i // len(FIRST)) % len(LAST)]
-        handle = f"{f}.{l}".lower().replace(" ", "").replace("'", "") + f".{i + 1}@{DOMAIN}"
-        out.append((f"{f} {l}", handle, AREAS[i % len(AREAS)]))
+def real_people(n: int) -> list[tuple[str, str]]:
+    """n distinct people with real-sounding Singapore names and an address-like handle on the demo domain."""
+    out, seen = [], set()
+    i = 0
+    while len(out) < n:
+        f, l = FIRST[i % len(FIRST)], LAST[(i * 5 + i // len(FIRST)) % len(LAST)]
+        i += 1
+        name = f"{f} {l}"
+        if name in seen:
+            continue
+        seen.add(name)
+        out.append((name, f"{f}.{l}".lower().replace(" ", "").replace("'", "") + f".{len(out) + 1}@{DOMAIN}"))
     return out
 
 
-def fill(conn, cid, target: int, reserve: int) -> None:
-    """Brings the member count of a community up to `target` with demo people who have real names (shared across communities), leaving `reserve` seats for real accounts."""
-    have = conn.execute(text("select count(*) from memberships where community_id = :c and status = 'active'"), {"c": cid}).scalar_one()
-    need = max(0, target - reserve - have)
-    if need:
-        for name, email, area in real_people(400):
-            conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, '40to59') on conflict (email) do nothing"), {"e": email, "n": name, "a": area})
-        conn.execute(text("insert into memberships (community_id, user_id) select :c, u.id from users u where u.email like :d "
-                          "and u.email not like 'meera.%' and not exists (select 1 from memberships m where m.community_id = :c and m.user_id = u.id) order by u.email limit :n"),
-                     {"c": cid, "n": need, "d": f"%@{DOMAIN}"})
+def reset(conn) -> None:
+    conn.execute(text("delete from communities where is_demo"))  # cascades to everything inside them
+    conn.execute(text("delete from users where email like :d"), {"d": f"%@{DOMAIN}"})
 
 
-def seed_others(conn, lead_id) -> None:
+def _handle(name: str, slug: str) -> str:
+    return f"{name.lower().replace(' ', '.').replace(chr(39), '')}.{slug.split('-')[0]}@{DOMAIN}"
+
+
+def _role(conn, cid, key: str):
+    name, manage = ROLE_NAMES[key]
+    return conn.execute(text("select id from role_definitions where community_id = :c and key = :k"), {"c": cid, "k": key}).first() or conn.execute(
+        text("insert into role_definitions (community_id, key, name, can_manage) values (:c, :k, :n, :m) returning id"), {"c": cid, "k": key, "n": name, "m": manage}).one()
+
+
+def seed_community(conn, c: dict) -> None:
+    if conn.execute(text("select 1 from communities where slug = :s"), {"s": c["slug"]}).first():
+        return
     now = datetime.now(timezone.utc)
-    for name, slug, kind, icon, members, desc, act, code in OTHERS:
-        if conn.execute(text("select 1 from communities where slug = :s"), {"s": slug}).first():
-            continue
-        cid = conn.execute(text("insert into communities (name, slug, kind, icon, description, privacy, invite_code, is_demo, created_by) "
-                                "values (:n, :s, :k, :i, :d, 'invite', :c, true, :u) returning id"), {"n": name, "s": slug, "k": kind, "i": icon, "d": desc, "c": code, "u": lead_id}).one().id
-        d = conn.execute(text("insert into role_definitions (community_id, key, name, can_manage) values (:c, 'lead', 'Community Lead', true) returning id"), {"c": cid}).one().id
-        conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": lead_id})
-        conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
-                     {"c": cid, "d": d, "u": lead_id})
-        title, cat, days, place = act
-        conn.execute(text("insert into activities (community_id, organiser_id, title, category, starts_at, ends_at, location) values (:c, :o, :t, :cat, :s, :e, :l)"),
-                     {"c": cid, "o": lead_id, "t": title, "cat": cat, "s": now + timedelta(days=days, hours=2), "e": now + timedelta(days=days, hours=4), "l": place})
-        conn.execute(text("insert into announcements (community_id, author_id, title, body, pinned) values (:c, :a, :t, :b, true)"),
-                     {"c": cid, "a": lead_id, "t": f"Welcome to {name}", "b": desc})
+    ids = []
+    for name, area, band, _role_key in c["people"]:
+        ids.append(conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, :b) returning id"),
+                                {"e": _handle(name, c["slug"]), "n": name, "a": area, "b": band}).one().id)
+    cid = conn.execute(
+        text("insert into communities (name, slug, kind, icon, description, area_name, privacy, invite_code, is_demo, created_by) values "
+             "(:n, :s, :k, :i, :d, :a, 'invite', :c, true, :u) returning id"),
+        {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "c": c["code"], "u": ids[0]}).one().id
+    for u in ids:
+        conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": u})
+    for (_n, _a, _b, role_key), user in zip(c["people"], ids):
+        if role_key:
+            d = _role(conn, cid, role_key).id
+            conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, :s, :e)"),
+                         {"c": cid, "d": d, "u": user, "s": date.today() - timedelta(days=90), "e": date.today() + timedelta(days=275)})
+    for title, body, pinned, who, days_ago in c["announcements"]:
+        conn.execute(text("insert into announcements (community_id, author_id, title, body, pinned, created_at) values (:c, :a, :t, :b, :p, :d)"),
+                     {"c": cid, "a": ids[who], "t": title, "b": body, "p": pinned, "d": now - timedelta(days=days_ago)})
+    acts = []
+    for title, desc, cat, days, hours, place, cap in c["activities"]:
+        start = now + timedelta(days=days, hours=2)
+        acts.append(conn.execute(
+            text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity) values "
+                 "(:c, :o, :t, :d, :cat, :s, :e, :l, :cap) returning id"),
+            {"c": cid, "o": ids[3], "t": title, "d": desc, "cat": cat, "s": start, "e": start + timedelta(hours=hours), "l": place, "cap": cap}).one().id)
+    for i, a in enumerate(acts):
+        for u in ids[: 3 + i * 2]:
+            conn.execute(text("insert into activity_participants (activity_id, user_id) values (:a, :u)"), {"a": a, "u": u})
+    for who, kind, desc, hours in c["contributions"]:
+        conn.execute(text("insert into contributions (community_id, user_id, kind, description, hours, verified_by) values (:c, :u, :k, :d, :h, :v)"),
+                     {"c": cid, "u": ids[who], "k": kind, "d": desc, "h": hours, "v": ids[1]})
+    for who, kind, title, desc, contact in c["opportunities"]:
+        conn.execute(text("insert into opportunities (community_id, posted_by, kind, title, description, contact) values (:c, :u, :k, :t, :d, :ct)"),
+                     {"c": cid, "u": ids[who], "k": kind, "t": title, "d": desc, "ct": contact})
+    print(f"demo community created: {c['name']} (join code {c['code']}), {len(ids)} core members")
+
+
+def fill(conn, cid, target: int, band_seed: int) -> None:
+    """Brings the member count of a community up to `target` with demo people who have real Singapore names (shared across communities)."""
+    have = conn.execute(text("select count(*) from memberships where community_id = :c and status = 'active'"), {"c": cid}).scalar_one()
+    need = max(0, target - have)
+    if not need:
+        return
+    for i, (name, email) in enumerate(real_people(400)):
+        band = "60plus" if i % 4 else "40to59"  # three in four are seniors
+        conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, 'Singapore', :b) on conflict (email) do nothing"), {"e": email, "n": name, "b": band})
+    conn.execute(text("insert into memberships (community_id, user_id) select :c, u.id from users u where u.email like :d and u.area_name = 'Singapore' "
+                      "and not exists (select 1 from memberships m where m.community_id = :c and m.user_id = u.id) order by md5(u.email || :x) limit :n"),
+                 {"c": cid, "n": need, "d": f"%@{DOMAIN}", "x": str(band_seed)})
+
+
+def seed(extra_emails: list[str]) -> None:
+    with engine().begin() as conn:
+        for c in COMMUNITIES:
+            seed_community(conn, c)
+        real = [e.strip().lower() for e in extra_emails]
+        for n, c in enumerate(COMMUNITIES):
+            cid = conn.execute(text("select id from communities where slug = :s"), {"s": c["slug"]}).one().id
+            for i, e in enumerate(real):  # real accounts belong to all demo communities; the first one becomes Secretary so the manager view can be tried
+                u = conn.execute(text("select id from users where email = :e"), {"e": e}).first()
+                if not u:
+                    if n == 0:
+                        print(f"no account for {e}: sign in once first, then run this again")
+                    continue
+                conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active'"), {"c": cid, "u": u.id})
+                if i == 0:
+                    d = _role(conn, cid, SECRETARY).id
+                    if not conn.execute(text("select 1 from role_terms where community_id = :c and user_id = :u and role_definition_id = :d"), {"c": cid, "u": u.id, "d": d}).first():
+                        conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
+                                     {"c": cid, "d": d, "u": u.id})
+            fill(conn, cid, c["target"], n)
+        print("demo communities ready: " + ", ".join(f"{c['name']} {c['target']}" for c in COMMUNITIES) + " members (real accounts included)")
 
 
 def main(argv: list[str]) -> None:
     if "--reset" in argv:
         with engine().begin() as conn:
             reset(conn)
-        print("demo community and demo people removed")
+        print("demo communities and demo people removed")
         return
     seed([a for a in argv if "@" in a])
 

@@ -2,3 +2,6 @@ INFO:     Started server process [13336]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 INFO:     Uvicorn running on http://0.0.0.0:8093 (Press CTRL+C to quit)
+INFO:     ('2409:40d0:201c:7b6e:d18f:15c1:bc5e:9316', 0) - "WebSocket /v1/agent/live" [accepted]
+INFO:     connection open
+INFO:     connection closed
