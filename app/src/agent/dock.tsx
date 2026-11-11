@@ -8,7 +8,7 @@ import { glowStore } from '../kit/glow';
 import { colors, radius, space } from '../theme/tokens';
 import { audioAvailable } from './audio';
 import { agentUi, clearNotice, end, sendText, startTalk, togglePanel } from './live';
-import { restoreSurface, surfaceStore } from './surface';
+import { dragSurface, releaseSurface, surfaceStore } from './surface';
 
 /**
  * The Bricks Agent bar, always at the very bottom (under the tab bar) as in the UI samples:
@@ -37,16 +37,16 @@ export function AgentDock() {
           While the panel is open it has its own handle on the sheet, so this one steps aside. */}
       {canvasOpen ? null : (
         <View style={{ alignItems: 'center', paddingTop: 3 }}>
-          <DragHandle label={t('common.agent.canvas.grow')} onRelease={(dy) => { if (dy <= -40) (canvas ? restoreSurface() : togglePanel()); }} />
+          <DragHandle label={t('common.agent.canvas.grow')} onMove={dragSurface} onRelease={releaseSurface} />
         </View>
       )}
       {ui.open ? (
         <View style={{ paddingHorizontal: space.lg, paddingTop: space.sm }}>
           <ScrollView style={{ maxHeight: 160 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ gap: 6 }}>
-            {ui.lines.slice(-8).map((l, i) => (
-              <Text key={i} style={{ fontSize: 15, color: l.role === 'agent' ? colors.ink : colors.muted, fontWeight: l.role === 'agent' ? '600' : '400', fontStyle: l.role === 'tool' ? 'italic' : 'normal' }}>{l.role === 'person' ? '🗣 ' : l.role === 'tool' ? '⚙ ' : ''}{l.text}</Text>
-            ))}
-          </ScrollView>
+              {ui.lines.slice(-8).map((l, i) => (
+                <Text key={i} style={{ fontSize: 15, color: l.role === 'agent' ? colors.ink : colors.muted, fontWeight: l.role === 'agent' ? '600' : '400', fontStyle: l.role === 'tool' ? 'italic' : 'normal' }}>{l.role === 'person' ? '🗣 ' : l.role === 'tool' ? '⚙ ' : ''}{l.text}</Text>
+              ))}
+            </ScrollView>
           {ui.notice ? (
             <Pressable onPress={clearNotice} accessibilityRole="button" style={{ paddingVertical: 4 }}>
               <Text style={{ fontSize: 14, color: colors.danger, fontWeight: '600' }}>{t(`common.agent.${ui.notice}`)}</Text>
@@ -73,6 +73,7 @@ export function AgentDock() {
         </View>
       ) : null}
 
+      <DragHandle label={t('common.agent.canvas.grow')} onMove={dragSurface} onRelease={releaseSurface} bare>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: space.lg, paddingVertical: space.sm }}>
         <Pressable onPress={() => (talking ? togglePanel() : void startTalk({ mic: audioAvailable() }))} accessibilityRole="button" accessibilityLabel={t('common.agent.talk')} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 12 }}>
           <Ionicons name={talking ? 'pulse' : 'mic-outline'} size={30} color={colors.accent} />
@@ -94,6 +95,7 @@ export function AgentDock() {
           <Ionicons name={ui.open ? 'chevron-down' : 'chevron-up'} size={24} color={colors.ink} />
         </Pressable>
       </View>
+      </DragHandle>
     </View>
   );
 }

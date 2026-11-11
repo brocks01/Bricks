@@ -52,7 +52,7 @@ export const LIMITS = {
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
-export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO });
+export const surfaceStore = createStore<{ open: boolean; surface: Surface | null; seq: number; ratio: number; live: number | null }>({ open: false, surface: null, seq: 0, ratio: SHEET_RATIO, live: null });
 
 let waiting: ((r: { answer?: string; how?: 'option' | 'typed'; dismissed?: boolean }) => void) | null = null;
 
@@ -165,7 +165,7 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.
-  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO });
+  surfaceStore.set({ open: true, surface, seq: surfaceStore.get().seq + 1, ratio: a.full ? 1 : SHEET_RATIO, live: null });
   const waitsForAPerson = surface.options.length > 0 || surface.allowText || surface.tiles.length > 0 || surface.next;
   if (!waitsForAPerson) return Promise.resolve({ shown: true, note: 'It stays until the person closes it or you call hide.' });
   return new Promise((resolve) => {
@@ -220,4 +220,42 @@ export function minimiseSurface(): void {
 export function restoreSurface(): void {
   if (!surfaceStore.get().surface) return;
   surfaceStore.set((s) => ({ ...s, open: true }));
+}
+
+// ---- The agent area. It can be pulled open at ANY time, with or without a screen the agent made: with one it shows that screen, without
+// one it shows the conversation. Any part of it can be grabbed (the sheet's header or the Bricks Agent bar); both call these. ----
+let dragFrom: number | null = null;
+let areaHeight = 0;
+const CLOSED_BASE = 0.1; // where a drag that starts from the closed bar counts from
+
+/** The height of the area the sheet lives in, so a drag distance can become a fraction. */
+export function setSurfaceArea(h: number): void {
+  areaHeight = h;
+}
+/** The live offset while the hand is down (negative = up). 0 means the hand let go. The area follows it the whole way. */
+export function dragSurface(dy: number): void {
+  if (!dy) {
+    dragFrom = null;
+    surfaceStore.set((s) => ({ ...s, live: null }));
+    return;
+  }
+  if (areaHeight < 40) return;
+  const st = surfaceStore.get();
+  if (dragFrom === null) dragFrom = st.open ? st.ratio : CLOSED_BASE;
+  const from = dragFrom;
+  surfaceStore.set((s) => ({ ...s, live: Math.min(1, Math.max(MIN_RATIO, from - dy / areaHeight)) }));
+}
+/** The hand let go after moving `dy`: stay exactly there, or (pulled all the way down) put it away. A screen the agent made is kept, not lost. */
+export function releaseSurface(dy: number): void {
+  const st = surfaceStore.get();
+  const landed = st.live ?? st.ratio;
+  dragFrom = null;
+  surfaceStore.set((s) => ({ ...s, live: null }));
+  if (Math.abs(dy) < 8) return; // a tap, not a drag
+  if (landed <= CLOSED_BELOW) {
+    if (st.surface) minimiseSurface();
+    else surfaceStore.set((s) => ({ ...s, open: false }));
+    return;
+  }
+  surfaceStore.set((s) => ({ ...s, open: true, ratio: Math.min(1, Math.max(MIN_RATIO, landed)) }));
 }

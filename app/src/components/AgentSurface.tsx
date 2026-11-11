@@ -1,8 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { askAgent } from '../agent/live';
-import { answerSurface, CLOSED_BELOW, FULL_AT, hideSurface, minimiseSurface, MIN_RATIO, setPanelRatio, setPanelState, surfaceStore, type PanelState, type Surface } from '../agent/surface';
+import { agentUi } from '../agent/live';
+import { answerSurface, dragSurface, FULL_AT, hideSurface, releaseSurface, setSurfaceArea, surfaceStore, type PanelState, type Surface } from '../agent/surface';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
 import { useCurrentPage } from '../navigation';
@@ -27,59 +27,35 @@ const iconFor = (name: string): IconName => (name && name in (Ionicons.glyphMap 
  * All words come from i18n/common.ts under agent.canvas.
  */
 export function AgentSurface() {
-  const { open, surface, seq, ratio: rest } = useStore(surfaceStore);
+  const { open, surface, seq, ratio: rest, live: dragging } = useStore(surfaceStore);
   const page = useCurrentPage();
   const t = useT();
-  const [area, setArea] = useState(0); // height of the area the sheet lives in, from onLayout
-  const [dragging, setDragging] = useState<number | null>(null); // where the finger has it right now
-  const from = useRef<number | null>(null); // which height the drag started at
   // Moving to another screen closes it. A question asked for the old screen is answered as "closed", so the agent is never left waiting.
   useEffect(() => {
     hideSurface();
   }, [page?.key]);
-  if (!open || !surface) return null;
+  // Closed and nobody is pulling it: draw nothing, but keep measuring the area, so the first pull up from the bar knows how tall the area is.
+  if (!open && dragging === null) return <View pointerEvents="none" onLayout={(e) => setSurfaceArea(e.nativeEvent.layout.height)} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} />;
   const live = dragging ?? rest;
   const state: PanelState = live >= FULL_AT ? 'full' : 'expanded';
+  const shown = surface ?? null;
 
-  // The sheet tracks the hand the whole way, and on release it STAYS where the hand left it - the way the
-  // Instagram comment sheet does. It only comes back to the resting size when the agent shows something new.
-  const onMove = (dy: number) => {
-    if (!dy) {
-      from.current = null;
-      setDragging(null);
-      return;
-    }
-    if (area < 40) return;
-    if (from.current === null) from.current = rest;
-    setDragging(Math.min(1, Math.max(MIN_RATIO, from.current - dy / area)));
-  };
-  const onRelease = (dy: number) => {
-    const landed = dragging ?? rest;
-    from.current = null;
-    setDragging(null);
-    if (Math.abs(dy) < 8) return; // a tap, not a drag
-    if (landed <= CLOSED_BELOW) {
-      minimiseSurface(); // pulled all the way down: put it away, but keep it
-      return;
-    }
-    setPanelRatio(landed); // any other height is the person's choice, and it is remembered
-  };
+  // The sheet tracks the hand the whole way, and on release it STAYS where the hand left it (the drag logic is in agent/surface.ts so the agent bar can drag it too).
+  const onMove = dragSurface;
+  const onRelease = releaseSurface;
 
   const height = `${Math.round(live * 100)}%`;
   return (
     <View
-      accessibilityViewIsModal
-      onLayout={(e) => setArea(e.nativeEvent.layout.height)}
+      pointerEvents="box-none"
+      onLayout={(e) => setSurfaceArea(e.nativeEvent.layout.height)}
       style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'flex-end' }}
     >
-      {/* The app stays visible above the sheet until it is dragged to full screen. Tapping the dimmed part
-          puts it away (never submits anything); the drag handle and the Close button do the same, deliberately. */}
-      {state === 'full' ? null : (
-        <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: 'rgba(15,20,18,0.30)' }} />
-      )}
+      {/* The canvas is part of the agent area: it sits flush on top of the agent's typing box and bar, with no dimming, so the app above stays visible and usable.
+          Its drag handle sets the height of the whole agent area; it stays where the hand leaves it. */}
       <View style={{ height, maxHeight: '100%' }}>
         {/* Keyed on seq: every screen the agent shows starts with nothing typed, nothing picked and the about line closed. */}
-        <Canvas key={seq} surface={surface} state={state} onMove={onMove} onRelease={onRelease} />
+        {shown ? <Canvas key={seq} surface={shown} state={state} onMove={onMove} onRelease={onRelease} /> : <ChatArea onMove={onMove} onRelease={onRelease} />}
       </View>
     </View>
   );
@@ -102,7 +78,7 @@ function Canvas({ surface, state, onMove, onRelease }: { surface: Surface; state
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
+    <View style={{ flex: 1, backgroundColor: colors.card, borderTopLeftRadius: radius.card, borderTopRightRadius: radius.card, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
       <View style={{ backgroundColor: colors.accentSoft }}>
         {/* Grab anywhere in this header - the bar or the row beside it - and the sheet follows your hand;
             let go and it stays at exactly the height you left it. */}
@@ -125,18 +101,6 @@ function Canvas({ surface, state, onMove, onRelease }: { surface: Surface; state
             <Pressable onPress={() => setAbout((v) => !v)} accessibilityRole="button" accessibilityLabel={t('common.agent.canvas.info')} accessibilityState={{ expanded: about }} hitSlop={10}>
               <Ionicons name="information-circle-outline" size={22} color={colors.accent} />
             </Pressable>
-            <Pressable
-              onPress={() => setPanelState(state === 'full' ? 'expanded' : 'full')}
-              accessibilityRole="button"
-              accessibilityLabel={t(state === 'full' ? 'agent.canvas.shrink' : 'agent.canvas.grow')}
-              accessibilityState={{ expanded: state === 'full' }}
-              hitSlop={10}
-            >
-              <Ionicons name={state === 'full' ? 'contract' : 'expand'} size={20} color={colors.ink} />
-            </Pressable>
-          <Pressable onPress={() => void askAgent('Show that screen again, with improvements.')} accessibilityRole="button" accessibilityLabel={t('common.agent.canvas.again')} hitSlop={10}>
-            <Ionicons name="refresh" size={21} color={colors.ink} />
-          </Pressable>
           <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} hitSlop={10}>
             <Ionicons name="close" size={24} color={colors.ink} />
           </Pressable>
@@ -264,6 +228,43 @@ function Canvas({ surface, state, onMove, onRelease }: { surface: Surface; state
           {showNext ? <Button label={t('common.agent.canvas.next')} icon="arrow-forward" onPress={submit} disabled={surface.tiles.length > 0 && chosen.length === 0} /> : null}
         </View>
       ) : null}
+    </View>
+  );
+}
+
+/**
+ * The agent area when the agent has not made any screen: the same green box, pulled open by hand. It shows the conversation so far, and the typing
+ * box in the Bricks Agent bar below it is the same one that shows under any screen. Close it by dragging it all the way down, or with the X.
+ */
+function ChatArea({ onMove, onRelease }: { onMove: (dy: number) => void; onRelease: (dy: number) => void }) {
+  const t = useT();
+  const ui = useStore(agentUi);
+  return (
+    <View style={{ flex: 1, backgroundColor: colors.accentSoft, borderTopLeftRadius: radius.card, borderTopRightRadius: radius.card, borderTopWidth: 1, borderLeftWidth: 1, borderRightWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
+      <DragHandle label={t('agent.canvas.grow')} onMove={onMove} onRelease={onRelease} style={{ paddingTop: space.xs, paddingBottom: space.sm }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, paddingHorizontal: space.lg }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: colors.card, borderRadius: radius.pill, paddingHorizontal: space.sm, paddingVertical: 5 }}>
+            <Ionicons name="sparkles" size={14} color={colors.accent} />
+            <Text style={{ fontSize: 12, fontWeight: '700', color: colors.ink }} numberOfLines={1}>Bricks Agent</Text>
+          </View>
+          <View style={{ flex: 1 }} />
+          <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} hitSlop={10}>
+            <Ionicons name="close" size={24} color={colors.ink} />
+          </Pressable>
+        </View>
+      </DragHandle>
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, gap: 8 }}>
+        {ui.lines.length === 0 ? (
+          <View style={{ alignItems: 'center', paddingVertical: space.xl }}>
+            <Ionicons name="sparkles-outline" size={40} color={colors.accent} />
+            <Text style={[type.body, { color: colors.muted, textAlign: 'center', marginTop: space.sm }]}>{t('common.agent.tap')}</Text>
+          </View>
+        ) : (
+          ui.lines.slice(-30).map((l, i) => (
+            <Text key={i} style={{ fontSize: 15, color: l.role === 'agent' ? colors.ink : colors.muted, fontWeight: l.role === 'agent' ? '600' : '400', fontStyle: l.role === 'tool' ? 'italic' : 'normal' }}>{l.role === 'person' ? '🗣 ' : l.role === 'tool' ? '⚙ ' : ''}{l.text}</Text>
+          ))
+        )}
+      </ScrollView>
     </View>
   );
 }

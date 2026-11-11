@@ -1,5 +1,5 @@
-import { useRef, useState, type ReactNode } from 'react';
-import { PanResponder, type ViewStyle, View } from 'react-native';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { PanResponder, Platform, type ViewStyle, View } from 'react-native';
 import { colors } from '../theme/tokens';
 
 /**
@@ -17,9 +17,15 @@ export interface DragHandleProps {
   onRelease?: (dy: number) => void;
   children?: ReactNode;
   style?: ViewStyle;
+  /** No little grab bar: the children themselves are the thing to grab (the Bricks Agent row). */
+  bare?: boolean;
 }
 
-export function DragHandle({ label, onMove, onRelease, children, style }: DragHandleProps) {
+// Web-only style keys (react-native-web passes them to CSS); ignored on a phone.
+// userSelect none and touchAction none: without them a mouse drag SELECTS the header text instead of moving the sheet.
+const webDrag = { userSelect: 'none', touchAction: 'none', cursor: 'grab' } as unknown as ViewStyle;
+
+export function DragHandle({ label, onMove, onRelease, children, style, bare }: DragHandleProps) {
   // The callbacks change every render; the responder must not, so it reads them from a box it mutates.
   const cb = useRef<DragHandleProps>({ label }).current;
   cb.onMove = onMove;
@@ -39,21 +45,72 @@ export function DragHandle({ label, onMove, onRelease, children, style }: DragHa
       },
       onPanResponderRelease: (_e, g) => {
         setLive(false);
+        cb.onRelease?.(g.dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
         cb.onMove?.(0);
-        cb.onRelease?.(g.dy);
       },
       // The sheet's own scroll view must not steal the gesture once it has started.
       onPanResponderTerminationRequest: () => false,
     })
   ).current;
 
+  // On the web a mouse does not drive PanResponder reliably, so the web uses pointer events on the element itself. Capture starts only
+  // once the pointer has moved a few pixels, so a plain click on a button inside the header still works.
+  const node = useRef<unknown>(null);
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const el = node.current as HTMLElement | null;
+    if (!el || !el.addEventListener) return;
+    let startY = 0;
+    let down = false;
+    let moved = false;
+    const onDown = (e: PointerEvent) => {
+      if (e.button) return;
+      down = true;
+      moved = false;
+      startY = e.clientY;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      const dy = e.clientY - startY;
+      if (!moved) {
+        if (Math.abs(dy) < 6) return;
+        moved = true;
+        try { el.setPointerCapture(e.pointerId); } catch { /* not capturable: the drag still works while over the element */ }
+        setLive(true);
+      }
+      e.preventDefault();
+      cb.onMove?.(dy);
+    };
+    const onUp = (e: PointerEvent) => {
+      if (!down) return;
+      down = false;
+      const dy = e.clientY - startY;
+      try { el.releasePointerCapture(e.pointerId); } catch { /* nothing captured */ }
+      if (!moved) return;
+      setLive(false);
+      cb.onRelease?.(dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
+      cb.onMove?.(0);
+    };
+    el.addEventListener('pointerdown', onDown);
+    el.addEventListener('pointermove', onMove);
+    el.addEventListener('pointerup', onUp);
+    el.addEventListener('pointercancel', onUp);
+    return () => {
+      el.removeEventListener('pointerdown', onDown);
+      el.removeEventListener('pointermove', onMove);
+      el.removeEventListener('pointerup', onUp);
+      el.removeEventListener('pointercancel', onUp);
+    };
+  }, [cb]);
+
   return (
-    <View {...pan.panHandlers} style={[{ opacity: live ? 0.7 : 1 }, style]}>
-      {/* The bar itself is only the affordance; the expand button next to it does the same job for anyone
-          who cannot drag, so this carries a label and no button role. */}
-      <View accessible accessibilityLabel={label} style={{ alignSelf: 'center', width: 56, height: 24, alignItems: 'center', justifyContent: 'center' }}>
-        <View style={{ width: 42, height: 5, borderRadius: 3, backgroundColor: colors.line }} />
-      </View>
+    <View ref={node as never} {...(Platform.OS === 'web' ? {} : pan.panHandlers)} style={[{ opacity: live ? 0.7 : 1 }, webDrag, style]}>
+      {/* The bar is the only control for the height: drag it up or down and the sheet stays where you leave it. */}
+      {bare ? null : (
+        <View accessible accessibilityLabel={label} style={{ alignSelf: 'center', width: 56, height: 24, alignItems: 'center', justifyContent: 'center' }}>
+          <View style={{ width: 42, height: 5, borderRadius: 3, backgroundColor: colors.line }} />
+        </View>
+      )}
       {children}
     </View>
   );
