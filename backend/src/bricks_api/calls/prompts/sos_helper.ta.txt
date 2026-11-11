@@ -1,0 +1,7 @@
+# sos_helper: Calls a Safe Circle helper when a member presses Help.
+
+[say]
+இது Bricks. {name} {place} அருகில் உதவி பொத்தானை அழுத்தினார்.
+
+[ask]
+நீங்கள் போக முடிந்தால் வருகிறேன் என்று சொல்லுங்கள், அல்லது 1-ஐ அழுத்துங்கள்.

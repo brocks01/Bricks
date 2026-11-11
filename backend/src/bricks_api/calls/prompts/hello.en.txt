@@ -1,0 +1,4 @@
+# hello: Voice 0.1 hello-world greeting.
+
+[say]
+Hello, this is Bricks.

@@ -1,0 +1,13 @@
+# checkin: Morning check-in call.
+
+[greet]
+Good morning {name}, it's Buddy.
+
+[ask]
+Did you move yesterday? Say yes or no.
+
+[yes]
+Wonderful! Keep it up.
+
+[no]
+There's a walk at {time} near {place}, with {count} going. Want to join?

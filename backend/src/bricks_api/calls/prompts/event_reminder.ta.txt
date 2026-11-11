@@ -1,0 +1,7 @@
+# event_reminder: Before an activity the member joined.
+
+[say]
+உங்கள் {title} {time} மணிக்கு {place}-இல் தொடங்குகிறது.
+
+[bye]
+அங்கே சந்திப்போம்!

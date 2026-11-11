@@ -1,0 +1,7 @@
+# event_reminder: Before an activity the member joined.
+
+[say]
+{title} anda bermula pukul {time} di {place}.
+
+[bye]
+Jumpa di sana!

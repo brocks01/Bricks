@@ -1,0 +1,7 @@
+# reminder: A reminder the member (or family) set.
+
+[say]
+Hai {name}, peringatan: {text}.
+
+[ask]
+Sebut sudah apabila anda selesai.

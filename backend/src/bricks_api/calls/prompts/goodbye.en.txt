@@ -1,0 +1,7 @@
+# goodbye: End of a call: [later] when we couldn't finish, [event] after joining something.
+
+[later]
+I'll call back later. Take care!
+
+[event]
+See you at the {title} at {time}!

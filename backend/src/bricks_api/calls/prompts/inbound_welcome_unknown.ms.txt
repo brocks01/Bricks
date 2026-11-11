@@ -1,0 +1,7 @@
+# inbound_welcome_unknown: An unknown number calls. Play [welcome] once, then each language's [option] in its own voice.
+
+[welcome]
+Selamat datang ke Bricks.
+
+[option]
+Untuk Bahasa Melayu, tekan 2.

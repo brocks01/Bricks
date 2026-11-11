@@ -9,11 +9,13 @@ import httpx
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 
 from .auth import TokenVerifier
+from .calls.audio import AUDIO_DIR
 from .config import Settings, get_settings
 from .db import make_pool
-from .routers import circles, events, family, me, passiton, sos, thrive, voice, walks
+from .routers import calls, circles, events, family, me, passiton, sos, thrive, voice, walks
 from .schemas import Health
 from .storage import Storage
 
@@ -67,8 +69,10 @@ def create_app(
             ok = False
         return Health(status="ok", database=ok)
 
-    for module in (me, events, circles, thrive, walks, sos, passiton, family, voice):
+    for module in (me, events, circles, thrive, walks, sos, passiton, family, voice, calls):
         app.include_router(module.router)
+    # Pre-generated call audio, fetched by Twilio while the call plays.
+    app.mount("/static/voice", StaticFiles(directory=AUDIO_DIR, check_dir=False), name="call-audio")
     return app
 
 

@@ -1,0 +1,7 @@
+# are_you_ok: No check-in today: we phone to check.
+
+[say]
+Hi {name}, we haven't heard from you today.
+
+[ask]
+Are you okay? Say yes, or say help.

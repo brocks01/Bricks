@@ -1,0 +1,4 @@
+# dtmf_hint: After a missed or unclear answer.
+
+[say]
+请说“是”，或者按 1。

@@ -1,0 +1,7 @@
+# goodbye: End of a call: [later] when we couldn't finish, [event] after joining something.
+
+[later]
+我晚点再打给您。保重！
+
+[event]
+{time} {title}见！

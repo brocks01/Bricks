@@ -1,0 +1,7 @@
+# goodbye: End of a call: [later] when we couldn't finish, [event] after joining something.
+
+[later]
+Saya akan telefon semula nanti. Jaga diri!
+
+[event]
+Jumpa di {title} pukul {time}!

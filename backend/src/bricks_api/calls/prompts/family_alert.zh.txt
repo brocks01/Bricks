@@ -1,0 +1,7 @@
+# family_alert: Calls family when the member hasn't checked in (and didn't answer are_you_ok).
+
+[say]
+{family_name}，您好，{member_name}今天还没有回复早上问候。
+
+[ask]
+请说“打电话”，或者按 1，我马上帮您接通。

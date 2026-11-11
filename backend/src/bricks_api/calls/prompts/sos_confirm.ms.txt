@@ -1,0 +1,7 @@
+# sos_confirm: The member asked for help on a call.
+
+[say]
+Bantuan dalam perjalanan. Jika boleh, letak telefon dan hubungi 9 9 5.
+
+[offer]
+Sebut sambung, dan saya akan telefon {family_name} sekarang.

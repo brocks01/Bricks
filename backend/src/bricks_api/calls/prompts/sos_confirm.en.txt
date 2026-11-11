@@ -1,0 +1,7 @@
+# sos_confirm: The member asked for help on a call.
+
+[say]
+Help is on the way. If you can, hang up and call 9 9 5.
+
+[offer]
+Say connect, and I'll call {family_name} now.

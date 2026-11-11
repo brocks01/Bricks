@@ -1,0 +1,4 @@
+# dtmf_hint: After a missed or unclear answer.
+
+[say]
+Sebut ya, atau tekan 1.

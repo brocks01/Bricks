@@ -1,0 +1,13 @@
+# checkin: Morning check-in call.
+
+[greet]
+{name}，早上好，我是 Buddy。
+
+[ask]
+您昨天有没有活动一下身体？请说“有”或者“没有”。
+
+[yes]
+太好了！继续保持。
+
+[no]
+{time} 在{place}附近有一个步行活动，已经有 {count} 人参加。您想一起去吗？

@@ -1,0 +1,7 @@
+# inbound_welcome_known: A member we know calls the Bricks number.
+
+[greet]
+{name}，您好，我是 Bricks 的 Buddy。
+
+[ask]
+您想做什么？您可以说：今天有什么活动、参加步行、设提醒，或者求助。

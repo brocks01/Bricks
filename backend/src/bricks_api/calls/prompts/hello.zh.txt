@@ -1,0 +1,4 @@
+# hello: Voice 0.1 hello-world greeting.
+
+[say]
+您好，这里是 Bricks。

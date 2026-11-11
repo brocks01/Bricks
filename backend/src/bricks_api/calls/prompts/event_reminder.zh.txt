@@ -1,0 +1,7 @@
+# event_reminder: Before an activity the member joined.
+
+[say]
+您的{title}在 {time} 开始，地点是{place}。
+
+[bye]
+到时见！

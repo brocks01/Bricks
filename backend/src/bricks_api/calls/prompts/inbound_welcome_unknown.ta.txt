@@ -1,0 +1,7 @@
+# inbound_welcome_unknown: An unknown number calls. Play [welcome] once, then each language's [option] in its own voice.
+
+[welcome]
+Bricks-க்கு வரவேற்கிறோம்.
+
+[option]
+தமிழுக்கு 4-ஐ அழுத்துங்கள்.

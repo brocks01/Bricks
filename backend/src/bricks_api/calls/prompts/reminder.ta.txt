@@ -1,0 +1,7 @@
+# reminder: A reminder the member (or family) set.
+
+[say]
+வணக்கம் {name}, ஒரு நினைவூட்டல்: {text}.
+
+[ask]
+முடிந்ததும் முடிந்தது என்று சொல்லுங்கள்.

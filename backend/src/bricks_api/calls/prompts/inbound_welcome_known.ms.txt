@@ -1,0 +1,7 @@
+# inbound_welcome_known: A member we know calls the Bricks number.
+
+[greet]
+Hai {name}, ini Buddy dari Bricks.
+
+[ask]
+Apa yang anda mahu buat? Anda boleh sebut: apa ada hari ini, ikut jalan kaki, buat peringatan, atau minta tolong.

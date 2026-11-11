@@ -1,0 +1,343 @@
+{
+  "version": 1,
+  "notes": [
+    "Shared contract #2 (voice iteration 0.2): the tools Buddy can use, on every channel.",
+    "Each entry is a Gemini function declaration (name, description, parameters as JSON Schema) plus:",
+    "  mutating   - changes the member's data: the tool returns needs_confirmation until the turn carries confirm.answer = 'yes'",
+    "  channels   - where the model may call it ('app', 'whatsapp', 'call'); calls and WhatsApp have no screen",
+    "  ui_action  - the action the app performs when the tool runs (app channel), or null. Show, don't tell: in the app every command visibly changes the screen",
+    "  priority   - P0 = golden path, P1 = later",
+    "  platforms  - optional: only offered on these phones (Move Along camera warm-ups are Android only)",
+    "Times are Singapore local time. Dates are YYYY-MM-DD. Change this file only with a heads-up to the team."
+  ],
+  "tools": [
+    {
+      "name": "get_today",
+      "description": "The member's day: whether the morning check-in is still pending, their next event and their next reminder. Use for 'what's on today', 'what do I have', or before suggesting something.",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "find_events",
+      "description": "Find upcoming community events (walks, tai chi, classes, games…) the member could join. Use when they ask what's on, want company, or want something to do. Never invent events: only mention what this returns.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["walk", "exercise", "class", "games", "music", "cooking", "gardening", "kids", "meetup", "other"],
+            "description": "Kind of event, if they said one."
+          },
+          "when": {
+            "type": "string",
+            "enum": ["today", "tomorrow", "weekend", "week"],
+            "description": "When, if they said. Default: the coming week."
+          },
+          "near": { "type": "string", "description": "A place or area they mentioned, e.g. 'Bishan Park'." }
+        }
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "join_event",
+      "description": "Sign the member up for an event ('I'm going'). Needs the event_id from get_today or find_events. Changes their data: confirm first.",
+      "parameters": {
+        "type": "object",
+        "properties": { "event_id": { "type": "string" } },
+        "required": ["event_id"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "cancel_event",
+      "description": "Take the member off an event they had joined ('I can't go any more'). Changes their data: confirm first.",
+      "parameters": {
+        "type": "object",
+        "properties": { "event_id": { "type": "string" } },
+        "required": ["event_id"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "check_in",
+      "description": "Answer today's morning check-in, 'Did you move yesterday?'. Their answer is the confirmation, so don't ask again. If they say no, offer a walk with company.",
+      "parameters": {
+        "type": "object",
+        "properties": { "answer": { "type": "string", "enum": ["yes", "no"] } },
+        "required": ["answer"]
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "set_reminder",
+      "description": "Create a reminder (medicine, a doctor's visit, an event, anything). Changes their data: confirm first, saying back the time and what it's for.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "kind": { "type": "string", "enum": ["medicine", "doctor", "event", "other"] },
+          "text": { "type": "string", "description": "Short words for the reminder, e.g. 'Take medicine'." },
+          "time": { "type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$", "description": "24-hour HH:MM." },
+          "repeat": {
+            "type": "string",
+            "enum": ["once", "daily", "weekdays"],
+            "description": "Default: daily for medicine, otherwise once."
+          },
+          "date": {
+            "type": "string",
+            "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+            "description": "Only for 'once': the day, YYYY-MM-DD."
+          }
+        },
+        "required": ["kind", "text", "time"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "list_reminders",
+      "description": "The member's reminders, with their ids. Use before deleting one, or when they ask what reminders they have.",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "delete_reminder",
+      "description": "Remove one reminder by id (from list_reminders). Changes their data: confirm first.",
+      "parameters": {
+        "type": "object",
+        "properties": { "reminder_id": { "type": "string" } },
+        "required": ["reminder_id"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "get_progress",
+      "description": "How the member did this week: check-ins answered, days moved, events joined. Use for 'how am I doing'. Praise warmly; never compare with others.",
+      "parameters": {
+        "type": "object",
+        "properties": { "period": { "type": "string", "enum": ["week"] } }
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "get_walk_stats",
+      "description": "The member's walks: total distance and count for the week or month, or just their last walk.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "period": { "type": "string", "enum": ["week", "month"] },
+          "last": { "type": "boolean", "description": "True for only their most recent walk." }
+        }
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "start_walk",
+      "description": "Start recording a walk in the app ('start a walk', 'I'm going for a walk now').",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "start_walk",
+      "priority": "P0"
+    },
+    {
+      "name": "finish_walk",
+      "description": "Finish the walk being recorded and show its summary ('stop', 'I'm done walking').",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "finish_walk",
+      "priority": "P0"
+    },
+    {
+      "name": "start_warmup",
+      "description": "Open a camera warm-up (Move Along) that counts the member's exercise.",
+      "parameters": {
+        "type": "object",
+        "properties": { "exercise": { "type": "string", "enum": ["sit_to_stand", "arm_raises"] } }
+      },
+      "mutating": false,
+      "channels": ["app"],
+      "platforms": ["android"],
+      "ui_action": "start_warmup",
+      "priority": "P0"
+    },
+    {
+      "name": "trigger_sos",
+      "description": "Get help NOW: alerts the member's Safe Circle and shows the SOS screen. Call it immediately, without asking, if they are hurt, fell, feel unwell, can't breathe or ask for help. Then tell them help is coming and to call 995 if they can.",
+      "parameters": {
+        "type": "object",
+        "properties": { "reason": { "type": "string", "description": "What they said, briefly." } }
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": "open_sos",
+      "priority": "P0"
+    },
+    {
+      "name": "navigate",
+      "description": "Open a screen in the app ('show my reminders', 'go to settings', 'open that walk'). For one event, circle or walk, give its id.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "screen": {
+            "type": "string",
+            "enum": [
+              "home",
+              "kampung",
+              "circles",
+              "circle",
+              "event",
+              "create_event",
+              "pass_it_on",
+              "share_skill",
+              "profile",
+              "thrive",
+              "checkin",
+              "reminders",
+              "new_reminder",
+              "walk",
+              "settings",
+              "language",
+              "safe_circle",
+              "family"
+            ]
+          },
+          "id": { "type": "string", "description": "For circle, event or walk: which one." }
+        },
+        "required": ["screen"]
+      },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "navigate",
+      "priority": "P0"
+    },
+    {
+      "name": "read_screen",
+      "description": "What the member is looking at right now in the app, in words, and what each field of the form on screen holds. Use for 'what does this say', 'what time is this', 'who is going', 'what have I filled in'.",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "fill_field",
+      "description": "Put a value into one field of the form on screen, so the member sees it typed in ('call it Morning walk', 'make it 8 am', 'at Bishan Park'). Use a field id from the screen's fields. Keep what the member already typed unless they ask to change it. This saves nothing: saving still needs a yes.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "field": { "type": "string", "description": "The field's id, from the screen's fields." },
+          "value": { "type": "string", "description": "Text; for a choice the option id; dates YYYY-MM-DD; times HH:MM." }
+        },
+        "required": ["field", "value"]
+      },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "fill",
+      "priority": "P0"
+    },
+    {
+      "name": "set_language",
+      "description": "Change the language Bricks speaks with them: English, Malay, Chinese or Tamil.",
+      "parameters": {
+        "type": "object",
+        "properties": { "lang": { "type": "string", "enum": ["en", "ms", "zh", "ta"] } },
+        "required": ["lang"]
+      },
+      "mutating": false,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P0"
+    },
+    {
+      "name": "create_event",
+      "description": "Start a new event for others to join ('I want to host a walk on Saturday at 8'). Changes their data: confirm first, saying back what, when and where.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "category": {
+            "type": "string",
+            "enum": ["walk", "exercise", "class", "games", "music", "cooking", "gardening", "kids", "meetup", "other"]
+          },
+          "date": { "type": "string", "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$" },
+          "time": { "type": "string", "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$" },
+          "place": { "type": "string" }
+        },
+        "required": ["title", "category", "date", "time", "place"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P1"
+    },
+    {
+      "name": "offer_skill",
+      "description": "Offer a skill to teach or share in Pass It On ('I can teach chess'). Changes their data: confirm first.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "availability": { "type": "string", "description": "When they can, in their words, or 'whenever someone asks'." },
+          "place": { "type": "string" }
+        },
+        "required": ["title"]
+      },
+      "mutating": true,
+      "channels": ["app", "whatsapp", "call"],
+      "ui_action": null,
+      "priority": "P1"
+    },
+    {
+      "name": "record_story",
+      "description": "Open the recorder so the member can record their short 'my story' voice intro. The recording itself happens on screen.",
+      "parameters": { "type": "object", "properties": {} },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "navigate",
+      "priority": "P1"
+    },
+    {
+      "name": "send_thanks",
+      "description": "Open the thank-you screen for an event they went to, to thank the host with one tap or a short voice message.",
+      "parameters": {
+        "type": "object",
+        "properties": { "event_id": { "type": "string" } },
+        "required": ["event_id"]
+      },
+      "mutating": false,
+      "channels": ["app"],
+      "ui_action": "navigate",
+      "priority": "P1"
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+# sos_helper: Calls a Safe Circle helper when a member presses Help.
+
+[say]
+这里是 Bricks。{name}在{place}附近按了求助。
+
+[ask]
+如果您能过去，请说“我去”，或者按 1。

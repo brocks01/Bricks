@@ -1,0 +1,4 @@
+# dtmf_hint: After a missed or unclear answer.
+
+[say]
+ஆம் என்று சொல்லுங்கள், அல்லது 1-ஐ அழுத்துங்கள்.

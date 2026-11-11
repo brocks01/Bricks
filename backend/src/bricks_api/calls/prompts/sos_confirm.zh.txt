@@ -1,0 +1,7 @@
+# sos_confirm: The member asked for help on a call.
+
+[say]
+帮助正在路上。如果可以，请挂断电话，拨打 9 9 5。
+
+[offer]
+请说“接通”，我马上打给{family_name}。

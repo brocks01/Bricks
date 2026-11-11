@@ -1,0 +1,7 @@
+# family_alert: Calls family when the member hasn't checked in (and didn't answer are_you_ok).
+
+[say]
+Hai {family_name}, {member_name} belum menjawab soalan pagi hari ini.
+
+[ask]
+Sebut telefon, atau tekan 1, dan saya akan sambungkan anda sekarang.

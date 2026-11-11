@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "notes": [
+    "Shared contract (voice iteration 0.2): words that mean 'I need help'. Checked BEFORE the model on every channel (app, WhatsApp, calls): SOS never depends on the model.",
+    "Every language is checked whatever the member's language (people switch languages under stress).",
+    "Latin-script phrases match whole words; other scripts match anywhere (Tamil words take endings).",
+    "Deliberately broad: 'help me find a walk' also matches (iteration 0.2 T3). The SOS screen's 5-second countdown with Cancel makes a false alarm cheap; a missed one is not.",
+    "ms / zh / ta still need a native speaker's review (voice 1.1-1.2). The app's Buddy keeps the same words (app test: distress-sync)."
+  ],
+  "phrases": {
+    "en": [
+      "help",
+      "help me",
+      "save me",
+      "i fell",
+      "i've fallen",
+      "i have fallen",
+      "fell down",
+      "fallen down",
+      "pain",
+      "hurt",
+      "chest pain",
+      "heart attack",
+      "stroke",
+      "can't breathe",
+      "cannot breathe",
+      "emergency",
+      "ambulance",
+      "call 995"
+    ],
+    "ms": [
+      "tolong",
+      "tolong saya",
+      "bantu saya",
+      "bantuan",
+      "saya jatuh",
+      "terjatuh",
+      "sakit",
+      "sakit dada",
+      "sesak nafas",
+      "tak boleh bernafas",
+      "kecemasan",
+      "ambulans",
+      "serangan jantung",
+      "strok",
+      "panggil 995"
+    ],
+    "zh": [
+      "救命",
+      "帮帮我",
+      "救救我",
+      "帮忙",
+      "我摔倒了",
+      "摔倒",
+      "跌倒",
+      "好痛",
+      "很痛",
+      "胸口痛",
+      "喘不过气",
+      "呼吸困难",
+      "紧急",
+      "救护车",
+      "心脏病",
+      "中风"
+    ],
+    "ta": [
+      "உதவி",
+      "உதவுங்கள்",
+      "காப்பாற்று",
+      "நான் விழுந்துவிட்டேன்",
+      "விழுந்து",
+      "வலி",
+      "நெஞ்சு வலி",
+      "மூச்சு விட முடியவில்லை",
+      "மூச்சுத் திணறல்",
+      "அவசரம்",
+      "ஆம்புலன்ஸ்",
+      "மாரடைப்பு",
+      "பக்கவாதம்"
+    ]
+  }
+}

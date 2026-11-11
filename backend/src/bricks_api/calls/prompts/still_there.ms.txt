@@ -1,0 +1,4 @@
+# still_there: Silence after a question.
+
+[ask]
+Anda masih di sana?

@@ -1,0 +1,7 @@
+# inbound_welcome_known: A member we know calls the Bricks number.
+
+[greet]
+வணக்கம் {name}, நான் Bricks-இலிருந்து Buddy.
+
+[ask]
+நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்? இன்று என்ன இருக்கிறது, நடைக்குச் சேர, நினைவூட்டல் வைக்க, அல்லது உதவி என்று சொல்லலாம்.

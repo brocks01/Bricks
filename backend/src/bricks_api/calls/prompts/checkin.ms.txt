@@ -1,0 +1,13 @@
+# checkin: Morning check-in call.
+
+[greet]
+Selamat pagi {name}, ini Buddy.
+
+[ask]
+Adakah anda bergerak semalam? Sebut ya atau tidak.
+
+[yes]
+Bagus! Teruskan.
+
+[no]
+Ada jalan kaki pukul {time} dekat {place}, {count} orang ikut. Mahu ikut sekali?

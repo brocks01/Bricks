@@ -1,0 +1,7 @@
+# family_alert: Calls family when the member hasn't checked in (and didn't answer are_you_ok).
+
+[say]
+Hi {family_name}, {member_name} hasn't checked in today.
+
+[ask]
+Say call, or press 1, and I'll connect you now.

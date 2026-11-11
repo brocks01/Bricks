@@ -1,0 +1,7 @@
+# family_alert: Calls family when the member hasn't checked in (and didn't answer are_you_ok).
+
+[say]
+வணக்கம் {family_name}, {member_name} இன்று காலை விசாரிப்புக்குப் பதில் சொல்லவில்லை.
+
+[ask]
+அழை என்று சொல்லுங்கள், அல்லது 1-ஐ அழுத்துங்கள், இப்போதே இணைக்கிறேன்.

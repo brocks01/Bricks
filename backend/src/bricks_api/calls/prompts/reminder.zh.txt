@@ -1,0 +1,7 @@
+# reminder: A reminder the member (or family) set.
+
+[say]
+{name}，您好，提醒您：{text}。
+
+[ask]
+做好了请说“好了”。

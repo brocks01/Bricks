@@ -1,0 +1,7 @@
+# goodbye: End of a call: [later] when we couldn't finish, [event] after joining something.
+
+[later]
+பிறகு மீண்டும் அழைக்கிறேன். உடம்பைப் பார்த்துக்கொள்ளுங்கள்!
+
+[event]
+{time} மணிக்கு {title}-இல் சந்திப்போம்!

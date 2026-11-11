@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     storage_bucket: str = "voice"
     cors_origins: list[str] = Field(default_factory=list)
 
+    # Phone calls (voice track). The public https address Twilio calls back to (ngrok
+    # locally). Webhook signatures are checked against it, so it must match the
+    # address set on the Twilio number exactly.
+    public_base_url: str = "http://localhost:8000"
+    twilio_account_sid: str = ""
+    twilio_auth_token: SecretStr | None = None
+    twilio_number: str = ""
+    # Keep on everywhere except quick local curl tests.
+    twilio_validate_signature: bool = True
+
     @property
     def supabase_issuer(self) -> str:
         return f"{self.supabase_url.rstrip('/')}/auth/v1"

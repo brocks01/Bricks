@@ -1,0 +1,4 @@
+# still_there: Silence after a question.
+
+[ask]
+您还在吗？

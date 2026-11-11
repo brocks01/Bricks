@@ -1,0 +1,7 @@
+# are_you_ok: No check-in today: we phone to check.
+
+[say]
+Hai {name}, kami belum dengar khabar anda hari ini.
+
+[ask]
+Anda okey? Sebut ya, atau sebut tolong.

@@ -1,0 +1,7 @@
+# reminder: A reminder the member (or family) set.
+
+[say]
+Hi {name}, a reminder: {text}.
+
+[ask]
+Say done when you have.

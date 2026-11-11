@@ -1,0 +1,7 @@
+# are_you_ok: No check-in today: we phone to check.
+
+[say]
+{name}，您好，今天还没有您的消息。
+
+[ask]
+您还好吗？没事请说“没事”，需要帮忙请说“帮忙”。
