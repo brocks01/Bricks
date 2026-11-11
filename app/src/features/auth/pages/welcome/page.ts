@@ -1,0 +1,18 @@
+import { definePage } from '../../../../kit/page';
+import { strings } from './strings';
+
+export const authWelcome = definePage({
+  key: 'auth.welcome',
+  module: 'auth',
+  route: '/welcome',
+  bare: true,
+  summary: 'The first page for someone who is not signed in: what Bricks is, and the button to start.',
+  keywords: ['start', 'welcome', 'begin'],
+  elements: {
+    heading: { kind: 'text' },
+    subtitle: { kind: 'text' },
+    start: { kind: 'action', summary: 'Goes to the sign-in page.' },
+    languageLink: { kind: 'action', summary: 'Opens the list of languages.' },
+  },
+  strings,
+});
