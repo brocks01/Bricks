@@ -38,7 +38,7 @@ import { DEMO_ALERT_DELAY_S, scheduleDemoAlert } from '@/lib/notifications';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
 import { useUndo } from '@/state/undo';
-import { color, iconSize, radius, space } from '@/theme';
+import { color, iconSize, radius, shadow, space } from '@/theme';
 
 /** Reading speeds offered (expo-speech rates). "Normal" is already slow and clear. */
 const SPEEDS = [
@@ -305,7 +305,8 @@ const styles = StyleSheet.create({
     gap: space.sm,
     padding: space.sm,
     borderRadius: radius.card,
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
+    ...shadow.card,
   },
   mePressed: {
     backgroundColor: color.primarySubtle,

@@ -11,6 +11,9 @@ describe('colour contrast', () => {
     ['text on bgSubtle', color.text, color.bgSubtle, AAA],
     ['textSecondary on bg', color.textSecondary, color.bg, AAA],
     ['textSecondary on bgSubtle', color.textSecondary, color.bgSubtle, AAA],
+    ['text on the page', color.text, color.canvas, AAA],
+    ['textSecondary on the page', color.textSecondary, color.canvas, AAA],
+    ['going green on the page', color.badgeGoingText, color.canvas, AA],
     ['primary text on bg', color.primary, color.bg, AA],
     ['primary on primarySubtle', color.primary, color.primarySubtle, AA],
     ['white on primary', color.textOnColor, color.primary, AA],
@@ -71,7 +74,7 @@ describe('senior-friendly sizing', () => {
   });
 
   it('only the agreed radii exist (Luma-style: pill buttons, rounded panels)', () => {
-    expect(radius).toEqual({ card: 20, button: 999, tile: 14, sheet: 28, avatar: 999 });
+    expect(radius).toEqual({ card: 24, button: 999, tile: 14, sheet: 28, avatar: 999 });
   });
 
   it('supports 200% system font', () => {

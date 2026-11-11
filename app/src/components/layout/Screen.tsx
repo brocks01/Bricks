@@ -48,8 +48,10 @@ export interface ScreenProps {
    * OK?, helper alert). Off while the screen itself is recording audio.
    */
   tellMe?: boolean;
-  /** A colour at the top fading to white (the event page's cover tint, Luma). */
+  /** A colour at the top fading to the page grey (the event page's cover tint, Luma). */
   tint?: string;
+  /** A deep colour behind the top of the page, fading into `tint` (event page). */
+  tintStrong?: string;
   children: ReactNode;
   testID?: string;
 }
@@ -75,6 +77,7 @@ export function Screen({
   standalone = false,
   tellMe,
   tint,
+  tintStrong,
   children,
   testID,
 }: ScreenProps) {
@@ -106,8 +109,10 @@ export function Screen({
     }, [autoRead, readOnOpen, owner, speak, stop]),
   );
 
+  const strongBand = tint && tintStrong ? tintStrong : undefined;
   const body = (
     <>
+      {strongBand && tint ? <TintBackdrop tint={tint} strong={strongBand} /> : null}
       {/* Mock data works offline, so the banner only shows on the real API. */}
       {offline && !config.demoVoice ? (
         <StatusBanner tone="notice" text={t('common.offline')} testID="offline-banner" />
@@ -124,17 +129,17 @@ export function Screen({
 
   return (
     <SafeAreaView
-      style={styles.root}
+      style={[styles.root, strongBand ? { backgroundColor: strongBand } : null]}
       edges={standalone ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}
       testID={testID}
     >
-      {tint ? <TintBackdrop tint={tint} /> : null}
+      {tint && !strongBand ? <TintBackdrop tint={tint} /> : null}
       {/* Read it out never disappears: without a script it reads the title. */}
       <TopBar readOut={script} showHelp={showHelp} owner={owner} />
       <View style={styles.flex}>
         {scroll ? (
           <ScrollView
-            style={styles.flex}
+            style={[styles.flex, strongBand ? styles.canvas : null]}
             contentContainerStyle={[styles.content, showBuddy && styles.buddyRoom]}
             keyboardShouldPersistTaps="handled"
           >
@@ -160,10 +165,13 @@ export function Screen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: color.bg,
+    backgroundColor: color.canvas,
   },
   flex: {
     flex: 1,
+  },
+  canvas: {
+    backgroundColor: color.canvas,
   },
   content: {
     paddingHorizontal: screenPadding,
@@ -188,6 +196,6 @@ const styles = StyleSheet.create({
     gap: space.sm,
     borderTopWidth: borderWidth.hairline,
     borderTopColor: color.border,
-    backgroundColor: color.bg,
+    backgroundColor: color.canvas,
   },
 });

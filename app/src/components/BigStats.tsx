@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { borderWidth, color, radius, space } from '@/theme';
+import { borderWidth, color, radius, shadow, space } from '@/theme';
 import { useEffectiveFontScale } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
@@ -80,7 +80,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.xs,
     paddingVertical: space.sm,
     borderRadius: radius.tile,
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
+    ...shadow.card,
   },
   cellStacked: {
     flexDirection: 'row',

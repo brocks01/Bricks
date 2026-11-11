@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
   },
   pressed: {
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.primarySubtle,
   },
   facts: {
     flex: 1,

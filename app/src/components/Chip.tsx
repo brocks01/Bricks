@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
 
 import { CheckIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -16,7 +16,7 @@ export interface ChipProps {
 }
 
 /**
- * A large grey pill for filters and one-question steps (Luma). Selected turns black
+ * A large white pill for filters and one-question steps (Luma). Selected turns black
  * with a tick, so the choice is clear without relying on colour.
  */
 export function Chip({ label, selected, onPress, icon: IconComponent, testID }: ChipProps) {
@@ -65,17 +65,18 @@ const styles = StyleSheet.create({
     paddingVertical: space.xs,
     borderRadius: radius.button,
     borderWidth: borderWidth.control,
-    borderColor: color.primarySubtle,
-    backgroundColor: color.primarySubtle,
+    borderColor: color.bg,
+    backgroundColor: color.bg,
     maxWidth: '100%',
+    ...shadow.control,
   },
   selected: {
     borderColor: color.primary,
     backgroundColor: color.primary,
   },
   pressed: {
-    borderColor: color.neutral,
-    backgroundColor: color.neutral,
+    borderColor: color.primarySubtle,
+    backgroundColor: color.primarySubtle,
   },
   label: {
     flexShrink: 1,

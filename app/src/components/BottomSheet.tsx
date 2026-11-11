@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   sheet: {
     ...shadow.floating,
     marginHorizontal: space.xs,
-    backgroundColor: color.bg,
+    backgroundColor: color.canvas,
     borderRadius: radius.sheet,
     paddingHorizontal: screenPadding,
     paddingVertical: space.lg,

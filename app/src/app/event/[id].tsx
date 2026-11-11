@@ -30,7 +30,7 @@ import {
   type ActionTile,
 } from '@/components';
 import { CATEGORY_ICON } from '@/features/events/categories';
-import { pageTint } from '@/features/events/tint';
+import { pageTint, pageTintStrong } from '@/features/events/tint';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { googleCalendarUrl } from '@/lib/calendar';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
@@ -167,7 +167,12 @@ function EventBody({ event, published }: { event: EventDetail; published: boolea
   };
 
   return (
-    <Screen readOut={readOut} tint={pageTint(event)} testID="screen-event">
+    <Screen
+      readOut={readOut}
+      tint={pageTint(event)}
+      tintStrong={pageTintStrong(event)}
+      testID="screen-event"
+    >
       {/* The cover floats on the tint with a white edge and a soft shadow (Luma). */}
       <View style={styles.cover}>
         <CoverArt
@@ -194,7 +199,7 @@ function EventBody({ event, published }: { event: EventDetail; published: boolea
 
       <ActionTiles tiles={tiles} />
 
-      <Card tone="plain" style={styles.card}>
+      <Card style={styles.card}>
         <Text variant="bodyStrong" color="textSecondary">
           {t('eventDetail.location')}
         </Text>
@@ -213,7 +218,7 @@ function EventBody({ event, published }: { event: EventDetail; published: boolea
         />
       </Card>
 
-      <Card tone="plain" style={styles.card}>
+      <Card style={styles.card}>
         <View style={styles.hostRow}>
           <Avatar name={event.host.name} photoUrl={event.host.photo_url} />
           <Text variant="bodyStrong" style={styles.flex}>
@@ -227,7 +232,7 @@ function EventBody({ event, published }: { event: EventDetail; published: boolea
       </Card>
 
       {event.description ? (
-        <Card tone="plain" style={styles.card}>
+        <Card style={styles.card}>
           <Text variant="heading">{t('eventDetail.about')}</Text>
           <Text>{event.description}</Text>
         </Card>

@@ -6,6 +6,7 @@ import {
   color,
   iconSize,
   radius,
+  shadow,
   space,
   touch,
   type ColorToken,
@@ -47,14 +48,14 @@ const PALETTE: Record<
 > = {
   primary: { bg: 'primary', pressed: 'primaryPressed', text: 'textOnColor', border: 'primary' },
   success: { bg: 'success', pressed: 'successPressed', text: 'textOnColor', border: 'success' },
-  // Secondary actions: a grey pill (Luma). Its dark label carries the meaning.
-  outline: { bg: 'primarySubtle', pressed: 'neutral', text: 'text', border: 'primarySubtle' },
+  // Secondary actions: a white floating pill (Luma). Its dark label carries the meaning.
+  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'text', border: 'bg' },
   sos: { bg: 'sos', pressed: 'sosPressed', text: 'textOnColor', border: 'sos' },
 };
 
 /**
  * The main button: a big pill with icon + word, full width by default. Black for the
- * main action, grey for the rest, green for done, red only for emergencies.
+ * main action, white for the rest, green for done, red only for emergencies.
  * Labels wrap rather than truncate, and the button grows with them.
  */
 export function BigButton({
@@ -92,6 +93,7 @@ export function BigButton({
           borderColor: color[disabled ? 'border' : palette.border],
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
+        !disabled && styles.raised,
       ]}
       {...rest}
     >
@@ -120,6 +122,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.xs,
     justifyContent: 'center',
+  },
+  raised: {
+    ...shadow.control,
   },
   content: {
     flexDirection: 'row',

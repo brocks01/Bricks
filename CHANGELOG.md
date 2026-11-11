@@ -145,6 +145,28 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - Phone and code entry screens aren't built yet (phone sign-in is off until an SMS provider
   exists), so Luma's code-entry box isn't used.
 
+### UI step 10: bolder Luma pass (font, white cards on grey, poster covers, immersive event page)
+Steps 0–9 kept the old app's bones, and side by side with the Luma screens it still read as
+the same app. This pass changes the shared building blocks, so every screen changes.
+- **Font:** Inter for English and Malay (the clean, iPhone-like face of the Luma screens).
+  Tamil keeps Noto Sans Tamil; Mandarin keeps the phone's font. `@expo-google-fonts/noto-sans`
+  removed, `@expo-google-fonts/inter` added (JS font files only; no dev build needed).
+- **Page and surfaces:** the page is pale grey (`canvas #F3F3F6`); cards, grouped lists, number
+  panels, Home's section cards and tiles are white with a soft shadow (`shadow.card`), corners
+  24dp. Bottom sheets are pale grey so their white buttons stand out.
+- **Buttons and chips:** secondary buttons, chips, Back and Read it out are white floating pills
+  (`shadow.control`), like Luma's round header buttons. Main actions stay black; Help stays red.
+- **Covers:** events and Circles without a photo get poster art: a bold diagonal gradient in the
+  category's colours (`posterColor`) with a big white icon, instead of a pastel square.
+- **Event page:** a deep band of the category colour behind the cover, fading into the soft tint
+  by the cover's bottom edge. It scrolls with the page, so the title and text always sit on the
+  light part (contrast unchanged and still tested).
+- **Tab bar:** the selected tab is a filled icon on a grey pill with a bold label (the old
+  full-item highlight ran past the bar). The bar only reserves a second label line when a
+  label has more than one word.
+- **Design doc:** `docs/02_DESIGN_PRINCIPLES.md` §5 updated to these tokens (it still described
+  the blue, flat look).
+
 ### UI step 9: safety screens (checked, kept plain)
 - **SOS, Are you okay?, helper alert:** unchanged apart from the shared pill shapes. Still plain,
   very large, red only for the emergency call, with **no Buddy, no pictures and no gradients**.

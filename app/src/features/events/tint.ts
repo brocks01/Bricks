@@ -1,5 +1,5 @@
 import type { EventDetail } from '@/api/types';
-import { categoryColor, color } from '@/theme';
+import { categoryColor, color, posterColor } from '@/theme';
 import { contrastRatio } from '@/theme/contrast';
 
 /**
@@ -16,4 +16,9 @@ export function pageTint(event: Pick<EventDetail, 'category' | 'cover_color'>): 
     if (readable) return fromCover;
   }
   return categoryColor[event.category].bg;
+}
+
+/** The deep colour behind the cover at the top of the event page (Luma). */
+export function pageTintStrong(event: Pick<EventDetail, 'category'>): string {
+  return posterColor[event.category].to;
 }

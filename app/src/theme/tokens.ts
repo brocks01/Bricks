@@ -6,7 +6,10 @@
  */
 
 export const color = {
+  /** Raised surfaces: cards, grouped lists, sheets' rows, inputs, secondary buttons. */
   bg: '#FFFFFF',
+  /** The page behind everything (Luma's pale grey): white cards float on it. */
+  canvas: '#F3F3F6',
   /** Soft grey panels (cards, grouped lists, secondary buttons). */
   bgSubtle: '#F2F2F5',
   border: '#E3E3E8',
@@ -70,6 +73,24 @@ export const categoryColor = {
 
 export type CategoryColorKey = keyof typeof categoryColor;
 
+/**
+ * Poster art: a bold diagonal gradient per category with a big white icon, used
+ * where an event has no photo (Luma's covers are vivid photos and posters).
+ * Decorative only: no text is ever drawn on it.
+ */
+export const posterColor: Record<CategoryColorKey, { from: string; to: string }> = {
+  walk: { from: '#3DD68C', to: '#0B7A4B' },
+  exercise: { from: '#6E9BFF', to: '#2A3DB5' },
+  class: { from: '#FFB561', to: '#D45A0B' },
+  games: { from: '#B993FF', to: '#6430D1' },
+  music: { from: '#FF85B0', to: '#C0185A' },
+  cooking: { from: '#FF9A6B', to: '#CF3D16' },
+  gardening: { from: '#A6DC63', to: '#3B861C' },
+  kids: { from: '#FFD95A', to: '#EE8A0A' },
+  meetup: { from: '#55D6E4', to: '#117C98' },
+  other: { from: '#A3ABBA', to: '#4A5262' },
+};
+
 export type FontWeightToken = 'regular' | 'semibold' | 'bold';
 
 export interface TypeStyle {
@@ -96,7 +117,7 @@ export type TypeVariant = keyof typeof typeScale;
 export const lineHeightRatio = 1.4;
 
 export const radius = {
-  card: 20,
+  card: 24,
   /** Every button is a pill. */
   button: 999,
   /** Icon tiles, photos in rows. */
@@ -106,7 +127,11 @@ export const radius = {
   avatar: 999,
 } as const;
 
-/** One soft shadow, only for things that float (tab bar, sheets, toasts). */
+/**
+ * Soft shadows (Luma). `floating` for things above the page (tab bar, sheets,
+ * toasts, covers); `card` lifts white cards off the grey page; `control` for
+ * white buttons and chips so their edges read clearly.
+ */
 export const shadow = {
   floating: {
     shadowColor: '#000000',
@@ -114,6 +139,20 @@ export const shadow = {
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 8 },
     elevation: 10,
+  },
+  card: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 2,
+  },
+  control: {
+    shadowColor: '#000000',
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
   },
 } as const;
 

@@ -8,6 +8,7 @@ import {
   color,
   iconSize,
   radius,
+  shadow,
   space,
   touch,
   type CategoryColorKey,
@@ -17,7 +18,7 @@ import { CaretRightIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
 
 /**
- * An iOS-style grouped list (Luma settings): rows on one grey panel, with thin
+ * An iOS-style grouped list (Luma settings): rows on one white panel, with thin
  * lines between them, and an optional small heading above.
  */
 export function GroupedList({
@@ -38,12 +39,14 @@ export function GroupedList({
         </Text>
       ) : null}
       <View style={styles.panel}>
-        {rows.map((row, i) => (
-          <Fragment key={row.key ?? i}>
-            {i > 0 ? <View style={styles.divider} /> : null}
-            {row}
-          </Fragment>
-        ))}
+        <View style={styles.clip}>
+          {rows.map((row, i) => (
+            <Fragment key={row.key ?? i}>
+              {i > 0 ? <View style={styles.divider} /> : null}
+              {row}
+            </Fragment>
+          ))}
+        </View>
       </View>
     </View>
   );
@@ -124,8 +127,12 @@ const styles = StyleSheet.create({
     gap: space.xs,
   },
   panel: {
+    ...shadow.card,
     borderRadius: radius.card,
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
+  },
+  clip: {
+    borderRadius: radius.card,
     overflow: 'hidden',
   },
   row: {

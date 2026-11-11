@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
 
 import { CaretRightIcon, CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -81,8 +81,9 @@ const styles = StyleSheet.create({
     padding: space.md,
     borderRadius: radius.card,
     borderWidth: borderWidth.control,
-    borderColor: color.bgSubtle,
-    backgroundColor: color.bgSubtle,
+    borderColor: color.bg,
+    backgroundColor: color.bg,
+    ...shadow.card,
   },
   pressed: {
     backgroundColor: color.primarySubtle,
@@ -99,7 +100,7 @@ const styles = StyleSheet.create({
     width: ICON_WELL,
     height: ICON_WELL,
     borderRadius: radius.tile,
-    backgroundColor: color.bg,
+    backgroundColor: color.bgSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },

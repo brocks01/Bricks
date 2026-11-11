@@ -21,7 +21,7 @@ import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { config } from '@/lib/config';
 import { isSingaporeMobile, normalisePhone } from '@/lib/phone';
 import { useOnboarding } from '@/state/onboarding';
-import { color, iconSize, radius, space } from '@/theme';
+import { color, iconSize, radius, shadow, space } from '@/theme';
 
 /** "Raj Kumar" → "Raj": what we call them unless they choose otherwise. */
 const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? '';
@@ -193,7 +193,8 @@ const styles = StyleSheet.create({
     width: ICON_WELL,
     height: ICON_WELL,
     borderRadius: radius.avatar,
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
+    ...shadow.card,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: space.xs,

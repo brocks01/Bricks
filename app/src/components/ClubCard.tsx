@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.tile,
   },
   pressed: {
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.primarySubtle,
   },
   info: {
     flex: 1,

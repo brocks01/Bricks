@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -24,31 +24,38 @@ import {
   typeScale,
 } from '@/theme';
 
+const ICON_PILL_WIDTH = 64;
+
 export const unstable_settings = {
   anchor: 'home',
 };
 
 /**
- * Room for the icon plus two lines of label at the phone's font size (labels like
- * "Pass It On" and most Tamil labels wrap on narrow phones). Grows with the system
- * font up to the chrome cap, so labels are never clipped.
+ * Room for the icon plus the labels at the phone's font size: two lines when a label
+ * has more than one word (those wrap on narrow phones, e.g. "Aktiviti Saya" and most
+ * Tamil labels), one line otherwise (one-word labels shrink to fit instead). Grows
+ * with the system font up to the chrome cap, so labels are never clipped.
  */
-function tabBarHeight(fontScale: number): number {
+function tabBarHeight(fontScale: number, labels: readonly string[]): number {
   const scale = Math.min(Math.max(fontScale, 1), maxChromeFontScale);
   const labelLine = typeScale.caption.size * lineHeightRatio * scale;
-  const content = space.xs * 2 + iconSize.inline + space.xxs + labelLine * 2;
+  const lines = labels.some((l) => /\s/.test(l.trim())) ? 2 : 1;
+  const content = space.xs * 2 + iconSize.inline + space.xxs * 3 + labelLine * lines;
   return Math.max(touch.large, Math.ceil(content));
 }
 
 function tabIcon(IconComponent: Icon) {
   return function TabIcon({ focused }: { focused: boolean }) {
-    // Filled when selected, so the active tab isn't shown by colour alone.
+    // Selected: a filled icon on a grey pill, and a bold label, so the active tab
+    // isn't shown by colour alone.
     return (
-      <IconComponent
-        size={iconSize.inline}
-        color={focused ? color.text : color.textSecondary}
-        weight={focused ? 'fill' : 'bold'}
-      />
+      <View style={[styles.iconPill, focused && styles.iconPillOn]}>
+        <IconComponent
+          size={iconSize.inline}
+          color={focused ? color.text : color.textSecondary}
+          weight={focused ? 'fill' : 'bold'}
+        />
+      </View>
     );
   };
 }
@@ -78,7 +85,7 @@ function tabLabel(label: string) {
 
 /**
  * Home · Community · Activity · Health, on a floating white pill with the selected
- * tab in a grey pill (Luma). Home is first and the default; the three pillars follow
+ * tab's icon in a grey pill (Luma). Home is first and the default; the three pillars follow
  * in the same order as the cards on Home. The bar stays in the layout (it doesn't
  * overlap the screen), so footers and the last list item are never hidden under it.
  */
@@ -96,11 +103,17 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: color.text,
         tabBarInactiveTintColor: color.textSecondary,
-        tabBarActiveBackgroundColor: color.primarySubtle,
         tabBarStyle: {
           ...shadow.floating,
-          height: tabBarHeight(fontScale) + space.xs * 2,
-          marginHorizontal: space.xs,
+          height:
+            tabBarHeight(fontScale, [
+              t('tabs.home'),
+              t('tabs.kampung'),
+              t('tabs.passItOn'),
+              t('tabs.thrive'),
+            ]) +
+            space.xs * 2,
+          marginHorizontal: space.sm,
           marginBottom: insets.bottom + space.xs,
           paddingHorizontal: space.xxs,
           paddingTop: space.xs,
@@ -110,7 +123,7 @@ export default function TabsLayout() {
           backgroundColor: color.bg,
         },
         tabBarItemStyle: styles.item,
-        sceneStyle: { backgroundColor: color.bg },
+        sceneStyle: { backgroundColor: color.canvas },
       }}
     >
       <Tabs.Screen
@@ -158,7 +171,16 @@ const styles = StyleSheet.create({
     minHeight: touch.min,
     paddingVertical: space.xxs,
     gap: space.xxs,
-    borderRadius: radius.button,
+    borderRadius: radius.card,
     overflow: 'hidden',
+  },
+  iconPill: {
+    width: ICON_PILL_WIDTH,
+    paddingVertical: space.xxs,
+    alignItems: 'center',
+    borderRadius: radius.button,
+  },
+  iconPillOn: {
+    backgroundColor: color.primarySubtle,
   },
 });

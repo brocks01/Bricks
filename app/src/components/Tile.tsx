@@ -2,7 +2,7 @@ import { Children, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
 
 import { CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -92,11 +92,12 @@ const styles = StyleSheet.create({
     padding: space.sm,
     borderRadius: radius.card,
     borderWidth: borderWidth.hairline,
-    borderColor: color.border,
+    borderColor: color.bg,
     backgroundColor: color.bg,
+    ...shadow.card,
   },
   pressed: {
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.primarySubtle,
     borderColor: color.primary,
   },
   selected: {

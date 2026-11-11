@@ -2,8 +2,8 @@ import { fontAssets, fontStyleFor } from './fonts';
 
 describe('fontStyleFor', () => {
   it('uses Noto Sans for English and Malay, without a separate fontWeight', () => {
-    expect(fontStyleFor('en', 'bold')).toEqual({ fontFamily: 'NotoSans_700Bold' });
-    expect(fontStyleFor('ms', 'regular')).toEqual({ fontFamily: 'NotoSans_400Regular' });
+    expect(fontStyleFor('en', 'bold')).toEqual({ fontFamily: 'Inter_700Bold' });
+    expect(fontStyleFor('ms', 'regular')).toEqual({ fontFamily: 'Inter_400Regular' });
   });
 
   it('uses Noto Sans Tamil for Tamil', () => {
