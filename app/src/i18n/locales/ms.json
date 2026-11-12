@@ -843,5 +843,42 @@
     "getting": "Menyediakan akaun Hakim {{n}}…",
     "welcome": "Selamat datang, {{name}}. Soalan hari ini menunggu di Utama.",
     "failed": "Kami tidak dapat membuka akaun hakim. Semak internet, kemudian cuba lagi."
+  },
+  "history": {
+    "title": "Jalan kaki anda",
+    "week": "Minggu",
+    "month": "Bulan",
+    "total": {
+      "week": "Minggu ini",
+      "month": "4 minggu lalu"
+    },
+    "more": {
+      "week": "{{distance}} lebih daripada minggu lalu. Syabas!",
+      "month": "{{distance}} lebih daripada 4 minggu sebelumnya. Syabas!"
+    },
+    "good": {
+      "week": "Minggu yang baik untuk berjalan.",
+      "month": "Bulan yang baik untuk berjalan."
+    },
+    "lighter": {
+      "week": "Minggu yang lebih ringan. Jalan kaki hari ini?",
+      "month": "Bulan yang lebih ringan. Jalan kaki hari ini?"
+    },
+    "bests": "Terbaik anda",
+    "longest": "Jalan kaki paling jauh",
+    "mostSteps": "Langkah paling banyak sehari",
+    "thisMonth": "Jalan kaki bulan ini",
+    "steps_one": "{{value}} langkah",
+    "steps_other": "{{value}} langkah",
+    "walks": "Semua jalan kaki",
+    "none": {
+      "week": "Belum ada jalan kaki minggu ini.",
+      "month": "Tiada jalan kaki dalam 4 minggu lalu."
+    },
+    "readout": {
+      "week": "Jalan kaki anda. Minggu ini anda berjalan {{distance}} dalam {{walks}}. {{compare}}",
+      "month": "Jalan kaki anda. Dalam 4 minggu lalu anda berjalan {{distance}} dalam {{walks}}. {{compare}}"
+    },
+    "lastLine": "Terakhir: {{line}}"
   }
 }

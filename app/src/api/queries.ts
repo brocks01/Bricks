@@ -11,6 +11,7 @@ import { api } from './client';
 import type { WalkUpload } from '@/features/walk/engine';
 
 import type {
+  WalkPeriod,
   CheckinResult,
   EventDetail,
   EventFilter,
@@ -42,7 +43,7 @@ export const queryKeys = {
   reminders: ['reminders'] as const,
   walks: ['walks'] as const,
   walk: (id: string) => ['walks', 'detail', id] as const,
-  walkStats: ['walks', 'stats'] as const,
+  walkStats: (period: WalkPeriod) => ['walks', 'stats', period] as const,
   sos: (id: string) => ['sos', id] as const,
   activeSos: ['sos', 'active'] as const,
   demoAccounts: ['demo', 'accounts'] as const,
@@ -218,8 +219,11 @@ export function useWalk(id: string) {
   return useQuery({ queryKey: queryKeys.walk(id), queryFn: () => api.getWalk(id) });
 }
 
-export function useWalkStats() {
-  return useQuery({ queryKey: queryKeys.walkStats, queryFn: () => api.getWalkStats() });
+export function useWalkStats(period: WalkPeriod = 'week') {
+  return useQuery({
+    queryKey: queryKeys.walkStats(period),
+    queryFn: () => api.getWalkStats(period),
+  });
 }
 
 export function useUploadWalk() {

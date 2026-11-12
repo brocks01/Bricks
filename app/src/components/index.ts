@@ -14,6 +14,7 @@ export { ClubCard, type ClubCardProps } from './ClubCard';
 export { ComingSoon } from './ComingSoon';
 export { ConfirmSheet, type ConfirmSheetProps } from './ConfirmSheet';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
+export { RouteThumb, type RouteThumbProps } from './RouteThumb';
 export { EventCard, type EventCardProps } from './EventCard';
 export { EventRow, type EventRowProps } from './EventRow';
 export { InfoRow } from './InfoRow';

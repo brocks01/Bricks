@@ -188,6 +188,8 @@ export interface WalkListItem {
   distance_m: number;
   moving_s: number;
   steps: number;
+  /** The route with the 200 m around home left out (safe for a thumbnail). */
+  route_public_polyline: string;
 }
 
 /** GET /walks/{id}, and the response to POST /walks. */
@@ -206,12 +208,28 @@ export interface WalkSummary extends WalkListItem {
 }
 
 /** GET /walks/stats?period=week. */
+export type WalkPeriod = 'week' | 'month';
+
+/** Personal bests (S24): all time, except walks this calendar month. */
+export interface WalkBests {
+  longest_m: number;
+  longest_walk_id: string | null;
+  most_steps_day: number;
+  walks_this_month: number;
+}
+
 export interface WalkStats {
+  period: WalkPeriod;
   distance_m: number;
   walks: number;
   moving_s: number;
-  /** Monday-first, this week: metres walked each day. */
+  /** Week: Monday-first, metres each day. Month: the last four weeks, one bar each (date = Monday). */
   days: { date: string; distance_m: number }[];
+  /** The same length of time just before ("1.2 km more than last week"). */
+  previous_distance_m: number;
+  bests: WalkBests;
+  /** The walks in the period, newest first. */
+  items: WalkListItem[];
   last_walk: WalkListItem | null;
 }
 

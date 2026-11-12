@@ -1,7 +1,7 @@
 """Walks: upload a finished walk, its summary, history and weekly stats (docs/03 §4, §6)."""
 
 import json
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Any, Literal
 
 from fastapi import APIRouter, HTTPException
@@ -12,6 +12,7 @@ from ..ids import new_id
 from ..repo import people, user_row
 from ..schemas import (
     Split,
+    WalkBests,
     WalkDay,
     WalkListItem,
     WalkPraise,
@@ -36,6 +37,7 @@ def _list_item(row: dict[str, Any]) -> WalkListItem:
         distance_m=row["distance_m"],
         moving_s=row["moving_s"],
         steps=row["steps"],
+        route_public_polyline=row["route_public_polyline"],
     )
 
 
@@ -50,7 +52,6 @@ async def _summary(ctx: Ctx, row: dict[str, Any]) -> WalkSummary:
         splits=[Split(**s) for s in splits],
         # The full route (with home) is only ever returned to the walker.
         route_polyline=row["route_polyline"] if row["user_id"] == ctx.user_id else None,
-        route_public_polyline=row["route_public_polyline"],
         walked_with=await people(ctx.conn, list(row["walked_with"])),
         praise=WalkPraise(**praise),
     )
@@ -133,33 +134,54 @@ async def upload_walk(body: WalkUpload, ctx: CtxDep) -> WalkSummary:
 
 
 @router.get("/walks/stats")
-async def walk_stats(ctx: CtxDep, period: Literal["week"] = "week") -> WalkStats:
-    monday = week_start(local_date(ctx.now))
+async def walk_stats(ctx: CtxDep, period: Literal["week", "month"] = "week") -> WalkStats:
+    """S20 / S24: this week (a bar a day) or the last four weeks (a bar a week)."""
+    today = local_date(ctx.now)
+    monday = week_start(today)
+    weeks = 1 if period == "week" else 4
+    start = monday - timedelta(weeks=weeks - 1)
+    before = start - timedelta(weeks=weeks)
     rows = await (
         await ctx.conn.execute(
-            "select * from walks where user_id = %s and started_at >= %s order by started_at",
-            (ctx.user_id, monday),
+            "select * from walks where user_id = %s order by started_at", (ctx.user_id,)
         )
     ).fetchall()
-    last = await (
-        await ctx.conn.execute(
-            "select * from walks where user_id = %s order by started_at desc limit 1",
-            (ctx.user_id,),
-        )
-    ).fetchone()
-    days = [monday + timedelta(days=i) for i in range(7)]
+    dated = [(local_date(r["started_at"]), r) for r in rows]
+    current = [r for d, r in dated if d >= start]
+    previous = [r for d, r in dated if before <= d < start]
+
+    if period == "week":
+        buckets = [(monday + timedelta(days=i), timedelta(days=1)) for i in range(7)]
+    else:
+        buckets = [(start + timedelta(weeks=i), timedelta(weeks=1)) for i in range(weeks)]
+
+    steps_by_day: dict[date, int] = {}
+    for d, r in dated:
+        steps_by_day[d] = steps_by_day.get(d, 0) + r["steps"]
+    longest = max(rows, key=lambda r: r["distance_m"], default=None)
+    month_start = today.replace(day=1)
+
     return WalkStats(
-        distance_m=sum(r["distance_m"] for r in rows),
-        walks=len(rows),
-        moving_s=sum(r["moving_s"] for r in rows),
+        period=period,
+        distance_m=sum(r["distance_m"] for r in current),
+        walks=len(current),
+        moving_s=sum(r["moving_s"] for r in current),
         days=[
             WalkDay(
-                date=d.isoformat(),
-                distance_m=sum(r["distance_m"] for r in rows if local_date(r["started_at"]) == d),
+                date=b.isoformat(),
+                distance_m=sum(r["distance_m"] for d, r in dated if b <= d < b + span),
             )
-            for d in days
+            for b, span in buckets
         ],
-        last_walk=_list_item(last) if last else None,
+        previous_distance_m=sum(r["distance_m"] for r in previous),
+        bests=WalkBests(
+            longest_m=longest["distance_m"] if longest else 0,
+            longest_walk_id=longest["id"] if longest else None,
+            most_steps_day=max(steps_by_day.values(), default=0),
+            walks_this_month=sum(1 for d, _ in dated if d >= month_start),
+        ),
+        items=[_list_item(r) for r in reversed(current)],
+        last_walk=_list_item(rows[-1]) if rows else None,
     )
 
 

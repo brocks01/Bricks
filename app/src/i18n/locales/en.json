@@ -865,5 +865,42 @@
     "getting": "Getting Judge {{n}}'s account ready…",
     "welcome": "Welcome, {{name}}. Today's question is waiting on Home.",
     "failed": "We couldn't open the judge account. Check the internet, then try again."
+  },
+  "history": {
+    "title": "Your walks",
+    "week": "Week",
+    "month": "Month",
+    "total": {
+      "week": "This week",
+      "month": "Last 4 weeks"
+    },
+    "more": {
+      "week": "{{distance}} more than last week. Well done!",
+      "month": "{{distance}} more than the 4 weeks before. Well done!"
+    },
+    "good": {
+      "week": "A good week of walking.",
+      "month": "A good month of walking."
+    },
+    "lighter": {
+      "week": "A lighter week. A walk today?",
+      "month": "A lighter month. A walk today?"
+    },
+    "bests": "Your best",
+    "longest": "Longest walk",
+    "mostSteps": "Most steps in a day",
+    "thisMonth": "Walks this month",
+    "steps_one": "{{value}} step",
+    "steps_other": "{{value}} steps",
+    "walks": "Every walk",
+    "none": {
+      "week": "No walks this week yet.",
+      "month": "No walks in the last 4 weeks."
+    },
+    "readout": {
+      "week": "Your walks. This week you walked {{distance}} in {{walks}}. {{compare}}",
+      "month": "Your walks. In the last 4 weeks you walked {{distance}} in {{walks}}. {{compare}}"
+    },
+    "lastLine": "Last: {{line}}"
   }
 }

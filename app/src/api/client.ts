@@ -46,6 +46,7 @@ import type {
   Today,
   Transcript,
   VoiceClip,
+  WalkPeriod,
   WalkStats,
   WalkSummary,
 } from './types';
@@ -74,7 +75,7 @@ export interface BricksApi {
   deleteReminder(id: string): Promise<void>;
   uploadWalk(upload: WalkUpload): Promise<WalkSummary>;
   getWalk(id: string): Promise<WalkSummary>;
-  getWalkStats(): Promise<WalkStats>;
+  getWalkStats(period?: WalkPeriod): Promise<WalkStats>;
   triggerSos(input: {
     trigger: 'button';
     lat: number | null;
@@ -156,7 +157,7 @@ const httpApi: BricksApi = {
   deleteReminder: (id) => request(`/reminders/${encodeURIComponent(id)}`, { method: 'DELETE' }),
   uploadWalk: (upload) => request('/walks', { method: 'POST', body: upload }),
   getWalk: (id) => request(`/walks/${encodeURIComponent(id)}`),
-  getWalkStats: () => request('/walks/stats?period=week'),
+  getWalkStats: (period = 'week') => request(`/walks/stats?period=${period}`),
   triggerSos: (input) => request('/sos', { method: 'POST', body: input }),
   getSos: (id) => request(`/sos/${encodeURIComponent(id)}`),
   resolveSos: (id) =>

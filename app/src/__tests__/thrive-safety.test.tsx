@@ -53,7 +53,10 @@ describe('Thrive', () => {
 
   it('opens the last walk: route, numbers, splits and a warm line', async () => {
     await renderApp('/thrive');
+    // Your walks → the newest walk is at the top of the list.
     await fireEvent.press(await screen.findByTestId('thrive-last-walk'));
+    const walks = await screen.findAllByTestId(/^history-walk-/);
+    await fireEvent.press(walks[0]!);
     expect(currentPath()).toMatch(/^\/walk\/w_/);
     expect(await screen.findByText(/Morning walk · Bishan Park/)).toBeTruthy();
     expect(screen.getByText('2.4 km')).toBeTruthy();

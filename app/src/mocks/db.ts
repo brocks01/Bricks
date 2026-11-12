@@ -1,4 +1,5 @@
 import type {
+  WalkPeriod,
   CheckinResult,
   CircleDetail,
   CircleList,
@@ -492,7 +493,7 @@ export function createMockDb(now: () => Date = () => new Date()) {
       if (!walk) throw new MockNotFound(`walk ${id}`);
       return walk;
     },
-    walkStats: () => thrive.walkStats(),
+    walkStats: (period: WalkPeriod = 'week') => thrive.walkStats(period),
     triggerSos: () => thrive.triggerSos(),
     getSos(id: string): SosAlert {
       const alert = thrive.getSos(id);

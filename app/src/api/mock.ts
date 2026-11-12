@@ -52,7 +52,7 @@ export const mockApi: BricksApi = {
   deleteReminder: (id) => respond(() => db.deleteReminder(id), `/reminders/${id}`),
   uploadWalk: (upload) => respond(() => db.uploadWalk(upload), '/walks'),
   getWalk: (id) => respond(() => db.getWalk(id), `/walks/${id}`),
-  getWalkStats: () => respond(() => db.walkStats(), '/walks/stats'),
+  getWalkStats: (period = 'week') => respond(() => db.walkStats(period), '/walks/stats'),
   triggerSos: () => respond(() => db.triggerSos(), '/sos'),
   getSos: (id) => respond(() => db.getSos(id), `/sos/${id}`),
   resolveSos: (id) => respond(() => db.resolveSos(id), `/sos/${id}`),

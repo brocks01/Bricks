@@ -83,7 +83,7 @@ export function BigButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={accessibilityLabel ?? label}
-      accessibilityState={{ disabled: !!disabled }}
+      accessibilityState={{ ...rest.accessibilityState, disabled: !!disabled }}
       disabled={disabled}
       onPress={(event) => {
         tapFeedback();

@@ -61,6 +61,8 @@ export interface GroupedRowProps {
   icon?: Icon;
   /** The coloured rounded square behind the icon. */
   tint?: CategoryColorKey;
+  /** Something else in the icon's place (a walk's route thumbnail). */
+  leading?: ReactNode;
   /** Leave out for a row that only shows information (no chevron). */
   onPress?: () => void;
   testID?: string;
@@ -73,13 +75,15 @@ export function GroupedRow({
   value,
   icon: IconComponent,
   tint = 'other',
+  leading,
   onPress,
   testID,
 }: GroupedRowProps) {
   const compact = useCompact();
   const content = (
     <>
-      {IconComponent ? (
+      {leading ?? null}
+      {!leading && IconComponent ? (
         <View
           style={[
             styles.iconTile,

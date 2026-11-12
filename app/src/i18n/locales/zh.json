@@ -843,5 +843,42 @@
     "getting": "正在准备评委 {{n}} 的账户…",
     "welcome": "欢迎，{{name}}。今天的问题在首页等着您。",
     "failed": "无法打开评委账户。请检查网络，然后再试一次。"
+  },
+  "history": {
+    "title": "您的散步",
+    "week": "周",
+    "month": "月",
+    "total": {
+      "week": "本周",
+      "month": "过去 4 周"
+    },
+    "more": {
+      "week": "比上周多走了 {{distance}}。真棒！",
+      "month": "比之前 4 周多走了 {{distance}}。真棒！"
+    },
+    "good": {
+      "week": "这周走得很好。",
+      "month": "这个月走得很好。"
+    },
+    "lighter": {
+      "week": "这周走得少一点。今天去走走？",
+      "month": "这个月走得少一点。今天去走走？"
+    },
+    "bests": "您的最佳",
+    "longest": "最长的一次散步",
+    "mostSteps": "一天最多步数",
+    "thisMonth": "本月散步次数",
+    "steps_one": "{{value}} 步",
+    "steps_other": "{{value}} 步",
+    "walks": "每一次散步",
+    "none": {
+      "week": "这周还没有散步。",
+      "month": "过去 4 周没有散步。"
+    },
+    "readout": {
+      "week": "您的散步。这周您走了 {{distance}}，共 {{walks}}。{{compare}}",
+      "month": "您的散步。过去 4 周您走了 {{distance}}，共 {{walks}}。{{compare}}"
+    },
+    "lastLine": "上一次：{{line}}"
   }
 }

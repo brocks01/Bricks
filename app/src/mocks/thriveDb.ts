@@ -6,6 +6,7 @@ import type {
   SafeCircleMember,
   SosAlert,
   WalkListItem,
+  WalkPeriod,
   WalkStats,
   WalkSummary,
 } from '@/api/types';
@@ -165,6 +166,7 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
     distance_m: w.distance_m,
     moving_s: w.moving_s,
     steps: w.steps,
+    route_public_polyline: w.route_public_polyline,
   });
 
   /* ---------- SOS ---------- */
@@ -237,23 +239,51 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
     getWalk(id: string): WalkSummary | null {
       return walks.find((w) => w.id === id) ?? null;
     },
-    walkStats(): WalkStats {
+    walkStats(period: WalkPeriod = 'week'): WalkStats {
       const monday = weekStart(now());
-      const thisWeek = walks.filter((w) => new Date(w.started_at) >= monday);
+      const weeks = period === 'week' ? 1 : 4;
+      const start = addDays(monday, -7 * (weeks - 1));
+      const before = addDays(start, -7 * weeks);
+      const day = (w: WalkSummary) => isoDate(new Date(w.started_at));
+      const current = walks.filter((w) => day(w) >= isoDate(start));
+      const previous = walks.filter((w) => day(w) >= isoDate(before) && day(w) < isoDate(start));
+      const sum = (list: WalkSummary[], key: 'distance_m' | 'moving_s') =>
+        list.reduce((total, w) => total + w[key], 0);
+      const buckets =
+        period === 'week'
+          ? Array.from({ length: 7 }, (_, i) => [addDays(monday, i), addDays(monday, i + 1)])
+          : Array.from({ length: weeks }, (_, i) => [
+              addDays(start, 7 * i),
+              addDays(start, 7 * (i + 1)),
+            ]);
+      const stepsByDay = new Map<string, number>();
+      for (const w of walks) stepsByDay.set(day(w), (stepsByDay.get(day(w)) ?? 0) + w.steps);
+      const longest = walks.reduce<WalkSummary | null>(
+        (best, w) => (!best || w.distance_m > best.distance_m ? w : best),
+        null,
+      );
+      const monthStart = isoDate(new Date(now().getFullYear(), now().getMonth(), 1));
       const last = walks[walks.length - 1];
       return {
-        distance_m: thisWeek.reduce((sum, w) => sum + w.distance_m, 0),
-        walks: thisWeek.length,
-        moving_s: thisWeek.reduce((sum, w) => sum + w.moving_s, 0),
-        days: Array.from({ length: 7 }, (_, i) => {
-          const date = isoDate(addDays(monday, i));
-          return {
-            date,
-            distance_m: thisWeek
-              .filter((w) => isoDate(new Date(w.started_at)) === date)
-              .reduce((sum, w) => sum + w.distance_m, 0),
-          };
-        }),
+        period,
+        distance_m: sum(current, 'distance_m'),
+        walks: current.length,
+        moving_s: sum(current, 'moving_s'),
+        days: buckets.map(([from, to]) => ({
+          date: isoDate(from!),
+          distance_m: sum(
+            walks.filter((w) => day(w) >= isoDate(from!) && day(w) < isoDate(to!)),
+            'distance_m',
+          ),
+        })),
+        previous_distance_m: sum(previous, 'distance_m'),
+        bests: {
+          longest_m: longest?.distance_m ?? 0,
+          longest_walk_id: longest?.id ?? null,
+          most_steps_day: Math.max(0, ...stepsByDay.values()),
+          walks_this_month: walks.filter((w) => day(w) >= monthStart).length,
+        },
+        items: current.slice().reverse().map(listItem),
         last_walk: last ? listItem(last) : null,
       };
     },

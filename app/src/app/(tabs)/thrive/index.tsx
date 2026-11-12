@@ -8,6 +8,7 @@ import type { CheckinWeek, WalkStats } from '@/api/types';
 import {
   BigButton,
   BellIcon,
+  ChartBarIcon,
   ButtonRow,
   Card,
   GroupedList,
@@ -189,19 +190,20 @@ function WeekSummary({
         testID="thrive-week"
       />
       <GroupedList>
+        {/* Your walks: the last one on the row, the history (S24) behind it. */}
         {stats.last_walk ? (
           <GroupedRow
-            icon={PersonSimpleWalkIcon}
+            icon={ChartBarIcon}
             tint="walk"
-            title={t('thrive.lastWalk')}
-            subtitle={t('thrive.lastWalkLine', {
-              place: stats.last_walk.start_place_name,
-              distance: formatDistance(stats.last_walk.distance_m, language),
-              time: formatMinutes(stats.last_walk.moving_s, t),
+            title={t('history.title')}
+            subtitle={t('history.lastLine', {
+              line: t('thrive.lastWalkLine', {
+                place: stats.last_walk.start_place_name,
+                distance: formatDistance(stats.last_walk.distance_m, language),
+                time: formatMinutes(stats.last_walk.moving_s, t),
+              }),
             })}
-            onPress={() =>
-              router.push({ pathname: '/walk/[id]', params: { id: stats.last_walk!.id } })
-            }
+            onPress={() => router.push('/thrive/history')}
             testID="thrive-last-walk"
           />
         ) : (

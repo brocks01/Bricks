@@ -233,6 +233,8 @@ class WalkListItem(Wire):
     distance_m: int
     moving_s: int
     steps: int
+    # The route with the 200 m around home left out (safe for a thumbnail).
+    route_public_polyline: str
 
 
 class WalkSummary(WalkListItem):
@@ -241,7 +243,6 @@ class WalkSummary(WalkListItem):
     avg_pace_s_per_km: int
     splits: list[Split]
     route_polyline: str | None
-    route_public_polyline: str
     walked_with: list[PersonSummary]
     praise: WalkPraise
 
@@ -251,11 +252,27 @@ class WalkDay(Wire):
     distance_m: int
 
 
+class WalkBests(Wire):
+    """Personal bests (S24): all time, except walks this calendar month."""
+
+    longest_m: int
+    longest_walk_id: str | None
+    most_steps_day: int
+    walks_this_month: int
+
+
 class WalkStats(Wire):
+    period: Literal["week", "month"]
     distance_m: int
     walks: int
     moving_s: int
+    # Week: Monday to Sunday. Month: the last four weeks, one bar each (date = Monday).
     days: list[WalkDay]
+    # The same length of time just before, for "1.2 km more than last week".
+    previous_distance_m: int
+    bests: WalkBests
+    # The walks in the period, newest first.
+    items: list[WalkListItem]
     last_walk: WalkListItem | None
 
 

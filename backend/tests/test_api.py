@@ -414,6 +414,31 @@ async def test_raj_has_three_weeks_of_walks(api: Api) -> None:
     assert len(month) >= 10
 
 
+async def test_walk_history_week_and_month(api: Api) -> None:
+    # S24 (iteration 3.2): totals match the walks, bars add up, bests are right.
+    week = (await api.client.get("/walks/stats?period=week")).json()
+    month = (await api.client.get("/walks/stats?period=month")).json()
+    for s in (week, month):
+        assert s["distance_m"] == sum(d["distance_m"] for d in s["days"])
+        assert s["walks"] == len(s["items"])
+        assert s["distance_m"] == sum(w["distance_m"] for w in s["items"])
+        dates = [w["started_at"] for w in s["items"]]
+        assert dates == sorted(dates, reverse=True)
+        assert all(w["route_public_polyline"] for w in s["items"])
+    assert week["period"] == "week" and len(week["days"]) == 7
+    assert month["period"] == "month" and len(month["days"]) == 4
+    # Four weeks hold every seeded walk from the last 20 days (and the week's).
+    assert month["walks"] >= week["walks"] and month["walks"] >= 9
+    assert month["bests"] == week["bests"]
+    bests = week["bests"]
+    longest = (await api.client.get(f"/walks/{bests['longest_walk_id']}")).json()
+    assert (
+        longest["distance_m"] == bests["longest_m"] >= max(w["distance_m"] for w in month["items"])
+    )
+    assert bests["most_steps_day"] >= max(w["steps"] for w in month["items"])
+    assert bests["walks_this_month"] >= 1
+
+
 # ---------- SOS ----------
 
 
