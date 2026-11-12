@@ -3,8 +3,9 @@
 Provider, in this order:
   1. Brevo over its REST API: set ONE variable, BREVO_API_KEY (a key that starts with xkeysib-). The sender is taken from EMAIL_FROM if you set it;
      otherwise the first active sender in the Brevo account is used (Brevo only sends from a sender you verified there).
-  2. Any SMTP server: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, EMAIL_FROM.
-  3. Neither (local work): nothing is sent and a notice is logged WITHOUT the code.
+  2. Resend over its REST API: set RESEND_API_KEY (starts with re_) and EMAIL_FROM (a sender on a domain verified in Resend). Works on hosts that block SMTP.
+  3. Any SMTP server: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASSWORD, EMAIL_FROM.
+  4. None (local work): nothing is sent and a notice is logged WITHOUT the code.
 
 The look is the plain white transactional style from the Jambagrad email module: one voice for every mail, no marketing chrome, no tracking on
 security mail. Failures never leak the key. A daily cap protects the free tier (EMAIL_DAILY_LIMIT, default 300, Brevo's free plan)."""
@@ -37,7 +38,7 @@ _sender_at = 0.0
 
 
 def configured() -> bool:
-    return bool(os.environ.get("BREVO_API_KEY", "").strip() or get_settings().smtp_host)
+    return bool(os.environ.get("BREVO_API_KEY", "").strip() or os.environ.get("RESEND_API_KEY", "").strip() or get_settings().smtp_host)
 
 
 def daily_limit() -> int:
@@ -105,6 +106,22 @@ def send(to: str, subject: str, html: str, text: str) -> bool:
         if r.status_code >= 300:
             why = {401: "bad_key", 402: "no_credit", 403: "forbidden", 429: "rate_limited"}.get(r.status_code, f"refused_{r.status_code}")
             log.warning("brevo refused the mail: %s (%s)", r.status_code, str((r.json() if r.content else {}).get("message", ""))[:120])
+            raise MailError(why)
+        return True
+    if os.environ.get("RESEND_API_KEY", "").strip():
+        sender = (get_settings().email_from or "").strip()
+        if not sender:
+            raise MailError("no_sender")  # Resend only sends from an address on a verified domain: set EMAIL_FROM
+        try:
+            r = httpx.post("https://api.resend.com/emails", timeout=12,
+                           headers={"Authorization": "Bearer " + os.environ["RESEND_API_KEY"].strip(), "content-type": "application/json"},
+                           json={"from": f"{BRAND} <{sender}>", "to": [to], "subject": subject, "html": html, "text": text})
+        except httpx.HTTPError as e:
+            log.warning("resend send failed: %s", type(e).__name__)
+            raise MailError("unreachable") from e
+        if r.status_code >= 300:
+            why = {401: "bad_key", 403: "forbidden", 429: "rate_limited"}.get(r.status_code, f"refused_{r.status_code}")
+            log.warning("resend refused the mail: %s", r.status_code)
             raise MailError(why)
         return True
     s = get_settings()

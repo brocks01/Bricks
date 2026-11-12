@@ -91,3 +91,35 @@ def test_the_daily_cap_stops_new_codes(monkeypatch):
     monkeypatch.setenv("EMAIL_DAILY_LIMIT", "0")
     r = client.post("/v1/auth/request-code", json={"email": f"cap-{uuid.uuid4().hex[:8]}@example.com"})
     assert r.status_code == 503 and r.json()["detail"]["code"] == "email_busy"
+
+
+def test_resend_send_over_rest_when_only_a_resend_key_is_set(monkeypatch):
+    monkeypatch.delenv("BREVO_API_KEY", raising=False)
+    monkeypatch.setenv("RESEND_API_KEY", "re_test")
+    monkeypatch.setenv("EMAIL_FROM", "hello@bricks.test")
+    sent = []
+
+    def post(url, headers=None, json=None, timeout=None):
+        sent.append((url, headers, json))
+        return httpx.Response(200, json={"id": "x"}, request=httpx.Request("POST", url))
+
+    monkeypatch.setattr(mail.httpx, "post", post)
+    assert mail.configured() and mail.send_login_code("asha@example.com", "246810", 10) is True
+    url, headers, body = sent[0]
+    assert url == "https://api.resend.com/emails" and headers["Authorization"] == "Bearer re_test"
+    assert body["from"] == "Bricks <hello@bricks.test>" and body["to"] == ["asha@example.com"] and "246810" in body["html"]
+
+
+def test_resend_needs_a_sender_and_names_its_refusals(monkeypatch):
+    monkeypatch.delenv("BREVO_API_KEY", raising=False)
+    monkeypatch.setenv("RESEND_API_KEY", "re_test")
+    monkeypatch.delenv("EMAIL_FROM", raising=False)
+    monkeypatch.setattr(mail, "get_settings", lambda: type("S", (), {"email_from": "", "smtp_host": ""})())
+    with pytest.raises(mail.MailError) as e:
+        mail.send("a@b.test", "s", "h", "t")
+    assert e.value.code == "no_sender"
+    monkeypatch.setattr(mail, "get_settings", lambda: type("S", (), {"email_from": "hello@bricks.test", "smtp_host": ""})())
+    monkeypatch.setattr(mail.httpx, "post", lambda *a, **k: httpx.Response(403, json={"message": "domain"}, request=httpx.Request("POST", "https://x")))
+    with pytest.raises(mail.MailError) as e:
+        mail.send("a@b.test", "s", "h", "t")
+    assert e.value.code == "forbidden" and "re_test" not in str(e.value)
