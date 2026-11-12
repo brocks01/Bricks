@@ -35,6 +35,11 @@ MAX_POINTS = 20_000  # ~28 hours at one point every 5 s
 VOICE_CHEER_S = 10  # a voice cheer is short (docs/02b S19)
 FEED_DAYS = 14
 FEED_SIZE = 10
+# Demo mode: when a member shares a walk, a Circle-mate (Lim, if he's one) cheers it a
+# few seconds later, so the stage demo shows Share → cheer without a second phone
+# (like the SOS helpers setting off, routers/sos.py).
+DEMO_CHEER_AFTER_S = 5
+DEMO_CHEERER = "u_lim"
 
 
 async def _circle_mates(ctx: Ctx, other: str) -> bool:
@@ -69,8 +74,9 @@ async def _cheers(ctx: Ctx, walk_id: str) -> list[WalkCheer]:
         await ctx.conn.execute(
             "select c.*, u.id as by_id, u.name as by_name, u.photo_url as by_photo_url"
             " from walk_cheers c join users u on u.id = c.from_user"
-            " where c.walk_id = %s order by c.created_at, c.id",
-            (walk_id,),
+            # A demo cheer waits in the future until it "arrives".
+            " where c.walk_id = %s and c.created_at <= %s order by c.created_at, c.id",
+            (walk_id, ctx.now),
         )
     ).fetchall()
     return [_cheer(r) for r in rows]
@@ -280,7 +286,35 @@ async def share_walk(walk_id: str, body: WalkShare, ctx: CtxDep) -> WalkSummary:
     ).fetchone()
     if not row:
         raise not_found(f"walk {walk_id}")
+    if body.visibility == "circle" and ctx.settings.demo_mode:
+        await _demo_cheer(ctx, walk_id)
     return await _summary(ctx, row)
+
+
+async def _demo_cheer(ctx: Ctx, walk_id: str) -> None:
+    """Queues a thumbs-up from a Circle-mate, shown DEMO_CHEER_AFTER_S from now."""
+    mate = await (
+        await ctx.conn.execute(
+            "select b.user_id from circle_members a"
+            " join circle_members b on b.circle_id = a.circle_id"
+            " where a.user_id = %s and b.user_id <> %s"
+            " order by (b.user_id = %s) desc, b.user_id limit 1",
+            (ctx.user_id, ctx.user_id, DEMO_CHEERER),
+        )
+    ).fetchone()
+    if not mate:
+        return
+    await ctx.conn.execute(
+        "insert into walk_cheers (id, walk_id, from_user, kind, created_at)"
+        " values (%s, %s, %s, 'thumb', %s)"
+        " on conflict (walk_id, from_user) where kind = 'thumb' do nothing",
+        (
+            new_id("c"),
+            walk_id,
+            mate["user_id"],
+            ctx.now + timedelta(seconds=DEMO_CHEER_AFTER_S),
+        ),
+    )
 
 
 @router.post("/walks/{walk_id}/cheers", status_code=201)
@@ -306,7 +340,9 @@ async def cheer_walk(
     await ctx.conn.execute(
         "insert into walk_cheers (id, walk_id, from_user, kind, audio_url, duration_s, created_at)"
         " values (%s, %s, %s, %s, %s, %s, %s)"
-        " on conflict (walk_id, from_user) where kind = 'thumb' do nothing",
+        # Once per person; tapping before a queued demo cheer arrives shows it now.
+        " on conflict (walk_id, from_user) where kind = 'thumb'"
+        " do update set created_at = least(walk_cheers.created_at, excluded.created_at)",
         (
             new_id("c"),
             walk_id,
@@ -334,7 +370,8 @@ async def circle_walks(circle_id: str, ctx: CtxDep) -> list[GroupWalk]:
     rows = await (
         await ctx.conn.execute(
             "select w.*,"
-            " (select count(*) from walk_cheers c where c.walk_id = w.id) as cheer_count,"
+            " (select count(*) from walk_cheers c where c.walk_id = w.id"
+            "   and c.created_at <= %(now)s) as cheer_count,"
             " exists(select 1 from walk_cheers c where c.walk_id = w.id and c.kind = 'thumb'"
             "   and c.from_user = %(me)s) as cheered_by_me"
             " from walks w join circle_members m on m.user_id = w.user_id and m.circle_id = %(c)s"
@@ -342,6 +379,7 @@ async def circle_walks(circle_id: str, ctx: CtxDep) -> list[GroupWalk]:
             " order by w.started_at desc limit %(n)s",
             {
                 "me": ctx.user_id,
+                "now": ctx.now,
                 "c": circle_id,
                 "since": ctx.now - timedelta(days=FEED_DAYS),
                 "n": FEED_SIZE,

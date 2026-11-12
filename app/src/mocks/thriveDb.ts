@@ -181,24 +181,37 @@ export function createThriveDb({
   }
 
   /* ---------- Group walk feed + Cheers (3.2) ---------- */
+  const DEMO_CHEERER = 'u_lim';
+  const DEMO_CHEER_AFTER_MS = 5000;
   const cheers = new Map<string, WalkCheer[]>();
   const addCheer = (
     walkId: string,
     by: string,
     kind: 'thumb' | 'voice',
     voice: WalkCheer['voice'],
+    at: Date = now(),
   ) => {
     const list = cheers.get(walkId) ?? [];
-    if (kind === 'thumb' && list.some((c) => c.by.id === by && c.kind === 'thumb')) return;
+    const thumb = list.find((c) => c.by.id === by && c.kind === 'thumb');
+    if (kind === 'thumb' && thumb) {
+      // Once each; tapping before a queued demo cheer arrives shows it now (like the server).
+      if (thumb.created_at > at.toISOString()) thumb.created_at = at.toISOString();
+      return;
+    }
     list.push({
       id: `c_${nextId++}`,
       by: person(by),
       kind,
       voice,
-      created_at: now().toISOString(),
+      created_at: at.toISOString(),
     });
     cheers.set(walkId, list);
   };
+  /** Cheers that have "arrived": a queued demo cheer waits until its time. */
+  const arrived = (walkId: string) =>
+    (cheers.get(walkId) ?? [])
+      .filter((c) => c.created_at <= now().toISOString())
+      .sort((a, b) => a.created_at.localeCompare(b.created_at));
   // Raj's last group walk is shared, and Ahmad cheered it.
   const lastGroup = walks.filter((w) => w.walked_with.length > 0).pop();
   if (lastGroup) {
@@ -242,7 +255,7 @@ export function createThriveDb({
       ? w
       : null;
   const view = (w: StoredWalk): WalkSummary => {
-    const list = cheers.get(w.id) ?? [];
+    const list = arrived(w.id);
     return {
       ...w,
       // Only the walker gets the full route.
@@ -340,6 +353,16 @@ export function createThriveDb({
       const w = walks.find((x) => x.id === id);
       if (!w) return null;
       w.visibility = visibility;
+      // The stage demo (3.4): a Circle-mate cheers a shared walk a few seconds later.
+      if (visibility === 'circle' && inCircleWithMe(DEMO_CHEERER)) {
+        addCheer(
+          w.id,
+          DEMO_CHEERER,
+          'thumb',
+          null,
+          new Date(now().getTime() + DEMO_CHEER_AFTER_MS),
+        );
+      }
       return view(w);
     },
     /** Raj cheers a walk; `cheerAs` lets tests (and the demo) cheer as someone else. */
@@ -375,7 +398,7 @@ export function createThriveDb({
         .sort((a, b) => b.started_at.localeCompare(a.started_at))
         .slice(0, 10)
         .map((w) => {
-          const list = cheers.get(w.id) ?? [];
+          const list = arrived(w.id);
           return {
             id: w.id,
             owner: w.owner,

@@ -722,6 +722,42 @@ async def test_life_stories_and_ask_grandpa(api: Api) -> None:
             await conn.commit()
 
 
+async def test_demo_cheer_arrives_after_sharing(api: Api) -> None:
+    # Iteration 3.4 stage step 2: Share → a Circle-mate's cheer shows a few seconds later.
+    walker = {"X-Demo-User": "u_judge7"}
+    await api.client.post("/demo/judges/7/reset")
+    try:
+        await api.client.post("/circles/c_walkers/join", headers=walker)
+        start = datetime.now(UTC) - timedelta(hours=2)
+        r = await api.client.post(
+            "/walks",
+            headers=walker,
+            json={
+                "segments": [[p.model_dump() for p in _bishan_loop(start, 0.5)]],
+                "steps": 1500,
+                "started_at": start.isoformat(),
+                "ended_at": (start + timedelta(minutes=15)).isoformat(),
+                "event_id": None,
+            },
+        )
+        wid = r.json()["id"]
+        shared = await api.client.patch(
+            f"/walks/{wid}", headers=walker, json={"visibility": "circle"}
+        )
+        assert shared.json()["cheers"] == []
+        api.clock.advance(6)
+        mine = (await api.client.get(f"/walks/{wid}", headers=walker)).json()
+        assert [(c["by"]["id"], c["kind"]) for c in mine["cheers"]] == [("u_lim", "thumb")]
+        # Sharing again doesn't cheer twice.
+        await api.client.patch(f"/walks/{wid}", headers=walker, json={"visibility": "circle"})
+        api.clock.advance(6)
+        again = (await api.client.get(f"/walks/{wid}", headers=walker)).json()
+        assert len(again["cheers"]) == 1
+    finally:
+        api.clock.reset()
+        await api.client.post("/demo/judges/7/reset")
+
+
 async def test_family_overview_shows_only_what_the_parent_shares(api: Api) -> None:
     # S10: Priya sees Raj's week; if Raj stops sharing his report, she doesn't.
     priya = {"X-Demo-User": "u_priya"}

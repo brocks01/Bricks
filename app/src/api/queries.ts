@@ -222,9 +222,19 @@ export function useDeleteReminder() {
   });
 }
 
+/** While their own walk is shared, check every 5 s so a cheer shows as it comes in. */
 export function useWalk(id: string) {
-  return useQuery({ queryKey: queryKeys.walk(id), queryFn: () => api.getWalk(id) });
+  return useQuery({
+    queryKey: queryKeys.walk(id),
+    queryFn: () => api.getWalk(id),
+    refetchInterval: (query) => {
+      const walk = query.state.data;
+      return walk && walk.visibility === 'circle' && !walk.can_cheer ? WALK_CHEER_POLL_MS : false;
+    },
+  });
 }
+
+const WALK_CHEER_POLL_MS = 5000;
 
 export function useWalkStats(period: WalkPeriod = 'week') {
   return useQuery({

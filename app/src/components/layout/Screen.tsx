@@ -1,7 +1,8 @@
+import { useQueryClient } from '@tanstack/react-query';
 import { useFocusEffect, useNavigation } from 'expo-router';
 import { createContext, useCallback, useContext, useId, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ReadOutBar } from '@/features/readout/ReadOutBar';
@@ -137,6 +138,19 @@ export function Screen({
     }, [autoRead, readOnOpen, owner, speak, stop]),
   );
 
+  // Pull down to refresh: fetches again whatever this screen shows (a reminder just
+  // set on a phone call, a cheer that came in). Coming back to the app does it too.
+  const queryClient = useQueryClient();
+  const [refreshing, setRefreshing] = useState(false);
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.refetchQueries({ type: 'active' });
+    } finally {
+      setRefreshing(false);
+    }
+  }, [queryClient]);
+
   const [viewportH, setViewportH] = useState(0);
   const [contentH, setContentH] = useState(0);
   const overflow = viewportH > 0 ? Math.max(0, Math.round(contentH - viewportH)) : 0;
@@ -199,6 +213,14 @@ export function Screen({
               showBuddy && (compact ? styles.buddyRoomCompact : styles.buddyRoom),
             ]}
             keyboardShouldPersistTaps="handled"
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={() => void refresh()}
+                tintColor={color.textSecondary}
+                colors={[color.primary]}
+              />
+            }
             onLayout={(e) => setViewportH(e.nativeEvent.layout.height)}
             onContentSizeChange={(_w, h) => setContentH(h)}
           >

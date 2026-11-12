@@ -14,7 +14,7 @@ keys or personal URLs here.
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview), 3.3 code part (top 3 usability fixes, visual pass); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; 3.3: test with seniors, backup videos, freeze tag + APK; native-speaker check of the new Tamil/Malay tab names |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview), 3.3 code part (top 3 usability fixes, visual pass), 3.4 code part (stage steps fixed, 5-run rehearsal test); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; 3.3: test with seniors, backup videos, freeze tag + APK; 3.4: 5 live runs on Raj's phone, Q&A slides; native-speaker check of the new Tamil/Malay tab names |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,24 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 3.4 (code): the stage demo runs as scripted, five times
+- **Stage script checked against the app.** Two steps couldn't happen as written; both fixed:
+  - **Step 2 "Share → Lim's cheer":** nothing cheered back. In demo mode, sharing a walk now
+    queues a thumbs-up from a Circle-mate (Lim when he is one), shown 5 s later, like the SOS
+    helpers setting off. The walk page checks every 5 s while your own walk is shared, so it
+    appears by itself. A real tap before then shows at once. Backend `PATCH /walks/{id}`
+    (`DEMO_CHEER_AFTER_S`, `DEMO_CHEERER`), cheers newer than now stay hidden; the mock matches.
+  - **Step 3 "pull to refresh":** no screen had it. Every scrolling screen now refreshes what
+    it shows when pulled down (`Screen` → `RefreshControl`). Coming back to the app after the
+    call already refreshed everything.
+- **Five runs, automatically:** `__tests__/rehearse.test.tsx` plays the four app steps
+  (check-in No → join → WhatsApp; last walk → read aloud → Share → cheer; reminder from the
+  call → pull to refresh; Help → helpers on the way → I'm safe) then Settings → Demo → Reset
+  demo, five times in a row. All five pass the same way.
+- **Backend test:** `test_demo_cheer_arrives_after_sharing`.
+- **Checks:** app 632 tests, tsc, eslint, prettier, expo-doctor 20/20, Android export; backend
+  ruff, mypy, 363 tests. No migration needed; restart the backend to pick it up.
 
 ### Iteration 3.3 (code): top 3 usability fixes and visual pass
 - **How it was checked:** every main page measured on a big phone (412×915) and a small budget
