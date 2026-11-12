@@ -37,6 +37,7 @@ def user_dict(row) -> dict:
         "age_band": row.age_band,
         "phone": row.phone,
         "area_name": row.area_name,
+        "login_kind": row.login_kind,
         "profile_complete": bool(row.display_name and row.display_name.strip()),
     }
 

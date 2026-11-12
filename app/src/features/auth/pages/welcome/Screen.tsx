@@ -1,30 +1,52 @@
-import { Text, View } from 'react-native';
-import { Logo } from '../../../../components/headers';
-import { Button, Screen } from '../../../../components/ui';
+import { Image, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Button } from '../../../../components/ui';
 import { LANGUAGES, useLanguage } from '../../../../i18n';
 import { El, useAction, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
-import { colors, space, type } from '../../../../theme/tokens';
+import { colors, radius, space, type } from '../../../../theme/tokens';
 import { authWelcome as page } from './page';
 
+/**
+ * The landing page. NOT a `Screen`: it must never scroll - the photo takes whatever height is left, so the
+ * whole page always fits the phone, whatever its size.
+ */
 export default function Welcome() {
   const w = usePageWords(page);
   const go = useNavigate();
   const code = useLanguage();
+  const insets = useSafeAreaInsets();
   const native = LANGUAGES.find((l) => l.code === code)?.native ?? '';
   useAction(page, 'start', () => go('auth.signIn'));
   useAction(page, 'languageLink', () => go('language.pick'));
 
   return (
-    <Screen title="" plain>
-      <View style={{ alignItems: 'center', paddingTop: space.xl * 2, paddingBottom: space.xl }}>
-        <Logo size={72} />
-        <Text style={[type.h1, { color: colors.ink, marginTop: space.lg, textAlign: 'center' }]} accessibilityRole="header">{w('heading')}</Text>
-        <Text style={[type.body, { color: colors.muted, marginTop: space.sm, textAlign: 'center' }]}>{w('subtitle')}</Text>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingHorizontal: space.lg, paddingTop: insets.top, paddingBottom: insets.bottom }}>
+      {/* The approved lockup: mark, Bricks wordmark and the tagline, so the heading is not repeated below. */}
+      <View style={{ alignItems: 'center', paddingTop: space.xl * 2, paddingBottom: space.lg }}>
+        <Image
+          source={require('../../../../../assets/brand/logo.png')}
+          accessibilityLabel="Bricks"
+          accessibilityRole="header"
+          resizeMode="contain"
+          style={{ width: 220, height: 80 }}
+        />
       </View>
+      {/* The photo grows and shrinks to fill whatever height is left, so nothing ever has to scroll. */}
+      <Image
+        source={require('../../../../../assets/images/everyday-life.jpg')}
+        accessibilityLabel="People in their community"
+        resizeMode="cover"
+        style={{ flex: 1, width: '100%', borderRadius: radius.card, backgroundColor: colors.accentSoft }}
+      />
+      <Text style={[type.body, { color: colors.muted, marginTop: space.lg, textAlign: 'center' }]}>{w('subtitle')}</Text>
+      <View style={{ height: space.md }} />
       <El page={page} id="start"><Button label={w('start')} onPress={() => go('auth.signIn')} /></El>
-      <View style={{ height: space.sm }} />
+      <View style={{ height: space.xs }} />
+      <El page={page} id="familyCode"><Button kind="plain" icon="key-outline" label={w('familyCode')} onPress={() => go('family.claim')} /></El>
+      <View style={{ height: space.xs }} />
       <El page={page} id="languageLink"><Button kind="plain" icon="language" label={`${w('languageLink')}: ${native}`} onPress={() => go('language.pick')} /></El>
-    </Screen>
+      <View style={{ height: space.lg }} />
+    </View>
   );
 }

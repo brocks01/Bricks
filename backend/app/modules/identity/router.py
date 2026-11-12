@@ -5,6 +5,7 @@ from sqlalchemy import Connection
 from ...core import auth_state
 from ...core.config import get_settings
 from ...core.db import get_conn
+from ..family import service as family_service
 from . import service
 from .schemas import CodeSentOut, GoogleIn, ProfilePatch, ProvidersOut, RefreshIn, RequestCodeIn, SessionOut, UserOut, VerifyCodeIn
 
@@ -77,17 +78,33 @@ def sign_out(body: RefreshIn, conn: Connection = Depends(get_conn)):
     service.sign_out(conn, body.refresh_token)
 
 
+def acting_user(
+    x_bricks_on_behalf: str | None = Header(default=None),
+    user_id: str = Depends(current_user_id),
+    conn: Connection = Depends(get_conn),
+) -> tuple[str, str]:
+    """(actor, person). With the on-behalf header the helper's own token acts on a family member's account,
+    re-checked against the live delegation every request; without it the person is themselves."""
+    if not x_bricks_on_behalf or x_bricks_on_behalf == user_id:
+        return user_id, user_id
+    try:
+        family_service.acting(conn, user_id, x_bricks_on_behalf)
+    except family_service.FamilyError:
+        raise HTTPException(status_code=403, detail={"code": "no_access"})
+    return user_id, x_bricks_on_behalf
+
+
 @router.get("/me", response_model=UserOut)
-def get_me(user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
-    row = service.get_user(conn, user_id)
+def get_me(acting: tuple[str, str] = Depends(acting_user), conn: Connection = Depends(get_conn)):
+    row = service.get_user(conn, acting[1])
     if row is None:
         raise HTTPException(status_code=401, detail={"code": "unauthorized"})
     return service.user_dict(row)
 
 
 @router.patch("/me", response_model=UserOut)
-def patch_me(body: ProfilePatch, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+def patch_me(body: ProfilePatch, acting: tuple[str, str] = Depends(acting_user), conn: Connection = Depends(get_conn)):
     try:
-        return service.update_profile(conn, user_id, body.model_dump(exclude_unset=True))
+        return service.update_profile(conn, acting[1], body.model_dump(exclude_unset=True))
     except service.AuthError as e:
         return _refuse(e)

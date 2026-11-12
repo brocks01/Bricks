@@ -8,3 +8,4 @@ import './explore/module';
 import './me/module';
 import './language/module';
 import './dev/module';
+import './family/module';

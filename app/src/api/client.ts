@@ -29,7 +29,7 @@ export class ApiError extends Error {
   }
 }
 
-type Hooks = { getToken: () => string | null; refresh: () => Promise<boolean> };
+type Hooks = { getToken: () => string | null; refresh: () => Promise<boolean>; getActiveProfile?: () => string | null };
 let hooks: Hooks = { getToken: () => null, refresh: async () => false };
 export const configureClient = (h: Hooks) => {
   hooks = h;
@@ -39,6 +39,10 @@ async function once(method: string, path: string, body: unknown, auth: boolean):
   const headers: Record<string, string> = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' }; // skips the tunnel's warning page; ignored by every other server
   const token = auth ? hooks.getToken() : null;
   if (token) headers.Authorization = `Bearer ${token}`;
+  // Acting on behalf of a family member (an assisted profile or a granted account): the token stays the
+  // helper's own; the server re-checks the live delegation on every request, so ending access takes hold at once.
+  const onBehalf = auth ? hooks.getActiveProfile?.() ?? null : null;
+  if (onBehalf && onBehalf !== '') headers['X-Bricks-On-Behalf'] = onBehalf;
   try {
     return await fetch(apiBase() + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   } catch {
@@ -46,7 +50,7 @@ async function once(method: string, path: string, body: unknown, auth: boolean):
   }
 }
 
-export async function api<T>(method: 'GET' | 'POST' | 'PATCH' | 'PUT', path: string, body?: unknown, opts: { auth?: boolean } = {}): Promise<T> {
+export async function api<T>(method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE', path: string, body?: unknown, opts: { auth?: boolean } = {}): Promise<T> {
   const auth = opts.auth ?? true;
   let res = await once(method, path, body, auth);
   if (res.status === 401 && auth && (await hooks.refresh())) res = await once(method, path, body, auth); // one silent retry with a fresh token

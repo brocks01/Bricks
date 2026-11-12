@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ReactNode, useState } from 'react';
 import { KeyboardTypeOptions, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, space, type } from '../theme/tokens';
 import { AppHeader, BackHeader } from './headers';
 
@@ -8,11 +9,12 @@ export type IconName = keyof typeof Ionicons.glyphMap;
 
 /**
  * A page. Tab pages show the app header (logo, bell, avatar); inner pages show a back header with the page title;
- * `plain` pages (sign-in start, profile setup) show neither.
+ * `plain` pages (sign-in start, profile setup) show neither. Nothing ever sits under the status bar or the clock.
  */
 export function Screen({ title, subtitle, children, back, plain, hero }: { title: string; subtitle?: string; children: ReactNode; back?: boolean; plain?: boolean; hero?: ReactNode }) {
+  const insets = useSafeAreaInsets();
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
+    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
       {plain ? null : back ? <BackHeader title={title} /> : <AppHeader />}
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
         {hero ?? (
