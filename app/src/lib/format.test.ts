@@ -77,6 +77,10 @@ describe('weekdayLabels', () => {
     expect(labels[0]).toBe('Mon');
     expect(labels[6]).toBe('Sun');
   });
+
+  it('uses one-letter Tamil days so seven fit under the week chart', () => {
+    expect(weekdayLabels('ta')).toEqual(['தி', 'செ', 'பு', 'வி', 'வெ', 'ச', 'ஞா']);
+  });
 });
 
 describe('walk formats', () => {

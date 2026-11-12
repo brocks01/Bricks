@@ -57,7 +57,9 @@ export function formatDuration(totalSeconds: number): string {
 
 /** Monday-first short weekday names in the member's language, for weekly charts. */
 export function weekdayLabels(language: Language): string[] {
-  const format = new Intl.DateTimeFormat(LANGUAGE_INFO[language].intlLocale, { weekday: 'short' });
+  // Tamil's short names ("திங்.") don't fit under seven bars; its one-letter forms do.
+  const weekday = language === 'ta' ? 'narrow' : 'short';
+  const format = new Intl.DateTimeFormat(LANGUAGE_INFO[language].intlLocale, { weekday });
   // 2026-11-09 is a Monday.
   return Array.from({ length: 7 }, (_, i) => format.format(new Date(2026, 10, 9 + i)));
 }

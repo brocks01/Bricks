@@ -361,7 +361,8 @@ describe('T1: Tamil at 200% text on every new screen', () => {
   afterEach(() => setFontScale(1));
 
   it.each([
-    ['/pass-it-on', 'என் செயல்பாடு'],
+    ['/pass-it-on', 'செயல்பாடு'],
+    ['/thrive', 'நலம்'],
     ['/pass-it-on/share', 'ஒரு திறமையைப் பகிர்'],
     ['/profile', 'என் சுயவிவரம்'],
     ['/thank/e_past_kueh', 'நன்றி சொல்லுங்கள்'],

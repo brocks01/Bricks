@@ -1,5 +1,5 @@
 import { useFocusEffect, useNavigation } from 'expo-router';
-import { useCallback, useId, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useId, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -33,6 +33,14 @@ import { UndoHost } from '../UndoHost';
 
 import { BackButton } from './BackButton';
 import { TopBar } from './TopBar';
+
+/**
+ * How many points the screen's content runs past the bottom (0 when it fits).
+ * Lets a main page drop its least important card on a small phone instead of
+ * scrolling (Home's "Picked for you"). Always 0 in tests and before layout.
+ */
+const ScreenOverflowContext = createContext(0);
+export const useScreenOverflow = () => useContext(ScreenOverflowContext);
 
 /** Lets the screen settle (and its data arrive) before reading it automatically. */
 const AUTO_READ_DELAY_MS = 600;
@@ -129,6 +137,10 @@ export function Screen({
     }, [autoRead, readOnOpen, owner, speak, stop]),
   );
 
+  const [viewportH, setViewportH] = useState(0);
+  const [contentH, setContentH] = useState(0);
+  const overflow = viewportH > 0 ? Math.max(0, Math.round(contentH - viewportH)) : 0;
+
   const strongBand = tint && tintStrong ? tintStrong : undefined;
   const body = (
     <>
@@ -179,6 +191,7 @@ export function Screen({
       <View style={styles.flex}>
         {scroll ? (
           <ScrollView
+            testID={testID ? `${testID}-scroll` : undefined}
             style={[styles.flex, strongBand ? styles.canvas : null]}
             contentContainerStyle={[
               styles.content,
@@ -186,8 +199,10 @@ export function Screen({
               showBuddy && (compact ? styles.buddyRoomCompact : styles.buddyRoom),
             ]}
             keyboardShouldPersistTaps="handled"
+            onLayout={(e) => setViewportH(e.nativeEvent.layout.height)}
+            onContentSizeChange={(_w, h) => setContentH(h)}
           >
-            {body}
+            <ScreenOverflowContext.Provider value={overflow}>{body}</ScreenOverflowContext.Provider>
           </ScrollView>
         ) : (
           <View style={[styles.flex, styles.content, compact && styles.compact]}>{body}</View>

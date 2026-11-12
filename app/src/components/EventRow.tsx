@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -25,12 +26,17 @@ export interface EventRowProps {
 }
 
 const COVER = 64;
+/** Narrower than this and the title breaks mid-word ("Eveni / ng"), so "I'm going" moves below. */
+const MIN_TITLE_WIDTH = 140;
 
 /**
  * One event as a short white row: a small cover, the title, when, and "You're
  * going" / "You're hosting" in green when it applies. Tapping it opens the event,
  * which has the place and the rest. Used on the tab pages, which fit on one
  * screen; the full list is one tap away.
+ *
+ * When "I'm going" is long (Tamil, Malay) or the phone is narrow, it would squeeze the
+ * title into a column, so it moves onto its own full-width line under the title.
  *
  * With `onGoing`, "I'm going" sits beside it as its own button (never nested inside
  * the row), so both stay reachable with a screen reader.
@@ -42,9 +48,11 @@ export function EventRow({ event, onOpen, onGoing, hosting = false, now }: Event
   const going = event.my_rsvp === 'going';
   const status = going ? t(hosting ? 'event.youreHosting' : 'event.youreGoing') : null;
   const showJoin = !!onGoing && !going;
+  // Only ever goes one way, so the row can't flip back and forth while it lays out.
+  const [stacked, setStacked] = useState(false);
 
   return (
-    <View style={styles.card} testID={`event-card-${event.id}`}>
+    <View style={[styles.card, stacked && styles.cardStacked]} testID={`event-card-${event.id}`}>
       <Pressable
         accessibilityRole="button"
         accessibilityLabel={[event.title, when, event.place_name, status]
@@ -64,7 +72,13 @@ export function EventRow({ event, onOpen, onGoing, hosting = false, now }: Event
           tint={event.category}
           size={COVER}
         />
-        <View style={styles.words}>
+        <View
+          style={styles.words}
+          testID={`event-card-${event.id}-words`}
+          onLayout={(e) => {
+            if (showJoin && e.nativeEvent.layout.width < MIN_TITLE_WIDTH) setStacked(true);
+          }}
+        >
           <Text variant="bodyStrong">{event.title}</Text>
           <Text color="textSecondary">
             {when}
@@ -84,11 +98,11 @@ export function EventRow({ event, onOpen, onGoing, hosting = false, now }: Event
         )}
       </Pressable>
       {showJoin ? (
-        <View style={styles.join}>
+        <View style={stacked ? styles.joinStacked : styles.join}>
           <BigButton
             label={t('event.imGoing')}
             labelVariant="bodyStrong"
-            fullWidth={false}
+            fullWidth={stacked}
             onPress={onGoing}
             testID={`event-card-${event.id}-join`}
           />
@@ -105,6 +119,10 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     backgroundColor: color.bg,
     ...shadow.card,
+  },
+  cardStacked: {
+    flexDirection: 'column',
+    alignItems: 'stretch',
   },
   body: {
     flex: 1,
@@ -123,5 +141,9 @@ const styles = StyleSheet.create({
   },
   join: {
     paddingRight: space.xs + space.xxs,
+  },
+  joinStacked: {
+    paddingHorizontal: space.xs + space.xxs,
+    paddingBottom: space.xs + space.xxs,
   },
 });

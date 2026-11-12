@@ -26,7 +26,7 @@
   },
   "tabs": {
     "home": "Utama",
-    "passItOn": "Aktiviti Saya",
+    "passItOn": "Aktiviti",
     "kampung": "Komuniti",
     "thrive": "Kesihatan"
   },
@@ -65,7 +65,7 @@
     "loading": "Menyediakan rancangan hari ini…"
   },
   "passItOn": {
-    "title": "Aktiviti Saya",
+    "title": "Aktiviti",
     "myStory": "Kisah saya",
     "noIntro": "Belum ada pengenalan suara.",
     "recordIntro": "Rakam salam ringkas",

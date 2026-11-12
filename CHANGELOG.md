@@ -14,7 +14,7 @@ keys or personal URLs here.
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; then 3.3 |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview), 3.3 code part (top 3 usability fixes, visual pass); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; 3.3: test with seniors, backup videos, freeze tag + APK; native-speaker check of the new Tamil/Malay tab names |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,28 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 3.3 (code): top 3 usability fixes and visual pass
+- **How it was checked:** every main page measured on a big phone (412×915) and a small budget
+  Android (360×780) in all four languages at Small and Normal text, plus the 3.2 visual rules
+  (colours, spacing, radius, red only for Help, no emojis, no "elderly") grepped across the app.
+  The visual rules all hold.
+- **Fix 1, event row squeezed:** with a long "I'm going" (Tamil "நான் வருகிறேன்", Malay) the
+  title was crushed into a column ("Eveni / ng / walk"). `EventRow` now moves the button onto
+  its own full-width line under the title when the title column would be under 140pt.
+- **Fix 2, tab labels cut off:** "ஆரோக்…", "என் செயல்…", "Kesiha…". Tamil and Malay tabs now use
+  one word like English (Activity → செயல்பாடு / Aktiviti, Health → நலம்), the page titles match,
+  and every tab label shrinks a little to fit instead of ending in "…" (phones only; the web
+  preview can't shrink text). Tamil weekday labels under the week chart use one letter
+  (தி செ பு…) instead of the cut-off "தி…".
+- **Fix 3, Home scrolls on small phones:** `Screen` now tells its content how far it runs past
+  the bottom (`useScreenOverflow`), and Home drops "Picked for you" (the lowest-priority card;
+  Community lists every event) rather than scroll. It stays dropped, so Home can't flicker.
+  Home now fits in all four languages on the big phone and in English, Malay and Chinese on the
+  small one.
+- **Tests:** `__tests__/polish.test.tsx` (row stacks / stays beside; Picked for you drops and
+  stays dropped), Tamil one-letter days, Health added to the Tamil-at-200% check.
+- **Checks:** app 631 tests, tsc, eslint, prettier, expo-doctor 20/20, Android export.
 
 ### Iteration 3.2 feature 6: Health Card, Life Stories, family overview
 - **S27 Health Card.** Health → **Health card** (beside the title): blood group,

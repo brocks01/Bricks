@@ -1,6 +1,6 @@
 // Layout and primitives
 export { BackButton } from './layout/BackButton';
-export { Screen, type ScreenProps } from './layout/Screen';
+export { Screen, useScreenOverflow, type ScreenProps } from './layout/Screen';
 export { TopBar } from './layout/TopBar';
 export { Text, type TextProps } from './primitives/Text';
 export * from './primitives/icons';

@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { useLastCheckinResult } from '@/api';
 import type { Today } from '@/api/types';
-import { EventRow } from '@/components';
+import { EventRow, useScreenOverflow } from '@/components';
 import { CheckinFlow } from '@/features/checkin/CheckinFlow';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { NextReminderCard } from '@/features/reminders/ReminderCard';
@@ -28,15 +29,21 @@ export function TodaySection({ today }: { today: Today }) {
 
 /**
  * "Picked for you" (Luma): one event worth joining that they aren't going to yet.
- * Hidden when it's already the check-in's walk suggestion, so it never shows twice.
+ * Hidden when it's already the check-in's walk suggestion, so it never shows twice,
+ * and on a phone too small for it (Home fits one screen; Community lists every event).
  */
 export function PickedForYou({ today }: { today: Today }) {
   const { t } = useTranslation();
   const router = useRouter();
   const join = useJoinEvent();
   const answered = useLastCheckinResult();
+  const overflow = useScreenOverflow();
+  // Once dropped it stays dropped, so Home can't flicker between the two layouts.
+  const [dropped, setDropped] = useState(false);
+  if (overflow > 0 && !dropped) setDropped(true);
   const event = today.next_event;
-  if (!event || event.my_rsvp === 'going' || event.id === answered?.suggestion?.id) return null;
+  if (dropped || !event || event.my_rsvp === 'going' || event.id === answered?.suggestion?.id)
+    return null;
 
   return (
     <View testID="picked-for-you" accessibilityLabel={t('home.pickedForYou')}>
