@@ -58,6 +58,14 @@ Normal (18 pt, default) or Large (20 pt body).
 
 ## Unreleased
 
+### Olive page background
+- Every main page now has one olive wash at the top (`color.pageWash` #D4D8BA) fading into a
+  light olive-stone page (`color.canvas` #E8EADD, was pale grey #F3F3F6), instead of a
+  different pale colour per section. White cards, buttons and the tab bar stand out clearly.
+  Event pages keep their cover tint; the tab bar's icon pills keep their section colours.
+- Contrast: grey text 7.1:1 on the darkest part (AAA), checked in `theme/tokens.test.ts`.
+- Checks: app 636 tests, tsc, eslint, prettier.
+
 ### Iteration 3.4 (code): the stage demo runs as scripted, five times
 - **Stage script checked against the app.** Two steps couldn't happen as written; both fixed:
   - **Step 2 "Share → Lim's cheer":** nothing cheered back. In demo mode, sharing a walk now

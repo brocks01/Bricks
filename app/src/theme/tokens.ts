@@ -8,8 +8,13 @@
 export const color = {
   /** Raised surfaces: cards, grouped lists, sheets' rows, inputs, secondary buttons. */
   bg: '#FFFFFF',
-  /** The page behind everything (Luma's pale grey): white cards float on it. */
-  canvas: '#F3F3F6',
+  /** The page behind everything (a light olive stone): white cards stand out on it. */
+  canvas: '#E8EADD',
+  /**
+   * The olive wash at the top of every main page, fading into `canvas`. The darkest
+   * shade that keeps grey text at 7:1 (theme/tokens.test.ts).
+   */
+  pageWash: '#D4D8BA',
   /** Soft grey panels (cards, grouped lists, secondary buttons). */
   bgSubtle: '#F2F2F5',
   border: '#E3E3E8',

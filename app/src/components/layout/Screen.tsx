@@ -11,14 +11,7 @@ import { config } from '@/lib/config';
 import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
-import {
-  borderWidth,
-  color,
-  screenPadding,
-  sectionColor,
-  space,
-  type SectionColorKey,
-} from '@/theme';
+import { borderWidth, color, screenPadding, space, type SectionColorKey } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from '../primitives/Text';
@@ -73,7 +66,7 @@ export interface ScreenProps {
   tint?: string;
   /** A small button beside the title, for a page's one secondary action. */
   titleAction?: ReactNode;
-  /** The part of the app this page belongs to: its soft colour washes the top. */
+  /** The part of the app this page belongs to: main pages get the olive wash at the top. */
   section?: SectionColorKey;
   /** A deep colour behind the top of the page, fading into `tint` (event page). */
   tintStrong?: string;
@@ -108,7 +101,8 @@ export function Screen({
   children,
   testID,
 }: ScreenProps) {
-  const pageTint = tint ?? (section ? sectionColor[section].bg : undefined);
+  // One olive wash on every main page; an event page brings its own cover tint.
+  const pageTint = tint ?? (section ? color.pageWash : undefined);
   const offline = useIsOffline();
   const compact = useCompact();
   const openBuddy = useBuddy((s) => s.open);
