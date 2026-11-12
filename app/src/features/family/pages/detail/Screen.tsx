@@ -3,9 +3,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { familyApi, type Family, type FamilyMember } from '../../../../api/family';
 import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, radius, space, type } from '../../../../theme/tokens';
+import { sessionStore } from '../../../../session/store';
 import { invalidateFamilies } from '../../state';
 import { familyDetail as page } from './page';
 
@@ -13,6 +15,7 @@ export default function FamilyDetail() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const w = usePageWords(page);
   const go = useNavigate();
+  const { status } = useStore(sessionStore);
   const [data, setData] = useState<Family | null>(null);
   const [failed, setFailed] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -32,8 +35,8 @@ export default function FamilyDetail() {
       .catch(() => setFailed(true));
   }, [id]);
   useEffect(() => {
-    load();
-  }, [load]);
+    if (status === 'in') load(); // wait until the saved sign-in has been checked, so the request carries a token
+  }, [status, load]);
 
   const act = async (run: () => Promise<unknown>) => {
     setError(null);

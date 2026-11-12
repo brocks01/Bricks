@@ -18,7 +18,8 @@ export function ProfileForm({ page, destination }: { page: Pick<PageDef, 'key' |
   const w = usePageWords(page);
   const t = useT();
   const go = useNavigate();
-  const { user } = useStore(sessionStore);
+  const { user: own, actingUser } = useStore(sessionStore);
+  const user = actingUser ?? own; // while helping a family member, their profile is the one being edited
   const [name, setName] = useState(user?.display_name ?? '');
   const [band, setBand] = useState<string | null>(user?.age_band ?? null);
   const [phone, setPhone] = useState(user?.phone ?? '');
