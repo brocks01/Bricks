@@ -130,3 +130,33 @@ def send(to: str, subject: str, html: str, text: str) -> bool:
 def send_login_code(email: str, code: str, minutes: int) -> bool:
     subject, html, text = code_email(code, minutes)
     return send(email, subject, html, text)
+
+
+def family_invite_email(family_name: str, code: str, hours: int) -> tuple[str, str, str]:
+    """(subject, html, text) of the family invitation mail: the code the person enters in their own app."""
+    subject = f"Your {BRAND} family invitation: {code}"
+    text = (f"{family_name} invited you to their family on {BRAND}.\n"
+            f"Open {BRAND}, choose the family invitation, and enter this code: {code}.\n"
+            f"It works for {hours} hours. If you were not expecting this, you can ignore this email.\n\n"
+            f"{BRAND}. This is an automated message; do not reply.")
+    html = (
+        '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>'
+        f"<title>{escape(subject)}</title></head>"
+        '<body style="margin:0;background:#fff;color:#3c4043;font-family:Roboto,Arial,Helvetica,sans-serif;line-height:1.6">'
+        '<div style="max-width:480px;margin:32px auto;padding:0 24px">'
+        f'<div style="font-size:14px;font-weight:500;color:#1B7F3B;margin-bottom:24px">{BRAND}</div>'
+        f'<div style="font-size:15px;margin-bottom:12px">{escape(family_name)} invited you to their family.</div>'
+        '<div style="font-size:15px;margin-bottom:12px">Your invitation code is</div>'
+        f'<div style="font-size:34px;font-weight:700;letter-spacing:8px;color:#16202A;margin:8px 0 16px">{escape(code)}</div>'
+        f'<div style="font-size:13px;color:#5f6368;margin:16px 0">Open {escape(BRAND)} and enter it to join. It works for {hours} hours. '
+        "If you were not expecting this, you can ignore this email.</div>"
+        '<hr style="border:none;border-top:1px solid #dadce0;margin:24px 0"/>'
+        f'<div style="font-size:12px;color:#5f6368">This is an automated message. Do not reply.<br/>&copy; {time.gmtime().tm_year} {BRAND}</div>'
+        "</div></body></html>"
+    )
+    return subject, html, text
+
+
+def send_family_invite(email: str, family_name: str, code: str, hours: int) -> bool:
+    subject, html, text = family_invite_email(family_name, code, hours)
+    return send(email, subject, html, text)

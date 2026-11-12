@@ -12,6 +12,7 @@ export const authWelcome = definePage({
     heading: { kind: 'text' },
     subtitle: { kind: 'text' },
     start: { kind: 'action', summary: 'Goes to the sign-in page.' },
+    familyCode: { kind: 'action', summary: 'For the person whose family set up an account for them: they enter the code and their own contact to make the account theirs.' },
     languageLink: { kind: 'action', summary: 'Opens the list of languages.' },
   },
   strings,

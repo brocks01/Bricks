@@ -1,8 +1,11 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AgentDock } from '../agent/dock';
 import { surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
+import { loadFamilies, useFamilies } from '../features/family/state';
 import { useT } from '../i18n';
 import { tabPages, useCurrentPage, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
@@ -22,6 +25,13 @@ export function AppTabBar() {
   const go = useNavigate();
   const current = useCurrentPage();
   const { status, user } = useStore(sessionStore);
+  const insets = useSafeAreaInsets();
+  // The Family tab is only there when the person actually belongs to a family, so we keep the list fresh:
+  // refetched once on every sign-in, and again whenever the family screens change something.
+  const { families } = useFamilies();
+  useEffect(() => {
+    if (status === 'in') void loadFamilies().catch(() => undefined);
+  }, [status]);
   // The tabs sit just above the agent bar and go away as soon as the agent area is pulled open (it is never shorter than 16% of the area once it shows),
   // including while the hand is still dragging it, and come back when it is put away.
   const { open, live } = useStore(surfaceStore);
@@ -30,8 +40,10 @@ export function AppTabBar() {
   return (
     <View style={{ backgroundColor: colors.card }}>
       {canvasOpen ? null : (
-        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 }}>
-          {tabPages().map((p) => {
+        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
+          {tabPages()
+            .filter((p) => p.key !== 'family.home' || (families?.length ?? 0) > 0) // the rule: the tab exists only with a family
+            .map((p) => {
             const active = current?.key === p.key;
             const icon = (active ? p.icon : `${p.icon}-outline`) as keyof typeof Ionicons.glyphMap;
             return (

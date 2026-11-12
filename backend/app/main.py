@@ -16,6 +16,7 @@ from .modules.grow.router import router as grow_router
 from .modules.media.router import router as media_router
 from .modules.voice.router import router as voice_router
 from .modules.translation.router import router as translation_router
+from .modules.family.router import router as family_router
 
 app = FastAPI(title="Bricks API", version="0.1.0")
 
@@ -38,6 +39,7 @@ app.include_router(explore_router)
 app.include_router(grow_router)
 app.include_router(media_router)
 app.include_router(translation_router)
+app.include_router(family_router)
 
 
 @app.get("/v1/health")

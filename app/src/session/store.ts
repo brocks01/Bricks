@@ -9,18 +9,20 @@ export type AgeBand = 'under40' | '40to59' | '60plus';
 
 export interface User {
   id: string;
-  email: string;
+  email: string | null; // null on an assisted profile: set up by a family member, no own login yet
   display_name: string | null;
   language: LangCode;
   age_band: AgeBand | null;
   phone: string | null;
   area_name: string | null;
+  login_kind: 'own' | 'assisted'; // 'assisted' = a family member is helping set this account up
   profile_complete: boolean;
 }
 
 interface SessionState {
   status: 'loading' | 'out' | 'in';
   user: User | null;
+  activeProfile: string | null; // the account the app is acting on (acting as a family helper); null = myself
   pendingEmail: string | null; // the address a code was just sent to
   devCode: string | null; // only set when the server is in development mode
 }
@@ -32,7 +34,7 @@ interface Tokens {
   is_new: boolean;
 }
 
-export const sessionStore = createStore<SessionState>({ status: 'loading', user: null, pendingEmail: null, devCode: null });
+export const sessionStore = createStore<SessionState>({ status: 'loading', user: null, activeProfile: null, pendingEmail: null, devCode: null });
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -42,14 +44,23 @@ async function accept(t: Tokens): Promise<void> {
   accessToken = t.access_token;
   refreshToken = t.refresh_token;
   await saveRefreshToken(t.refresh_token);
-  sessionStore.set((s) => ({ ...s, status: 'in', user: t.user, pendingEmail: null, devCode: null }));
+  sessionStore.set((s) => ({ ...s, status: 'in', user: t.user, activeProfile: null, pendingEmail: null, devCode: null }));
 }
 
 async function clear(): Promise<void> {
   accessToken = null;
   refreshToken = null;
   await saveRefreshToken(null);
-  sessionStore.set((s) => ({ ...s, status: 'out', user: null }));
+  sessionStore.set((s) => ({ ...s, status: 'out', user: null, activeProfile: null }));
+}
+
+/**
+ * Switch accounts: act on behalf of a family member I help, or go back to my own account.
+ * Every request the app makes carries the on-behalf header while another profile is active;
+ * the server re-checks the live delegation on every request, so ended access takes hold at once.
+ */
+export function setActiveProfile(id: string | null): void {
+  sessionStore.set((s) => (id && s.user?.id === id ? { ...s, activeProfile: null } : { ...s, activeProfile: id }));
 }
 
 /** Gets a new access token from the saved refresh token. Used at start-up and whenever the server says the token has expired. */
@@ -72,7 +83,11 @@ export function refreshSession(): Promise<boolean> {
   return refreshing;
 }
 
-configureClient({ getToken: () => accessToken, refresh: refreshSession });
+configureClient({
+  getToken: () => accessToken,
+  refresh: refreshSession,
+  getActiveProfile: () => sessionStore.get().activeProfile,
+});
 
 /** Called once when the app starts. */
 export const getAccessToken = (): string | null => accessToken;
@@ -149,7 +164,8 @@ export type ProfilePatch = Partial<{ display_name: string; language: LangCode; a
 
 export async function updateProfile(patch: ProfilePatch): Promise<User> {
   const user = await api<User>('PATCH', '/v1/me', patch);
-  sessionStore.set((s) => ({ ...s, user }));
+  // While acting on behalf of someone else the answer is THEIR profile; my session stays mine.
+  sessionStore.set((s) => (user.id === s.user?.id ? { ...s, user } : s));
   return user;
 }
 
@@ -161,4 +177,16 @@ export async function signOut(): Promise<void> {
     /* signing out here still works if the server cannot be reached */
   }
   await clear();
+}
+
+/**
+ * The person takes their own account: the 6-digit code a family member showed them in person plus their
+ * own contact. The server moves the assisted profile to them and signs them in at once.
+ */
+export async function claimWithCode(code: string, email: string): Promise<{ isNew: boolean }> {
+  const t = await api<Tokens>('POST', '/v1/auth/claim', { code, email }, { auth: false });
+  await accept(t);
+  const lang = t.user.language;
+  if (isLangCode(lang)) await setLanguage(lang);
+  return { isNew: t.is_new };
 }

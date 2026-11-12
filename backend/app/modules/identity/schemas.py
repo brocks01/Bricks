@@ -44,12 +44,13 @@ class ProfilePatch(BaseModel):
 
 class UserOut(BaseModel):
     id: str
-    email: str
+    email: str | None
     display_name: str | None
     language: Language
     age_band: AgeBand | None
     phone: str | None
     area_name: str | None
+    login_kind: str = "own"  # "assisted" = a family profile set up by someone else, no own login yet
     profile_complete: bool
 
 
