@@ -14,7 +14,7 @@ keys or personal URLs here.
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); then 3.2 |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 (walk history, group walks + Cheers, Simple Mode, admin QR); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands, 6 if time; then 3.3 |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,40 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 3.2: P1 features 1–4 (walk history, group walks + Cheers, Simple Mode, admin QR)
+- **1 · S24 Walk history & trends.** Health → "Your walks" (the last walk is on the row):
+  Week or Month (the last 4 weeks), the total with a bar a day or a bar a week, a kind line
+  ("1.2 km more than last week. Well done!", or "A lighter week. A walk today?", never "less"),
+  personal bests (longest walk → opens it, most steps in a day, walks this month) and every
+  walk with a small route drawing. `GET /walks/stats?period=week|month` now also returns the
+  previous total, the bests and the walks; list items carry the public route.
+- **2 · S19 Group walk feed + Cheers.** A walk is private until the walker taps **Share with my
+  Circle** on S23 (migration 003 makes earlier walks private too). Circle members see "Recent
+  group walks" on the Circle page: route (public part only), "Lim · 8 people · 2.4 km · Tuesday",
+  who walked, **Cheer** (one tap) and **Voice cheer** (up to 10 s, listen, send). The walker sees
+  who cheered, plays voice cheers, and can stop sharing. No rankings. Seeded: Raj's last group
+  walk (cheered by Ahmad), Lim's group walk and Ahmad's walk for Raj to cheer.
+  `GET /circles/{id}/walks`, `PATCH /walks/{id}`, `POST /walks/{id}/cheers`.
+- **3 · S13 Simple Mode.** Home becomes three big buttons, each about a fifth of the screen:
+  **Today** (the day's plan, read out, with the check-in to answer), **Talk** (Buddy) and **Help**
+  (red, straight to Help). It reads itself out and the tab bar goes. Turned on in Settings, or by
+  family on the Family screen (`PUT /family/seniors/{id}/simple-mode`; Priya's accepted invite
+  for Raj is now seeded). The disabled "Simple Mode" placeholder there is gone.
+- **4 · S11 Admin QR onboarding.** Staff see their organisation in Settings: verified badge,
+  **Show QR** (full screen, with the code in big letters), **Share the join link on WhatsApp**,
+  **Add people** (paste a list: name, phone) and everyone's status (Needs help after 3 days,
+  Invited, Joined). Names and statuses only. Scanning opens `/join/<code>` and the member is in.
+  Migration 004 (`orgs`, `org_members`), `/orgs` routes, seeded Bishan Active Ageing Centre (code
+  BISHAN) run by Lee Hui Min, a new demo account ("staff"). Adds `react-native-qrcode-svg` (JS).
+- **Settings fits one screen again** with the new row: the profile row is one line, Reminders
+  shows "App" / "WhatsApp" / "Call", and Sign out, the version and (demo builds) Demo share the
+  bottom line.
+- **Not done:** 5 · Move Along polish waits for the posture module (not in the repo yet; the
+  iPhone warm-up needs move photos). 6 · Health Card, Life Stories and the family overview are
+  the plan's "if time allows".
+- **Checks:** app 618 tests, tsc, eslint, prettier, expo-doctor 20/20, Android export; backend
+  ruff, mypy, 359 tests. Every screen still opens (crash sweep).
 
 ### Voice 2.1: Buddy's real brain (`/assistant/turn`), pre-router, calls on the orchestrator
 - `POST /assistant/turn` (`assistant/orchestrator.py`): help words → SOS first, before
