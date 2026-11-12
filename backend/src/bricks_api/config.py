@@ -44,6 +44,14 @@ class Settings(BaseSettings):
     # Speech recognition on calls (Twilio <Gather language>). en-IN copes with Singapore
     # accents; try en-GB / en-US if recognition is poor.
     call_speech_language: str = "en-IN"
+    # Buddy's brain (voice 2.1): Gemini tool-calling. No key → keyword fallback only.
+    gemini_api_key: SecretStr | None = None
+    gemini_model: str = "gemini-3.5-flash"
+    gemini_fallback_model: str = "gemini-3.1-flash-lite"
+    # Past this, the turn answers from the keyword fallback instead of waiting.
+    assistant_timeout_s: float = 8.0
+    # On a phone call the caller hears silence while we wait, so give up sooner.
+    call_assistant_timeout_s: float = 3.0
 
     @property
     def supabase_issuer(self) -> str:

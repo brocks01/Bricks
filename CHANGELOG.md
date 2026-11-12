@@ -15,7 +15,7 @@ keys or personal URLs here.
 | Track | Done | Next |
 |---|---|---|
 | App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); then 3.2 |
-| Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3 (done) | 2.1 real `/assistant/turn` (a real phone call when Twilio is upgraded) |
+| Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
 **App look:** Luma-style redesign (UI steps 0 to 12 below; brief in
@@ -57,6 +57,29 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Voice 2.1: Buddy's real brain (`/assistant/turn`), pre-router, calls on the orchestrator
+- `POST /assistant/turn` (`assistant/orchestrator.py`): help words → SOS first, before
+  anything else; the answer to "Is that right?" runs or drops the change; then the
+  **pre-router**; then Gemini with the channel's tools; if the model is down or slow, the
+  keywords again (less strict). Every change (reminder, join, cancel, delete) asks first.
+  Screen tools come back as app actions in order. Replies at most 2 sentences.
+- **Pre-router** (`assistant/prerouter.py`, `assistant/screens.json`): what's on today, a
+  reminder with a time (English), join the next event, open a screen (4 languages), start /
+  finish a walk, profile. Answers in **0.2 to 0.7 s** live, without Gemini. Anything with a
+  day, "the second one", "how many", or extra words ("join the tai chi class") goes to Gemini.
+  `screens.json` uses the same words as the app's mock Buddy (`NAV_WORDS`): change both.
+- Reminders are said back the way the call says them: "Every day at 8 am: Take your
+  medicine. Is that right?" (`confirm_what.set_reminder_daily` / `_weekdays`).
+- **Calls:** the 1.3 keyword path still answers first (instant); anything it doesn't catch
+  goes to the orchestrator with a 3 s limit (`CALL_ASSISTANT_TIMEOUT_S`), and its changes are
+  confirmed on the call ("Say yes, or press 1"). Model down → the usual "Sorry" + menu.
+- Tests: 10 utterances per core intent (today, reminders, join, open a screen, start walk,
+  finish walk) with the model forbidden; what goes to the model; model-down fallbacks; calls
+  through the orchestrator. Backend: ruff, mypy, 354 tests.
+- Live: the free Gemini tier is still slow (8 s limit hit on "What's on tomorrow?") and
+  rate-limited; open questions need a paid key to answer in time. Not done: memory merge
+  (no `user_memory` table yet).
 
 ### Iteration 3.1: stabilise at the venue (code part)
 - **Judge accounts (§3.5).** Judge 1 to Judge 10 are seeded on every reset: set up (Bishan,

@@ -12,6 +12,7 @@ from typing import Any
 import httpx
 import pytest
 
+from bricks_api.assistant import orchestrator
 from bricks_api.calls import session
 from bricks_api.config import Settings
 from bricks_api.main import create_app
@@ -79,6 +80,12 @@ async def phone(seeded: None) -> AsyncIterator[Phone]:
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
             yield Phone(client=client, app=app)
+
+
+@pytest.fixture(autouse=True)
+def no_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No real Gemini on calls in tests (a test that wants one scripts it)."""
+    monkeypatch.setattr(orchestrator, "_client", lambda ctx: None)
 
 
 async def call_in(phone: Phone, name: str = "Mary Tan") -> tuple[Call, str]:
@@ -246,3 +253,50 @@ async def test_a_call_survives_a_server_restart(phone: Phone) -> None:
     session.end(call.sid)  # as if the process restarted
     twiml = await call.say("What's on today?")
     assert "Sorry" not in twiml
+
+
+# ---------- voice 2.1: what the keywords don't catch goes to Buddy's brain ----------
+
+
+async def test_t8_an_open_question_is_answered_by_the_orchestrator(
+    phone: Phone, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from .test_assistant_turn import FakeGemini, call, say
+
+    fake = FakeGemini(call("get_walk_stats"), say("You walked 3 times this week. Well done!"))
+    monkeypatch.setattr(orchestrator, "_client", lambda ctx: fake)
+    c, _ = await call_in(phone)
+    await c.start()
+    twiml = await c.say("How did my walking go this week?")
+    assert "You walked 3 times this week. Well done!" in twiml
+    assert "Anything else?" in twiml
+    # The model got the member's real numbers.
+    response = fake.sent[1][-1].parts[0].function_response  # type: ignore[index]
+    assert response is not None and response.name == "get_walk_stats"
+
+
+async def test_a_change_from_the_orchestrator_is_confirmed_on_the_call(
+    phone: Phone, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from .test_assistant_turn import FakeGemini, call
+
+    args = {"kind": "other", "text": "Call Ravi", "time": "18:00", "repeat": "daily"}
+    monkeypatch.setattr(
+        orchestrator, "_client", lambda ctx: FakeGemini(call("set_reminder", **args))
+    )
+    c, user_id = await call_in(phone)
+    await c.start()
+    twiml = await c.say("I need to ring Ravi every evening at six")
+    assert "Every day at 6 pm: Call Ravi. Is that right? Say yes, or press 1." in twiml
+    assert not await phone.db("select 1 from reminders where user_id = %s", user_id)
+    twiml = await c.say(digits="1")
+    assert "Done." in twiml
+    rows = await phone.db("select text, created_by from reminders where user_id = %s", user_id)
+    assert rows == [{"text": "Call Ravi", "created_by": "call"}]
+
+
+async def test_a_slow_or_missing_model_falls_back_to_the_menu(phone: Phone) -> None:
+    c, _ = await call_in(phone)
+    await c.start()
+    twiml = await c.say("How did my walking go this week?")
+    assert "Sorry, I didn't catch that." in twiml

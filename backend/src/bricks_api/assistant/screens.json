@@ -1,0 +1,526 @@
+{
+  "_note": "What people call each screen (same words as the app's mock Buddy, app/src/features/buddy/intents.ts NAV_WORDS / NAV_VERBS: change both together). More specific screens first. A screen name with an 'open' word goes straight there (assistant/prerouter.py).",
+  "verbs": {
+    "en": [
+      "open",
+      "go to",
+      "go",
+      "show",
+      "take me",
+      "bring me",
+      "see",
+      "view",
+      "where is",
+      "switch to"
+    ],
+    "ms": [
+      "buka",
+      "pergi ke",
+      "pergi",
+      "tunjuk",
+      "bawa saya",
+      "lihat"
+    ],
+    "zh": [
+      "打开",
+      "去看",
+      "看看",
+      "显示",
+      "带我",
+      "进入"
+    ],
+    "ta": [
+      "திற",
+      "காட்டு",
+      "செல்"
+    ]
+  },
+  "screens": {
+    "en": [
+      [
+        "safe_circle",
+        [
+          "safe circle"
+        ]
+      ],
+      [
+        "create_event",
+        [
+          "start something",
+          "create an event",
+          "create event",
+          "new event",
+          "host an event",
+          "organise",
+          "organize"
+        ]
+      ],
+      [
+        "circles",
+        [
+          "my circles",
+          "circles",
+          "groups"
+        ]
+      ],
+      [
+        "checkin",
+        [
+          "check-in",
+          "check in",
+          "checkin",
+          "morning question",
+          "morning check"
+        ]
+      ],
+      [
+        "reminders",
+        [
+          "reminders",
+          "my reminders",
+          "reminder list"
+        ]
+      ],
+      [
+        "pass_it_on",
+        [
+          "my activity",
+          "activity tab",
+          "activity",
+          "pass it on",
+          "share a skill",
+          "share my skill",
+          "teach"
+        ]
+      ],
+      [
+        "kampung",
+        [
+          "community",
+          "kampung",
+          "happenings",
+          "events",
+          "activities"
+        ]
+      ],
+      [
+        "thrive",
+        [
+          "thrive",
+          "my health",
+          "health"
+        ]
+      ],
+      [
+        "language",
+        [
+          "language",
+          "languages"
+        ]
+      ],
+      [
+        "settings",
+        [
+          "settings",
+          "setting"
+        ]
+      ],
+      [
+        "family",
+        [
+          "my family",
+          "family"
+        ]
+      ],
+      [
+        "profile",
+        [
+          "my profile",
+          "profile",
+          "my account"
+        ]
+      ],
+      [
+        "home",
+        [
+          "home",
+          "home page",
+          "main page",
+          "start page"
+        ]
+      ]
+    ],
+    "ms": [
+      [
+        "safe_circle",
+        [
+          "kumpulan selamat",
+          "bulatan selamat"
+        ]
+      ],
+      [
+        "create_event",
+        [
+          "mulakan sesuatu",
+          "buat acara",
+          "acara baru"
+        ]
+      ],
+      [
+        "circles",
+        [
+          "bulatan saya",
+          "bulatan",
+          "kumpulan"
+        ]
+      ],
+      [
+        "checkin",
+        [
+          "soalan pagi",
+          "daftar masuk"
+        ]
+      ],
+      [
+        "reminders",
+        [
+          "peringatan saya",
+          "senarai peringatan",
+          "peringatan"
+        ]
+      ],
+      [
+        "pass_it_on",
+        [
+          "aktiviti saya",
+          "kongsi ilmu",
+          "kongsi kemahiran"
+        ]
+      ],
+      [
+        "kampung",
+        [
+          "komuniti",
+          "kampung",
+          "aktiviti",
+          "acara"
+        ]
+      ],
+      [
+        "thrive",
+        [
+          "sihat",
+          "kesihatan"
+        ]
+      ],
+      [
+        "language",
+        [
+          "bahasa"
+        ]
+      ],
+      [
+        "settings",
+        [
+          "tetapan"
+        ]
+      ],
+      [
+        "family",
+        [
+          "keluarga"
+        ]
+      ],
+      [
+        "profile",
+        [
+          "profil saya",
+          "profil"
+        ]
+      ],
+      [
+        "home",
+        [
+          "utama",
+          "laman utama"
+        ]
+      ]
+    ],
+    "zh": [
+      [
+        "safe_circle",
+        [
+          "安全圈"
+        ]
+      ],
+      [
+        "create_event",
+        [
+          "发起活动",
+          "创建活动",
+          "新活动",
+          "发起"
+        ]
+      ],
+      [
+        "circles",
+        [
+          "我的圈子",
+          "圈子",
+          "小组"
+        ]
+      ],
+      [
+        "checkin",
+        [
+          "早上问候",
+          "签到"
+        ]
+      ],
+      [
+        "reminders",
+        [
+          "我的提醒",
+          "提醒列表",
+          "提醒"
+        ]
+      ],
+      [
+        "pass_it_on",
+        [
+          "我的活动",
+          "传承分享",
+          "传承",
+          "分享技能"
+        ]
+      ],
+      [
+        "kampung",
+        [
+          "社区",
+          "甘榜",
+          "活动"
+        ]
+      ],
+      [
+        "thrive",
+        [
+          "健康"
+        ]
+      ],
+      [
+        "language",
+        [
+          "语言"
+        ]
+      ],
+      [
+        "settings",
+        [
+          "设置"
+        ]
+      ],
+      [
+        "family",
+        [
+          "家人",
+          "家庭"
+        ]
+      ],
+      [
+        "profile",
+        [
+          "个人资料",
+          "我的资料"
+        ]
+      ],
+      [
+        "home",
+        [
+          "首页",
+          "主页"
+        ]
+      ]
+    ],
+    "ta": [
+      [
+        "safe_circle",
+        [
+          "பாதுகாப்பு வட்ட"
+        ]
+      ],
+      [
+        "create_event",
+        [
+          "ஒன்றைத் தொடங்",
+          "புதிய நிகழ்வ"
+        ]
+      ],
+      [
+        "circles",
+        [
+          "என் வட்ட",
+          "வட்டங்க"
+        ]
+      ],
+      [
+        "checkin",
+        [
+          "காலை விசாரிப்ப",
+          "செக் இன்"
+        ]
+      ],
+      [
+        "reminders",
+        [
+          "நினைவூட்டல்"
+        ]
+      ],
+      [
+        "pass_it_on",
+        [
+          "என் செயல்பா",
+          "பகிர்ந்து கொ",
+          "திறமை"
+        ]
+      ],
+      [
+        "kampung",
+        [
+          "சமூக",
+          "கம்போங்",
+          "நிகழ்வுக",
+          "நிகழ்ச்சிக"
+        ]
+      ],
+      [
+        "thrive",
+        [
+          "நலம்",
+          "நலத்",
+          "ஆரோக்கிய"
+        ]
+      ],
+      [
+        "language",
+        [
+          "மொழி"
+        ]
+      ],
+      [
+        "settings",
+        [
+          "அமைப்பு"
+        ]
+      ],
+      [
+        "family",
+        [
+          "குடும்ப"
+        ]
+      ],
+      [
+        "profile",
+        [
+          "சுயவிவர"
+        ]
+      ],
+      [
+        "home",
+        [
+          "முகப்ப"
+        ]
+      ]
+    ]
+  },
+  "specific": {
+    "_note": "Words that make a request too specific for the pre-router (a day, 'the second one'): those go to the model.",
+    "en": [
+      "tomorrow",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday",
+      "sunday",
+      "weekend",
+      "next week",
+      "this week",
+      "first",
+      "second",
+      "third",
+      "last",
+      "how many",
+      "how much",
+      "why",
+      "who"
+    ],
+    "ms": [
+      "esok",
+      "besok",
+      "isnin",
+      "selasa",
+      "rabu",
+      "khamis",
+      "jumaat",
+      "sabtu",
+      "ahad",
+      "hujung minggu",
+      "minggu depan",
+      "pertama",
+      "kedua",
+      "ketiga",
+      "berapa",
+      "siapa",
+      "kenapa"
+    ],
+    "zh": [
+      "明天",
+      "后天",
+      "星期",
+      "周末",
+      "下周",
+      "这周",
+      "第一",
+      "第二",
+      "第三",
+      "多少",
+      "几个",
+      "为什么",
+      "谁"
+    ],
+    "ta": [
+      "நாளை",
+      "திங்கள்",
+      "செவ்வாய்",
+      "புதன்",
+      "வியாழன்",
+      "வெள்ளி",
+      "சனி",
+      "ஞாயிறு",
+      "வார இறுதி",
+      "அடுத்த வாரம்",
+      "முதல்",
+      "இரண்டாவது",
+      "எத்தனை",
+      "ஏன்",
+      "யார்"
+    ]
+  },
+  "tomorrow": {
+    "en": [
+      "tomorrow"
+    ],
+    "ms": [
+      "esok",
+      "besok"
+    ],
+    "zh": [
+      "明天"
+    ],
+    "ta": [
+      "நாளை"
+    ]
+  }
+}

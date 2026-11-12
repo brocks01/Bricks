@@ -21,7 +21,11 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Depends, Request, Response
 from twilio.twiml.voice_response import Gather, VoiceResponse
 
+from ..assistant import orchestrator
+from ..assistant.contract import ConfirmAction, TurnIn
 from ..assistant.distress import match_distress
+from ..assistant.executor import ToolError
+from ..assistant.executor import run as run_tool
 from ..calls import session
 from ..calls.audio import LANGS, VOICES, audio_url, has_audio
 from ..calls.intents import (
@@ -349,10 +353,30 @@ async def _handle(
         session.end(call_sid)
         return "goodbye"
 
+    # 4. Anything else: Buddy's brain (Gemini with the call's tools), with a short limit.
+    if said and await _ask_buddy(reply, state, ctx, said):
+        return "assistant"
+
     state.misses += 1
     reply.fixed("not_understood.say")
     _ask_menu(reply)
     return "not_understood"
+
+
+async def _ask_buddy(reply: Reply, state: session.CallState, ctx: Ctx, said: str) -> bool:
+    """The orchestrator's answer, spoken. False if it didn't understand either."""
+    body = TurnIn(language=state.lang, channel="call", text=said)
+    out = await orchestrator.turn(ctx, body, timeout_s=ctx.settings.call_assistant_timeout_s)
+    if not orchestrator.understood(out, state.lang):
+        return False
+    confirm = next((a for a in out.ui_actions if isinstance(a, ConfirmAction)), None)
+    if confirm is not None:
+        state.pending = session.Pending("tool", {"tool": confirm.tool, "args": confirm.args})
+        _confirm(reply, f"{out.reply_text} {EN['say_yes']}")
+        return True
+    reply.live(out.reply_text)
+    _anything_else(reply)
+    return True
 
 
 async def _answer_pending(
@@ -388,7 +412,13 @@ async def _answer_pending(
         _anything_else(reply)
         return f"{pending.kind}_no"
 
-    if pending.kind == "join":
+    if pending.kind == "tool":
+        try:
+            await run_tool(pending.data["tool"], pending.data["args"], ctx, _call_turn(state))
+            reply.live(EN["done"])
+        except ToolError:
+            reply.fixed("not_understood.say")
+    elif pending.kind == "join":
         joined = await rsvp(pending.data["event_id"], ctx)
         reply.live(EN["joined"].format(title=joined.title))
     else:  # remind
@@ -406,6 +436,10 @@ async def _answer_pending(
         reply.live(EN["remind_done"])
     _anything_else(reply)
     return f"{pending.kind}_yes"
+
+
+def _call_turn(state: session.CallState) -> TurnIn:
+    return TurnIn(language=state.lang, channel="call", text="yes")
 
 
 def _missed(reply: Reply, state: session.CallState, again: str | None) -> str:

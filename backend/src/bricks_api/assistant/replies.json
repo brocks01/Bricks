@@ -1,0 +1,141 @@
+{
+  "_note": "Buddy's fixed sentences (orchestrator.py), in the 4 languages. At most 2 short sentences each.",
+  "say": {
+    "sos": {
+      "en": "I'm getting help now. Your Safe Circle is being told.",
+      "ms": "Saya sedang dapatkan bantuan. Kumpulan Selamat anda sedang diberitahu.",
+      "zh": "我正在帮您求助，正在通知您的安全圈。",
+      "ta": "இப்போதே உதவி அழைக்கிறேன். உங்கள் பாதுகாப்பு வட்டத்திற்குத் தெரிவிக்கிறோம்."
+    },
+    "done": {
+      "en": "Done.",
+      "ms": "Siap.",
+      "zh": "好了。",
+      "ta": "முடிந்தது."
+    },
+    "cancelled": {
+      "en": "Okay, I didn't change anything.",
+      "ms": "Baik, saya tidak ubah apa-apa.",
+      "zh": "好的，我什么都没改。",
+      "ta": "சரி, நான் எதையும் மாற்றவில்லை."
+    },
+    "not_understood": {
+      "en": "Sorry, I didn't catch that. You can say: what's on today, remind me, or help.",
+      "ms": "Maaf, saya tidak faham. Anda boleh sebut: apa ada hari ini, ingatkan saya, atau tolong.",
+      "zh": "对不起，我没听懂。您可以说：今天有什么活动、提醒我，或者帮忙。",
+      "ta": "மன்னிக்கவும், புரியவில்லை. இன்று என்ன இருக்கிறது, நினைவூட்டு, அல்லது உதவி என்று சொல்லலாம்."
+    },
+    "confirm": {
+      "en": "{what}. Is that right?",
+      "ms": "{what}. Betul?",
+      "zh": "{what}。对吗？",
+      "ta": "{what}. சரியா?"
+    },
+    "open_reminder": {
+      "en": "Here's a new reminder. Tell me the time, or fill it in.",
+      "ms": "Ini peringatan baharu. Beritahu saya masanya, atau isikan sendiri.",
+      "zh": "这是新的提醒。请告诉我时间，或者自己填写。",
+      "ta": "இதோ புதிய நினைவூட்டல். நேரத்தைச் சொல்லுங்கள், அல்லது நீங்களே நிரப்புங்கள்."
+    },
+    "open_community": {
+      "en": "Here are things you can join near you.",
+      "ms": "Ini acara yang boleh anda sertai berdekatan.",
+      "zh": "这是附近可以参加的活动。",
+      "ta": "இதோ உங்கள் அருகில் சேரக்கூடிய நிகழ்வுகள்."
+    },
+    "next_reminder": {
+      "en": "Your next reminder is at {time}: {text}.",
+      "ms": "Peringatan seterusnya pada {time}: {text}.",
+      "zh": "下一个提醒：{time}，{text}。",
+      "ta": "அடுத்த நினைவூட்டல் {time}: {text}."
+    },
+    "next_event": {
+      "en": "Next: {title}, {when}, at {place}.",
+      "ms": "Seterusnya: {title}, {when}, di {place}.",
+      "zh": "接下来：{when}在{place}有{title}。",
+      "ta": "அடுத்து: {title}, {when}, {place}."
+    },
+    "nothing_today": {
+      "en": "Nothing is planned for today.",
+      "ms": "Tiada rancangan untuk hari ini.",
+      "zh": "今天没有安排。",
+      "ta": "இன்று எதுவும் திட்டமிடப்படவில்லை."
+    },
+    "opening": {
+      "en": "Here it is.",
+      "ms": "Ini dia.",
+      "zh": "在这里。",
+      "ta": "இதோ."
+    },
+    "walk_started": {
+      "en": "Your walk has started. Enjoy it!",
+      "ms": "Jalan kaki anda sudah bermula. Selamat berjalan!",
+      "zh": "开始散步了，祝您走得开心！",
+      "ta": "உங்கள் நடை தொடங்கியது. மகிழ்ச்சியாக நடங்கள்!"
+    },
+    "walk_finished": {
+      "en": "Walk finished. Well done!",
+      "ms": "Jalan kaki selesai. Syabas!",
+      "zh": "散步结束了，做得好！",
+      "ta": "நடை முடிந்தது. நன்றாகச் செய்தீர்கள்!"
+    },
+    "nothing_to_join": {
+      "en": "There's nothing to join right now.",
+      "ms": "Tiada acara untuk disertai sekarang.",
+      "zh": "现在没有可以参加的活动。",
+      "ta": "இப்போது சேர எதுவும் இல்லை."
+    }
+  },
+  "confirm_what": {
+    "set_reminder": {
+      "en": "A reminder at {time}: {text}",
+      "ms": "Peringatan pada {time}: {text}",
+      "zh": "{time} 提醒：{text}",
+      "ta": "{time} நினைவூட்டல்: {text}"
+    },
+    "set_reminder_daily": {
+      "en": "Every day at {time}: {text}",
+      "ms": "Setiap hari pada {time}: {text}",
+      "zh": "每天{time}提醒：{text}",
+      "ta": "தினமும் {time} நினைவூட்டல்: {text}"
+    },
+    "set_reminder_weekdays": {
+      "en": "Weekdays at {time}: {text}",
+      "ms": "Hari bekerja pada {time}: {text}",
+      "zh": "工作日{time}提醒：{text}",
+      "ta": "வார நாட்களில் {time} நினைவூட்டல்: {text}"
+    },
+    "join_event": {
+      "en": "I'll put you down for {title}",
+      "ms": "Saya akan daftarkan anda untuk {title}",
+      "zh": "我帮您报名参加{title}",
+      "ta": "உங்களை {title}-இல் சேர்க்கிறேன்"
+    },
+    "cancel_event": {
+      "en": "I'll take you off {title}",
+      "ms": "Saya akan batalkan {title} untuk anda",
+      "zh": "我帮您取消{title}",
+      "ta": "{title}-இலிருந்து உங்களை நீக்குகிறேன்"
+    },
+    "delete_reminder": {
+      "en": "I'll delete that reminder",
+      "ms": "Saya akan padam peringatan itu",
+      "zh": "我帮您删除这个提醒",
+      "ta": "அந்த நினைவூட்டலை நீக்குகிறேன்"
+    }
+  },
+  "day": {
+    "today": {
+      "en": "today",
+      "ms": "hari ini",
+      "zh": "今天",
+      "ta": "இன்று"
+    },
+    "tomorrow": {
+      "en": "tomorrow",
+      "ms": "esok",
+      "zh": "明天",
+      "ta": "நாளை"
+    }
+  }
+}

@@ -16,6 +16,7 @@ from .calls.audio import AUDIO_DIR
 from .config import Settings, get_settings
 from .db import make_pool
 from .routers import (
+    assistant,
     calls,
     circles,
     demo,
@@ -81,7 +82,21 @@ def create_app(
             ok = False
         return Health(status="ok", database=ok)
 
-    for module in (me, events, circles, thrive, walks, sos, passiton, family, voice, calls, demo):
+    routers = (
+        me,
+        events,
+        circles,
+        thrive,
+        walks,
+        sos,
+        passiton,
+        family,
+        voice,
+        calls,
+        demo,
+        assistant,
+    )
+    for module in routers:
         app.include_router(module.router)
     # Pre-generated call audio, fetched by Twilio while the call plays.
     app.mount("/static/voice", StaticFiles(directory=AUDIO_DIR, check_dir=False), name="call-audio")

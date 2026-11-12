@@ -13,7 +13,7 @@ from ..schemas import Language
 
 TTL_S = 10 * 60
 
-PendingKind = Literal["join", "remind", "remind_time", "remind_what"]
+PendingKind = Literal["join", "remind", "remind_time", "remind_what", "tool"]
 
 
 @dataclass

@@ -26,6 +26,8 @@ EN = {
     "sos_told": "I've told your Safe Circle. Stay where you are if you can.",
     "goodbye_plain": "Goodbye, and take care!",
     "english_only": "For now I can talk in English only.",
+    "say_yes": "Say yes, or press 1.",
+    "done": "Done.",
 }
 
 
