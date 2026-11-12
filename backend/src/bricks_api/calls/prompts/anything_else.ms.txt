@@ -1,0 +1,4 @@
+# anything_else: After a task is done.
+
+[ask]
+Ada apa-apa lagi? Atau sebut selamat tinggal.

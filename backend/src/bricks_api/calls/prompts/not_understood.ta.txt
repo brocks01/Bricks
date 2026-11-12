@@ -1,0 +1,4 @@
+# not_understood: We couldn't tell what they wanted.
+
+[say]
+மன்னிக்கவும், எனக்குச் சரியாகக் கேட்கவில்லை.

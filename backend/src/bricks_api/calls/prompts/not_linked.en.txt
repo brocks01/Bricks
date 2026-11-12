@@ -1,0 +1,4 @@
+# not_linked: An unknown number, outside demo mode.
+
+[say]
+This number isn't linked to Bricks yet; your family can add you in the app. Goodbye!

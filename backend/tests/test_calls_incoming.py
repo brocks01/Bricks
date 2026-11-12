@@ -1,4 +1,4 @@
-"""Voice 0.1: an inbound call is greeted in four languages; unsigned webhooks get 403.
+"""Voice 0.1: /voice/hello greets in four languages; unsigned webhooks get 403.
 
 No database: the app's startup (which opens the pool) isn't run by ASGITransport.
 """
@@ -37,7 +37,7 @@ def signed(path: str, form: dict[str, str]) -> dict[str, str]:
 @pytest.mark.asyncio
 async def test_t1_a_signed_call_is_greeted_in_four_languages() -> None:
     async with make_client() as client:
-        r = await client.post("/voice/incoming", data=FORM, headers=signed("/voice/incoming", FORM))
+        r = await client.post("/voice/hello", data=FORM, headers=signed("/voice/hello", FORM))
     assert r.status_code == 200
     assert r.headers["content-type"].startswith("application/xml")
     for lang in ("en-IN", "ms-MY", "cmn-CN", "ta-IN"):
@@ -49,21 +49,21 @@ async def test_t1_a_signed_call_is_greeted_in_four_languages() -> None:
 @pytest.mark.asyncio
 async def test_t2_an_unsigned_call_is_refused() -> None:
     async with make_client() as client:
-        r = await client.post("/voice/incoming", data=FORM)
+        r = await client.post("/voice/hello", data=FORM)
     assert r.status_code == 403
 
 
 @pytest.mark.asyncio
 async def test_a_tampered_call_is_refused() -> None:
-    headers = signed("/voice/incoming", FORM)
+    headers = signed("/voice/hello", FORM)
     async with make_client() as client:
         tampered = {**FORM, "From": "+6599999999"}
-        r = await client.post("/voice/incoming", data=tampered, headers=headers)
+        r = await client.post("/voice/hello", data=tampered, headers=headers)
     assert r.status_code == 403
 
 
 @pytest.mark.asyncio
 async def test_signature_check_can_be_switched_off_for_local_curl() -> None:
     async with make_client(twilio_validate_signature=False) as client:
-        r = await client.post("/voice/incoming", data=FORM)
+        r = await client.post("/voice/hello", data=FORM)
     assert r.status_code == 200

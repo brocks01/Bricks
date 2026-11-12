@@ -1,0 +1,4 @@
+# anything_else: After a task is done.
+
+[ask]
+还有别的吗？没有的话请说再见。

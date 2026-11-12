@@ -1,0 +1,85 @@
+{
+  "_note": "Words that pick an intent on calls (and for mock Buddy). 'help' also includes every phrase in assistant/distress.json. Latin phrases match whole words; other scripts match anywhere in what was said.",
+  "today": [
+    "apa ada hari ini",
+    "hari ini",
+    "ada apa",
+    "acara hari ini",
+    "aktiviti hari ini",
+    "jadual saya"
+  ],
+  "join": [
+    "sertai",
+    "ikut",
+    "saya ikut",
+    "nak ikut",
+    "nak pergi",
+    "daftar",
+    "saya pergi"
+  ],
+  "checkin_yes": [
+    "ya saya jalan",
+    "sudah jalan",
+    "dah jalan",
+    "saya bergerak",
+    "dah bergerak",
+    "sudah bergerak"
+  ],
+  "checkin_no": [
+    "belum",
+    "tak jalan",
+    "tidak jalan",
+    "belum jalan",
+    "tak bergerak"
+  ],
+  "remind": [
+    "ingatkan",
+    "peringatan",
+    "jangan bagi saya lupa",
+    "boleh ingatkan"
+  ],
+  "walk_start": [
+    "mula jalan",
+    "mula berjalan",
+    "jom jalan"
+  ],
+  "walk_stop": [
+    "berhenti jalan",
+    "habis jalan",
+    "selesai jalan"
+  ],
+  "help": [],
+  "profile": [
+    "profil saya",
+    "buka profil"
+  ],
+  "yes": [
+    "ya",
+    "ye",
+    "boleh",
+    "okey",
+    "ok",
+    "betul",
+    "baik",
+    "setuju"
+  ],
+  "no": [
+    "tidak",
+    "tak",
+    "tak nak",
+    "bukan",
+    "salah",
+    "batal",
+    "jangan"
+  ],
+  "goodbye": [
+    "selamat tinggal",
+    "bye",
+    "itu sahaja",
+    "tak ada lagi",
+    "tiada lagi",
+    "dah cukup",
+    "tak",
+    "tidak"
+  ]
+}

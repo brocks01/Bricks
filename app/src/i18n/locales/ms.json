@@ -99,10 +99,10 @@
     "wallReadoutVoice": "{{name}} berkata: {{words}}",
     "readoutShare": "Apa yang anda boleh kongsi: {{skills}}.",
     "readoutGiven": "Anda telah mengajar {{sessions}} sesi, membantu {{people}} orang dan menerima {{thanks}} ucapan terima kasih.",
-    "readoutActions": "Tekan Kongsi kemahiran untuk menawarkan sesuatu yang baharu.",
+    "readoutActions": "Ketik Kongsi kemahiran untuk menawarkan sesuatu yang baharu.",
     "prompt": {
       "title": "Ucap terima kasih",
-      "question": "Bagaimana {{event}} {{name}}?",
+      "question": "Bagaimana {{event}} bersama {{name}}?",
       "open": "Ucap terima kasih kepada {{name}}",
       "thank": "Terima kasih, {{name}}",
       "sayThanks": "Sebut terima kasih",
@@ -110,7 +110,7 @@
       "skip": "Langkau",
       "sent": "Kami telah beritahu {{name}}. Terima kasih.",
       "none": "Anda sudah mengucapkan terima kasih. Terima kasih!",
-      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau.",
+      "readout": "Ketik Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau.",
       "openShort": "Ucap terima kasih"
     },
     "storyHint": "Salam suara anda dan perkara yang anda suka bualkan."
@@ -118,7 +118,7 @@
   "kampung": {
     "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
-    "readout": "Komuniti. {{summary}} Tekan satu aktiviti untuk melihat dan menyertainya, Lihat semua untuk senarai penuh, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
+    "readout": "Komuniti. {{summary}} Ketik satu aktiviti untuk melihat dan menyertainya, Lihat semua untuk senarai penuh, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
     "myCircles": {
       "title": "Kumpulan Saya",
       "count_other": "Anda menyertai {{count}} Kumpulan",
@@ -251,7 +251,7 @@
     "join": "Sertai Kumpulan ini"
   },
   "voice": {
-    "playFrom": "Main mesej suara daripada {{name}}",
+    "playFrom": "Mainkan mesej suara daripada {{name}}",
     "length": "{{duration}} panjang",
     "forSkill": "Untuk {{skill}}"
   },
@@ -269,7 +269,7 @@
     "thinking": "Sekejap…",
     "notHeard": "Maaf, saya tidak dengar dengan jelas.",
     "denied": "Sila benarkan mikrofon dalam Tetapan telefon anda, supaya saya boleh dengar.",
-    "demoTitle": "Demo: tekan apa yang disebut"
+    "demoTitle": "Demo: ketik apa yang disebut"
   },
   "stat": {
     "daysActive": "{{done}} daripada {{total}} hari aktif"
@@ -539,18 +539,18 @@
   "record": {
     "start": "Rakam",
     "recording": "Merakam… {{time}} daripada {{max}}",
-    "hint": "Sehingga {{seconds}} saat. Tekan Berhenti apabila selesai.",
+    "hint": "Sehingga {{seconds}} saat. Ketik Berhenti apabila selesai.",
     "denied": "Untuk merakam, sila benarkan mikrofon dalam Tetapan telefon anda."
   },
   "buddy": {
-    "playAgain": "Main semula",
+    "playAgain": "Mainkan semula",
     "cancelled": "Baik, saya tidak ubah apa-apa.",
     "todayCheckin": "Ada satu soalan untuk anda: adakah anda bergerak semalam?",
     "todayEvent": "Akan datang: {{title}}, {{when}}.",
     "todayReminder": "Peringatan pada {{time}}: {{text}}.",
     "todayNothing": "Tiada apa-apa lagi hari ini. Selamat menikmati hari anda.",
     "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Komuniti.",
-    "alreadyGoing": "Anda sudah pergi ke {{title}}, {{when}}.",
+    "alreadyGoing": "Anda sudah ikut {{title}}, {{when}}.",
     "joinConfirm": "Sertai {{title}}, {{when}}?",
     "checkinConfirm": {
       "yes": "Anda bergerak semalam. Betul?",
@@ -559,12 +559,12 @@
     "remindNoTime": "Pukul berapa saya patut ingatkan anda? Pilih di sini.",
     "confirmQuestion": "{{summary}}. Betul?",
     "walkStarted": "Jalan anda sudah bermula. Selamat berjalan.",
-    "walkContinues": "Jalan anda masih berjalan.",
+    "walkContinues": "Jalan kaki anda masih diteruskan.",
     "noWalk": "Anda tidak sedang berjalan sekarang.",
     "profile": "Ini profil anda.",
     "unknown": "Maaf, saya tidak faham. Anda boleh sebut: apa ada hari ini, saya nak ikut, ingatkan saya makan ubat pukul 8, atau tolong.",
     "name": "Buddy",
-    "buttonLabel": "Buddy. Tekan dan sebut apa yang anda mahu",
+    "buttonLabel": "Buddy. Ketik dan sebut apa yang anda mahu",
     "opening": "Ini {{place}}.",
     "cantGoBack": "Anda sudah di permulaan."
   },
@@ -626,30 +626,30 @@
       "name": {
         "title": "Apa nama panggilan anda?",
         "label": "Nama anda",
-        "readoutHint": "Taipkan, atau tekan Sebut sahaja."
+        "readoutHint": "Taipkan, atau ketik Sebut sahaja."
       },
       "area": {
         "title": "Di mana anda tinggal?",
         "other": "Tempat lain",
         "label": "Kawasan anda",
-        "readoutHint": "Tekan kawasan anda, atau tekan Sebut sahaja."
+        "readoutHint": "Ketik kawasan anda, atau ketik Sebut sahaja."
       },
       "interests": {
         "title": "Apa yang anda suka?",
         "hint": "Pilih seberapa banyak yang anda suka.",
         "demo": "{{a}} dan {{b}}",
-        "readoutHint": "Pilih seberapa banyak yang anda suka, kemudian tekan Seterusnya."
+        "readoutHint": "Pilih seberapa banyak yang anda suka, kemudian ketik Seterusnya."
       }
     },
     "voiceIntro": {
       "title": "Suara anda",
       "prompt": "Ceritakan sedikit tentang diri anda",
       "examples": "Contohnya: kerja anda dahulu, apa yang anda suka, atau apa yang orang boleh tanya anda.",
-      "readout": "Ceritakan sedikit tentang diri anda. Tekan Rakam dan bercakap sehingga {{seconds}} saat. Anda boleh langkau ini."
+      "readout": "Ceritakan sedikit tentang diri anda. Ketik Rakam dan bercakap sehingga {{seconds}} saat. Anda boleh langkau ini."
     },
     "safeCircle": {
       "title": "Siapa yang perlu kami beritahu jika anda perlukan bantuan?",
-      "why": "Jika anda tekan Bantuan, kami terus beritahu mereka. Pilih sehingga lima orang.",
+      "why": "Jika anda ketik Bantuan, kami terus beritahu mereka. Pilih sehingga lima orang.",
       "readout": "Siapa yang perlu kami beritahu jika anda perlukan bantuan? Pilih sehingga lima orang. Anda boleh buat ini nanti."
     },
     "channel": {
@@ -670,8 +670,8 @@
     "phoneLabel": "Nombor telefon bimbit mereka",
     "add": "Tambah",
     "family": "Keluarga",
-    "remove": "Buang",
-    "removed": "{{name}} dibuang.",
+    "remove": "Keluarkan",
+    "removed": "{{name}} dikeluarkan.",
     "already": "{{name}} sudah ada dalam Kumpulan Selamat anda.",
     "noName": "Tiada nama",
     "contactsDenied": "Kami tidak dapat melihat kenalan anda. Anda boleh taip nama dan nombor.",
@@ -710,7 +710,7 @@
     "signOutConfirm": "Log keluar? Anda perlu log masuk semula.",
     "signOutConfirmDemo": "Log keluar? Ini juga memulakan demo semula dari awal.",
     "demoHeading": "Demo",
-    "demoAreYouOk": "Demo: terlepas daftar masuk",
+    "demoAreYouOk": "Demo: terlepas soalan pagi",
     "demoHelperAlert": "Demo: seseorang perlukan bantuan",
     "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
     "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
@@ -757,7 +757,7 @@
       "phoneLabel": "Nombor telefon bimbit mereka",
       "phoneHint": "Kami akan hantar jemputan kepada {{name}} di sini.",
       "interestsHint": "Anda boleh langkau ini. {{name}} boleh pilih nanti.",
-      "safeCircleWhy": "Jika {{name}} tekan Bantuan, kami akan terus beritahu anda.",
+      "safeCircleWhy": "Jika {{name}} ketik Bantuan, kami akan terus beritahu anda.",
       "review": "Sila semak",
       "reviewName": "Nama",
       "reviewPhone": "Nombor telefon bimbit",
@@ -770,14 +770,14 @@
       "consent": "Kami akan hantar jemputan WhatsApp kepada {{name}}. Tiada apa-apa disediakan sehingga {{name}} bersetuju.",
       "send": "Hantar jemputan",
       "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}}",
-      "readoutSend": "Tekan Hantar jemputan apabila semuanya betul."
+      "readoutSend": "Ketik Hantar jemputan apabila semuanya betul."
     },
     "emptyDetail": "Tambah ibu bapa atau datuk nenek untuk melihat keadaan mereka dan menetapkan peringatan."
   },
   "profile": {
     "title": "Profil saya",
     "verified": "Disahkan dengan Singpass",
-    "speaks": "Bertutur {{languages}}",
+    "speaks": "Boleh bertutur {{languages}}",
     "askMeAbout": "Tanya saya tentang",
     "endorsed_other": "Diucapkan terima kasih untuk {{skill}} oleh {{count}} orang",
     "readout": "{{name}}, {{area}}. Tanya saya tentang: {{about}}. Beginilah ahli lain melihat anda."
@@ -816,6 +816,6 @@
     "normalHint": "Mudah dibaca. Ramai orang suka ini.",
     "large": "Besar",
     "largeHint": "Tulisan paling besar.",
-    "readout": "Saiz tulisan. Pilih kecil, biasa atau besar. Sekarang: {{size}}. Kemudian tekan Seterusnya."
+    "readout": "Saiz tulisan. Pilih kecil, biasa atau besar. Sekarang: {{size}}. Kemudian ketik Seterusnya."
   }
 }

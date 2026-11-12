@@ -1,0 +1,4 @@
+# not_understood: We couldn't tell what they wanted.
+
+[say]
+Maaf, saya tidak dengar dengan jelas.

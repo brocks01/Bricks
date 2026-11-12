@@ -1,0 +1,4 @@
+# menu_keys: Keypad choices after the welcome question.
+
+[say]
+Atau tekan 1 untuk hari ini, 2 untuk peringatan, atau 9 untuk bantuan.

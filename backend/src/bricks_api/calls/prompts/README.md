@@ -43,6 +43,10 @@ possible is fixed.
 | still_there | ask | |
 | goodbye | later | event (title, time) |
 | dtmf_hint | say | |
+| menu_keys | say | |
+| anything_else | ask | |
+| not_understood | say | |
+| not_linked | say | |
 
 `inbound_welcome_unknown`: we don't know the caller's language yet. Play `[welcome]` once,
 then each language's `[option]` in that language's own voice ("For English, press 1…

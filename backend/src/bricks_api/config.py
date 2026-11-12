@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     twilio_number: str = ""
     # Keep on everywhere except quick local curl tests.
     twilio_validate_signature: bool = True
+    # Speech recognition on calls (Twilio <Gather language>). en-IN copes with Singapore
+    # accents; try en-GB / en-US if recognition is poor.
+    call_speech_language: str = "en-IN"
 
     @property
     def supabase_issuer(self) -> str:

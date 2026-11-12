@@ -1,0 +1,4 @@
+# not_understood: We couldn't tell what they wanted.
+
+[say]
+Sorry, I didn't catch that.

@@ -1,0 +1,4 @@
+# anything_else: After a task is done.
+
+[ask]
+Anything else? Or say bye.

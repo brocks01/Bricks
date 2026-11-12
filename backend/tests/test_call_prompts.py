@@ -30,6 +30,11 @@ EXPECTED = {
     "still_there",
     "goodbye",
     "dtmf_hint",
+    # Voice 1.3: the call loop.
+    "menu_keys",
+    "anything_else",
+    "not_understood",
+    "not_linked",
 }
 SENTENCE_END = re.compile("[.!?" + chr(0x3002) + chr(0xFF01) + chr(0xFF1F) + "]+")  # + Chinese
 # Things speech engines read badly or letter by letter.

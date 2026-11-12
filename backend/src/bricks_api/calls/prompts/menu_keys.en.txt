@@ -1,0 +1,4 @@
+# menu_keys: Keypad choices after the welcome question.
+
+[say]
+Or press 1 for today, 2 for a reminder, or 9 for help.

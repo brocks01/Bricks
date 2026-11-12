@@ -1,0 +1,4 @@
+# menu_keys: Keypad choices after the welcome question.
+
+[say]
+அல்லது இன்றைக்கு 1, நினைவூட்டலுக்கு 2, உதவிக்கு 9 அழுத்துங்கள்.

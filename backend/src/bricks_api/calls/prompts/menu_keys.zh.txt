@@ -1,0 +1,4 @@
+# menu_keys: Keypad choices after the welcome question.
+
+[say]
+或者按 1 听今天的安排，按 2 设提醒，按 9 求助。

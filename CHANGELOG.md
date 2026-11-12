@@ -15,7 +15,7 @@ keys or personal URLs here.
 | Track | Done | Next |
 |---|---|---|
 | App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2; Luma-style redesign steps 0 to 12 | Voice-driven Buddy (with voice 2.1), then 2.3 integration freeze |
-| Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts (done) | 1.3 translations wave 3 + inbound call loop, 2.1 real `/assistant/turn` |
+| Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3 (done) | 2.1 real `/assistant/turn` (a real phone call when Twilio is upgraded) |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
 **App look:** Luma-style redesign (UI steps 0 to 12 below; brief in
@@ -24,8 +24,13 @@ keys or personal URLs here.
 Normal (18 pt, default) or Large (20 pt body).
 
 **Running it locally**
-- Backend: `cd backend && uv run python -m bricks_api` (port 8000), exposed with ngrok. The
-  app's `EXPO_PUBLIC_API_URL` points at the ngrok address.
+- Backend: `cd backend && uv run python -m bricks_api` (port 8000), exposed with ngrok:
+  `ngrok http 8000` (or, with the free static domain, `ngrok http --url=<name>.ngrok-free.app
+  8000`). The address goes in **two places**: `PUBLIC_BASE_URL` in `backend/.env` and
+  `EXPO_PUBLIC_API_URL` in `app/.env.local`; then restart the backend and the Expo server
+  (`--clear`). For phone calls, also the Twilio number's webhook. A static domain never changes.
+- Git: a teammate shares branch `sarath`. Pull before starting an iteration; push as soon as
+  one is finished.
 - App on the phone: EAS **development** build ("Bricks (Dev)") + `npx expo start --dev-client`
   (with `APP_VARIANT=development`); USB: `adb reverse tcp:8081 tcp:8081`. Code changes load
   live; only new native modules need a new EAS build (about 25 min).
@@ -52,6 +57,24 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Voice 1.3: English call loop, keyword lists, translations wave 3
+- Calling the number: known members are greeted by name; "What's on today?", "Remind me
+  to take my medicine at 8" (confirmed, then saved and visible in the app), "join", "bye";
+  keypad 1 / 2 / 9; help words in any language or key 9 raise an SOS first; silence twice
+  ends the call. Unknown numbers get the language menu (demo mode then continues as Raj).
+- `/voice/hello` keeps 0.1's four-language greeting; `/voice/incoming` is the loop.
+- Keyword lists in 4 languages (`calls/keywords/`) and a time parser for all 4.
+- Calls log into the shared `messages_log` from the WhatsApp branch (`002_whatsapp.sql`,
+  copied identically; no message text). New add-only `python -m bricks_api.migrate`.
+- Twilio can call you instead (no international dialling needed):
+  `uv run python -m bricks_api.calls.call_me +91XXXXXXXXXX [hello]`. On calls we place, the
+  member is recognised from "To". **Needs an upgraded Twilio account:** on a trial, calls
+  placed through the API may only run Twilio's own sample scripts (calls coming in are fine).
+- Translations wave 3 (285 strings: Activity, onboarding, Settings, Family, Buddy's replies…)
+  reviewed. "Tap" is now one word per language everywhere (Malay Ketik, Chinese 点, Tamil
+  தொடு); Malay "Mainkan", "Soalan pagi", "Keluarkan"; check-in wording matches the screens.
+- Backend 258 tests, app 543 tests pass. A real phone call waits for an upgraded Twilio account.
 
 ### UI step 0: Luma first pass (tokens, buttons, cards, tab bar)
 The brief assumed this pass was done; it wasn't in this repo, so it's done here.

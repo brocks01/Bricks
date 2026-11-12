@@ -1,0 +1,4 @@
+# not_understood: We couldn't tell what they wanted.
+
+[say]
+对不起，我没听清楚。

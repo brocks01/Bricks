@@ -1,0 +1,122 @@
+{
+  "_note": "Words that pick an intent on calls (and for mock Buddy). 'help' also includes every phrase in assistant/distress.json. Latin phrases match whole words; other scripts match anywhere in what was said.",
+  "today": [
+    "what's on",
+    "whats on",
+    "what is on",
+    "today",
+    "what do i have",
+    "anything today",
+    "got what today",
+    "what's happening",
+    "my plan",
+    "any activity",
+    "any activities",
+    "got walk",
+    "anything on"
+  ],
+  "join": [
+    "join",
+    "i'm going",
+    "im going",
+    "sign me up",
+    "count me in",
+    "i want to go",
+    "can join",
+    "i'll go",
+    "i will go"
+  ],
+  "checkin_yes": [
+    "yes i walked",
+    "i walked",
+    "i moved",
+    "yes i did",
+    "walked already",
+    "already walk",
+    "already walked",
+    "went for a walk"
+  ],
+  "checkin_no": [
+    "no i didn't",
+    "didn't walk",
+    "did not walk",
+    "not yet",
+    "haven't walked",
+    "never walk"
+  ],
+  "remind": [
+    "remind",
+    "reminder",
+    "don't let me forget",
+    "dont let me forget",
+    "can remind"
+  ],
+  "walk_start": [
+    "start walk",
+    "start a walk",
+    "start my walk",
+    "let's walk",
+    "lets walk",
+    "go walking"
+  ],
+  "walk_stop": [
+    "stop walk",
+    "finish walk",
+    "end walk",
+    "i'm done walking",
+    "im done walking",
+    "stop walking"
+  ],
+  "help": [
+    "i'm not ok",
+    "i am not okay",
+    "can't get up",
+    "cannot get up"
+  ],
+  "profile": [
+    "my profile",
+    "open profile",
+    "my account"
+  ],
+  "yes": [
+    "yes",
+    "yeah",
+    "yep",
+    "ok",
+    "okay",
+    "sure",
+    "correct",
+    "right",
+    "can",
+    "yes please",
+    "that's right",
+    "confirm",
+    "alright"
+  ],
+  "no": [
+    "no",
+    "nope",
+    "not right",
+    "wrong",
+    "cancel",
+    "don't",
+    "dont",
+    "cannot",
+    "no thanks",
+    "not correct"
+  ],
+  "goodbye": [
+    "bye",
+    "goodbye",
+    "that's all",
+    "thats all",
+    "nothing else",
+    "no more",
+    "i'm done",
+    "finish already",
+    "no",
+    "nope",
+    "nothing",
+    "no thanks"
+  ]
+}

@@ -41,7 +41,7 @@
       "afternoon": "下午好",
       "evening": "晚上好"
     },
-    "readout": "{{greeting}}。{{today}}要打开社区、活动或健康，请按屏幕下方的按钮。",
+    "readout": "{{greeting}}。{{today}}要打开社区、活动或健康，请点屏幕下方的按钮。",
     "readoutCheckin": "有一个问题要您回答：您昨天有没有活动一下身体？",
     "readoutEvent": "即将举行：{{title}}，{{when}}。",
     "readoutReminder": "{{time}} 的提醒：{{text}}。",
@@ -99,7 +99,7 @@
     "wallReadoutVoice": "{{name}}说：{{words}}",
     "readoutShare": "您能分享的：{{skills}}。",
     "readoutGiven": "您教过 {{sessions}} 堂课，帮过 {{people}} 个人，收到 {{thanks}} 次感谢。",
-    "readoutActions": "按分享一项技能，提供新的东西。",
+    "readoutActions": "点分享一项技能，提供新的东西。",
     "prompt": {
       "title": "说声谢谢",
       "question": "{{name}}的{{event}}怎么样？",
@@ -110,7 +110,7 @@
       "skip": "跳过",
       "sent": "我们已经告诉{{name}}了。谢谢您。",
       "none": "您已经说过谢谢了。谢谢您！",
-      "readout": "按谢谢{{name}}，或者按说声谢谢录一段短消息，或者跳过。",
+      "readout": "点谢谢{{name}}，或者点说声谢谢录一段短消息，或者跳过。",
       "openShort": "说声谢谢"
     },
     "storyHint": "您的语音问候，以及您喜欢聊的话题。"
@@ -118,7 +118,7 @@
   "kampung": {
     "title": "社区",
     "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
-    "readout": "社区。{{summary}}按一个活动查看并参加，按查看全部看完整列表，或按发起活动自己办一个。",
+    "readout": "社区。{{summary}}点一个活动查看并参加，点查看全部看完整列表，或点发起活动自己办一个。",
     "myCircles": {
       "title": "我的圈子",
       "count_other": "您加入了 {{count}} 个圈子",
@@ -252,7 +252,7 @@
   },
   "voice": {
     "playFrom": "播放 {{name}} 的语音留言",
-    "length": "长 {{duration}}",
+    "length": "时长 {{duration}}",
     "forSkill": "关于{{skill}}"
   },
   "prompt": {
@@ -523,7 +523,7 @@
     "reminderBody": "做好了就点完成。",
     "snooze": "{{count}} 分钟后再提醒",
     "checkinTitle": "早上问候：您昨天有没有活动一下身体？",
-    "checkinBody": "请按“是”或“否”。",
+    "checkinBody": "请点“是”或“否”。",
     "alertsChannel": "紧急提醒",
     "areYouOkTitle": "您还好吗？",
     "areYouOkBody": "今天早上我们没有收到您的回复。点一下回答。",
@@ -539,13 +539,13 @@
   "record": {
     "start": "录音",
     "recording": "正在录音… {{time}} / {{max}}",
-    "hint": "最多 {{seconds}} 秒。说完后按停止。",
+    "hint": "最多 {{seconds}} 秒。说完后点停止。",
     "denied": "要录音，请在手机的设置里允许使用麦克风。"
   },
   "buddy": {
     "playAgain": "再听一次",
     "cancelled": "好的，我什么都没改。",
-    "todayCheckin": "有一个问题请您回答：您昨天有活动吗？",
+    "todayCheckin": "有一个问题请您回答：您昨天有没有活动一下身体？",
     "todayEvent": "接下来：{{title}}，{{when}}。",
     "todayReminder": "{{time}} 的提醒：{{text}}。",
     "todayNothing": "今天没有别的事了。祝您愉快。",
@@ -553,8 +553,8 @@
     "alreadyGoing": "您已经报名参加 {{title}}，{{when}}。",
     "joinConfirm": "参加 {{title}}，{{when}}？",
     "checkinConfirm": {
-      "yes": "您昨天有活动。对吗？",
-      "no": "您昨天没有活动。对吗？"
+      "yes": "您昨天活动了身体。对吗？",
+      "no": "您昨天没有活动身体。对吗？"
     },
     "remindNoTime": "要在几点提醒您？请在这里选择。",
     "confirmQuestion": "{{summary}}。对吗？",
@@ -562,7 +562,7 @@
     "walkContinues": "您的散步还在进行中。",
     "noWalk": "您现在没有在散步。",
     "profile": "这是您的资料。",
-    "unknown": "对不起，我没听懂。您可以说：今天有什么活动、我要参加、提醒我8点吃药，或者救命。",
+    "unknown": "对不起，我没听懂。您可以说：今天有什么活动、我要参加、提醒我8点吃药，或者帮忙。",
     "name": "Buddy",
     "buttonLabel": "Buddy。点一下，说出您想做的事",
     "opening": "这是{{place}}。",
@@ -595,7 +595,7 @@
   "onboarding": {
     "sayIt": "用说的",
     "skipForNow": "先跳过",
-    "later": "以后再说",
+    "later": "晚点再说",
     "who": {
       "title": "谁在设置？",
       "self": "我自己",
@@ -626,30 +626,30 @@
       "name": {
         "title": "我们怎么称呼您？",
         "label": "您的名字",
-        "readoutHint": "可以打字，或者按“用说的”。"
+        "readoutHint": "可以打字，或者点“用说的”。"
       },
       "area": {
         "title": "您住在哪里？",
         "other": "其他地方",
         "label": "您住的地区",
-        "readoutHint": "按您住的地区，或者按“用说的”。"
+        "readoutHint": "点您住的地区，或者点“用说的”。"
       },
       "interests": {
         "title": "您喜欢做什么？",
         "hint": "可以选很多个。",
         "demo": "{{a}}和{{b}}",
-        "readoutHint": "可以选很多个，然后按下一步。"
+        "readoutHint": "可以选很多个，然后点下一步。"
       }
     },
     "voiceIntro": {
       "title": "您的声音",
       "prompt": "跟大家简单介绍一下自己",
       "examples": "比如：您以前做什么工作、您喜欢什么，或者大家可以问您什么。",
-      "readout": "跟大家简单介绍一下自己。按录音，最多说 {{seconds}} 秒。也可以跳过。"
+      "readout": "跟大家简单介绍一下自己。点录音，最多说 {{seconds}} 秒。也可以跳过。"
     },
     "safeCircle": {
       "title": "您需要帮助时，我们该通知谁？",
-      "why": "您按求助时，我们会马上通知这些人。最多选五个人。",
+      "why": "您点求助时，我们会马上通知这些人。最多选五个人。",
       "readout": "您需要帮助时，我们该通知谁？最多选五个人。也可以以后再设置。"
     },
     "channel": {
@@ -757,7 +757,7 @@
       "phoneLabel": "对方的手机号码",
       "phoneHint": "我们会把邀请发到这个号码给{{name}}。",
       "interestsHint": "可以跳过，{{name}}以后可以自己选。",
-      "safeCircleWhy": "{{name}}按求助时，我们会马上通知您。",
+      "safeCircleWhy": "{{name}}点求助时，我们会马上通知您。",
       "review": "请检查",
       "reviewName": "名字",
       "reviewPhone": "手机号码",
@@ -770,7 +770,7 @@
       "consent": "我们会在 WhatsApp 上给{{name}}发邀请。{{name}}同意之前，什么都不会设置。",
       "send": "发送邀请",
       "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}",
-      "readoutSend": "确认无误后，按发送邀请。"
+      "readoutSend": "确认无误后，点发送邀请。"
     },
     "emptyDetail": "添加父母或祖父母，就能了解他们的近况，并为他们设置提醒。"
   },
@@ -816,6 +816,6 @@
     "normalHint": "容易阅读，大多数人喜欢。",
     "large": "大",
     "largeHint": "字最大。",
-    "readout": "字体大小。请选小、标准或大。现在是：{{size}}。然后按下一步。"
+    "readout": "字体大小。请选小、标准或大。现在是：{{size}}。然后点下一步。"
   }
 }

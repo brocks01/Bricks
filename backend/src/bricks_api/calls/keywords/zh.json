@@ -1,0 +1,79 @@
+{
+  "_note": "Words that pick an intent on calls (and for mock Buddy). 'help' also includes every phrase in assistant/distress.json. Latin phrases match whole words; other scripts match anywhere in what was said.",
+  "today": [
+    "今天",
+    "有什么活动",
+    "今天有什么",
+    "我的安排",
+    "有什么"
+  ],
+  "join": [
+    "参加",
+    "报名",
+    "我要去",
+    "我去",
+    "算我一个",
+    "加入"
+  ],
+  "checkin_yes": [
+    "有走",
+    "走了",
+    "有活动",
+    "动了",
+    "散步了"
+  ],
+  "checkin_no": [
+    "没走",
+    "还没",
+    "没动",
+    "没有走"
+  ],
+  "remind": [
+    "提醒",
+    "别让我忘",
+    "记得叫我"
+  ],
+  "walk_start": [
+    "开始走",
+    "开始散步",
+    "去散步"
+  ],
+  "walk_stop": [
+    "走完了",
+    "结束步行",
+    "不走了"
+  ],
+  "help": [
+    "帮我"
+  ],
+  "profile": [
+    "我的资料",
+    "个人资料"
+  ],
+  "yes": [
+    "是",
+    "对",
+    "好",
+    "可以",
+    "有",
+    "没错",
+    "行",
+    "嗯"
+  ],
+  "no": [
+    "不",
+    "没有",
+    "不是",
+    "不要",
+    "不用",
+    "错",
+    "取消"
+  ],
+  "goodbye": [
+    "再见",
+    "拜拜",
+    "没有了",
+    "就这样",
+    "不用了"
+  ]
+}
