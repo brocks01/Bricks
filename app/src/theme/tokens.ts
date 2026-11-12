@@ -19,6 +19,16 @@ export const color = {
   /** Soft grey panels (cards, grouped lists, secondary buttons). */
   bgSubtle: '#F2F2F5',
   border: '#E3E3E8',
+  /**
+   * The thin edge on white cards and secondary buttons (an olive-tinted line, not grey),
+   * so they read on the olive page without heavy shadows.
+   */
+  hairline: 'rgba(46, 52, 24, 0.10)',
+  /** The fixed controls (Read it out, Back, a title's button): frosted white over the wash. */
+  chrome: 'rgba(255, 255, 255, 0.72)',
+  chromePressed: 'rgba(255, 255, 255, 0.95)',
+  /** The selected tab's pill: one light olive on every tab. */
+  selected: '#E2E6CF',
   /** Stronger border for controls (outline buttons, inputs) so their edges are easy to see. */
   borderStrong: '#5F6368',
   text: '#111111',
@@ -80,10 +90,9 @@ export const categoryColor = {
 export type CategoryColorKey = keyof typeof categoryColor;
 
 /**
- * Each part of the app has its own soft colour (warm yellow Home, teal Community,
- * lilac Activity, green Health, blue Settings): a wash at the top of its pages and
- * the selected tab's pill, so members always know where they are. Text on these is
- * contrast-tested like the category tints (same values).
+ * Names for the parts of the app (Home, Community, Activity, Health, Settings), used
+ * by `Screen`'s `section` prop. Every section now shares the one olive wash and the
+ * one selected-tab colour; these soft tints stay for contrast tests and future use.
  */
 export const sectionColor = {
   home: categoryColor.kids,
@@ -139,7 +148,7 @@ export type TypeVariant = keyof typeof typeScale;
 export const lineHeightRatio = 1.4;
 
 export const radius = {
-  card: 24,
+  card: 20,
   /** Every button is a pill. */
   button: 999,
   /** Icon tiles, photos in rows. */
@@ -149,33 +158,59 @@ export const radius = {
   avatar: 999,
 } as const;
 
+/** Shadows are tinted with the page's olive (a black shadow on olive looks muddy). */
+const SHADOW_INK = '#2E3418';
+
 /**
- * Soft shadows (Luma). `floating` for things above the page (tab bar, sheets,
- * toasts, covers); `card` lifts white cards off the grey page; `control` for
- * white buttons and chips so their edges read clearly.
+ * Soft shadows. `floating` for things above the page (tab bar, sheets, toasts,
+ * covers); `card` lifts white cards off the page together with their hairline
+ * edge (`surface`); `control` is barely there, for white buttons and chips.
+ * Solid buttons (black, green, red) have no shadow.
  */
 export const shadow = {
   floating: {
-    shadowColor: '#000000',
-    shadowOpacity: 0.12,
+    shadowColor: SHADOW_INK,
+    shadowOpacity: 0.14,
     shadowRadius: 24,
     shadowOffset: { width: 0, height: 8 },
-    elevation: 10,
+    elevation: 8,
   },
   card: {
-    shadowColor: '#000000',
-    shadowOpacity: 0.06,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 2,
+    shadowColor: SHADOW_INK,
+    shadowOpacity: 0.07,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 1,
   },
   control: {
-    shadowColor: '#000000',
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    shadowColor: SHADOW_INK,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
+} as const;
+
+/**
+ * A white card's edge and lift, shared by every card-like surface. The 1pt edge
+ * comes out of the card's padding (`padding - surface.borderWidth`), so the words
+ * inside keep the same width and wrap exactly as before.
+ */
+export const surface = {
+  borderWidth: 1,
+  borderColor: color.hairline,
+  ...shadow.card,
+} as const;
+
+/**
+ * Tighter letter spacing for big Latin headings and numbers (Inter is set for
+ * body sizes; large sizes look loose without it). Tamil and Chinese keep 0.
+ */
+export const tracking = {
+  stat: -1,
+  display: -0.8,
+  title: -0.6,
+  heading: -0.3,
 } as const;
 
 /** Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. */

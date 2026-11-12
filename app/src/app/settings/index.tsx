@@ -198,9 +198,33 @@ export default function SettingsScreen() {
         ) : null}
       </GroupedList>
 
-      {/* Sign out, the version (tap 5 times for demo controls) and, on demo builds, Demo:
-          small, below the member's own settings (Luma). */}
+      {/* Sign out and, on demo builds, Demo side by side; the version under them
+          (tap it 5 times for demo controls). Below the member's own settings. */}
       <View style={styles.footer}>
+        <View style={styles.footerButtons}>
+          <View style={styles.footerButton}>
+            <BigButton
+              variant="outline"
+              icon={SignOutIcon}
+              label={t('settings.signOut')}
+              labelVariant="bodyStrong"
+              onPress={() => setConfirmSignOut(true)}
+              testID="settings-sign-out"
+            />
+          </View>
+          {showDemo ? (
+            <View style={styles.footerButton}>
+              <BigButton
+                variant="outline"
+                icon={WrenchIcon}
+                label={t('settings.demoHeading')}
+                labelVariant="bodyStrong"
+                onPress={() => router.push('/settings/demo')}
+                testID="settings-demo-open"
+              />
+            </View>
+          ) : null}
+        </View>
         <Pressable
           accessibilityRole="text"
           onPress={tapVersion}
@@ -211,26 +235,6 @@ export default function SettingsScreen() {
             {t('settings.version', { version: APP_VERSION })}
           </Text>
         </Pressable>
-        <BigButton
-          variant="outline"
-          fullWidth={false}
-          icon={SignOutIcon}
-          label={t('settings.signOut')}
-          labelVariant="bodyStrong"
-          onPress={() => setConfirmSignOut(true)}
-          testID="settings-sign-out"
-        />
-        {showDemo ? (
-          <BigButton
-            variant="outline"
-            fullWidth={false}
-            icon={WrenchIcon}
-            label={t('settings.demoHeading')}
-            labelVariant="bodyStrong"
-            onPress={() => router.push('/settings/demo')}
-            testID="settings-demo-open"
-          />
-        ) : null}
       </View>
 
       <ConfirmSheet
@@ -276,11 +280,18 @@ const UNLOCK_WINDOW_MS = 4000;
 
 const styles = StyleSheet.create({
   footer: {
+    gap: space.xs,
+    marginTop: space.xs,
+  },
+  footerButtons: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    alignItems: 'center',
-    justifyContent: 'center',
     gap: space.xs,
+  },
+  // Two equal halves; on a narrow phone with long words each takes the full width.
+  footerButton: {
+    flexGrow: 1,
+    flexBasis: '40%',
   },
   version: {
     alignSelf: 'center',

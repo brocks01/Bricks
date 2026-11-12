@@ -121,10 +121,10 @@ Kavya owns the board; Person A builds from it.
   Tab pages show a short summary and open the full list on its own page; only those detail pages
   scroll (all happenings, an event, a Circle, My story, the Thank-You Wall, the profile).
   Home doesn't repeat Community, Activity and Health: that's the tab bar's job.
-- **Section colours** (`sectionColor`): warm yellow Home, teal Community, lilac Activity, green
-  Health, blue Settings, as a soft wash at the top of each page and the selected tab's pill.
-  Home's check-in card is soft green, reminders soft rose, and rows have coloured icon squares,
-  so the app never reads as a white form.
+- **One calm surface.** Every page has the same olive wash; every card is white with a thin olive
+  edge; the selected tab is the same light olive pill on every tab. Colour lives in small places:
+  the coloured icon squares on rows, the event covers, green for done and red for Help. Chevrons
+  are always grey.
 
 ### 5.2 Colour
 
@@ -134,7 +134,10 @@ Kavya owns the board; Person A builds from it.
 | `pageWash` | `#C8CEA8` | Olive wash at the top of every main page, fading into `canvas` |
 | `bg` | `#FFFFFF` | Raised surfaces: cards, grouped lists, inputs, secondary buttons, chips |
 | `bg-subtle` | `#F2F2F5` | Wells inside white cards (icon squares, map placeholders) |
-| `border` | `#E3E3E8` | Dividers inside grouped lists |
+| `border` | `#E3E3E8` | Input and control outlines |
+| `hairline` | olive ink at 10% | The thin edge on cards and white buttons; dividers inside grouped lists |
+| `chrome` | white at 72% | Frosted fixed controls: Read it out, Back, a title's button |
+| `selected` | `#E2E6CF` | The selected tab's icon pill |
 | `text` | `#111111` | Body and titles |
 | `text-secondary` | `#3C4043` | Secondary text (never lighter than this) |
 | `primary` | `#111111` | Ink black: main buttons, links, selected chips, route lines, charts |
@@ -142,7 +145,7 @@ Kavya owns the board; Person A builds from it.
 | `success` | `#1E7B34` | "Going", "Done", completed days |
 | `sos` | `#C62828` | **Only** Help button and emergency screens |
 | `notice` | `#8A5A00` on `#FFF4DC` | Gentle notices (amber) |
-| `primary-subtle` | `#E9E9EE` | Selected tab's icon pill, pressed white buttons and rows |
+| `primary-subtle` | `#E9E9EE` | Pressed white buttons and rows |
 | `border-strong` | `#5F6368` | Edges of controls (3:1 against white) |
 | `neutral` | `#D5D8DD` | Missed days and inactive states (never red) |
 
@@ -154,9 +157,11 @@ Pressed shades: `success-pressed` `#165C27`, `sos-pressed` `#9E1F1F`. Every pair
 - Red only for SOS. Never colour alone to carry meaning.
 
 ### 5.3 Shape, spacing, elevation
-- Radius: **24dp cards, 14dp tiles and photos in rows, 28dp sheets, 999 for buttons, chips and avatars.** Nothing else.
+- Radius: **20dp cards, 14dp tiles and photos in rows, 28dp sheets, 999 for buttons, chips and avatars.** Nothing else.
 - Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. Screen padding 20.
-- Elevation (Luma): **white surfaces on a pale grey page, lifted by soft shadows.** `shadow.card` for cards and lists, `shadow.control` for white buttons and chips, `shadow.floating` for the tab bar, sheets, toasts and covers. No borders on cards.
+- Elevation: **white surfaces on the olive page, with a thin olive edge and a soft olive-tinted shadow** (`surface` = `hairline` edge + `shadow.card`; the edge comes out of the card's padding so text never re-wraps). `shadow.control` (barely there) for white buttons and chips, `shadow.floating` for the tab bar, Buddy, sheets, toasts and covers. Solid buttons (black, green, red) are flat.
+- Hierarchy of buttons: **black** for the one main action, **white with an edge** for the rest, **frosted** (`chrome`) for the fixed controls and a title's button, **green** for done, **red** only for Help.
+- Big Latin headings and numbers use slightly tighter letter spacing (`tracking`); Tamil and Chinese never do.
 - Touch targets ≥ 64×64dp, ≥ 16dp apart. Primary button at the bottom, full width.
 - Haptic tick on every successful tap.
 

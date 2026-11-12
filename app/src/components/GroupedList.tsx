@@ -9,8 +9,8 @@ import {
   color,
   iconSize,
   radius,
-  shadow,
   space,
+  surface,
   touch,
   type CategoryColorKey,
 } from '@/theme';
@@ -24,10 +24,13 @@ import { Text } from './primitives/Text';
  */
 export function GroupedList({
   title,
+  inset = true,
   children,
   testID,
 }: {
   title?: string;
+  /** Lines start after the icon (iOS). False for tall rows with buttons: edge to edge. */
+  inset?: boolean;
   children: ReactNode;
   testID?: string;
 }) {
@@ -43,7 +46,7 @@ export function GroupedList({
         <View style={styles.clip}>
           {rows.map((row, i) => (
             <Fragment key={row.key ?? i}>
-              {i > 0 ? <View style={styles.divider} /> : null}
+              {i > 0 ? <View style={[styles.divider, !inset && styles.dividerFull]} /> : null}
               {row}
             </Fragment>
           ))}
@@ -145,7 +148,7 @@ const styles = StyleSheet.create({
     gap: space.xs,
   },
   panel: {
-    ...shadow.card,
+    ...surface,
     borderRadius: radius.card,
     backgroundColor: color.bg,
   },
@@ -158,7 +161,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: space.sm,
     minHeight: touch.min,
-    paddingHorizontal: space.sm,
+    paddingHorizontal: space.sm - surface.borderWidth,
     paddingVertical: space.sm,
   },
   rowCompact: {
@@ -175,9 +178,12 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: borderWidth.hairline,
-    backgroundColor: color.border,
+    backgroundColor: color.hairline,
     // Starts after the icon, like iOS.
     marginLeft: space.sm + ICON_TILE + space.sm,
+  },
+  dividerFull: {
+    marginLeft: 0,
   },
   iconTile: {
     width: ICON_TILE,

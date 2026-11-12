@@ -119,7 +119,8 @@ const styles = StyleSheet.create({
   },
   chart: {
     flexDirection: 'row',
-    gap: space.xs,
+    // Narrow gaps, so "Wed" fits under its bar on a small phone.
+    gap: space.xxs,
     marginTop: space.xs,
   },
   column: {

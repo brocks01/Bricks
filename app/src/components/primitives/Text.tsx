@@ -5,6 +5,7 @@ import {
   fontStyleFor,
   lineHeightRatio,
   maxFontScale,
+  tracking,
   typeScale,
   type ColorToken,
   type FontWeightToken,
@@ -46,6 +47,11 @@ export function Text({
   const language = lang ?? appLanguage;
   const scale = typeScale[variant];
   const size = scale.size * fontScale;
+  // Big Latin headings and numbers sit a little tighter; Tamil and Chinese never do.
+  const letterSpacing =
+    language === 'ta' || language === 'zh'
+      ? undefined
+      : (tracking as Partial<Record<TypeVariant, number>>)[variant];
 
   return (
     <RNText
@@ -61,6 +67,7 @@ export function Text({
           lineHeight: Math.round(size * lineHeightRatio),
           color: colors[color],
           textAlign: align,
+          letterSpacing,
         },
         fontStyleFor(language, weight ?? scale.weight, fontsLoaded),
         style,

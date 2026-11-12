@@ -10,7 +10,7 @@ import { useCompact, useTypography } from '@/theme/TypographyProvider';
 
 import { REMINDER_ICON, timeToday } from './kinds';
 
-/** Reminders are rose: a soft card with the kind's icon in a deep-rose square. */
+/** Reminders are rose: a white card with the kind's icon on a soft rose square. */
 const REMINDER_TINT = categoryColor.music;
 
 /**
@@ -41,7 +41,7 @@ export function NextReminderCard({
   return (
     <View style={styles.stack}>
       {thanks}
-      <Card testID="next-reminder" style={styles.tinted}>
+      <Card testID="next-reminder">
         <View style={[styles.row, compact && styles.wrapRow]}>
           <View style={styles.iconWell}>
             <KindIcon size={iconSize.inline} color={REMINDER_TINT.fg} weight="bold" />
@@ -78,9 +78,6 @@ export function NextReminderCard({
 const ICON_WELL = 44;
 
 const styles = StyleSheet.create({
-  tinted: {
-    backgroundColor: REMINDER_TINT.bg,
-  },
   wrapRow: {
     flexWrap: 'wrap',
   },
@@ -88,7 +85,7 @@ const styles = StyleSheet.create({
     width: ICON_WELL,
     height: ICON_WELL,
     borderRadius: radius.tile,
-    backgroundColor: color.bg,
+    backgroundColor: REMINDER_TINT.bg,
     alignItems: 'center',
     justifyContent: 'center',
   },

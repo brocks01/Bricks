@@ -58,6 +58,27 @@ Normal (18 pt, default) or Large (20 pt body).
 
 ## Unreleased
 
+### Production polish: one calm, consistent look
+- **Cards:** every card is white (the check-in was mint and the reminder pink) with a thin olive
+  edge and a soft olive-tinted shadow instead of a grey one; corners 20 instead of 24. The edge
+  comes out of the padding, so no text re-wraps. The reminder keeps its rose colour in its icon square.
+- **Buttons:** solid buttons (black, green, red) are flat; white ones have a thin edge and almost no
+  shadow. Read it out, Back, Settings on Home and Health card are frosted (`chrome`), so the
+  fixed controls sit lighter than the page's content.
+- **Chevrons** are always grey (they were purple, green or black by category).
+- **Tab bar:** the selected tab is one light olive pill on every tab (it changed colour per tab),
+  with a thin edge; labels are a touch tighter so "Community" fits.
+- **Buddy** is one black pill with the microphone and its name (was a round button with a separate
+  name tag), so it takes less height at the bottom.
+- **Activity stats:** the three numbers sit on one card, centred, with thin lines between them
+  ("Thank-yous" no longer breaks over two lines).
+- **Settings:** Sign out and Demo sit side by side as equal halves, with the version centred under them.
+- **Reminders:** lines between reminders run edge to edge; screens with a bottom button no longer
+  have a separate grey band behind it.
+- Big headings and numbers have slightly tighter letter spacing (Latin only).
+- Small phone (360×780, Normal, English): Health now scrolls 19pt (was 25) and Settings 9pt (was 30).
+- **Checks:** app 636 tests, tsc, eslint, prettier.
+
 ### Olive page background
 - Every main page now has one olive wash at the top (`color.pageWash` #C8CEA8) fading into a
   light olive-stone page (`color.canvas` #DFE2D0, was pale grey #F3F3F6), instead of a

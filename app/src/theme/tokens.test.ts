@@ -78,7 +78,7 @@ describe('senior-friendly sizing', () => {
   });
 
   it('only the agreed radii exist (Luma-style: pill buttons, rounded panels)', () => {
-    expect(radius).toEqual({ card: 24, button: 999, tile: 14, sheet: 28, avatar: 999 });
+    expect(radius).toEqual({ card: 20, button: 999, tile: 14, sheet: 28, avatar: 999 });
   });
 
   it('supports 200% system font', () => {

@@ -1,6 +1,6 @@
 import { StyleSheet, View, type ViewProps } from 'react-native';
 
-import { color, radius, shadow, space } from '@/theme';
+import { color, radius, space, surface } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 export interface CardProps extends ViewProps {
@@ -11,8 +11,8 @@ export interface CardProps extends ViewProps {
 }
 
 /**
- * The one card style (Luma): a white card with 24dp corners, lifted off the pale
- * grey page by a soft shadow. Unpadded cards clip their photo to the corners.
+ * The one card style: a white card with 20dp corners, a thin olive edge and a soft
+ * shadow to lift it off the page. Unpadded cards clip their photo to the corners.
  */
 export function Card({ tone = 'default', padded = true, style, ...rest }: CardProps) {
   const compact = useCompact();
@@ -37,18 +37,18 @@ const styles = StyleSheet.create({
   },
   // iOS draws no shadow outside a clipped view, so only photo cards clip.
   raised: {
-    ...shadow.card,
+    ...surface,
   },
   clip: {
     overflow: 'hidden',
   },
   padded: {
-    padding: space.md,
+    padding: space.md - surface.borderWidth,
     gap: space.sm,
   },
   // Small and Normal text: a tighter card.
   paddedCompact: {
-    padding: space.sm,
+    padding: space.sm - surface.borderWidth,
     gap: space.xs + space.xxs,
   },
 });

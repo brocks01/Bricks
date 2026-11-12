@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { borderWidth, color, radius, shadow, space } from '@/theme';
+import { borderWidth, color, radius, space, surface } from '@/theme';
 import { useEffectiveFontScale } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
@@ -14,25 +14,36 @@ export interface BigStat {
 const STACK_SCALE = 1.3;
 
 /**
- * Three big numbers with plain labels underneath ("2.4 km / Distance").
- * Side by side normally; stacked when text is large so numbers never squeeze.
+ * Three big numbers with plain labels underneath ("2.4 km / Distance"), on one white
+ * card with thin lines between them. Side by side normally; stacked when text is
+ * large so numbers never squeeze.
  */
 export function BigStatsRow({ stats, testID }: { stats: BigStat[]; testID?: string }) {
   const stacked = useEffectiveFontScale() >= STACK_SCALE;
   return (
     <View style={[styles.row, stacked && styles.stacked]} testID={testID}>
-      {stats.map((s) => (
+      {stats.map((s, i) => (
         <View
           key={s.label}
-          style={[styles.cell, stacked && styles.cellStacked]}
+          style={[
+            styles.cell,
+            i > 0 && (stacked ? styles.dividerTop : styles.dividerLeft),
+            stacked && styles.cellStacked,
+          ]}
           accessible
           accessibilityLabel={`${s.label}: ${s.value}`}
         >
-          {/* Three side by side use the title size, so "3,000" fits its panel without breaking. */}
-          <Text variant={stacked || stats.length < 3 ? 'stat' : 'title'} style={styles.value}>
+          {/* Three side by side use the title size, so "3,000" fits its column without breaking. */}
+          <Text
+            variant={stacked || stats.length < 3 ? 'stat' : 'title'}
+            align={stacked ? undefined : 'center'}
+            style={styles.value}
+          >
             {s.value}
           </Text>
-          <Text color="textSecondary">{s.label}</Text>
+          <Text color="textSecondary" align={stacked ? undefined : 'center'}>
+            {s.label}
+          </Text>
         </View>
       ))}
     </View>
@@ -68,26 +79,33 @@ export function BigStatsList({ stats, testID }: { stats: BigStat[]; testID?: str
 const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
-    gap: space.sm,
+    borderRadius: radius.card,
+    backgroundColor: color.bg,
+    ...surface,
   },
   stacked: {
     flexDirection: 'column',
   },
-  // Each number sits on its own grey panel (Luma / Apple Health).
   cell: {
     flex: 1,
     gap: space.xxs,
-    paddingHorizontal: space.xs,
+    paddingHorizontal: space.xxs,
     paddingVertical: space.sm,
-    borderRadius: radius.tile,
-    backgroundColor: color.bg,
-    ...shadow.card,
+  },
+  dividerLeft: {
+    borderLeftWidth: borderWidth.hairline,
+    borderLeftColor: color.hairline,
+  },
+  dividerTop: {
+    borderTopWidth: borderWidth.hairline,
+    borderTopColor: color.hairline,
   },
   cellStacked: {
     flexDirection: 'row',
     alignItems: 'baseline',
     flexWrap: 'wrap',
     columnGap: space.sm,
+    paddingHorizontal: space.sm,
   },
   value: {
     fontVariant: ['tabular-nums'],

@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     borderRadius: radius.card,
     borderWidth: borderWidth.control,
-    borderColor: color.bg,
+    borderColor: color.hairline,
     backgroundColor: color.bg,
     ...shadow.card,
   },

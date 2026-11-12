@@ -18,7 +18,7 @@ import { useCompact, useTouchSizes } from '@/theme/TypographyProvider';
 import { Text } from './primitives/Text';
 import type { Icon } from './primitives/icons';
 
-export type BigButtonVariant = 'primary' | 'success' | 'outline' | 'sos';
+export type BigButtonVariant = 'primary' | 'success' | 'outline' | 'chrome' | 'sos';
 export type BigButtonSize = 'md' | 'lg' | 'xl';
 
 export interface BigButtonProps extends Omit<PressableProps, 'children' | 'style'> {
@@ -48,14 +48,17 @@ const PALETTE: Record<
 > = {
   primary: { bg: 'primary', pressed: 'primaryPressed', text: 'textOnColor', border: 'primary' },
   success: { bg: 'success', pressed: 'successPressed', text: 'textOnColor', border: 'success' },
-  // Secondary actions: a white floating pill (Luma). Its dark label carries the meaning.
-  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'text', border: 'bg' },
+  // Secondary actions: a white pill with a thin edge. Its dark label carries the meaning.
+  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'text', border: 'hairline' },
+  // The fixed controls and a title's button: frosted white, lighter than the content.
+  chrome: { bg: 'chrome', pressed: 'chromePressed', text: 'text', border: 'hairline' },
   sos: { bg: 'sos', pressed: 'sosPressed', text: 'textOnColor', border: 'sos' },
 };
 
 /**
  * The main button: a big pill with icon + word, full width by default. Black for the
- * main action, white for the rest, green for done, red only for emergencies.
+ * main action, white for the rest, frosted for the fixed controls, green for done,
+ * red only for emergencies. Solid buttons are flat; white ones have a thin edge.
  * Labels wrap rather than truncate, and the button grows with them.
  */
 export function BigButton({
@@ -98,7 +101,7 @@ export function BigButton({
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
         compact && styles.compact,
-        !disabled && styles.raised,
+        !disabled && variant === 'outline' && styles.raised,
       ]}
       {...rest}
     >
@@ -124,7 +127,7 @@ export function BigButton({
 const styles = StyleSheet.create({
   base: {
     borderRadius: radius.button,
-    borderWidth: borderWidth.control,
+    borderWidth: borderWidth.hairline,
     paddingHorizontal: space.md,
     paddingVertical: space.xs,
     justifyContent: 'center',

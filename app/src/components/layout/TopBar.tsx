@@ -32,7 +32,7 @@ export function TopBar({ readOut, showHelp = true, owner }: TopBarProps) {
       <View style={styles.slot}>
         {readOut ? (
           <BigButton
-            variant="outline"
+            variant="chrome"
             icon={speaking ? StopIcon : SpeakerHighIcon}
             label={speaking ? t('common.stopReading') : t('common.readOut')}
             labelVariant="bodyStrong"

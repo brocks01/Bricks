@@ -85,7 +85,7 @@ const styles = StyleSheet.create({
     paddingVertical: space.xs,
     borderRadius: radius.button,
     borderWidth: borderWidth.control,
-    borderColor: color.bg,
+    borderColor: color.hairline,
     backgroundColor: color.bg,
     maxWidth: '100%',
     ...shadow.control,

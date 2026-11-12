@@ -3,14 +3,14 @@ import { useTranslation } from 'react-i18next';
 import { Pressable, StyleSheet } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { color, iconSize, maxChromeFontScale, radius, shadow, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, maxChromeFontScale, radius, space, touch } from '@/theme';
 import { useTouchSizes } from '@/theme/TypographyProvider';
 
 import { CaretLeftIcon } from '../primitives/icons';
 import { Text } from '../primitives/Text';
 
 /**
- * "‹ Back" as a white floating pill on its own row above the title (Luma's round back button,
+ * "‹ Back" as a frosted pill (like Read it out) on its own row above the title (Luma's round back button,
  * with the word kept: never icon-only).
  * Keeping it off the top bar means Read it out and Help never move between screens.
  */
@@ -52,10 +52,11 @@ const styles = StyleSheet.create({
     paddingRight: space.md,
     gap: space.xxs,
     borderRadius: radius.button,
-    backgroundColor: color.bg,
-    ...shadow.control,
+    borderWidth: borderWidth.hairline,
+    borderColor: color.hairline,
+    backgroundColor: color.chrome,
   },
   pressed: {
-    backgroundColor: color.primarySubtle,
+    backgroundColor: color.chromePressed,
   },
 });

@@ -14,7 +14,7 @@ import {
 } from '@/components';
 import { tapFeedback } from '@/lib/haptics';
 import { useBuddy } from '@/state/buddy';
-import { color, iconSize, radius, shadow, space, type ColorToken } from '@/theme';
+import { color, iconSize, radius, space, surface, type ColorToken } from '@/theme';
 
 import { useGreeting } from './useHomeReadout';
 
@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   button: {
-    ...shadow.card,
+    ...surface,
     borderRadius: radius.card,
     alignItems: 'center',
     justifyContent: 'center',

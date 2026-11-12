@@ -5,7 +5,7 @@ import { StyleSheet, View } from 'react-native';
 import { useAnswerCheckin, useLastCheckinResult } from '@/api';
 import { BigButton, Card, EventCard, StatusBanner, Text, YesNo } from '@/components';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
-import { categoryColor, space } from '@/theme';
+import { space } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 /**
@@ -33,7 +33,7 @@ export function CheckinFlow({
 
   if (!answered) {
     return (
-      <Card testID="checkin-card" style={styles.tinted}>
+      <Card testID="checkin-card">
         <Text variant={compact ? 'bodyStrong' : 'heading'}>{t('home.checkin.question')}</Text>
         <YesNo
           onYes={() => checkin.mutate('yes')}
@@ -80,10 +80,6 @@ export function CheckinFlow({
 }
 
 const styles = StyleSheet.create({
-  // The daily question is green, like Health (where it also appears).
-  tinted: {
-    backgroundColor: categoryColor.walk.bg,
-  },
   group: {
     gap: space.xs,
   },

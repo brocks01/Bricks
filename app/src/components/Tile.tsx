@@ -2,7 +2,7 @@ import { Children, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, radius, space, surface, touch } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { CheckCircleIcon, type Icon } from './primitives/icons';
@@ -104,10 +104,8 @@ const styles = StyleSheet.create({
     gap: space.xs,
     padding: space.sm,
     borderRadius: radius.card,
-    borderWidth: borderWidth.hairline,
-    borderColor: color.bg,
     backgroundColor: color.bg,
-    ...shadow.card,
+    ...surface,
   },
   // Small and Normal text: icon beside the word, so a step's choices fit on one screen.
   tileCompact: {

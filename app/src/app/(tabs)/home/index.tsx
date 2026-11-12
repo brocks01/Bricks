@@ -38,7 +38,7 @@ export default function HomeScreen() {
           {greeting}
         </Text>
         <BigButton
-          variant="outline"
+          variant="chrome"
           fullWidth={false}
           icon={GearSixIcon}
           label={t('settings.title')}

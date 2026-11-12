@@ -11,7 +11,7 @@ import { config } from '@/lib/config';
 import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
-import { borderWidth, color, screenPadding, space, type SectionColorKey } from '@/theme';
+import { color, screenPadding, space, type SectionColorKey } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from '../primitives/Text';
@@ -57,7 +57,7 @@ export interface ScreenProps {
   /** True when no tab bar sits below, so the footer must clear the home indicator. */
   standalone?: boolean;
   /**
-   * Shows Buddy, the round voice button in the bottom-right corner. On by default
+   * Shows Buddy, the voice button in the bottom-right corner. On by default
    * on every screen except the safety screens (where Help is hidden: SOS, Are you
    * OK?, helper alert). Off while the screen itself is recording audio.
    */
@@ -233,7 +233,9 @@ export function Screen({
       </View>
       <ReadOutBar />
       {footer ? (
-        <View style={[styles.footer, compact && styles.footerCompact]}>{footer}</View>
+        <View style={[styles.footer, compact && styles.footerCompact, strongBand && styles.canvas]}>
+          {footer}
+        </View>
       ) : null}
     </SafeAreaView>
   );
@@ -279,7 +281,7 @@ const styles = StyleSheet.create({
     paddingBottom: space.sm,
     gap: space.xs + space.xxs,
   },
-  // The last item can always scroll clear of the round Buddy button.
+  // The last item can always scroll clear of the Buddy button.
   buddyRoom: {
     paddingBottom: BUDDY_BUTTON_CLEARANCE,
   },
@@ -295,9 +297,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: screenPadding,
     paddingVertical: space.sm,
     gap: space.sm,
-    borderTopWidth: borderWidth.hairline,
-    borderTopColor: color.border,
-    backgroundColor: color.canvas,
   },
   footerCompact: {
     paddingVertical: space.xs + space.xxs,

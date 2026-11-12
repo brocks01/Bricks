@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { color, iconSize, radius, shadow, space } from '@/theme';
+import { color, iconSize, radius, space, surface } from '@/theme';
 
 import type { Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     height: ICON_WELL,
     borderRadius: radius.avatar,
     backgroundColor: color.bg,
-    ...shadow.card,
+    ...surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: space.xxs,

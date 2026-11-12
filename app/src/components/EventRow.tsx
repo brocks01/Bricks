@@ -6,7 +6,7 @@ import type { EventSummary } from '@/api/types';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { categoryColor, color, iconSize, radius, shadow, space } from '@/theme';
+import { color, iconSize, radius, space, surface } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { BigButton } from './BigButton';
@@ -90,11 +90,7 @@ export function EventRow({ event, onOpen, onGoing, hosting = false, now }: Event
           </Text>
         </View>
         {showJoin ? null : (
-          <CaretRightIcon
-            size={iconSize.inline}
-            color={categoryColor[event.category].fg}
-            weight="bold"
-          />
+          <CaretRightIcon size={iconSize.inline} color={color.textSecondary} weight="bold" />
         )}
       </Pressable>
       {showJoin ? (
@@ -118,7 +114,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: radius.card,
     backgroundColor: color.bg,
-    ...shadow.card,
+    ...surface,
   },
   cardStacked: {
     flexDirection: 'column',
@@ -129,7 +125,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
-    padding: space.xs + space.xxs,
+    padding: space.xs + space.xxs - surface.borderWidth,
     borderRadius: radius.card,
   },
   pressed: {
@@ -140,10 +136,10 @@ const styles = StyleSheet.create({
     gap: space.xxs,
   },
   join: {
-    paddingRight: space.xs + space.xxs,
+    paddingRight: space.xs + space.xxs - surface.borderWidth,
   },
   joinStacked: {
-    paddingHorizontal: space.xs + space.xxs,
-    paddingBottom: space.xs + space.xxs,
+    paddingHorizontal: space.xs + space.xxs - surface.borderWidth,
+    paddingBottom: space.xs + space.xxs - surface.borderWidth,
   },
 });

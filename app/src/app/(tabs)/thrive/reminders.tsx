@@ -125,7 +125,7 @@ export default function RemindersScreen() {
               onAction={() => router.push('/thrive/reminder-new')}
             />
           ) : (
-            <GroupedList>
+            <GroupedList inset={false}>
               {list.map((r) => {
                 const KindIcon = REMINDER_ICON[r.kind];
                 return (

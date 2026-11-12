@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { color, iconSize, radius, space, surface, touch } from '@/theme';
 
 import { CaretRightIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -53,7 +53,9 @@ export function ListRow({
         {value ? <Text color="textSecondary">{value}</Text> : null}
         {note ? <Text color="textSecondary">{note}</Text> : null}
       </View>
-      {disabled ? null : <CaretRightIcon size={iconSize.inline} color={fg} weight="bold" />}
+      {disabled ? null : (
+        <CaretRightIcon size={iconSize.inline} color={color.textSecondary} weight="bold" />
+      )}
     </Pressable>
   );
 }
@@ -65,16 +67,13 @@ const styles = StyleSheet.create({
     gap: space.sm,
     minHeight: touch.min + space.sm,
     paddingVertical: space.sm,
-    paddingHorizontal: space.md,
+    paddingHorizontal: space.md - surface.borderWidth,
     borderRadius: radius.card,
-    borderWidth: borderWidth.hairline,
-    borderColor: color.bg,
     backgroundColor: color.bg,
-    ...shadow.card,
+    ...surface,
   },
   pressed: {
     backgroundColor: color.primarySubtle,
-    borderColor: color.primary,
   },
   disabled: {
     backgroundColor: color.bgSubtle,

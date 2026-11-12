@@ -22,10 +22,8 @@ import {
   radius,
   shadow,
   space,
-  sectionColor,
   touch,
   typeScale,
-  type SectionColorKey,
 } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
@@ -51,16 +49,15 @@ function tabBarHeight(fontScale: number, textSize: number, labels: readonly stri
   return Math.max(textSize < 1 ? touch.compact : touch.large, Math.ceil(content));
 }
 
-function tabIcon(IconComponent: Icon, section: SectionColorKey) {
-  const tint = sectionColor[section];
+function tabIcon(IconComponent: Icon) {
   return function TabIcon({ focused }: { focused: boolean }) {
-    // Selected: a filled icon on a pill in the section's colour, and a bold label,
-    // so the active tab isn't shown by colour alone.
+    // Selected: a filled icon on a light olive pill, and a bold label, so the active
+    // tab isn't shown by colour alone. The same on every tab.
     return (
-      <View style={[styles.iconPill, focused && { backgroundColor: tint.bg }]}>
+      <View style={[styles.iconPill, focused && styles.iconPillSelected]}>
         <IconComponent
           size={iconSize.inline}
-          color={focused ? tint.fg : color.textSecondary}
+          color={focused ? color.text : color.textSecondary}
           weight={focused ? 'fill' : 'bold'}
         />
       </View>
@@ -74,6 +71,8 @@ function tabLabel(label: string) {
   // to fit rather than being cut off with "…".
   const oneWord = !/\s/.test(label.trim());
   return function TabLabel({ focused }: { focused: boolean }) {
+    const { language } = useTypography();
+    const latin = language !== 'ta' && language !== 'zh';
     return (
       <Text
         variant="caption"
@@ -84,6 +83,7 @@ function tabLabel(label: string) {
         adjustsFontSizeToFit
         minimumFontScale={0.75}
         maxFontSizeMultiplier={maxChromeFontScale}
+        style={latin ? styles.label : null}
       >
         {label}
       </Text>
@@ -127,7 +127,9 @@ export default function TabsLayout() {
                 ]) + (textSize < 1 ? space.xxs * 2 : space.xs * 2),
               marginHorizontal: space.sm,
               marginBottom: insets.bottom + space.xs,
-              paddingHorizontal: space.xxs,
+              paddingHorizontal: 0,
+              borderWidth: 1,
+              borderColor: color.hairline,
               paddingTop: textSize < 1 ? space.xxs : space.xs,
               paddingBottom: textSize < 1 ? space.xxs : space.xs,
               borderTopWidth: 0,
@@ -142,7 +144,7 @@ export default function TabsLayout() {
         name="home"
         options={{
           title: t('tabs.home'),
-          tabBarIcon: tabIcon(HouseIcon, 'home'),
+          tabBarIcon: tabIcon(HouseIcon),
           tabBarLabel: tabLabel(t('tabs.home')),
           tabBarButtonTestID: 'tab-home',
         }}
@@ -151,7 +153,7 @@ export default function TabsLayout() {
         name="kampung"
         options={{
           title: t('tabs.kampung'),
-          tabBarIcon: tabIcon(UsersThreeIcon, 'community'),
+          tabBarIcon: tabIcon(UsersThreeIcon),
           tabBarLabel: tabLabel(t('tabs.kampung')),
           tabBarButtonTestID: 'tab-kampung',
         }}
@@ -160,7 +162,7 @@ export default function TabsLayout() {
         name="pass-it-on"
         options={{
           title: t('tabs.passItOn'),
-          tabBarIcon: tabIcon(HandHeartIcon, 'activity'),
+          tabBarIcon: tabIcon(HandHeartIcon),
           tabBarLabel: tabLabel(t('tabs.passItOn')),
           tabBarButtonTestID: 'tab-pass-it-on',
         }}
@@ -169,7 +171,7 @@ export default function TabsLayout() {
         name="thrive"
         options={{
           title: t('tabs.thrive'),
-          tabBarIcon: tabIcon(HeartbeatIcon, 'health'),
+          tabBarIcon: tabIcon(HeartbeatIcon),
           tabBarLabel: tabLabel(t('tabs.thrive')),
           tabBarButtonTestID: 'tab-thrive',
         }}
@@ -182,6 +184,7 @@ const styles = StyleSheet.create({
   item: {
     minHeight: touch.min,
     paddingVertical: space.xxs,
+    paddingHorizontal: 0,
     gap: space.xxs,
     borderRadius: radius.card,
     overflow: 'hidden',
@@ -191,5 +194,12 @@ const styles = StyleSheet.create({
     paddingVertical: space.xxs,
     alignItems: 'center',
     borderRadius: radius.button,
+  },
+  // A touch tighter so "Community" fits its quarter of the bar.
+  label: {
+    letterSpacing: -0.3,
+  },
+  iconPillSelected: {
+    backgroundColor: color.selected,
   },
 });

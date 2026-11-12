@@ -106,7 +106,7 @@ export default function ThriveScreen() {
       // S27: the health card, one tap from Health (Apple's Medical ID).
       titleAction={
         <BigButton
-          variant="outline"
+          variant="chrome"
           fullWidth={false}
           icon={FirstAidKitIcon}
           label={t('healthCard.title')}
