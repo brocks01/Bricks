@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 
 import { resetMockDb } from '@/api/mock';
+import { useToast } from '@/components/Toast';
 import { resetShownSos } from '@/features/safety/ActiveSosWatcher';
 import { useActiveWalk } from '@/features/walk/activeWalk';
 import { useOnboarding } from '@/state/onboarding';
@@ -24,6 +25,7 @@ export async function resetAppState({ onboarded = true } = {}): Promise<void> {
   useOnboarding.getState().reset();
   if (onboarded) useOnboarding.getState().complete();
   useUndo.getState().clear();
+  useToast.setState({ text: null });
   resetShownSos();
   useSettings.setState({ language: 'en', textSize: DEFAULT_TEXT_SIZE, demoUser: null });
   await useActiveWalk.getState().discard();

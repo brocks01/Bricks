@@ -821,7 +821,9 @@
     "simpleModeOff": "Turn off Simple Mode for {{name}}",
     "simpleModeHint": "Simple Mode shows {{name}} three big buttons: Today, Talk and Help.",
     "simpleModeTurnedOn": "Simple Mode is on for {{name}}.",
-    "simpleModeTurnedOff": "Simple Mode is off for {{name}}."
+    "simpleModeTurnedOff": "Simple Mode is off for {{name}}.",
+    "healthCard": "Health card",
+    "stories": "Stories"
   },
   "profile": {
     "title": "My profile",
@@ -985,5 +987,69 @@
     "verifiedLine": "A verified organisation.",
     "failed": "We couldn't find that code. Please check it with the staff.",
     "goHome": "Go to Home"
+  },
+  "healthCard": {
+    "title": "Health card",
+    "titleFor": "{{name}}'s health card",
+    "private": "Only you and your family can see this.",
+    "privateFor": "Only {{name}} and their family can see this.",
+    "bloodGroup": "Blood group",
+    "conditions": "Conditions",
+    "medicines": "Medicines",
+    "notAdded": "Not added",
+    "noneAdded": "None added",
+    "contacts": "Who to call",
+    "noContacts": "No one in their Safe Circle yet.",
+    "addContacts": "Add people to your Safe Circle",
+    "updatedBy": "Updated by {{name}}, {{day}}",
+    "edit": "Edit",
+    "dontKnow": "I don't know",
+    "conditionsHint": "For example: high blood pressure, diabetes",
+    "medicinesHint": "One per line, with when to take it",
+    "saved": "Health card saved.",
+    "readout": "{{title}}. Blood group: {{blood}}. Conditions: {{conditions}}. Medicines: {{medicines}}."
+  },
+  "stories": {
+    "title": "Life stories",
+    "titleFor": "{{name}}'s stories",
+    "record": "Record a story",
+    "recordHint": "Up to 3 minutes. Listen before you save.",
+    "storyTitle": "What's it called?",
+    "save": "Save the story",
+    "saved": "Your story is saved.",
+    "list": "Stories",
+    "none": "No stories yet. Your family would love to hear one.",
+    "noneFor": "No stories from {{name}} yet. Ask a question to start one.",
+    "asked": "{{name}} asked",
+    "askedLine": "{{name}} asked for this",
+    "answer": "Tell this story",
+    "delete": "Delete",
+    "deleteConfirm": "Delete \"{{title}}\"? It can't be undone.",
+    "ask": "Ask {{name}} a question",
+    "question": "Your question",
+    "questionHint": "For example: What was your first job?",
+    "send": "Send the question",
+    "sent": "Sent. {{name}} will see your question.",
+    "waiting": "Waiting for a story: {{text}}",
+    "readout_one": "{{title}}. {{count}} story. Questions from family: {{questions}}.",
+    "readout_other": "{{title}}. {{count}} stories. Questions from family: {{questions}}.",
+    "prompts": {
+      "firstJob": "Your first job",
+      "met": "How you met your partner",
+      "growingUp": "Growing up",
+      "festival": "A festival you remember",
+      "advice": "Advice for your grandchildren"
+    }
+  },
+  "familyOverview": {
+    "thisWeek": "{{name}} this week",
+    "walks_one": "{{count}} walk, {{distance}}",
+    "walks_other": "{{count}} walks, {{distance}}",
+    "noWalks": "No walks yet this week",
+    "streak_one": "Checked in {{count}} day in a row",
+    "streak_other": "Checked in {{count}} days in a row",
+    "noStreak": "Hasn't checked in today yet",
+    "next": "Next: {{title}}, {{when}}",
+    "noNext": "Nothing planned yet"
   }
 }

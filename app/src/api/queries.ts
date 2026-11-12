@@ -11,6 +11,8 @@ import { api } from './client';
 import type { WalkUpload } from '@/features/walk/engine';
 
 import type {
+  HealthCardInput,
+  NewStory,
   NewCheer,
   OrgPerson,
   WalkPeriod,
@@ -369,6 +371,9 @@ export const queryKeys13 = {
   thanksPrompts: ['endorsements', 'pending'] as const,
   familyInvites: ['family', 'invites'] as const,
   myOrgs: ['orgs', 'mine'] as const,
+  healthCard: (who: string) => ['health-card', who] as const,
+  stories: (who: string) => ['stories', who] as const,
+  familyOverview: (seniorId: string) => ['family', 'overview', seniorId] as const,
   org: (id: string) => ['orgs', 'detail', id] as const,
 };
 
@@ -436,6 +441,66 @@ export function useDeleteSkill() {
 
 export function useThanksPrompts() {
   return useQuery({ queryKey: queryKeys13.thanksPrompts, queryFn: () => api.getThanksPrompts() });
+}
+
+/** S27 Health Card: theirs, or a parent's (`seniorId`, for family). */
+export function useHealthCard(seniorId?: string) {
+  return useQuery({
+    queryKey: queryKeys13.healthCard(seniorId ?? 'me'),
+    queryFn: () => api.getHealthCard(seniorId),
+  });
+}
+
+export function useSaveHealthCard(seniorId?: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (card: HealthCardInput) => api.saveHealthCard(card, seniorId),
+    meta: { errorToast: true },
+    onSuccess: (card) => client.setQueryData(queryKeys13.healthCard(seniorId ?? 'me'), card),
+  });
+}
+
+/** S35 Life Stories: theirs, or a parent's (`seniorId`, for family). */
+export function useStories(seniorId?: string) {
+  return useQuery({
+    queryKey: queryKeys13.stories(seniorId ?? 'me'),
+    queryFn: () => api.getStories(seniorId),
+  });
+}
+
+export function useRecordStory() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (story: NewStory) => api.recordStory(story),
+    onSuccess: (list) => client.setQueryData(queryKeys13.stories('me'), list),
+  });
+}
+
+export function useDeleteStory() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.deleteStory(id),
+    meta: { errorToast: true },
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.stories('me') }),
+  });
+}
+
+/** "Ask Grandpa": family send a question for a story. */
+export function useAskForStory(seniorId: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (text: string) => api.askForStory(seniorId, text),
+    onSuccess: (list) => client.setQueryData(queryKeys13.stories(seniorId), list),
+  });
+}
+
+/** S10: a parent's week, only what they share. */
+export function useFamilyOverview(seniorId: string | null) {
+  return useQuery({
+    queryKey: queryKeys13.familyOverview(seniorId ?? ''),
+    queryFn: () => api.getFamilyOverview(seniorId!),
+    enabled: !!seniorId,
+  });
 }
 
 /** S11: the organisations this member runs (Settings shows them to staff). */

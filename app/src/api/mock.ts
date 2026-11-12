@@ -83,6 +83,16 @@ export const mockApi: BricksApi = {
   getFamilyInvites: () => respond(() => db.getFamilyInvites(), '/family/invites'),
   createFamilyInvite: (input) => respond(() => db.createFamilyInvite(input), '/family/invite'),
   acceptFamilyInvite: (id) => respond(() => db.acceptFamilyInvite(id), `/invites/${id}/accept`),
+  getHealthCard: (seniorId) => respond(() => db.getHealthCard(seniorId), '/health-card'),
+  saveHealthCard: (card, seniorId) =>
+    respond(() => db.saveHealthCard(card, seniorId), '/health-card'),
+  getStories: (seniorId) => respond(() => db.getStories(seniorId), '/stories'),
+  recordStory: (story) => respond(() => db.recordStory(story), '/stories'),
+  deleteStory: (id) => respond(() => db.deleteStory(id), `/stories/${id}`),
+  askForStory: (seniorId, text) =>
+    respond(() => db.askForStory(seniorId, text), `/family/seniors/${seniorId}/questions`),
+  getFamilyOverview: (seniorId) =>
+    respond(() => db.familyOverview(seniorId), `/family/seniors/${seniorId}/overview`),
   getMyOrgs: () => respond(() => db.myOrgs(), '/orgs/mine'),
   getOrg: (id) => respond(() => db.getOrg(id), `/orgs/${id}`),
   addOrgPeople: (id, people) =>

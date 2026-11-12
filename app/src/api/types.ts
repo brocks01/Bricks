@@ -605,3 +605,66 @@ export interface OrgJoined {
   name: string;
   verified: boolean;
 }
+
+/* ---------- Health Card, Life Stories, family overview (3.2 feature 6) ---------- */
+
+export const BLOOD_GROUPS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'] as const;
+export type BloodGroup = (typeof BLOOD_GROUPS)[number];
+
+/** S27 (Medical ID): only the member and their family see it. */
+export interface HealthCard {
+  blood_group: BloodGroup | null;
+  conditions: string;
+  medicines: string;
+  /** The Safe Circle, in order: who to call. */
+  emergency_contacts: SafeCircleMember[];
+  updated_by: PersonSummary | null;
+  updated_at: string | null;
+}
+
+export interface HealthCardInput {
+  blood_group: BloodGroup | null;
+  conditions: string;
+  medicines: string;
+}
+
+export interface Story {
+  id: string;
+  title: string;
+  voice: VoiceClip;
+  prompt_text: string | null;
+  asked_by: PersonSummary | null;
+  created_at: string;
+}
+
+export interface StoryQuestion {
+  id: string;
+  text: string;
+  asked_by: PersonSummary;
+  created_at: string;
+}
+
+/** S35: their stories, and questions family asked that don't have a story yet. */
+export interface Stories {
+  stories: Story[];
+  questions: StoryQuestion[];
+}
+
+export interface NewStory {
+  title: string;
+  audio_uri: string;
+  duration_s: number;
+  language: Language;
+  prompt_text: string | null;
+  question_id: string | null;
+}
+
+/** S10: a parent's week, only what they share with family. */
+export interface FamilyOverview {
+  name: string;
+  walks_this_week: number;
+  distance_m_this_week: number;
+  checkin_streak: number;
+  next_event: EventSummary | null;
+  stories: number;
+}

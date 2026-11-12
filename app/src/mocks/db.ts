@@ -1,4 +1,11 @@
 import type {
+  FamilyOverview,
+  HealthCard,
+  HealthCardInput,
+  NewStory,
+  Stories,
+  Story,
+  StoryQuestion,
   NewCheer,
   Org,
   OrgDetail,
@@ -25,6 +32,7 @@ import type {
 } from '@/api/types';
 import type { WalkUpload } from '@/features/walk/engine';
 
+import { sampleAudio } from './audio';
 import { createPassItOnDb } from './passItOnDb';
 import { createThriveDb } from './thriveDb';
 
@@ -56,6 +64,8 @@ const PEOPLE: Record<string, PersonSummary> = Object.fromEntries(
 );
 
 const person = (id: string): PersonSummary => PEOPLE[id] ?? { id, name: id, photo_url: null };
+
+const addDays = (d: Date, n: number) => new Date(d.getTime() + n * 24 * 60 * 60 * 1000);
 
 interface EventRow {
   id: string;
@@ -324,6 +334,79 @@ export function createMockDb(now: () => Date = () => new Date()) {
     deleteEvent: (id) => void state.events.delete(id),
     eventStart: (id) => state.events.get(id)?.start.toISOString() ?? null,
   });
+
+  /* ---------- Health Card + Life Stories (3.2 feature 6) ---------- */
+  const EMPTY_CARD: Omit<HealthCard, 'emergency_contacts'> = {
+    blood_group: null,
+    conditions: '',
+    medicines: '',
+    updated_by: null,
+    updated_at: null,
+  };
+  // Raj's, kept up to date by Priya (like the server's seed).
+  const healthCards = new Map<string, Omit<HealthCard, 'emergency_contacts'>>([
+    [
+      ME_ID,
+      {
+        blood_group: 'B+',
+        conditions: 'High blood pressure',
+        medicines: 'Amlodipine 5 mg, every morning\nBlood pressure tablet, every evening',
+        updated_by: person('u_priya'),
+        updated_at: addDays(now(), -12).toISOString(),
+      },
+    ],
+  ]);
+  /** Family see a parent's; for anyone else (or no one) it's Raj's own. */
+  const cardOwner = (seniorId?: string) => {
+    if (!seniorId || seniorId === ME_ID) return ME_ID;
+    const ok = passItOn
+      .getFamilyInvites()
+      .some((i) => i.senior_id === seniorId && i.status === 'accepted');
+    if (!ok) throw new MockNotFound(`family member ${seniorId}`);
+    return seniorId;
+  };
+  const safeCircleContacts = () => passItOn.getSafeCircle();
+  type MockQuestion = StoryQuestion & { answered: boolean };
+  const stories = new Map<string, { stories: Story[]; questions: MockQuestion[] }>([
+    [
+      ME_ID,
+      {
+        stories: [
+          {
+            id: 'st_teacher',
+            title: 'Thirty years of teaching maths',
+            voice: {
+              audio_url: sampleAudio.introRaj,
+              duration_s: 8,
+              transcript:
+                "Hello, I'm Raj. I was a maths teacher for thirty years. Ask me about chess!",
+            },
+            prompt_text: 'Your first job',
+            asked_by: null,
+            created_at: addDays(now(), -25).toISOString(),
+          },
+        ],
+        questions: [
+          {
+            id: 'q_met_amma',
+            text: 'How did you and Amma meet?',
+            asked_by: person('u_priya'),
+            created_at: addDays(now(), -2).toISOString(),
+            answered: false,
+          },
+        ],
+      },
+    ],
+  ]);
+  const storiesOf = (id: string) => {
+    let s = stories.get(id);
+    if (!s) {
+      s = { stories: [], questions: [] };
+      stories.set(id, s);
+    }
+    return s;
+  };
+  let nextStoryId = 1;
 
   /* ---------- Organisations (S11) ---------- */
   interface OrgRow {
@@ -614,6 +697,80 @@ export function createMockDb(now: () => Date = () => new Date()) {
     skipThanks: passItOn.skipThanks,
     getFamilyInvites: () => passItOn.getFamilyInvites(),
     createFamilyInvite: passItOn.createFamilyInvite,
+    /* Health Card (S27): Raj's, or a parent's for family (any accepted invite). */
+    getHealthCard(seniorId?: string): HealthCard {
+      const id = cardOwner(seniorId);
+      const card = healthCards.get(id) ?? EMPTY_CARD;
+      return { ...card, emergency_contacts: id === ME_ID ? safeCircleContacts() : [] };
+    },
+    saveHealthCard(input: HealthCardInput, seniorId?: string): HealthCard {
+      const id = cardOwner(seniorId);
+      healthCards.set(id, {
+        ...EMPTY_CARD,
+        blood_group: input.blood_group,
+        conditions: input.conditions.trim(),
+        medicines: input.medicines.trim(),
+        updated_by: person(ME_ID),
+        updated_at: now().toISOString(),
+      });
+      return this.getHealthCard(seniorId);
+    },
+
+    /* Life Stories (S35) */
+    getStories(seniorId?: string): Stories {
+      const id = cardOwner(seniorId);
+      const s = storiesOf(id);
+      return { stories: [...s.stories], questions: s.questions.filter((q) => !q.answered) };
+    },
+    recordStory(input: NewStory): Stories {
+      const s = storiesOf(ME_ID);
+      const question = input.question_id
+        ? s.questions.find((q) => q.id === input.question_id)
+        : undefined;
+      if (input.question_id && !question) throw new MockNotFound(`question ${input.question_id}`);
+      if (question) question.answered = true;
+      s.stories.unshift({
+        id: `st_${nextStoryId++}`,
+        title: input.title.trim(),
+        voice: { audio_url: input.audio_uri, duration_s: input.duration_s, transcript: null },
+        prompt_text: question?.text ?? input.prompt_text,
+        asked_by: question?.asked_by ?? null,
+        created_at: now().toISOString(),
+      });
+      return this.getStories();
+    },
+    deleteStory(id: string): void {
+      const s = storiesOf(ME_ID);
+      if (!s.stories.some((x) => x.id === id)) throw new MockNotFound(`story ${id}`);
+      s.stories = s.stories.filter((x) => x.id !== id);
+    },
+    askForStory(seniorId: string, text: string): Stories {
+      const id = cardOwner(seniorId);
+      storiesOf(id).questions.push({
+        id: `q_${nextStoryId++}`,
+        text: text.trim(),
+        asked_by: person(ME_ID),
+        created_at: now().toISOString(),
+        answered: false,
+      });
+      return this.getStories(seniorId);
+    },
+    /** S10: a parent's week. Mock parents are new, so it starts quiet. */
+    familyOverview(seniorId: string): FamilyOverview {
+      const invite = passItOn
+        .getFamilyInvites()
+        .find((i) => i.senior_id === seniorId && i.status === 'accepted');
+      if (!invite) throw new MockNotFound(`family member ${seniorId}`);
+      return {
+        name: invite.senior_name,
+        walks_this_week: 0,
+        distance_m_this_week: 0,
+        checkin_streak: 0,
+        next_event: null,
+        stories: storiesOf(seniorId).stories.length,
+      };
+    },
+
     /* Organisations (S11). Raj runs none at first; tests and demos make one. */
     myOrgs: (): Org[] => [...orgs.values()].filter((o) => o.admin === ME_ID).map(orgOf),
     /** Tests and demos: Raj runs an organisation. */

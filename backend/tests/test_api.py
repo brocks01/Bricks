@@ -631,6 +631,126 @@ async def test_admin_qr_onboarding(api: Api) -> None:
         await api.client.post(f"/demo/judges/{n}/reset")
 
 
+async def test_health_card_for_the_member_and_their_family_only(api: Api) -> None:
+    # S27: Raj and Priya (family) can read and edit it; nobody else can see it.
+    priya = {"X-Demo-User": "u_priya"}
+    card = (await api.client.get("/health-card")).json()
+    assert card["blood_group"] == "B+" and card["conditions"] == "High blood pressure"
+    assert "Amlodipine" in card["medicines"] and card["updated_by"]["name"] == "Priya Kumar"
+    assert next(c["name"] for c in card["emergency_contacts"]) == "Priya Kumar"
+    original = {k: card[k] for k in ("blood_group", "conditions", "medicines")}
+    try:
+        theirs = (await api.client.get("/family/seniors/u_raj/health-card", headers=priya)).json()
+        assert theirs == card
+        r = await api.client.put(
+            "/family/seniors/u_raj/health-card",
+            headers=priya,
+            json={**original, "medicines": "Amlodipine 10 mg, every morning"},
+        )
+        assert r.json()["medicines"] == "Amlodipine 10 mg, every morning"
+        mine = await api.client.put("/health-card", json={**original, "blood_group": "O+"})
+        assert mine.json()["blood_group"] == "O+" and mine.json()["updated_by"]["id"] == "u_raj"
+        bad = await api.client.put("/health-card", json={**original, "blood_group": "Z"})
+        assert bad.status_code == 422
+        for who in ("u_lim", "u_lee"):
+            r = await api.client.get(
+                "/family/seniors/u_raj/health-card", headers={"X-Demo-User": who}
+            )
+            assert r.status_code == 404
+    finally:
+        await api.client.put("/health-card", json=original)
+
+
+async def test_life_stories_and_ask_grandpa(api: Api) -> None:
+    # S35: Priya's question waits on Raj's page; his story answers it; she can listen.
+    priya = {"X-Demo-User": "u_priya"}
+    before = (await api.client.get("/stories")).json()
+    assert [q["text"] for q in before["questions"]] == ["How did you and Amma meet?"]
+    assert before["questions"][0]["asked_by"]["name"] == "Priya Kumar"
+    assert before["stories"][0]["title"] == "Thirty years of teaching maths"
+    qid = before["questions"][0]["id"]
+    r = await api.client.post(
+        "/stories",
+        data={"title": "Meeting Amma", "duration_s": "95", "question_id": qid},
+        files={"audio": ("story.m4a", b"\x00" * 4096, "audio/m4a")},
+    )
+    assert r.status_code == 201, r.text
+    after = r.json()
+    new = after["stories"][0]
+    try:
+        assert new["title"] == "Meeting Amma" and new["voice"]["duration_s"] == 95
+        assert new["prompt_text"] == "How did you and Amma meet?"
+        assert new["asked_by"]["id"] == "u_priya" and after["questions"] == []
+        theirs = (await api.client.get("/family/seniors/u_raj/stories", headers=priya)).json()
+        assert theirs["stories"][0]["id"] == new["id"]
+        asked = await api.client.post(
+            "/family/seniors/u_raj/questions",
+            headers=priya,
+            json={"text": "What was Bishan like in 1980?"},
+        )
+        assert [q["text"] for q in asked.json()["questions"]] == ["What was Bishan like in 1980?"]
+        too_long = await api.client.post(
+            "/stories",
+            data={"title": "Long", "duration_s": "600"},
+            files={"audio": ("story.m4a", b"\x00" * 4096, "audio/m4a")},
+        )
+        assert too_long.status_code == 422
+        lim = {"X-Demo-User": "u_lim"}
+        assert (
+            await api.client.get("/family/seniors/u_raj/stories", headers=lim)
+        ).status_code == 404
+        r = await api.client.post(
+            "/family/seniors/u_raj/questions", headers=lim, json={"text": "Hello there?"}
+        )
+        assert r.status_code == 404
+        assert (await api.client.delete(f"/stories/{new['id']}", headers=lim)).status_code == 404
+    finally:
+        assert (await api.client.delete(f"/stories/{new['id']}")).status_code == 204
+        async with await AsyncConnection.connect(
+            api.settings.database_url.get_secret_value(), prepare_threshold=None
+        ) as conn:
+            schema = sql.Identifier(api.settings.db_schema)
+            await conn.execute(
+                sql.SQL("update {}.story_questions set story_id = null where id = %s").format(
+                    schema
+                ),
+                (qid,),
+            )
+            await conn.execute(
+                sql.SQL("delete from {}.story_questions where id <> %s").format(schema), (qid,)
+            )
+            await conn.commit()
+
+
+async def test_family_overview_shows_only_what_the_parent_shares(api: Api) -> None:
+    # S10: Priya sees Raj's week; if Raj stops sharing his report, she doesn't.
+    priya = {"X-Demo-User": "u_priya"}
+    o = (await api.client.get("/family/seniors/u_raj/overview", headers=priya)).json()
+    stats = (await api.client.get("/walks/stats?period=week")).json()
+    week = (await api.client.get("/checkins/week")).json()
+    assert o["name"] == "Raj Kumar"
+    assert o["walks_this_week"] == stats["walks"]
+    assert o["distance_m_this_week"] == stats["distance_m"]
+    assert o["checkin_streak"] == week["streak"]
+    assert o["stories"] >= 1
+    lim = {"X-Demo-User": "u_lim"}
+    assert (await api.client.get("/family/seniors/u_raj/overview", headers=lim)).status_code == 404
+    async with await AsyncConnection.connect(
+        api.settings.database_url.get_secret_value(), prepare_threshold=None
+    ) as conn:
+        flip = sql.SQL(
+            "update {}.family_links set can_view_report = %s where senior_id = 'u_raj'"
+        ).format(sql.Identifier(api.settings.db_schema))
+        await conn.execute(flip, (False,))
+        await conn.commit()
+        try:
+            r = await api.client.get("/family/seniors/u_raj/overview", headers=priya)
+            assert r.status_code == 404
+        finally:
+            await conn.execute(flip, (True,))
+            await conn.commit()
+
+
 # ---------- SOS ----------
 
 

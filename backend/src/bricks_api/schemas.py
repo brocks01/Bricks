@@ -543,3 +543,63 @@ class OrgPeopleIn(Input):
 class OrgJoined(Wire):
     name: str
     verified: bool
+
+
+# ---------- Health Card, Life Stories, family overview (3.2 feature 6) ----------
+
+BloodGroup = Literal["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]
+
+
+class HealthCard(Wire):
+    """S27 (Medical ID): only the member and their family see it."""
+
+    blood_group: BloodGroup | None
+    conditions: str
+    medicines: str
+    # The Safe Circle, in order: who to call.
+    emergency_contacts: list[SafeCircleMember]
+    updated_by: PersonSummary | None
+    updated_at: str | None
+
+
+class HealthCardIn(Input):
+    blood_group: BloodGroup | None
+    conditions: Annotated[str, Field(max_length=1000)]
+    medicines: Annotated[str, Field(max_length=1000)]
+
+
+class Story(Wire):
+    id: str
+    title: str
+    voice: VoiceClip
+    prompt_text: str | None
+    asked_by: PersonSummary | None
+    created_at: str
+
+
+class StoryQuestion(Wire):
+    id: str
+    text: str
+    asked_by: PersonSummary
+    created_at: str
+
+
+class StoryQuestionIn(Input):
+    text: Annotated[str, Field(min_length=3, max_length=200)]
+
+
+class Stories(Wire):
+    stories: list[Story]
+    # Questions family asked that don't have a story yet.
+    questions: list[StoryQuestion]
+
+
+class FamilyOverview(Wire):
+    """S10: this week for a parent, only what they share with family."""
+
+    name: str
+    walks_this_week: int
+    distance_m_this_week: int
+    checkin_streak: int
+    next_event: EventSummary | None
+    stories: int

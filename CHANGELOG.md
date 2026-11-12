@@ -14,7 +14,7 @@ keys or personal URLs here.
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 (walk history, group walks + Cheers, Simple Mode, admin QR); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands, 6 if time; then 3.3 |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; then 3.3 |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,30 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 3.2 feature 6: Health Card, Life Stories, family overview
+- **S27 Health Card.** Health → **Health card** (beside the title): blood group,
+  conditions, medicines and who to call (the Safe Circle, tap to call), with "Only you and your
+  family can see this." and who last updated it. Edit: blood group chips (or "I don't know"),
+  conditions and medicines. Family open it from the Family screen and can edit it too.
+- **S35 Life Stories.** Activity → My story → **Life stories**: questions family asked ("Priya
+  asked: How did you and Amma meet?" → Tell this story), **Record a story** (up to 3 minutes,
+  with ideas: first job, how you met, growing up, a festival, advice for grandchildren), and
+  every story to play, with Delete (asks first). Family open their parent's stories to listen,
+  and **Ask a question**, which waits on the parent's page.
+- **S10 family overview.** Each parent who joined shows "Dad this week": walks and distance,
+  check-in streak and the next plan, plus Health card and Stories. Only what the parent shares
+  (`family_links.can_view_report`; off means family don't see it).
+- **Backend:** migration 005 (`health_cards`, `stories`, `story_questions`), `routers/care.py`:
+  `GET/PUT /health-card`, `GET/POST /stories`, `DELETE /stories/{id}`,
+  `GET/PUT /family/seniors/{id}/health-card`, `GET /family/seniors/{id}/stories`,
+  `POST /family/seniors/{id}/questions`, `GET /family/seniors/{id}/overview`. Family routes 404
+  for anyone who isn't accepted family (organisation staff included). Seeded: Raj's card
+  (updated by Priya), one story and Priya's question.
+- **One screen still:** Health card sits beside the Health title (Screen gained `titleAction`),
+  Life stories lives on My story, and "Your walks" shows place and distance on one line.
+- **Checks:** app 625 tests, tsc, eslint, prettier, expo-doctor 20/20, Android export; backend
+  ruff, mypy, 362 tests.
 
 ### Iteration 3.2: P1 features 1–4 (walk history, group walks + Cheers, Simple Mode, admin QR)
 - **1 · S24 Walk history & trends.** Health → "Your walks" (the last walk is on the row):

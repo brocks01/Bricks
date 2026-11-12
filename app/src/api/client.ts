@@ -47,7 +47,12 @@ import type {
   Transcript,
   VoiceClip,
   GroupWalk,
+  FamilyOverview,
+  HealthCard,
+  HealthCardInput,
   NewCheer,
+  NewStory,
+  Stories,
   Org,
   OrgDetail,
   OrgJoined,
@@ -125,6 +130,15 @@ export interface BricksApi {
   addOrgPeople(id: string, people: OrgPerson[]): Promise<OrgDetail>;
   /** A member scanned the QR (or tapped the link). */
   joinOrg(code: string): Promise<OrgJoined>;
+  // 3.2 feature 6. `seniorId`: family looking at a parent's (S10).
+  getHealthCard(seniorId?: string): Promise<HealthCard>;
+  saveHealthCard(card: HealthCardInput, seniorId?: string): Promise<HealthCard>;
+  getStories(seniorId?: string): Promise<Stories>;
+  recordStory(story: NewStory): Promise<Stories>;
+  deleteStory(id: string): Promise<void>;
+  /** "Ask Grandpa": the question waits on their Life Stories page. */
+  askForStory(seniorId: string, text: string): Promise<Stories>;
+  getFamilyOverview(seniorId: string): Promise<FamilyOverview>;
   /** S10: family turns Simple Mode on or off for a parent who has joined. */
   setSeniorSimpleMode(seniorId: string, on: boolean): Promise<void>;
   /** What was said in a recording. Rejects when there's no speech service (mock data). */
@@ -222,6 +236,38 @@ const httpApi: BricksApi = {
   skipThanks: (eventId) =>
     request(`/endorsements/pending/${encodeURIComponent(eventId)}`, { method: 'DELETE' }),
   getFamilyInvites: () => request('/family/invites'),
+  getHealthCard: (seniorId) =>
+    request(
+      seniorId ? `/family/seniors/${encodeURIComponent(seniorId)}/health-card` : '/health-card',
+    ),
+  saveHealthCard: (card, seniorId) =>
+    request(
+      seniorId ? `/family/seniors/${encodeURIComponent(seniorId)}/health-card` : '/health-card',
+      { method: 'PUT', body: card },
+    ),
+  getStories: (seniorId) =>
+    request(seniorId ? `/family/seniors/${encodeURIComponent(seniorId)}/stories` : '/stories'),
+  recordStory: ({ title, audio_uri, duration_s, language, prompt_text, question_id }) =>
+    request('/stories', {
+      method: 'POST',
+      body: formData({
+        title,
+        duration_s,
+        language,
+        prompt_text,
+        question_id,
+        audio: audioFile(audio_uri),
+      }),
+      timeoutMs: 30_000,
+    }),
+  deleteStory: (id) => request(`/stories/${encodeURIComponent(id)}`, { method: 'DELETE' }),
+  askForStory: (seniorId, text) =>
+    request(`/family/seniors/${encodeURIComponent(seniorId)}/questions`, {
+      method: 'POST',
+      body: { text },
+    }),
+  getFamilyOverview: (seniorId) =>
+    request(`/family/seniors/${encodeURIComponent(seniorId)}/overview`),
   getMyOrgs: () => request('/orgs/mine'),
   getOrg: (id) => request(`/orgs/${encodeURIComponent(id)}`),
   addOrgPeople: (id, people) =>

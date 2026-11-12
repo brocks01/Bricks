@@ -800,7 +800,9 @@
     "simpleModeOff": "Matikan Mod Mudah untuk {{name}}",
     "simpleModeHint": "Mod Mudah menunjukkan tiga butang besar kepada {{name}}: Hari ini, Cakap dan Bantuan.",
     "simpleModeTurnedOn": "Mod Mudah dihidupkan untuk {{name}}.",
-    "simpleModeTurnedOff": "Mod Mudah dimatikan untuk {{name}}."
+    "simpleModeTurnedOff": "Mod Mudah dimatikan untuk {{name}}.",
+    "healthCard": "Kad kesihatan",
+    "stories": "Kisah"
   },
   "profile": {
     "title": "Profil saya",
@@ -959,5 +961,66 @@
     "verifiedLine": "Organisasi yang disahkan.",
     "failed": "Kami tidak jumpa kod itu. Sila semak dengan kakitangan.",
     "goHome": "Pergi ke Utama"
+  },
+  "healthCard": {
+    "title": "Kad kesihatan",
+    "titleFor": "Kad kesihatan {{name}}",
+    "private": "Hanya anda dan keluarga anda boleh melihat ini.",
+    "privateFor": "Hanya {{name}} dan keluarganya boleh melihat ini.",
+    "bloodGroup": "Jenis darah",
+    "conditions": "Penyakit",
+    "medicines": "Ubat",
+    "notAdded": "Belum ditambah",
+    "noneAdded": "Tiada ditambah",
+    "contacts": "Siapa untuk dihubungi",
+    "noContacts": "Belum ada sesiapa dalam Bulatan Selamatnya.",
+    "addContacts": "Tambah orang ke Bulatan Selamat anda",
+    "updatedBy": "Dikemas kini oleh {{name}}, {{day}}",
+    "edit": "Ubah",
+    "dontKnow": "Saya tidak tahu",
+    "conditionsHint": "Contohnya: darah tinggi, kencing manis",
+    "medicinesHint": "Satu setiap baris, dengan bila perlu diambil",
+    "saved": "Kad kesihatan disimpan.",
+    "readout": "{{title}}. Jenis darah: {{blood}}. Penyakit: {{conditions}}. Ubat: {{medicines}}."
+  },
+  "stories": {
+    "title": "Kisah hidup",
+    "titleFor": "Kisah {{name}}",
+    "record": "Rakam kisah",
+    "recordHint": "Sehingga 3 minit. Dengar dahulu sebelum simpan.",
+    "storyTitle": "Apa tajuknya?",
+    "save": "Simpan kisah",
+    "saved": "Kisah anda disimpan.",
+    "list": "Kisah",
+    "none": "Belum ada kisah. Keluarga anda pasti suka mendengarnya.",
+    "noneFor": "Belum ada kisah daripada {{name}}. Tanya soalan untuk mula.",
+    "asked": "{{name}} bertanya",
+    "askedLine": "{{name}} minta kisah ini",
+    "answer": "Ceritakan kisah ini",
+    "delete": "Padam",
+    "deleteConfirm": "Padam \"{{title}}\"? Ia tidak boleh dibatalkan.",
+    "ask": "Tanya {{name}} satu soalan",
+    "question": "Soalan anda",
+    "questionHint": "Contohnya: Apa kerja pertama anda?",
+    "send": "Hantar soalan",
+    "sent": "Dihantar. {{name}} akan nampak soalan anda.",
+    "waiting": "Menunggu kisah: {{text}}",
+    "readout_other": "{{title}}. {{count}} kisah. Soalan daripada keluarga: {{questions}}.",
+    "prompts": {
+      "firstJob": "Kerja pertama anda",
+      "met": "Bagaimana anda bertemu pasangan",
+      "growingUp": "Zaman kanak-kanak",
+      "festival": "Perayaan yang anda ingat",
+      "advice": "Nasihat untuk cucu anda"
+    }
+  },
+  "familyOverview": {
+    "thisWeek": "{{name}} minggu ini",
+    "walks_other": "{{count}} jalan kaki, {{distance}}",
+    "noWalks": "Belum berjalan minggu ini",
+    "streak_other": "Melapor diri {{count}} hari berturut-turut",
+    "noStreak": "Belum melapor diri hari ini",
+    "next": "Seterusnya: {{title}}, {{when}}",
+    "noNext": "Belum ada rancangan"
   }
 }

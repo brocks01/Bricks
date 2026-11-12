@@ -7,6 +7,7 @@ import type { Profile } from '@/api/types';
 import {
   Avatar,
   BigButton,
+  BookOpenIcon,
   Card,
   MicrophoneIcon,
   QueryState,
@@ -96,6 +97,13 @@ function StoryBody({ profile: p }: { profile: Profile }) {
             </TagRow>
           </>
         ) : null}
+        <BigButton
+          variant="outline"
+          icon={BookOpenIcon}
+          label={t('stories.title')}
+          onPress={() => router.push('/stories')}
+          testID="life-stories-row"
+        />
         <BigButton
           variant="outline"
           icon={UserCircleIcon}

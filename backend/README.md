@@ -80,5 +80,5 @@ Use the Dockerfile on Render, Railway or Fly, with the same environment variable
 | Migration v1, seed (B0.1, B0.2) | PostGIS nearest helpers (SOS uses the Safe Circle in order) |
 | Me, home, events, circles (B1.1) | Scheduler and notifier: 8 am check-in push, reminders, escalation ladder (B2.1/B2.2) |
 | Check-ins, reminders, SOS, Safe Circle, walks + processing (B1.2) | `/assistant/turn`, `/assistant/transcribe`, `/tts`: answer 503 until the voice lane's speech keys exist; the app falls back |
-| Singpass mock, Google via Supabase, family invite + yes, skills, thank-yous (attendance checked), profiles, voice intro (B1.3) | Stories, health card, exercise sessions, Joy Report (Phase 3) |
-| Walk history (week / 4 weeks, bests), circle walks + cheers, Simple Mode (self or family), orgs + QR join (3.2) | |
+| Singpass mock, Google via Supabase, family invite + yes, skills, thank-yous (attendance checked), profiles, voice intro (B1.3) | Exercise sessions, Joy Report (Phase 3) |
+| Walk history (week / 4 weeks, bests), circle walks + cheers, Simple Mode (self or family), orgs + QR join, health card, life stories + family questions, family overview (3.2) | |

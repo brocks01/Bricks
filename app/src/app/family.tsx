@@ -6,6 +6,9 @@ import { useAcceptFamilyInvite, useFamilyInvites, useSetSeniorSimpleMode } from 
 import {
   BellIcon,
   BigButton,
+  ButtonRow,
+  FirstAidKitIcon,
+  MicrophoneIcon,
   Card,
   EmptyState,
   HouseIcon,
@@ -20,6 +23,7 @@ import {
   UsersThreeIcon,
   InfoRow,
 } from '@/components';
+import { ParentOverview } from '@/features/family/ParentOverview';
 import { useRelationName } from '@/features/family/relationName';
 import { config } from '@/lib/config';
 import { borderWidth, color, radius, space } from '@/theme';
@@ -82,6 +86,37 @@ export default function FamilyScreen() {
                         icon={ShieldCheckIcon}
                         text={t('family.inSafeCircle', { name: who })}
                       />
+                    ) : null}
+                    {joined && invite.senior_id ? (
+                      <ParentOverview seniorId={invite.senior_id} name={who} />
+                    ) : null}
+                    {joined && invite.senior_id ? (
+                      <ButtonRow>
+                        <BigButton
+                          variant="outline"
+                          icon={FirstAidKitIcon}
+                          label={t('family.healthCard')}
+                          onPress={() =>
+                            router.push({
+                              pathname: '/health-card',
+                              params: { senior: invite.senior_id!, name: who },
+                            })
+                          }
+                          testID={`family-health-card-${invite.id}`}
+                        />
+                        <BigButton
+                          variant="outline"
+                          icon={MicrophoneIcon}
+                          label={t('family.stories')}
+                          onPress={() =>
+                            router.push({
+                              pathname: '/stories',
+                              params: { senior: invite.senior_id!, name: who },
+                            })
+                          }
+                          testID={`family-stories-${invite.id}`}
+                        />
+                      </ButtonRow>
                     ) : null}
                     {joined && invite.senior_id ? (
                       <BigButton

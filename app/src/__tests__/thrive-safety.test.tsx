@@ -44,7 +44,7 @@ describe('Thrive', () => {
     expect(screen.queryByText('Did you move yesterday?')).toBeNull();
     expect(await screen.findByTestId('thrive-week')).toBeTruthy();
     expect(screen.getByText(/days in a row/)).toBeTruthy();
-    expect(screen.getByText(/Bishan Park · 2\.4 km · 32 min/)).toBeTruthy();
+    expect(screen.getByText(/^Last: Bishan Park · 2\.4 km$/)).toBeTruthy();
     expect(screen.getByTestId('thrive-reminders')).toBeTruthy();
     expect(
       screen.getByText(/^Next: (8 am · Take medicine|8 pm · Blood pressure tablet)$/),

@@ -32,6 +32,7 @@ export { DeviceMobileIcon } from 'phosphor-react-native/src/icons/DeviceMobile';
 export { DotsThreeIcon } from 'phosphor-react-native/src/icons/DotsThree';
 export { FlagCheckeredIcon } from 'phosphor-react-native/src/icons/FlagCheckered';
 export { GearIcon } from 'phosphor-react-native/src/icons/Gear';
+export { FirstAidKitIcon } from 'phosphor-react-native/src/icons/FirstAidKit';
 export { FootprintsIcon } from 'phosphor-react-native/src/icons/Footprints';
 export { GearSixIcon } from 'phosphor-react-native/src/icons/GearSix';
 export { GoogleLogoIcon } from 'phosphor-react-native/src/icons/GoogleLogo';

@@ -9,6 +9,7 @@ import {
   BigButton,
   BellIcon,
   ChartBarIcon,
+  FirstAidKitIcon,
   ButtonRow,
   Card,
   GroupedList,
@@ -26,14 +27,7 @@ import {
   loadUnfinishedWalk,
   uploadFromSnapshot,
 } from '@/features/walk/activeWalk';
-import {
-  formatDistance,
-  formatMinutes,
-  formatTime,
-  sayDistance,
-  sayMinutes,
-  weekdayLabels,
-} from '@/lib/format';
+import { formatDistance, formatTime, sayDistance, sayMinutes, weekdayLabels } from '@/lib/format';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
@@ -106,7 +100,24 @@ export default function ThriveScreen() {
   };
 
   return (
-    <Screen section="health" title={t('thrive.title')} readOut={readOut} testID="screen-thrive">
+    <Screen
+      section="health"
+      title={t('thrive.title')}
+      // S27: the health card, one tap from Health (Apple's Medical ID).
+      titleAction={
+        <BigButton
+          variant="outline"
+          fullWidth={false}
+          icon={FirstAidKitIcon}
+          label={t('healthCard.title')}
+          labelVariant="bodyStrong"
+          onPress={() => router.push('/health-card')}
+          testID="thrive-health-card"
+        />
+      }
+      readOut={readOut}
+      testID="screen-thrive"
+    >
       {unfinished ? (
         <Card testID="thrive-unfinished">
           <StatusBanner tone="notice" text={t('thrive.unfinished')} />
@@ -197,11 +208,8 @@ function WeekSummary({
             tint="walk"
             title={t('history.title')}
             subtitle={t('history.lastLine', {
-              line: t('thrive.lastWalkLine', {
-                place: stats.last_walk.start_place_name,
-                distance: formatDistance(stats.last_walk.distance_m, language),
-                time: formatMinutes(stats.last_walk.moving_s, t),
-              }),
+              // Place and distance only, so the row stays one line (the time is on the walk).
+              line: `${stats.last_walk.start_place_name} · ${formatDistance(stats.last_walk.distance_m, language)}`,
             })}
             onPress={() => router.push('/thrive/history')}
             testID="thrive-last-walk"

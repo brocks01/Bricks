@@ -62,6 +62,8 @@ export interface ScreenProps {
   tellMe?: boolean;
   /** A colour at the top fading to the page grey (the event page's cover tint, Luma). */
   tint?: string;
+  /** A small button beside the title, for a page's one secondary action. */
+  titleAction?: ReactNode;
   /** The part of the app this page belongs to: its soft colour washes the top. */
   section?: SectionColorKey;
   /** A deep colour behind the top of the page, fading into `tint` (event page). */
@@ -86,6 +88,7 @@ export function Screen({
   back = 'auto',
   onBack,
   showHelp = true,
+  titleAction,
   footer,
   scroll = true,
   standalone = false,
@@ -145,7 +148,15 @@ export function Screen({
       ) : (
         <>
           {showBack ? <BackButton onPress={onBack} /> : null}
-          {title ? (
+          {title && titleAction ? (
+            // A small button beside the title (Health → Health card).
+            <View style={[styles.titleRow, !compact && styles.title]}>
+              <Text variant="title" style={styles.backTitle}>
+                {title}
+              </Text>
+              {titleAction}
+            </View>
+          ) : title ? (
             <Text variant="title" style={compact ? null : styles.title}>
               {title}
             </Text>
@@ -198,6 +209,13 @@ export function Screen({
 }
 
 const styles = StyleSheet.create({
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    gap: space.xs,
+  },
   root: {
     flex: 1,
     backgroundColor: color.canvas,

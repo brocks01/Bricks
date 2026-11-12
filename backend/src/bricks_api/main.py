@@ -18,6 +18,7 @@ from .db import make_pool
 from .routers import (
     assistant,
     calls,
+    care,
     circles,
     demo,
     events,
@@ -97,6 +98,7 @@ def create_app(
         demo,
         assistant,
         orgs,
+        care,
     )
     for module in routers:
         app.include_router(module.router)

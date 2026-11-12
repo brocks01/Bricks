@@ -554,6 +554,32 @@ async def _seed(
         "insert into family_links (senior_id, family_id, relation) values"
         " ('u_raj', 'u_priya', 'father')"
     )
+    # S27: Raj's health card, kept up to date by Priya. S35: one life story, and a
+    # question from Priya waiting for the next one.
+    await ex(
+        "insert into health_cards (user_id, blood_group, conditions, medicines, updated_by,"
+        " updated_at) values ('u_raj', 'B+', 'High blood pressure', %s, 'u_priya', %s)",
+        (
+            "Amlodipine 5 mg, every morning\nBlood pressure tablet, every evening",
+            now - timedelta(days=12),
+        ),
+    )
+    if audio["intro"]:
+        await ex(
+            "insert into stories (id, user_id, title, audio_url, duration_s, transcript,"
+            " language, prompt_text, created_at) values ('st_teacher', 'u_raj',"
+            " 'Thirty years of teaching maths', %s, 8, %s, 'en', 'Your first job', %s)",
+            (
+                audio["intro"],
+                "Hello, I'm Raj. I was a maths teacher for thirty years. Ask me about chess!",
+                now - timedelta(days=25),
+            ),
+        )
+    await ex(
+        "insert into story_questions (id, senior_id, asked_by, text, created_at)"
+        " values ('q_met_amma', 'u_raj', 'u_priya', 'How did you and Amma meet?', %s)",
+        (now - timedelta(days=2),),
+    )
     # Priya added her dad at the start, and he said yes: her Family view (S10).
     await ex(
         "insert into family_invites (id, family_id, senior_name, senior_phone, relation,"

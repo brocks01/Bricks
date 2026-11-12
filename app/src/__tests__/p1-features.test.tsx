@@ -258,3 +258,119 @@ describe('S11 Admin: members & QR', () => {
     expect(screen.getByText(/We couldn't find that code/)).toBeTruthy();
   });
 });
+
+describe('S27 Health Card', () => {
+  it('Health → Health card: blood group, conditions, medicines, who to call, private', async () => {
+    await renderApp('/thrive');
+    await fireEvent.press(await screen.findByTestId('thrive-health-card'));
+    expect(await screen.findByTestId('screen-health-card')).toBeTruthy();
+    expect(await screen.findByText('Only you and your family can see this.')).toBeTruthy();
+    expect(screen.getByText('B+')).toBeTruthy();
+    expect(screen.getByText('High blood pressure')).toBeTruthy();
+    expect(screen.getByText(/Amlodipine 5 mg/)).toBeTruthy();
+    expect(
+      within(screen.getByTestId('health-card-contacts')).getByText('Priya Kumar'),
+    ).toBeTruthy();
+    expect(screen.getByText(/^Updated by Priya, /)).toBeTruthy();
+  });
+
+  it('Edit: choose a blood group, change medicines, save', async () => {
+    await renderApp('/health-card');
+    await fireEvent.press(await screen.findByTestId('health-card-edit'));
+    await fireEvent.press(screen.getByTestId('health-card-blood-O+'));
+    await fireEvent.changeText(
+      screen.getByTestId('health-card-medicines-field'),
+      'Amlodipine 10 mg, every morning',
+    );
+    await fireEvent.press(screen.getByTestId('health-card-save'));
+    expect(await screen.findByText('Health card saved.')).toBeTruthy();
+    const card = mockDb().getHealthCard();
+    expect(card.blood_group).toBe('O+');
+    expect(card.medicines).toBe('Amlodipine 10 mg, every morning');
+    expect(card.updated_by?.id).toBe('u_raj');
+  });
+});
+
+describe('S35 Life Stories', () => {
+  it("a question from family: tell that story; it's saved and the question is answered", async () => {
+    await renderApp('/pass-it-on/story');
+    await fireEvent.press(await screen.findByTestId('life-stories-row'));
+    expect(await screen.findByTestId('screen-stories')).toBeTruthy();
+    expect(await screen.findByText('Thirty years of teaching maths')).toBeTruthy();
+    expect(screen.getByText('How did you and Amma meet?')).toBeTruthy();
+
+    await fireEvent.press(screen.getByTestId('stories-answer-q_met_amma'));
+    await fireEvent.press(await screen.findByTestId('story-start'));
+    await fireEvent.press(await screen.findByTestId('story-stop'));
+    await fireEvent.press(await screen.findByTestId('stories-save'));
+    expect(await screen.findByText('Your story is saved.')).toBeTruthy();
+    const { stories, questions } = mockDb().getStories();
+    expect(questions).toEqual([]);
+    expect(stories[0]!.title).toBe('How did you and Amma meet?');
+    expect(stories[0]!.asked_by?.id).toBe('u_priya');
+  });
+
+  it('Record a story from an idea', async () => {
+    await renderApp('/stories');
+    await fireEvent.press(await screen.findByTestId('stories-record'));
+    await fireEvent.press(screen.getByTestId('stories-prompt-festival'));
+    await fireEvent.press(screen.getByTestId('story-start'));
+    await fireEvent.press(await screen.findByTestId('story-stop'));
+    await fireEvent.press(await screen.findByTestId('stories-save'));
+    await waitFor(() =>
+      expect(mockDb().getStories().stories[0]!.title).toBe('A festival you remember'),
+    );
+  });
+
+  it('delete asks first', async () => {
+    await renderApp('/stories');
+    await fireEvent.press(await screen.findByTestId('story-delete-st_teacher'));
+    expect(screen.getByText(/Delete "Thirty years of teaching maths"\?/)).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('confirm-yes'));
+    await waitFor(() => expect(mockDb().getStories().stories).toEqual([]));
+  });
+});
+
+describe('S10 Family overview', () => {
+  const joinedParent = () => {
+    const invite = mockDb().createFamilyInvite({
+      senior_name: 'Raj Kumar',
+      senior_phone: '+6591234567',
+      relation: 'father',
+      language: 'en',
+      interests: [],
+      add_me_to_safe_circle: true,
+    });
+    return mockDb().acceptFamilyInvite(invite.id);
+  };
+
+  it("shows Dad's week, then his health card and stories; family can ask for a story", async () => {
+    const invite = joinedParent();
+    await renderApp('/family');
+    const overview = await screen.findByTestId(`family-overview-${invite.senior_id}`);
+    expect(within(overview).getByText('Dad this week')).toBeTruthy();
+    expect(within(overview).getByText('No walks yet this week')).toBeTruthy();
+
+    await fireEvent.press(screen.getByTestId(`family-health-card-${invite.id}`));
+    expect(await screen.findByText("Dad's health card")).toBeTruthy();
+    expect(await screen.findByText('Only Dad and their family can see this.')).toBeTruthy();
+  });
+
+  it('ask Dad a question: it waits on his stories page', async () => {
+    const invite = joinedParent();
+    await renderApp('/family');
+    await fireEvent.press(await screen.findByTestId(`family-stories-${invite.id}`));
+    await fireEvent.press(await screen.findByTestId('stories-ask'));
+    await fireEvent.changeText(
+      screen.getByTestId('stories-question-field'),
+      'What was Bishan like in 1980?',
+    );
+    await fireEvent.press(screen.getByTestId('stories-send'));
+    expect(await screen.findByText('Sent. Dad will see your question.')).toBeTruthy();
+    expect(
+      mockDb()
+        .getStories(invite.senior_id!)
+        .questions.map((q) => q.text),
+    ).toEqual(['What was Bishan like in 1980?']);
+  });
+});

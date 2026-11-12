@@ -800,7 +800,9 @@
     "simpleModeOff": "为{{name}}关闭简易模式",
     "simpleModeHint": "简易模式会给{{name}}显示三个大按钮：今天、说话和求助。",
     "simpleModeTurnedOn": "已为{{name}}打开简易模式。",
-    "simpleModeTurnedOff": "已为{{name}}关闭简易模式。"
+    "simpleModeTurnedOff": "已为{{name}}关闭简易模式。",
+    "healthCard": "健康卡",
+    "stories": "故事"
   },
   "profile": {
     "title": "我的资料",
@@ -959,5 +961,66 @@
     "verifiedLine": "已认证的机构。",
     "failed": "找不到这个代码。请向工作人员确认。",
     "goHome": "回到首页"
+  },
+  "healthCard": {
+    "title": "健康卡",
+    "titleFor": "{{name}}的健康卡",
+    "private": "只有您和您的家人能看到。",
+    "privateFor": "只有{{name}}和家人能看到。",
+    "bloodGroup": "血型",
+    "conditions": "病况",
+    "medicines": "药物",
+    "notAdded": "未填写",
+    "noneAdded": "未填写",
+    "contacts": "紧急联系人",
+    "noContacts": "安全圈里还没有人。",
+    "addContacts": "把人加进您的安全圈",
+    "updatedBy": "由{{name}}更新，{{day}}",
+    "edit": "修改",
+    "dontKnow": "我不知道",
+    "conditionsHint": "例如：高血压、糖尿病",
+    "medicinesHint": "每行一种，写上什么时候吃",
+    "saved": "健康卡已保存。",
+    "readout": "{{title}}。血型：{{blood}}。病况：{{conditions}}。药物：{{medicines}}。"
+  },
+  "stories": {
+    "title": "人生故事",
+    "titleFor": "{{name}}的故事",
+    "record": "录一个故事",
+    "recordHint": "最多 3 分钟。保存前可以先听一遍。",
+    "storyTitle": "故事叫什么？",
+    "save": "保存故事",
+    "saved": "您的故事已保存。",
+    "list": "故事",
+    "none": "还没有故事。家人一定很想听。",
+    "noneFor": "{{name}}还没有故事。问一个问题来开始吧。",
+    "asked": "{{name}}问",
+    "askedLine": "{{name}}想听这个",
+    "answer": "讲这个故事",
+    "delete": "删除",
+    "deleteConfirm": "删除“{{title}}”？删除后无法恢复。",
+    "ask": "问{{name}}一个问题",
+    "question": "您的问题",
+    "questionHint": "例如：您的第一份工作是什么？",
+    "send": "发送问题",
+    "sent": "已发送。{{name}}会看到您的问题。",
+    "waiting": "等待故事：{{text}}",
+    "readout_other": "{{title}}。{{count}} 个故事。家人的问题：{{questions}}。",
+    "prompts": {
+      "firstJob": "您的第一份工作",
+      "met": "您怎么认识另一半",
+      "growingUp": "小时候",
+      "festival": "难忘的节日",
+      "advice": "给孙子孙女的话"
+    }
+  },
+  "familyOverview": {
+    "thisWeek": "{{name}}这周",
+    "walks_other": "散步 {{count}} 次，{{distance}}",
+    "noWalks": "这周还没有散步",
+    "streak_other": "连续 {{count}} 天报平安",
+    "noStreak": "今天还没有报平安",
+    "next": "下一个：{{title}}，{{when}}",
+    "noNext": "还没有安排"
   }
 }
