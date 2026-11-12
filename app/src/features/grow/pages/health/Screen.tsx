@@ -12,6 +12,10 @@ import { colors, radius, space, type } from '../../../../theme/tokens';
 import { Card, RemoveButton, num } from '../../ui';
 import { growHealth as page } from './page';
 
+// Health is "coming soon": a real-time trainer agent is being built by a teammate (Sayan Ghosh) and will live here. The records screen below
+// (and its API) is kept working and is switched back on by setting this to false.
+const TRAINER_COMING_SOON: boolean = true;
+
 const KINDS: { id: HealthKind; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
   { id: 'heart_rate', icon: 'heart-outline', color: '#E5372E' },
   { id: 'sleep_hours', icon: 'moon-outline', color: '#4B5FBF' },
@@ -41,7 +45,7 @@ export default function Health() {
       .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
-    if (status === 'in') load();
+    if (status === 'in' && !TRAINER_COMING_SOON) load();
   }, [status, load]);
 
   const show = (v: string | number) => String(Number(v));
@@ -95,6 +99,23 @@ export default function Health() {
           ],
         }
   );
+
+  if (TRAINER_COMING_SOON) {
+    return (
+      <Screen title={w('heading')} back>
+        <View style={{ alignItems: 'center', paddingTop: space.xl, gap: space.md }}>
+          <View style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="fitness" size={52} color={colors.accent} />
+          </View>
+          <View style={{ backgroundColor: colors.accentSoft, borderRadius: radius.pill, paddingHorizontal: 14, paddingVertical: 6 }}>
+            <Text style={{ fontSize: 14, fontWeight: '800', color: colors.accent }}>{w('soon')}</Text>
+          </View>
+          <Text accessibilityRole="header" style={{ fontSize: 24, fontWeight: '800', color: colors.ink, textAlign: 'center' }}>{w('soonTitle')}</Text>
+          <Text style={[type.body, { color: colors.muted, textAlign: 'center', maxWidth: 320 }]}>{w('soonBody')}</Text>
+        </View>
+      </Screen>
+    );
+  }
 
   return (
     <Screen title={w('heading')} back>
