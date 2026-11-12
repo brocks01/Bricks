@@ -18,7 +18,7 @@ export const connectIndex = definePage({
     find: { kind: 'field', type: 'string', summary: 'Type to find one of your communities by name.' },
     mine: { kind: 'text', summary: 'The title of the list of communities the person belongs to.' },
     noCommunity: { kind: 'text', summary: 'Says the person is not in a community yet.' },
-    joinOrCreate: { kind: 'action', summary: 'The one entry point to join a community with an invite code or create a new one. Coming soon.' },
+    joinOrCreate: { kind: 'action', summary: 'The one entry point to join a community with an invite code or create a new one.' },
     filter: { kind: 'action', summary: 'Filter and sort the list of communities. Coming soon.' },
     comingUp: { kind: 'text', summary: 'The next few events across all the communities the person belongs to.' },
   },

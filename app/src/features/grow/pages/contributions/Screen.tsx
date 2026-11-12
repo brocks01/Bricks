@@ -6,7 +6,7 @@ import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Field, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
-import { El, usePageData, usePageWords } from '../../../../kit';
+import { El, useField, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
 import { Card, Chips, Stat, num } from '../../ui';
@@ -54,6 +54,9 @@ export default function Contributions() {
     }
   }, [cid, kind, what, hours, load]);
 
+  useField(page, 'kindOf', kind, (v) => setKind(KINDS.includes(v as ContributionKind) ? (v as ContributionKind) : 'time'));
+  useField(page, 'whatDid', what, (v) => setWhat(String(v)));
+  useField(page, 'hoursOpt', hours, (v) => setHours(String(v)));
   usePageData(
     page,
     d === null

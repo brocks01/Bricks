@@ -83,3 +83,9 @@ export interface UpdateDetail { id: string; community_id: string; title: string;
 export const getUpdate = (id: string) => api<UpdateDetail>('GET', `/v1/communities/updates/${id}`);
 export const commentOnUpdate = (id: string, body: string) => api<UpdateDetail>('POST', `/v1/communities/updates/${id}/comments`, { body });
 export const likeUpdate = (id: string, liked: boolean) => api<{ liked: boolean; likes: number }>('POST', `/v1/communities/updates/${id}/like`, { liked });
+
+/** Join a community with the invite code a leader gave you. Returns its id. Refused with code_invalid when no community has that code. */
+export const joinCommunity = (code: string) => api<{ id: string }>('POST', '/v1/communities/join', { code });
+export type CommunityKind = 'apartment' | 'block' | 'neighbourhood' | 'club' | 'other';
+/** Start a community; the creator becomes its Community Lead and gets the invite code to share. */
+export const createCommunity = (body: { name: string; kind: CommunityKind; area_name?: string; description?: string }) => api<{ id: string }>('POST', '/v1/communities', body);
