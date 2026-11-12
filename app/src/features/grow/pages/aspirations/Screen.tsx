@@ -6,7 +6,7 @@ import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Field, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
-import { El, usePageData, usePageWords } from '../../../../kit';
+import { El, useField, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
 import { Card, Chips, RemoveButton } from '../../ui';
@@ -67,6 +67,9 @@ export default function Aspirations() {
       setList((l) => (l ? [a, ...l] : l));
     }
   }, []);
+
+  useField(page, 'addTitle', title, (v) => setTitle(String(v)));
+  useField(page, 'kindOf', kind, (v) => setKind(KINDS.includes(v as AspirationKind) ? (v as AspirationKind) : 'own'));
 
   usePageData(
     page,

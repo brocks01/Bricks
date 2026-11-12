@@ -11,6 +11,8 @@ export const growActivity = definePage({
   elements: {
     heading: { kind: 'text', summary: 'The title.' },
     logActivity: { kind: 'action', summary: 'Open the form to add an activity.' },
+    kindOf: { kind: 'choice', type: 'string', options: ['walk', 'jog', 'yoga', 'exercise', 'other'], summary: 'The kind of activity.' },
+    minutes: { kind: 'field', type: 'string', summary: 'How many minutes, as a number.' },
     saveActivity: { kind: 'action', summary: 'Save the activity.' },
   },
   strings: pageStrings('h_activity'),

@@ -90,7 +90,7 @@ export default function ConnectIndex() {
               })),
             },
           ],
-          actions: [],
+          actions: [{ id: 'joinOrCreate', label: w('joinOrCreate'), run: () => { navigate('connect.join'); } }],
         }
   );
 
@@ -154,8 +154,8 @@ export default function ConnectIndex() {
         </View>
       ) : null}
 
-      <El page={page} id="joinOrCreate"><Button label={w('joinOrCreate')} onPress={() => undefined} disabled icon="add-circle" /></El>
-      <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginTop: space.xs, marginBottom: space.lg }]}>{w('soon')}</Text>
+      <El page={page} id="joinOrCreate"><Button label={w('joinOrCreate')} onPress={() => { navigate('connect.join'); }} icon="add-circle" /></El>
+      <View style={{ height: space.lg }} />
 
       {soon.length ? (
         <>
