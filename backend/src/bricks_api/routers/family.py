@@ -7,7 +7,7 @@ the app's "they said yes" control is a demo-only shortcut.
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException, Response
+from fastapi import APIRouter, HTTPException, Request, Response
 
 from ..db import Conn
 from ..deps import CtxDep, not_found
@@ -56,7 +56,7 @@ async def list_invites(ctx: CtxDep) -> list[FamilyInvite]:
 
 
 @router.post("/family/invite", status_code=201)
-async def create_invite(body: NewFamilyInvite, ctx: CtxDep) -> FamilyInvite:
+async def create_invite(body: NewFamilyInvite, ctx: CtxDep, request: Request) -> FamilyInvite:
     row = await (
         await ctx.conn.execute(
             "insert into family_invites (id, family_id, senior_name, senior_phone, relation,"
@@ -76,7 +76,12 @@ async def create_invite(body: NewFamilyInvite, ctx: CtxDep) -> FamilyInvite:
         )
     ).fetchone()
     assert row
-    # Sending the WhatsApp/SMS invite is the WhatsApp lane's job (docs/06).
+    # The parent's WhatsApp invite (welcome_invite_family). A failed send is logged,
+    # never an error here: the family can still see the invite in the app.
+    # (Imported here: the WhatsApp flow uses accept_invite from this module.)
+    from ..whatsapp.flows.family import send_invite as send_whatsapp_invite
+
+    await send_whatsapp_invite(request.app.state.wa, ctx.conn, row["id"])
     return _invite(row)
 
 

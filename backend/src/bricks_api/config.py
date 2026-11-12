@@ -53,6 +53,22 @@ class Settings(BaseSettings):
     # On a phone call the caller hears silence while we wait, so give up sooner.
     call_assistant_timeout_s: float = 3.0
 
+    # ---- WhatsApp (docs/06) ----
+    # Meta Cloud API: developers.facebook.com -> your app -> WhatsApp -> API Setup.
+    meta_wa_token: SecretStr | None = None
+    meta_wa_phone_number_id: str = ""
+    meta_wa_waba_id: str = ""
+    meta_app_secret: SecretStr | None = None
+    meta_wa_verify_token: SecretStr | None = None
+    meta_graph_version: str = "v20.0"
+    # Twilio WhatsApp sandbox (backup route, walk-up judges). Uses the Twilio account above.
+    twilio_wa_sandbox_number: str = "+14155238886"
+    twilio_wa_join_code: str = ""
+    # Runs the 8 am check-in, reminders and the missed check-in ladder. Off in tests.
+    wa_scheduler: bool = False
+    # Minutes instead of hours between the check-in ladder's steps (stage demo).
+    demo_fast_escalation: bool = False
+
     @property
     def supabase_issuer(self) -> str:
         return f"{self.supabase_url.rstrip('/')}/auth/v1"

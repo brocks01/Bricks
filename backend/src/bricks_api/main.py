@@ -33,6 +33,10 @@ from .routers import (
 )
 from .schemas import Health
 from .storage import Storage
+from .whatsapp import scheduler
+from .whatsapp import webhook as whatsapp_webhook
+from .whatsapp.service import WhatsApp
+from .whatsapp.speech import Speech
 
 log = logging.getLogger("bricks")
 
@@ -51,8 +55,14 @@ def create_app(
         async with httpx.AsyncClient(timeout=20) as client:
             app.state.pool = pool
             app.state.storage = Storage(settings, client)
+            app.state.wa = WhatsApp(settings, pool, client, app.state.clock)
+            app.state.speech = Speech(settings, client)
             try:
-                yield
+                if settings.wa_scheduler:
+                    async with scheduler.running(app.state.wa):
+                        yield
+                else:
+                    yield
             finally:
                 await pool.close()
 
@@ -104,6 +114,7 @@ def create_app(
         app.include_router(module.router)
     # Pre-generated call audio, fetched by Twilio while the call plays.
     app.mount("/static/voice", StaticFiles(directory=AUDIO_DIR, check_dir=False), name="call-audio")
+    app.include_router(whatsapp_webhook.router)
     return app
 
 

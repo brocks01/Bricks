@@ -320,7 +320,7 @@ class WalkStats(Wire):
 
 
 class SosIn(Input):
-    trigger: Literal["button", "voice", "volume", "fall"] = "button"
+    trigger: Literal["button", "voice", "volume", "fall", "whatsapp"] = "button"
     lat: float | None = None
     lng: float | None = None
 
