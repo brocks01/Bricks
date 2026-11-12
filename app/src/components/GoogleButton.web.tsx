@@ -25,7 +25,9 @@ export const googleAvailable = !!process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
 export function GoogleButton({ onToken, onError, locale }: { onToken: (idToken: string) => void; onError: () => void; locale?: string }) {
   const host = useRef<unknown>(null);
   const cb = useRef({ onToken, onError });
-  cb.current = { onToken, onError };
+  useEffect(() => {
+    cb.current = { onToken, onError }; // kept fresh after every commit
+  });
 
   useEffect(() => {
     let dead = false;
@@ -46,6 +48,5 @@ export function GoogleButton({ onToken, onError, locale }: { onToken: (idToken: 
     };
   }, [locale]);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return <View ref={host as any} style={{ alignItems: 'center', minHeight: 44 }} />;
+  return <View ref={host as never} style={{ alignItems: 'center', minHeight: 44 }} />;
 }

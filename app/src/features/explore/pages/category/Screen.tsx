@@ -24,8 +24,12 @@ export default function ExploreCategory() {
   const [items, setItems] = useState<ExploreItem[] | null>(null);
   const [failed, setFailed] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
-    getExploreItems({ category: String(id) }).then(setItems).catch(() => setFailed(true));
+    getExploreItems({ category: String(id) })
+      .then((x) => {
+        setFailed(false);
+        setItems(x);
+      })
+      .catch(() => setFailed(true));
   }, [id]);
   useEffect(() => {
     if (status === 'in' && id) load();

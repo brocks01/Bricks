@@ -192,15 +192,18 @@ export function SurfaceMessage({ surface }: { surface: Surface }) {
 /** On a call with nothing else to show: a waveform, what the agent is doing, and how long the call has been going. */
 function CallScreen({ phase, since }: { phase: string; since: number | null }) {
   const t = useT();
-  const pulse = useRef(new Animated.Value(0)).current;
-  const [sec, setSec] = useState(since ? Math.floor((Date.now() - since) / 1000) : 0);
+  const pulse = useState(() => new Animated.Value(0))[0];
+  const [sec, setSec] = useState(0);
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([Animated.timing(pulse, { toValue: 1, duration: 900, useNativeDriver: true }), Animated.timing(pulse, { toValue: 0, duration: 900, useNativeDriver: true })]));
     loop.start();
-    const tick = setInterval(() => setSec(since ? Math.floor((Date.now() - since) / 1000) : 0), 1000);
+    const tick = () => setSec(since ? Math.floor((Date.now() - since) / 1000) : 0);
+    const first = setTimeout(tick, 0); // the first second comes a tick later: the clock is not read during render
+    const iv = setInterval(tick, 1000);
     return () => {
       loop.stop();
-      clearInterval(tick);
+      clearTimeout(first);
+      clearInterval(iv);
     };
   }, [pulse, since]);
   const word = phase === 'speaking' ? t('common.agent.speaking') : phase === 'working' ? t('common.agent.working') : phase === 'connecting' ? t('common.agent.connecting') : t('common.agent.listening');

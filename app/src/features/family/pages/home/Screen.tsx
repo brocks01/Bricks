@@ -18,8 +18,7 @@ export default function FamilyTab() {
   const [failed, setFailed] = useState(false);
 
   const load = useCallback(() => {
-    setFailed(false);
-    loadFamilies().catch(() => setFailed(true));
+    loadFamilies().then(() => setFailed(false)).catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

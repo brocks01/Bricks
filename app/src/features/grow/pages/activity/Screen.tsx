@@ -26,8 +26,12 @@ export default function Activity() {
   const [mins, setMins] = useState('');
   const [error, setError] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
-    getActivity().then(setData).catch(() => setFailed(true));
+    getActivity()
+      .then((x) => {
+        setFailed(false);
+        setData(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

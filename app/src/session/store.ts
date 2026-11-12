@@ -1,7 +1,6 @@
 import { api, ApiError, configureClient } from '../api/client';
 import { createStore } from '../core/store';
-import { setLanguage } from '../i18n/store';
-import { languageStore } from '../i18n/store';
+import { setLanguage, languageStore } from '../i18n/store';
 import { isLangCode, type LangCode } from '../i18n/languages';
 import { loadRefreshToken, saveRefreshToken } from './storage';
 
