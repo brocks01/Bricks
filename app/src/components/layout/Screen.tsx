@@ -11,6 +11,7 @@ import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
 import { borderWidth, color, screenPadding, space } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from '../primitives/Text';
 
@@ -82,6 +83,7 @@ export function Screen({
   testID,
 }: ScreenProps) {
   const offline = useIsOffline();
+  const compact = useCompact();
   const openBuddy = useBuddy((s) => s.open);
   const buddyListening = useBuddy((s) => s.listening);
   const showBuddy = tellMe ?? showHelp;
@@ -119,7 +121,7 @@ export function Screen({
       ) : null}
       {showBack ? <BackButton onPress={onBack} /> : null}
       {title ? (
-        <Text variant="title" style={styles.title}>
+        <Text variant="title" style={compact ? null : styles.title}>
           {title}
         </Text>
       ) : null}
@@ -140,13 +142,17 @@ export function Screen({
         {scroll ? (
           <ScrollView
             style={[styles.flex, strongBand ? styles.canvas : null]}
-            contentContainerStyle={[styles.content, showBuddy && styles.buddyRoom]}
+            contentContainerStyle={[
+              styles.content,
+              compact && styles.compact,
+              showBuddy && styles.buddyRoom,
+            ]}
             keyboardShouldPersistTaps="handled"
           >
             {body}
           </ScrollView>
         ) : (
-          <View style={[styles.flex, styles.content]}>{body}</View>
+          <View style={[styles.flex, styles.content, compact && styles.compact]}>{body}</View>
         )}
         {/* Floats above the footer / tab bar, on the focused screen only. */}
         <UndoHost />
@@ -157,7 +163,9 @@ export function Screen({
         ) : null}
       </View>
       <ReadOutBar />
-      {footer ? <View style={styles.footer}>{footer}</View> : null}
+      {footer ? (
+        <View style={[styles.footer, compact && styles.footerCompact]}>{footer}</View>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -181,6 +189,11 @@ const styles = StyleSheet.create({
   title: {
     marginTop: space.xs,
   },
+  // Small and Normal text: tighter rhythm so more fits on one screen.
+  compact: {
+    paddingBottom: space.sm,
+    gap: space.xs + space.xxs,
+  },
   // The last item can always scroll clear of the round Buddy button.
   buddyRoom: {
     paddingBottom: BUDDY_BUTTON_CLEARANCE,
@@ -197,5 +210,9 @@ const styles = StyleSheet.create({
     borderTopWidth: borderWidth.hairline,
     borderTopColor: color.border,
     backgroundColor: color.canvas,
+  },
+  footerCompact: {
+    paddingVertical: space.xs + space.xxs,
+    gap: space.xs + space.xxs,
   },
 });

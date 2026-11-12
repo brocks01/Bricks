@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
-import { fireEvent, screen, waitFor } from 'expo-router/testing-library';
+import { fireEvent, screen, waitFor, within } from 'expo-router/testing-library';
 import * as Speech from 'expo-speech';
+import { StyleSheet } from 'react-native';
 
 import { mockDb } from '@/api/mock';
 import { useOnboarding } from '@/state/onboarding';
@@ -42,6 +43,13 @@ describe('Onboarding: Myself (S1 → S8)', () => {
 
     await press('language-ta');
     expect(useSettings.getState().language).toBe('ta');
+    // S1b: text size, in Tamil already. Normal is chosen to start with.
+    expect(await screen.findByTestId('screen-onboarding-text-size')).toBeTruthy();
+    expect(screen.getByText('எழுத்து அளவு')).toBeTruthy();
+    expect(screen.getByTestId('text-size-normal').props.accessibilityState).toMatchObject({
+      selected: true,
+    });
+    await press('text-size-next');
     expect(await screen.findByText('யார் அமைக்கிறார்கள்?')).toBeTruthy();
     // The community path isn't built yet, and says so.
     expect(screen.getByTestId('who-community').props.accessibilityState).toMatchObject({
@@ -220,6 +228,27 @@ describe('Settings (S40)', () => {
     expect(useSettings.getState().language).toBe('en');
   });
 
+  it('changes the text size for the whole app, from Settings', async () => {
+    await renderApp('/settings');
+    const row = () => within(screen.getByTestId('settings-text-size'));
+    expect(row().getByText('Normal')).toBeTruthy();
+    const titleSize = () =>
+      StyleSheet.flatten(screen.getByText('Settings').props.style).fontSize as number;
+    const normalSize = titleSize();
+
+    await press('settings-text-size');
+    expect(await screen.findByTestId('screen-settings-text-size')).toBeTruthy();
+    await press('text-size-large');
+    expect(useSettings.getState().textSize).toBe('large');
+    expect(screen.getByTestId('text-size-large').props.accessibilityState).toMatchObject({
+      selected: true,
+    });
+
+    await press('screen-back');
+    expect(await row().findByText('Large')).toBeTruthy();
+    expect(titleSize()).toBeGreaterThan(normalSize);
+  });
+
   it('sets reading speed, auto-read and the reminder channel', async () => {
     await renderApp('/settings');
     await press('settings-speed-slow');
@@ -274,8 +303,10 @@ describe('Settings (S40)', () => {
   it.each([
     '/settings',
     '/settings/language',
+    '/settings/text-size',
     '/settings/safe-circle',
     '/family',
+    '/onboarding/text-size',
     '/onboarding/who',
   ])('Help and Read it out on %s', async (url) => {
     await renderApp(url);

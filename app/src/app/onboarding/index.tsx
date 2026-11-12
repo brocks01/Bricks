@@ -10,17 +10,19 @@ import { LanguagePicker } from '@/features/settings/LanguagePicker';
 import { LANGUAGE_INFO, LANGUAGES } from '@/i18n/languages';
 import { useSettings } from '@/state/settings';
 import { space } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 /**
  * S1 Language (Singpass / LifeSG): the app name, "Choose your language" in all
  * four languages, and four big buttons in their own scripts. Choosing one
- * switches the whole app and moves on. Read it out says it in all four voices.
+ * switches the whole app and moves on to the text size. Read it out says it in all four voices.
  */
 export default function LanguageScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const chosen = useSettings((s) => s.language);
   const setLanguage = useSettings((s) => s.setLanguage);
+  const compact = useCompact();
   useResumeHere('/onboarding');
 
   // The very first screen: Android Back leaves the app instead of skipping set-up.
@@ -44,7 +46,7 @@ export default function LanguageScreen() {
       testID="screen-onboarding-language"
     >
       <WelcomeCollage />
-      <Text variant="display" style={styles.appName}>
+      <Text variant="display" style={compact ? null : styles.appName}>
         {t('common.appName')}
       </Text>
       <View style={styles.prompts}>
@@ -58,7 +60,7 @@ export default function LanguageScreen() {
         selected={chosen}
         onChoose={(language) => {
           setLanguage(language);
-          router.push('/onboarding/who');
+          router.push('/onboarding/text-size');
         }}
       />
     </Screen>

@@ -207,3 +207,25 @@ export const maxFontScale = 2;
 
 /** Fixed controls (top bar, tab bar) grow less so they never push content off screen. */
 export const maxChromeFontScale = 1.4;
+
+/**
+ * The member's text size (asked in onboarding, changeable in Settings). It multiplies
+ * the type scale on top of the phone's own font setting. Large is the full scale
+ * (body 20pt); Normal, the default, is still generous (body 18pt); Small fits the
+ * most on one screen (body 16pt).
+ */
+export const textSizeScale = {
+  small: 0.8,
+  normal: 0.9,
+  large: 1,
+} as const;
+
+export type TextSize = keyof typeof textSizeScale;
+
+export const TEXT_SIZES = ['small', 'normal', 'large'] as const satisfies readonly TextSize[];
+
+export const DEFAULT_TEXT_SIZE: TextSize = 'normal';
+
+export function isTextSize(value: unknown): value is TextSize {
+  return typeof value === 'string' && value in textSizeScale;
+}

@@ -23,8 +23,8 @@ import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import '@/lib/online';
 import { createQueryClient, useAppStateFocus } from '@/lib/queryClient';
 import { useOnboardingHydrated } from '@/state/onboarding';
-import { useSettingsHydrated } from '@/state/settings';
-import { color, fontAssets, screenPadding, space } from '@/theme';
+import { useSettings, useSettingsHydrated } from '@/state/settings';
+import { color, fontAssets, screenPadding, space, textSizeScale } from '@/theme';
 import { TypographyProvider } from '@/theme/TypographyProvider';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -137,12 +137,17 @@ function AppProviders({
   children: ReactNode;
 }) {
   const [queryClient] = useState(createQueryClient);
+  const textSize = useSettings((s) => s.textSize);
   useAppStateFocus();
 
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <TypographyProvider language={language} fontsLoaded={fontsLoaded}>
+        <TypographyProvider
+          language={language}
+          fontsLoaded={fontsLoaded}
+          fontScale={textSizeScale[textSize]}
+        >
           <ReadOutProvider language={language}>{children}</ReadOutProvider>
         </TypographyProvider>
       </QueryClientProvider>

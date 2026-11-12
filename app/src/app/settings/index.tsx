@@ -23,6 +23,7 @@ import {
   SpeakerHighIcon,
   StatusBanner,
   Text,
+  TextAaIcon,
   TranslateIcon,
   CaretRightIcon,
   UserCircleIcon,
@@ -70,6 +71,7 @@ export default function SettingsScreen() {
   const updateMe = useUpdateMe();
   const showUndo = useUndo((s) => s.show);
   const { speak, missingVoice } = useReadOut();
+  const textSize = useSettings((s) => s.textSize);
   const autoRead = useSettings((s) => s.readOut.autoRead);
   const setAutoRead = useSettings((s) => s.setAutoRead);
   const rate = useSettings((s) => s.readOut.rate);
@@ -148,6 +150,14 @@ export default function SettingsScreen() {
           value={LANGUAGE_INFO[language].nativeName}
           onPress={() => router.push('/settings/language')}
           testID="settings-language"
+        />
+        <GroupedRow
+          icon={TextAaIcon}
+          tint="class"
+          title={t('textSize.title')}
+          value={t(`textSize.${textSize}`)}
+          onPress={() => router.push('/settings/text-size')}
+          testID="settings-text-size"
         />
       </GroupedList>
 

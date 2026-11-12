@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
 import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { CaretRightIcon, CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -34,6 +35,7 @@ export function SectionCard({
   testID,
 }: SectionCardProps) {
   const fg = disabled ? color.textSecondary : color.primary;
+  const compact = useCompact();
   return (
     <Pressable
       accessibilityRole="button"
@@ -45,7 +47,12 @@ export function SectionCard({
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.card, selected && styles.selected, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.card,
+        compact && styles.compact,
+        selected && styles.selected,
+        pressed && styles.pressed,
+      ]}
     >
       <View style={[styles.iconWell, disabled && styles.iconWellDisabled]}>
         <IconComponent size={iconSize.hero} color={fg} weight="bold" />
@@ -84,6 +91,11 @@ const styles = StyleSheet.create({
     borderColor: color.bg,
     backgroundColor: color.bg,
     ...shadow.card,
+  },
+  // Small and Normal text: the card hugs its content (the icon keeps it >= 64dp).
+  compact: {
+    minHeight: touch.min,
+    padding: space.sm,
   },
   pressed: {
     backgroundColor: color.primarySubtle,

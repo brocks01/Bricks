@@ -806,5 +806,17 @@
     "hosting": "Penganjur",
     "full": "Penuh",
     "new": "Baharu"
+  },
+  "textSize": {
+    "title": "Saiz tulisan",
+    "subtitle": "Pilih saiz yang paling mudah dibaca. Anda boleh menukarnya kemudian dalam Tetapan.",
+    "settingsSubtitle": "Pilih saiz yang paling mudah dibaca. Seluruh aplikasi berubah serta-merta.",
+    "small": "Kecil",
+    "smallHint": "Paling banyak muat dalam satu skrin.",
+    "normal": "Biasa",
+    "normalHint": "Mudah dibaca. Ramai orang suka ini.",
+    "large": "Besar",
+    "largeHint": "Tulisan paling besar.",
+    "readout": "Saiz tulisan. Pilih kecil, biasa atau besar. Sekarang: {{size}}. Kemudian tekan Seterusnya."
   }
 }

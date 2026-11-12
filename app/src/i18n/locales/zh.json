@@ -806,5 +806,17 @@
     "hosting": "主办",
     "full": "已满",
     "new": "新"
+  },
+  "textSize": {
+    "title": "字体大小",
+    "subtitle": "选一个您看得最清楚的大小。以后可以在设置里更改。",
+    "settingsSubtitle": "选一个您看得最清楚的大小。整个应用会马上改变。",
+    "small": "小",
+    "smallHint": "一个屏幕能看到最多内容。",
+    "normal": "标准",
+    "normalHint": "容易阅读，大多数人喜欢。",
+    "large": "大",
+    "largeHint": "字最大。",
+    "readout": "字体大小。请选小、标准或大。现在是：{{size}}。然后按下一步。"
   }
 }

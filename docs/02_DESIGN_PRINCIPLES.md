@@ -106,6 +106,15 @@ Kavya owns the board; Person A builds from it.
 
 - Line height ≥ 1.4×. No weights below 400. No italics for meaning. No ALL CAPS sentences.
 - Must not break at 200% system font size.
+- **Text size (member's choice).** Asked in onboarding right after the language, changeable in
+  Settings → Text size. The table above is **Large** (×1.0). **Normal** is the default (×0.9:
+  body 18pt) and **Small** fits the most (×0.8: body 16pt). It multiplies on top of the phone's
+  own font setting.
+- **Compact layout** comes with Small and Normal (`useCompact()`): tighter gaps and card padding,
+  `lg` buttons at 64dp, a shorter welcome picture and walk map, and the four languages as a 2×2
+  grid. Tap targets never drop below 64dp. Goal: every single-task screen (onboarding steps,
+  pickers, safety screens, the walk) fits on one phone screen without scrolling. Lists and feeds
+  (Home, Community, Activity, Settings, event pages) still scroll.
 
 ### 5.2 Colour
 

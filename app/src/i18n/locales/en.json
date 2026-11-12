@@ -823,5 +823,17 @@
     "hosting": "Hosting",
     "full": "Full",
     "new": "New"
+  },
+  "textSize": {
+    "title": "Text size",
+    "subtitle": "Pick the size that is easiest to read. You can change it later in Settings.",
+    "settingsSubtitle": "Pick the size that is easiest to read. The whole app changes straight away.",
+    "small": "Small",
+    "smallHint": "Fits the most on one screen.",
+    "normal": "Normal",
+    "normalHint": "Easy to read. Most people like this.",
+    "large": "Large",
+    "largeHint": "The biggest words.",
+    "readout": "Text size. Pick small, normal or large. Now: {{size}}. Then press Next."
   }
 }

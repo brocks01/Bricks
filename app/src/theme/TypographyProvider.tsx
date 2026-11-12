@@ -41,6 +41,15 @@ export function useTypography(): TypographyContextValue {
 }
 
 /**
+ * True when the member chose Small or Normal text (a scale below 1). Layouts then
+ * tighten their gaps and padding so most screens fit on one phone screen. Tap
+ * targets never shrink below touch.min. Large keeps the roomy layout.
+ */
+export function useCompact(): boolean {
+  return useTypography().fontScale < 1;
+}
+
+/**
  * How big text actually is right now: the phone's font setting (capped at 200%)
  * times any preview override. Components use it to switch layouts, e.g. stacking
  * Yes / No buttons when text gets large.

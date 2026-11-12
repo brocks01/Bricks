@@ -5,6 +5,7 @@ import MapView, { Circle, Polyline } from 'react-native-maps';
 import { regionFor, type LatLng } from '@/lib/geo';
 import { platform } from '@/lib/platform';
 import { borderWidth, color, radius } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 /**
  * A light Android map style: muted roads and labels so the walk route (in the
@@ -36,6 +37,8 @@ const DOT_RADIUS_M = 12;
  * pinching or rotating (no hidden gestures).
  */
 export function RouteMap({ points, label, height = 240, live = false, testID }: RouteMapProps) {
+  // Small and Normal text: a shorter map so the numbers and buttons fit below it.
+  const shownHeight = Math.round(height * (useCompact() ? COMPACT_MAP_SCALE : 1));
   const region = useMemo(() => regionFor(points), [points]);
   const coordinates = useMemo(
     () => points.map((p) => ({ latitude: p.lat, longitude: p.lng })),
@@ -46,7 +49,7 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
 
   return (
     <View
-      style={[styles.frame, { height }]}
+      style={[styles.frame, { height: shownHeight }]}
       accessible
       accessibilityRole="image"
       accessibilityLabel={label}
@@ -98,6 +101,8 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
     </View>
   );
 }
+
+const COMPACT_MAP_SCALE = 0.6;
 
 const styles = StyleSheet.create({
   frame: {

@@ -14,6 +14,7 @@ import {
 } from '@/theme';
 
 import type { Language } from '@/i18n/languages';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
 import type { Icon } from './primitives/icons';
@@ -73,6 +74,9 @@ export function BigButton({
   ...rest
 }: BigButtonProps) {
   const palette = PALETTE[variant];
+  // Small and Normal text: lg drops to the standard 64dp (never below touch.min).
+  const compact = useCompact();
+  const minHeight = compact && size === 'lg' ? MIN_HEIGHT.md : MIN_HEIGHT[size];
   const textColor: ColorToken = disabled ? 'textSecondary' : palette.text;
 
   return (
@@ -88,11 +92,12 @@ export function BigButton({
       style={({ pressed }) => [
         styles.base,
         {
-          minHeight: MIN_HEIGHT[size],
+          minHeight,
           backgroundColor: color[disabled ? 'bgSubtle' : pressed ? palette.pressed : palette.bg],
           borderColor: color[disabled ? 'border' : palette.border],
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
+        compact && styles.compact,
         !disabled && styles.raised,
       ]}
       {...rest}
@@ -106,6 +111,7 @@ export function BigButton({
           color={textColor}
           maxFontSizeMultiplier={maxFontSizeMultiplier}
           lang={labelLanguage}
+          align="center"
           style={styles.label}
         >
           {label}
@@ -122,6 +128,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.md,
     paddingVertical: space.xs,
     justifyContent: 'center',
+  },
+  compact: {
+    paddingHorizontal: space.sm,
   },
   raised: {
     ...shadow.control,

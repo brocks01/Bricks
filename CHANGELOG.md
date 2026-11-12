@@ -6,7 +6,7 @@
 |---|---|
 | App look | Luma-style redesign in progress on branch `ui-luma` (see Unreleased) |
 | Design brief | `docs/design/LUMA_REDESIGN_PROMPT.md` |
-| Accessibility floors | Body ≥ 20 pt, nothing < 18 pt, touch ≥ 64 dp, contrast ≥ 4.5:1 (aim 7:1), 200% font, Tamil: all still enforced by tests |
+| Accessibility floors | Touch ≥ 64 dp, contrast ≥ 4.5:1 (aim 7:1), 200% font, Tamil: all still enforced by tests. Text: body 20 pt at Large; the member can pick Normal (18 pt, default) or Small (16 pt) |
 
 ## Unreleased
 
@@ -144,6 +144,24 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
   breaks the 150–200 ms motion rule and can unsettle people prone to motion sickness.
 - Phone and code entry screens aren't built yet (phone sign-in is off until an SMS provider
   exists), so Luma's code-entry box isn't used.
+
+### UI step 11: text size (Small · Normal · Large) and one-screen layouts
+- **New onboarding step** right after the language: "Text size", three white cards each written
+  in its own size. Choosing one changes the whole app at once; Next moves on. Normal is chosen to
+  start with. Also in **Settings → Text size** (`settings-text-size`).
+- **Sizes:** Large is the old full scale (body 20 pt). Normal is the new default (×0.9, body
+  18 pt). Small is ×0.8 (body 16 pt). Saved on the device with the other settings, checked on load.
+  This deliberately relaxes the brief's 20 pt body floor, at the product owner's request; Large
+  keeps it.
+- **Compact layout with Small and Normal:** tighter screen and card spacing, 64 dp `lg` buttons,
+  shorter welcome picture and walk map, the four languages as a 2×2 grid, smaller sign-in icon.
+  Button labels that wrap stay centred. Tap targets stay ≥ 64 dp.
+- **Result on a 393×760 phone screen (iPhone 15 size, after the status bar):** every onboarding
+  step, Settings → Language and Text size, SOS, Are you OK, the helper alert, Family, check-in and
+  Pass It On intro fit with no scrolling at Small and Normal; Walking fits at Small (22 px over
+  at Normal). Lists and feeds (Home, Community, Activity, Settings, Profile, event page) still
+  scroll: they hold more than one screen of content at any size.
+- Tests: onboarding goes through the new step; Settings changes the size and the title grows.
 
 ### UI step 10: bolder Luma pass (font, white cards on grey, poster covers, immersive event page)
 Steps 0–9 kept the old app's bones, and side by side with the Luma screens it still read as

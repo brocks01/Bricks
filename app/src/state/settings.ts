@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { isLanguage, type Language } from '@/i18n/languages';
+import { DEFAULT_TEXT_SIZE, isTextSize, type TextSize } from '@/theme/tokens';
 
 /**
  * Per-device preferences. Server-owned profile data (name, area, channel) lives
@@ -12,6 +13,8 @@ import { isLanguage, type Language } from '@/i18n/languages';
 export interface SettingsState {
   /** null until the member picks one; we follow the device language until then. */
   language: Language | null;
+  /** How big text is across the app (onboarding asks; Settings changes it). */
+  textSize: TextSize;
   readOut: {
     /** expo-speech rate. 0.85 is "slow and clear" for seniors. */
     rate: number;
@@ -19,6 +22,7 @@ export interface SettingsState {
     autoRead: boolean;
   };
   setLanguage: (language: Language) => void;
+  setTextSize: (textSize: TextSize) => void;
   setReadOutRate: (rate: number) => void;
   setAutoRead: (autoRead: boolean) => void;
 }
@@ -31,8 +35,10 @@ export const useSettings = create<SettingsState>()(
   persist(
     (set) => ({
       language: null,
+      textSize: DEFAULT_TEXT_SIZE,
       readOut: { rate: READ_OUT_RATE.normal, autoRead: false },
       setLanguage: (language) => set({ language }),
+      setTextSize: (textSize) => set({ textSize }),
       setReadOutRate: (rate) =>
         set((s) => ({
           readOut: { ...s.readOut, rate: clamp(rate, READ_OUT_RATE.min, READ_OUT_RATE.max) },
@@ -43,13 +49,14 @@ export const useSettings = create<SettingsState>()(
       name: 'kc.settings',
       version: 1,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ language, readOut }) => ({ language, readOut }),
+      partialize: ({ language, textSize, readOut }) => ({ language, textSize, readOut }),
       // Never trust stored values blindly: a bad value must not break startup.
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsState>;
         return {
           ...current,
           language: isLanguage(p.language) ? p.language : current.language,
+          textSize: isTextSize(p.textSize) ? p.textSize : current.textSize,
           readOut: {
             rate:
               typeof p.readOut?.rate === 'number'
