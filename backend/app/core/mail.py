@@ -77,7 +77,7 @@ def _brevo_sender() -> dict:
 def code_email(code: str, minutes: int) -> tuple[str, str, str]:
     """(subject, html, text) of the sign-in code mail."""
     subject = f"Your {BRAND} code: {code}"
-    text = f"Your {BRAND} sign-in code is {code}.\nIt works for {minutes} minutes. If you did not ask for it, you can ignore this email.\n\n{BRAND}. This is an automated message; do not reply."
+    text = f"Your {BRAND} sign-in code is {code}.\nIt works for {minutes} minutes. If you did not ask for it, you can ignore this email.\n\n{BRAND}, the neighbourhood club for seniors."
     html = (
         '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>'
         f"<title>{escape(subject)}</title></head>"
