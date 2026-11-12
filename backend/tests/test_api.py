@@ -536,6 +536,37 @@ async def test_raj_sees_the_seeded_group_walks(api: Api) -> None:
     assert dates == sorted(dates, reverse=True)
 
 
+async def test_simple_mode_by_the_member_or_their_family(api: Api) -> None:
+    # Iteration 3.2 (S13, T4): the member turns it on in Settings, or family on S10.
+    judge = {"X-Demo-User": "u_judge7"}
+    r = await api.client.patch("/me", headers=judge, json={"simple_mode": True})
+    assert r.json()["simple_mode"] is True
+    await api.client.post("/demo/judges/7/reset")
+    assert (await api.client.get("/me", headers=judge)).json()["simple_mode"] is False
+
+    priya = {"X-Demo-User": "u_priya"}
+    try:
+        invites = (await api.client.get("/family/invites", headers=priya)).json()
+        dad = next(i for i in invites if i["senior_id"] == "u_raj")
+        assert dad["status"] == "accepted" and dad["simple_mode"] is False
+        r = await api.client.put(
+            "/family/seniors/u_raj/simple-mode", headers=priya, json={"on": True}
+        )
+        assert r.status_code == 204
+        assert (await api.client.get("/me")).json()["simple_mode"] is True
+        invites = (await api.client.get("/family/invites", headers=priya)).json()
+        assert next(i for i in invites if i["senior_id"] == "u_raj")["simple_mode"] is True
+        # Only Raj's family can.
+        lim = {"X-Demo-User": "u_lim"}
+        r = await api.client.put(
+            "/family/seniors/u_raj/simple-mode", headers=lim, json={"on": False}
+        )
+        assert r.status_code == 404
+    finally:
+        await api.client.put("/family/seniors/u_raj/simple-mode", headers=priya, json={"on": False})
+    assert (await api.client.get("/me")).json()["simple_mode"] is False
+
+
 # ---------- SOS ----------
 
 

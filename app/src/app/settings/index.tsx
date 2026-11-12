@@ -2,14 +2,15 @@ import { useQueryClient } from '@tanstack/react-query';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useRef, useState } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useMe, useSafeCircle } from '@/api';
+import { useMe, useSafeCircle, useUpdateMe } from '@/api';
 import { resetMockDb } from '@/api/mock';
 import {
   BellIcon,
   ArrowCounterClockwiseIcon,
+  BigButton,
   ConfirmSheet,
   GroupedList,
   GroupedRow,
@@ -18,6 +19,7 @@ import {
   ShieldCheckIcon,
   SignOutIcon,
   SpeakerHighIcon,
+  SquaresFourIcon,
   Text,
   TextAaIcon,
   TranslateIcon,
@@ -53,6 +55,8 @@ export default function SettingsScreen() {
   const resetOnboarding = useOnboarding((s) => s.reset);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [confirmReset, setConfirmReset] = useState(false);
+  const [confirmSimple, setConfirmSimple] = useState(false);
+  const updateMe = useUpdateMe();
   const reset = useDemoReset();
   // Hidden demo controls: tap the version 5 times (the stage demo, judges' phones).
   const [demoUnlocked, setDemoUnlocked] = useState(false);
@@ -101,7 +105,7 @@ export default function SettingsScreen() {
             icon={UserCircleIcon}
             tint="games"
             title={me.name}
-            subtitle={t('settings.viewProfile')}
+            value={t('settings.profile')}
             onPress={() => router.push('/profile')}
             testID="settings-profile"
           />
@@ -123,6 +127,14 @@ export default function SettingsScreen() {
           testID="settings-text-size"
         />
         <GroupedRow
+          icon={SquaresFourIcon}
+          tint="kids"
+          title={t('simple.title')}
+          value={me ? t(me.simple_mode ? 'simple.on' : 'simple.off') : undefined}
+          onPress={me ? () => setConfirmSimple(true) : undefined}
+          testID="settings-simple-mode"
+        />
+        <GroupedRow
           icon={SpeakerHighIcon}
           tint="games"
           title={t('settings.readAloud')}
@@ -134,7 +146,7 @@ export default function SettingsScreen() {
           icon={BellIcon}
           tint="music"
           title={t('settings.remindShort')}
-          value={me ? t(`channel.${channel}.title`) : undefined}
+          value={me ? t(`channel.${channel}.short`) : undefined}
           onPress={() => router.push('/settings/reminders')}
           testID="settings-reminders"
         />
@@ -163,14 +175,6 @@ export default function SettingsScreen() {
           onPress={() => router.push('/family')}
           testID="settings-family"
         />
-        {showDemo ? (
-          <GroupedRow
-            icon={WrenchIcon}
-            title={t('settings.demoHeading')}
-            onPress={() => router.push('/settings/demo')}
-            testID="settings-demo-open"
-          />
-        ) : null}
         {demoUnlocked ? (
           <GroupedRow
             icon={ArrowCounterClockwiseIcon}
@@ -179,25 +183,62 @@ export default function SettingsScreen() {
             testID="settings-reset-demo"
           />
         ) : null}
-        <GroupedRow
+      </GroupedList>
+
+      {/* Sign out, the version (tap 5 times for demo controls) and, on demo builds, Demo:
+          small, below the member's own settings (Luma). */}
+      <View style={styles.footer}>
+        <Pressable
+          accessibilityRole="text"
+          onPress={tapVersion}
+          style={styles.version}
+          testID="settings-version"
+        >
+          <Text variant="caption" color="textSecondary" align="center">
+            {t('settings.version', { version: APP_VERSION })}
+          </Text>
+        </Pressable>
+        <BigButton
+          variant="outline"
+          fullWidth={false}
           icon={SignOutIcon}
-          title={t('settings.signOut')}
+          label={t('settings.signOut')}
+          labelVariant="bodyStrong"
           onPress={() => setConfirmSignOut(true)}
           testID="settings-sign-out"
         />
-      </GroupedList>
+        {showDemo ? (
+          <BigButton
+            variant="outline"
+            fullWidth={false}
+            icon={WrenchIcon}
+            label={t('settings.demoHeading')}
+            labelVariant="bodyStrong"
+            onPress={() => router.push('/settings/demo')}
+            testID="settings-demo-open"
+          />
+        ) : null}
+      </View>
 
-      <Pressable
-        accessibilityRole="text"
-        onPress={tapVersion}
-        style={styles.version}
-        testID="settings-version"
-      >
-        <Text variant="caption" color="textSecondary" align="center">
-          {t('settings.version', { version: APP_VERSION })}
-        </Text>
-      </Pressable>
-
+      <ConfirmSheet
+        visible={confirmSimple}
+        icon={SquaresFourIcon}
+        text={t(me?.simple_mode ? 'simple.confirmOff' : 'simple.confirmOn')}
+        onYes={() => {
+          setConfirmSimple(false);
+          const on = !me?.simple_mode;
+          updateMe.mutate(
+            { simple_mode: on },
+            {
+              onSuccess: () => {
+                showToast(t(on ? 'simple.turnedOn' : 'simple.turnedOff'));
+                if (on) router.navigate('/home');
+              },
+            },
+          );
+        }}
+        onNo={() => setConfirmSimple(false)}
+      />
       <ConfirmSheet
         visible={confirmReset}
         icon={ArrowCounterClockwiseIcon}
@@ -221,6 +262,13 @@ const UNLOCK_TAPS = 5;
 const UNLOCK_WINDOW_MS = 4000;
 
 const styles = StyleSheet.create({
+  footer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: space.xs,
+  },
   version: {
     alignSelf: 'center',
     paddingVertical: space.xxs,

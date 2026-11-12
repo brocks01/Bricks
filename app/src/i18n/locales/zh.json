@@ -582,15 +582,18 @@
   "channel": {
     "app": {
       "title": "应用通知",
-      "description": "这部手机上会弹出消息。"
+      "description": "这部手机上会弹出消息。",
+      "short": "应用"
     },
     "whatsapp": {
       "title": "WhatsApp 消息",
-      "description": "我们给您发 WhatsApp 消息。"
+      "description": "我们给您发 WhatsApp 消息。",
+      "short": "WhatsApp"
     },
     "call": {
       "title": "电话",
-      "description": "我们打电话给您，读给您听。"
+      "description": "我们打电话给您，读给您听。",
+      "short": "电话"
     }
   },
   "onboarding": {
@@ -716,7 +719,6 @@
     "demoScheduled": "演示：提醒会在 {{seconds}} 秒后出现。您可以先锁上手机。",
     "demoNoNotifications": "请先在手机设置中允许 Bricks 发送通知。",
     "you": "我",
-    "viewProfile": "查看我的资料",
     "remindShort": "提醒",
     "version": "版本 {{version}}",
     "demoUnlocked": "演示控制已开启。",
@@ -737,7 +739,8 @@
     "connectionOk": "服务器在 {{ms}} 毫秒内回应。",
     "connectionSlow": "服务器在 {{ms}} 毫秒内回应。有点慢：试试热点。",
     "connectionNoDatabase": "服务器有回应，但数据库没有。请换个网络。",
-    "connectionFailed": "连不上服务器。试试热点。"
+    "connectionFailed": "连不上服务器。试试热点。",
+    "profile": "个人资料"
   },
   "family": {
     "title": "我的家人",
@@ -748,8 +751,6 @@
     "joined": "{{name}}已加入",
     "inSafeCircle": "您在{{name}}的安全圈里。",
     "setReminder": "为{{name}}设置提醒",
-    "simpleMode": "开启简易模式",
-    "simpleModeLater": "简易模式即将推出。",
     "addAnother": "添加另一位家人",
     "demoHint": "演示：在真实手机上，对方会在 WhatsApp 上同意。",
     "demoAccept": "演示：{{name}}同意了",
@@ -793,7 +794,12 @@
       "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}",
       "readoutSend": "确认无误后，点发送邀请。"
     },
-    "emptyDetail": "添加父母或祖父母，就能了解他们的近况，并为他们设置提醒。"
+    "emptyDetail": "添加父母或祖父母，就能了解他们的近况，并为他们设置提醒。",
+    "simpleModeOn": "为{{name}}打开简易模式",
+    "simpleModeOff": "为{{name}}关闭简易模式",
+    "simpleModeHint": "简易模式会给{{name}}显示三个大按钮：今天、说话和求助。",
+    "simpleModeTurnedOn": "已为{{name}}打开简易模式。",
+    "simpleModeTurnedOff": "已为{{name}}关闭简易模式。"
   },
   "profile": {
     "title": "我的资料",
@@ -905,5 +911,21 @@
     "sharedToast": "已分享给您的圈子。",
     "shared": "已分享给您的圈子。他们能看到路线，但看不到您家附近的部分。",
     "stopSharing": "停止分享"
+  },
+  "simple": {
+    "title": "简易模式",
+    "on": "开",
+    "off": "关",
+    "today": "今天",
+    "todayHint": "听今天的安排",
+    "talk": "说话",
+    "talkHint": "问 Buddy 任何事",
+    "help": "求助",
+    "helpHint": "马上求助",
+    "readout": "{{greeting}}。三个大按钮。今天，听今天的安排。说话，问 Buddy。求助，如果您现在需要帮助。",
+    "confirmOn": "打开简易模式？首页会显示三个大按钮：今天、说话和求助。",
+    "confirmOff": "关闭简易模式？首页会回到完整的应用。",
+    "turnedOn": "简易模式已打开。",
+    "turnedOff": "简易模式已关闭。"
   }
 }

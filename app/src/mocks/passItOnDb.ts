@@ -319,10 +319,18 @@ export function createPassItOnDb({
         id: id('inv'),
         status: 'invited',
         senior_id: null,
+        simple_mode: false,
         created_at: now().toISOString(),
       };
       invites.unshift(invite);
       return invite;
+    },
+    /** S10: family turns Simple Mode on for a parent who joined. */
+    setSeniorSimpleMode(seniorId: string, on: boolean): boolean {
+      const invite = invites.find((i) => i.senior_id === seniorId && i.status === 'accepted');
+      if (!invite) return false;
+      invite.simple_mode = on;
+      return true;
     },
     /** The senior said yes (on WhatsApp or SMS). In the demo, a facilitator control. */
     acceptFamilyInvite(inviteId: string): FamilyInvite | null {

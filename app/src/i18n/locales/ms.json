@@ -582,15 +582,18 @@
   "channel": {
     "app": {
       "title": "Pemberitahuan aplikasi",
-      "description": "Mesej muncul di telefon ini."
+      "description": "Mesej muncul di telefon ini.",
+      "short": "Aplikasi"
     },
     "whatsapp": {
       "title": "Mesej WhatsApp",
-      "description": "Kami hantar mesej WhatsApp kepada anda."
+      "description": "Kami hantar mesej WhatsApp kepada anda.",
+      "short": "WhatsApp"
     },
     "call": {
       "title": "Panggilan telefon",
-      "description": "Kami telefon anda dan sebutkannya."
+      "description": "Kami telefon anda dan sebutkannya.",
+      "short": "Panggilan"
     }
   },
   "onboarding": {
@@ -716,7 +719,6 @@
     "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
     "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
     "you": "Anda",
-    "viewProfile": "Lihat profil saya",
     "remindShort": "Peringatan",
     "version": "Versi {{version}}",
     "demoUnlocked": "Kawalan demo dihidupkan.",
@@ -737,7 +739,8 @@
     "connectionOk": "Pelayan menjawab dalam {{ms}} ms.",
     "connectionSlow": "Pelayan menjawab dalam {{ms}} ms. Itu perlahan: cuba hotspot.",
     "connectionNoDatabase": "Pelayan menjawab, tetapi pangkalan datanya tidak. Cuba rangkaian lain.",
-    "connectionFailed": "Kami tidak dapat menghubungi pelayan. Cuba hotspot."
+    "connectionFailed": "Kami tidak dapat menghubungi pelayan. Cuba hotspot.",
+    "profile": "Profil"
   },
   "family": {
     "title": "Keluarga saya",
@@ -748,8 +751,6 @@
     "joined": "{{name}} sudah menyertai",
     "inSafeCircle": "Anda dalam Kumpulan Selamat {{name}}.",
     "setReminder": "Tetapkan peringatan untuk {{name}}",
-    "simpleMode": "Hidupkan Mod Mudah",
-    "simpleModeLater": "Mod Mudah akan datang.",
     "addAnother": "Tambah ahli keluarga lain",
     "demoHint": "Demo: di telefon sebenar, mereka bersetuju melalui WhatsApp.",
     "demoAccept": "Demo: {{name}} bersetuju",
@@ -793,7 +794,12 @@
       "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}}",
       "readoutSend": "Ketik Hantar jemputan apabila semuanya betul."
     },
-    "emptyDetail": "Tambah ibu bapa atau datuk nenek untuk melihat keadaan mereka dan menetapkan peringatan."
+    "emptyDetail": "Tambah ibu bapa atau datuk nenek untuk melihat keadaan mereka dan menetapkan peringatan.",
+    "simpleModeOn": "Hidupkan Mod Mudah untuk {{name}}",
+    "simpleModeOff": "Matikan Mod Mudah untuk {{name}}",
+    "simpleModeHint": "Mod Mudah menunjukkan tiga butang besar kepada {{name}}: Hari ini, Cakap dan Bantuan.",
+    "simpleModeTurnedOn": "Mod Mudah dihidupkan untuk {{name}}.",
+    "simpleModeTurnedOff": "Mod Mudah dimatikan untuk {{name}}."
   },
   "profile": {
     "title": "Profil saya",
@@ -905,5 +911,21 @@
     "sharedToast": "Dikongsi dengan Bulatan anda.",
     "shared": "Dikongsi dengan Bulatan anda. Mereka nampak laluan anda, tetapi tidak bahagian dekat rumah anda.",
     "stopSharing": "Berhenti berkongsi"
+  },
+  "simple": {
+    "title": "Mod Mudah",
+    "on": "Hidup",
+    "off": "Mati",
+    "today": "Hari ini",
+    "todayHint": "Dengar rancangan hari ini",
+    "talk": "Cakap",
+    "talkHint": "Tanya Buddy apa sahaja",
+    "help": "Bantuan",
+    "helpHint": "Dapatkan bantuan sekarang",
+    "readout": "{{greeting}}. Tiga butang besar. Hari ini, untuk dengar rancangan hari ini. Cakap, untuk bertanya kepada Buddy. Bantuan, jika anda perlukan bantuan sekarang.",
+    "confirmOn": "Hidupkan Mod Mudah? Utama akan tunjuk tiga butang besar: Hari ini, Cakap dan Bantuan.",
+    "confirmOff": "Matikan Mod Mudah? Utama kembali kepada aplikasi penuh.",
+    "turnedOn": "Mod Mudah dihidupkan.",
+    "turnedOff": "Mod Mudah dimatikan."
   }
 }

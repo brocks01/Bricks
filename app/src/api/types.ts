@@ -366,6 +366,8 @@ export interface MeUpdate {
   language?: Language;
   /** Expo push token from our Android build (2.1). */
   push_token?: string;
+  /** S13: Home becomes three big buttons (Today, Talk, Help). */
+  simple_mode?: boolean;
 }
 
 /** GET/PUT /safe-circle: who we tell if the member needs help, in order. */
@@ -481,9 +483,14 @@ export interface FamilyInvite {
   status: 'invited' | 'accepted';
   /** The parent's account, once they've said yes. */
   senior_id: string | null;
+  /** The parent's Simple Mode (S13), which family can turn on for them. */
+  simple_mode: boolean;
   created_at: string;
 }
-export type NewFamilyInvite = Omit<FamilyInvite, 'id' | 'status' | 'senior_id' | 'created_at'>;
+export type NewFamilyInvite = Omit<
+  FamilyInvite,
+  'id' | 'status' | 'senior_id' | 'simple_mode' | 'created_at'
+>;
 
 /** Skill tags use the interest keys, so the app can translate them. */
 export type SkillTag = Interest;

@@ -1,6 +1,7 @@
-import { fireEvent, screen, within } from 'expo-router/testing-library';
+import { fireEvent, screen, waitFor, within } from 'expo-router/testing-library';
 
 import { mockDb } from '@/api/mock';
+import { useBuddy } from '@/state/buddy';
 import { currentPath, renderApp, resetAppState } from '@/test-utils/renderApp';
 
 /**
@@ -125,5 +126,73 @@ describe('S19 Group walk feed + Cheers', () => {
     await screen.findByTestId('circle-join');
     expect(screen.queryByText('Recent group walks')).toBeNull();
     expect(mockDb().circleWalks('c_gardeners')).toEqual([]);
+  });
+});
+
+describe('S13 Simple Mode', () => {
+  const turnOn = async () => {
+    await renderApp('/settings');
+    expect(await screen.findByText('Off')).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('settings-simple-mode'));
+    expect(screen.getByText(/three big buttons: Today, Talk and Help/)).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('confirm-yes'));
+    expect(await screen.findByTestId('screen-home-simple')).toBeTruthy();
+  };
+
+  it('Settings → Simple Mode: Home is three big buttons, no tab bar', async () => {
+    await turnOn();
+    expect(mockDb().getMe().simple_mode).toBe(true);
+    expect(screen.getByTestId('simple-today')).toBeTruthy();
+    expect(screen.getByTestId('simple-talk')).toBeTruthy();
+    expect(screen.getByTestId('simple-help')).toBeTruthy();
+    expect(screen.queryByTestId('tab-kampung')).toBeNull();
+  });
+
+  it('Today reads the plan and asks the check-in; Help goes to Help', async () => {
+    mockDb().updateMe({ simple_mode: true });
+    await renderApp('/home');
+    await fireEvent.press(await screen.findByTestId('simple-today'));
+    expect(await screen.findByTestId('screen-today')).toBeTruthy();
+    expect(await screen.findByTestId('checkin-card')).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('today-done'));
+    await fireEvent.press(await screen.findByTestId('simple-help'));
+    expect(await screen.findByTestId('screen-sos')).toBeTruthy();
+  });
+
+  it('Talk opens Buddy', async () => {
+    mockDb().updateMe({ simple_mode: true });
+    await renderApp('/home');
+    await fireEvent.press(await screen.findByTestId('simple-talk'));
+    expect(useBuddy.getState().listening).toBe(true);
+    useBuddy.getState().close();
+  });
+
+  it('can be turned off again from Settings', async () => {
+    mockDb().updateMe({ simple_mode: true });
+    await renderApp('/home');
+    await screen.findByTestId('screen-home-simple');
+    await fireEvent.press(screen.getByTestId('home-settings'));
+    expect(await screen.findByText('On')).toBeTruthy();
+    await fireEvent.press(await screen.findByTestId('settings-simple-mode'));
+    await fireEvent.press(screen.getByTestId('confirm-yes'));
+    await waitFor(() => expect(mockDb().getMe().simple_mode).toBe(false));
+    expect(await screen.findByText('Simple Mode is off.')).toBeTruthy();
+  });
+
+  it('family turns it on for a parent who joined (S10, T4)', async () => {
+    const invite = mockDb().createFamilyInvite({
+      senior_name: 'Raj Kumar',
+      senior_phone: '+6591234567',
+      relation: 'father',
+      language: 'en',
+      interests: [],
+      add_me_to_safe_circle: true,
+    });
+    mockDb().acceptFamilyInvite(invite.id);
+    await renderApp('/family');
+    await fireEvent.press(await screen.findByTestId(`family-simple-${invite.id}`));
+    expect(await screen.findByText('Simple Mode is on for Dad.')).toBeTruthy();
+    expect(mockDb().getFamilyInvites()[0]!.simple_mode).toBe(true);
+    expect(await screen.findByText('Turn off Simple Mode for Dad')).toBeTruthy();
   });
 });

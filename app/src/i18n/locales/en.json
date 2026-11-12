@@ -601,15 +601,18 @@
   "channel": {
     "app": {
       "title": "App notification",
-      "description": "A message pops up on this phone."
+      "description": "A message pops up on this phone.",
+      "short": "App"
     },
     "whatsapp": {
       "title": "WhatsApp message",
-      "description": "We send you a WhatsApp message."
+      "description": "We send you a WhatsApp message.",
+      "short": "WhatsApp"
     },
     "call": {
       "title": "Phone call",
-      "description": "We call you and say it out loud."
+      "description": "We call you and say it out loud.",
+      "short": "Call"
     }
   },
   "onboarding": {
@@ -737,7 +740,6 @@
     "demoScheduled": "Demo: the alert comes in {{seconds}} seconds. You can lock your phone.",
     "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first.",
     "you": "You",
-    "viewProfile": "See my profile",
     "remindShort": "Reminders",
     "version": "Version {{version}}",
     "demoUnlocked": "Demo controls are on.",
@@ -758,7 +760,8 @@
     "connectionOk": "The server answered in {{ms}} ms.",
     "connectionSlow": "The server answered in {{ms}} ms. That's slow: try the hotspot.",
     "connectionNoDatabase": "The server answered, but its database didn't. Try another network.",
-    "connectionFailed": "We can't reach the server. Try the hotspot."
+    "connectionFailed": "We can't reach the server. Try the hotspot.",
+    "profile": "Profile"
   },
   "family": {
     "title": "My family",
@@ -769,8 +772,6 @@
     "joined": "{{name}} joined",
     "inSafeCircle": "You're in {{name}}'s Safe Circle.",
     "setReminder": "Set a reminder for {{name}}",
-    "simpleMode": "Turn on Simple Mode",
-    "simpleModeLater": "Simple Mode is coming soon.",
     "addAnother": "Add another family member",
     "demoHint": "Demo: on a real phone, they say yes on WhatsApp.",
     "demoAccept": "Demo: {{name}} says yes",
@@ -814,7 +815,12 @@
       "readoutStep": "Step {{step}} of {{total}}. {{question}}",
       "readoutSend": "Tap Send invite when it's right."
     },
-    "emptyDetail": "Add a parent or grandparent to see how they're doing and set reminders for them."
+    "emptyDetail": "Add a parent or grandparent to see how they're doing and set reminders for them.",
+    "simpleModeOn": "Turn on Simple Mode for {{name}}",
+    "simpleModeOff": "Turn off Simple Mode for {{name}}",
+    "simpleModeHint": "Simple Mode shows {{name}} three big buttons: Today, Talk and Help.",
+    "simpleModeTurnedOn": "Simple Mode is on for {{name}}.",
+    "simpleModeTurnedOff": "Simple Mode is off for {{name}}."
   },
   "profile": {
     "title": "My profile",
@@ -930,5 +936,21 @@
     "sharedToast": "Shared with your Circle.",
     "shared": "Shared with your Circle. They see your route, but never the part near your home.",
     "stopSharing": "Stop sharing"
+  },
+  "simple": {
+    "title": "Simple Mode",
+    "on": "On",
+    "off": "Off",
+    "today": "Today",
+    "todayHint": "Hear today's plan",
+    "talk": "Talk",
+    "talkHint": "Ask Buddy anything",
+    "help": "Help",
+    "helpHint": "Get help now",
+    "readout": "{{greeting}}. Three big buttons. Today, to hear today's plan. Talk, to ask Buddy. Help, if you need help now.",
+    "confirmOn": "Turn on Simple Mode? Home will show three big buttons: Today, Talk and Help.",
+    "confirmOff": "Turn off Simple Mode? Home goes back to the full app.",
+    "turnedOn": "Simple Mode is on.",
+    "turnedOff": "Simple Mode is off."
   }
 }

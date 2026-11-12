@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { useAcceptFamilyInvite, useFamilyInvites } from '@/api';
+import { useAcceptFamilyInvite, useFamilyInvites, useSetSeniorSimpleMode } from '@/api';
 import {
   BellIcon,
   BigButton,
@@ -12,6 +12,8 @@ import {
   QueryState,
   Screen,
   ShieldCheckIcon,
+  SquaresFourIcon,
+  showToast,
   StatusBanner,
   Text,
   UserPlusIcon,
@@ -25,13 +27,14 @@ import { borderWidth, color, radius, space } from '@/theme';
 /**
  * S10 Family view (LifeSG status): for each parent, "Waiting for Dad to say yes"
  * until they accept on WhatsApp or SMS, then "Dad joined". Once they've joined,
- * family can set a reminder for them. The weekly overview comes in 3.2.
+ * family can set a reminder for them or turn on Simple Mode (S13) for them.
  */
 export default function FamilyScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const invites = useFamilyInvites();
   const accept = useAcceptFamilyInvite();
+  const simpleMode = useSetSeniorSimpleMode();
   const relationName = useRelationName();
 
   const readOut = () => {
@@ -93,13 +96,39 @@ export default function FamilyScreen() {
                         testID={`family-reminder-${invite.id}`}
                       />
                     ) : null}
-                    <BigButton
-                      variant="outline"
-                      label={t('family.simpleMode')}
-                      disabled
-                      onPress={() => {}}
-                    />
-                    <Text color="textSecondary">{t('family.simpleModeLater')}</Text>
+                    {joined && invite.senior_id ? (
+                      <>
+                        <BigButton
+                          variant="outline"
+                          icon={SquaresFourIcon}
+                          label={t(
+                            invite.simple_mode ? 'family.simpleModeOff' : 'family.simpleModeOn',
+                            { name: who },
+                          )}
+                          disabled={simpleMode.isPending}
+                          onPress={() =>
+                            simpleMode.mutate(
+                              { seniorId: invite.senior_id!, on: !invite.simple_mode },
+                              {
+                                onSuccess: () =>
+                                  showToast(
+                                    t(
+                                      invite.simple_mode
+                                        ? 'family.simpleModeTurnedOff'
+                                        : 'family.simpleModeTurnedOn',
+                                      { name: who },
+                                    ),
+                                  ),
+                              },
+                            )
+                          }
+                          testID={`family-simple-${invite.id}`}
+                        />
+                        <Text color="textSecondary">
+                          {t('family.simpleModeHint', { name: who })}
+                        </Text>
+                      </>
+                    ) : null}
                     {config.demoVoice && !joined ? (
                       // Facilitator control on mock data: the parent's "Yes" happens on WhatsApp or SMS.
                       <View style={styles.demo}>

@@ -4,60 +4,32 @@ import { StyleSheet, View } from 'react-native';
 
 import { useEvents, useMe, useToday } from '@/api';
 import { BigButton, GearSixIcon, QueryState, Screen, Text } from '@/components';
-import { dayPart } from '@/features/home/greeting';
-import { PickedForYou, timeToday, TodaySection } from '@/features/home/TodaySection';
+import { SimpleHome } from '@/features/home/SimpleHome';
+import { PickedForYou, TodaySection } from '@/features/home/TodaySection';
+import { useGreeting, useHomeReadout } from '@/features/home/useHomeReadout';
 import { YourEvents } from '@/features/home/YourEvents';
 import { ReadOutTarget } from '@/features/readout/ReadOutTarget';
-import { formatTime, formatWhen } from '@/lib/format';
 import { space } from '@/theme';
-import { useTypography } from '@/theme/TypographyProvider';
 
 /**
  * S12 Home: everything for today on one screen, no scrolling. The greeting with
  * Settings beside it, then the check-in and the next reminder (each answered in
  * place), the next event they're going to, and one event picked for them (joinable
  * in one tap). Community, Activity and Health are the tab bar's job, so Home
- * doesn't repeat them.
+ * doesn't repeat them. In Simple Mode (S13) Home is three big buttons instead.
  */
 export default function HomeScreen() {
   const { t } = useTranslation();
-  const { language } = useTypography();
   const router = useRouter();
   const { data: me } = useMe();
   const today = useToday();
   const events = useEvents(null);
 
-  const part = dayPart();
-  const name = me?.preferred_name ?? me?.name;
-  const greeting = name ? t(`home.greeting.${part}`, { name }) : t(`home.greetingNoName.${part}`);
+  const greeting = useGreeting();
 
-  // Where you are → what's on today → what you can do.
-  const readOut = () => {
-    const d = today.data;
-    let todayText = '';
-    if (d?.checkin.pending) todayText += t('home.readoutCheckin');
-    if (d?.next_event) {
-      todayText += t('home.readoutEvent', {
-        title: d.next_event.title,
-        when: formatWhen(new Date(d.next_event.start_at), language, t),
-      });
-    }
-    if (d?.next_reminder) {
-      todayText += t('home.readoutReminder', {
-        time: formatTime(timeToday(d.next_reminder.time), language),
-        text: d.next_reminder.text,
-      });
-    }
-    // Highlight "Today" while it's read.
-    const full = t('home.readout', { greeting, today: todayText });
-    const at = todayText ? full.indexOf(todayText) : -1;
-    if (at < 0) return full;
-    return [
-      { text: full.slice(0, at) },
-      { text: todayText, target: 'today' },
-      { text: full.slice(at + todayText.length) },
-    ];
-  };
+  const readOut = useHomeReadout();
+
+  if (me?.simple_mode) return <SimpleHome />;
 
   return (
     <Screen section="home" readOut={readOut} testID="screen-home">

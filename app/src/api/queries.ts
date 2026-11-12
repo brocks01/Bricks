@@ -435,6 +435,17 @@ export function useThanksPrompts() {
   return useQuery({ queryKey: queryKeys13.thanksPrompts, queryFn: () => api.getThanksPrompts() });
 }
 
+/** S10: family turns Simple Mode on or off for a parent. */
+export function useSetSeniorSimpleMode() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ seniorId, on }: { seniorId: string; on: boolean }) =>
+      api.setSeniorSimpleMode(seniorId, on),
+    meta: { errorToast: true },
+    onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.familyInvites }),
+  });
+}
+
 export function useSendThanks() {
   const client = useQueryClient();
   return useMutation({

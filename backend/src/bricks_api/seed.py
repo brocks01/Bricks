@@ -551,6 +551,14 @@ async def _seed(
         "insert into family_links (senior_id, family_id, relation) values"
         " ('u_raj', 'u_priya', 'father')"
     )
+    # Priya added her dad at the start, and he said yes: her Family view (S10).
+    await ex(
+        "insert into family_invites (id, family_id, senior_name, senior_phone, relation,"
+        " language, interests, add_me_to_safe_circle, status, senior_id, created_at)"
+        " values ('inv_priya_raj', 'u_priya', 'Raj Kumar', '+6590000001', 'father', 'en',"
+        " '{chess,walking}', true, 'accepted', 'u_raj', %s)",
+        (now - timedelta(days=60),),
+    )
 
     # Three weeks of morning walks; two were group walks with Lim and Ahmad.
     ctx = Ctx(conn=conn, user_id=DEMO_USER, now=now, settings=settings)

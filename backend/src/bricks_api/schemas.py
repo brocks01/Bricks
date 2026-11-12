@@ -66,6 +66,12 @@ class MeUpdate(Input):
     channel_pref: ChannelPref | None = None
     language: Language | None = None
     push_token: Annotated[str, Field(max_length=200)] | None = None
+    # S13 Simple Mode: Home becomes three big buttons (Today, Talk, Help).
+    simple_mode: bool | None = None
+
+
+class SimpleModeIn(Input):
+    on: bool
 
 
 class EventSummary(Wire):
@@ -479,6 +485,8 @@ class FamilyInvite(Wire):
     add_me_to_safe_circle: bool
     status: Literal["invited", "accepted"]
     senior_id: str | None
+    # The parent's Simple Mode (S13), which family can turn on for them (S10).
+    simple_mode: bool
     created_at: str
 
 

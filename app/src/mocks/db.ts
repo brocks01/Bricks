@@ -557,6 +557,11 @@ export function createMockDb(now: () => Date = () => new Date()) {
     skipThanks: passItOn.skipThanks,
     getFamilyInvites: () => passItOn.getFamilyInvites(),
     createFamilyInvite: passItOn.createFamilyInvite,
+    setSeniorSimpleMode(seniorId: string, on: boolean): void {
+      if (!passItOn.setSeniorSimpleMode(seniorId, on)) {
+        throw new MockNotFound(`family member ${seniorId}`);
+      }
+    },
     acceptFamilyInvite(id: string) {
       const invite = passItOn.acceptFamilyInvite(id);
       if (!invite) throw new MockNotFound(`invite ${id}`);

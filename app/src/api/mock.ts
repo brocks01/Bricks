@@ -83,6 +83,8 @@ export const mockApi: BricksApi = {
   getFamilyInvites: () => respond(() => db.getFamilyInvites(), '/family/invites'),
   createFamilyInvite: (input) => respond(() => db.createFamilyInvite(input), '/family/invite'),
   acceptFamilyInvite: (id) => respond(() => db.acceptFamilyInvite(id), `/invites/${id}/accept`),
+  setSeniorSimpleMode: (seniorId, on) =>
+    respond(() => db.setSeniorSimpleMode(seniorId, on), `/family/seniors/${seniorId}/simple-mode`),
   // No speech service on mock data: voice screens use demo phrases and the phone's own voice.
   transcribe: () => Promise.reject(new ApiError(503, NO_SPEECH, '/assistant/transcribe')),
   tts: () => Promise.reject(new ApiError(503, NO_SPEECH, '/tts')),

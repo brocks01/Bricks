@@ -7,12 +7,12 @@ the app's "they said yes" control is a demo-only shortcut.
 
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Response
 
 from ..db import Conn
 from ..deps import CtxDep, not_found
 from ..ids import new_id
-from ..schemas import FamilyInvite, NewFamilyInvite
+from ..schemas import FamilyInvite, NewFamilyInvite, SimpleModeIn
 from ..timeutil import iso
 
 router = APIRouter(tags=["family"])
@@ -29,15 +29,26 @@ def _invite(row: dict[str, Any]) -> FamilyInvite:
         add_me_to_safe_circle=row["add_me_to_safe_circle"],
         status=row["status"],
         senior_id=row["senior_id"],
+        simple_mode=bool(row.get("senior_simple_mode")),
         created_at=iso(row["created_at"]),
     )
+
+
+INVITE_SELECT = (
+    "select i.*, u.simple_mode as senior_simple_mode"
+    " from family_invites i left join users u on u.id = i.senior_id"
+)
+
+
+async def _load_invite(conn: Conn, invite_id: str) -> dict[str, Any] | None:
+    return await (await conn.execute(INVITE_SELECT + " where i.id = %s", (invite_id,))).fetchone()
 
 
 @router.get("/family/invites")
 async def list_invites(ctx: CtxDep) -> list[FamilyInvite]:
     rows = await (
         await ctx.conn.execute(
-            "select * from family_invites where family_id = %s order by created_at desc",
+            INVITE_SELECT + " where i.family_id = %s order by i.created_at desc",
             (ctx.user_id,),
         )
     ).fetchall()
@@ -133,4 +144,22 @@ async def accept(invite_id: str, ctx: CtxDep) -> FamilyInvite:
         raise HTTPException(403, "Your parent says yes on their own phone.")
     row = await accept_invite(ctx.conn, invite_id)
     assert row
-    return _invite(row)
+    loaded = await _load_invite(ctx.conn, invite_id)
+    assert loaded
+    return _invite(loaded)
+
+
+@router.put("/family/seniors/{senior_id}/simple-mode", status_code=204)
+async def set_simple_mode(senior_id: str, body: SimpleModeIn, ctx: CtxDep) -> Response:
+    """S10: family turns Simple Mode on or off for a parent who has joined."""
+    link = await (
+        await ctx.conn.execute(
+            "select 1 from family_links where senior_id = %s and family_id = %s"
+            " and status = 'accepted'",
+            (senior_id, ctx.user_id),
+        )
+    ).fetchone()
+    if not link:
+        raise not_found(f"family member {senior_id}")
+    await ctx.conn.execute("update users set simple_mode = %s where id = %s", (body.on, senior_id))
+    return Response(status_code=204)

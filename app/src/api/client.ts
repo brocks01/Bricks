@@ -114,6 +114,8 @@ export interface BricksApi {
   createFamilyInvite(input: NewFamilyInvite): Promise<FamilyInvite>;
   /** The senior's yes (ON-5). Normally sent from WhatsApp or SMS; a demo control in the app. */
   acceptFamilyInvite(id: string): Promise<FamilyInvite>;
+  /** S10: family turns Simple Mode on or off for a parent who has joined. */
+  setSeniorSimpleMode(seniorId: string, on: boolean): Promise<void>;
   /** What was said in a recording. Rejects when there's no speech service (mock data). */
   transcribe(input: { audio_uri: string; language: Language }): Promise<Transcript>;
   /** Spoken audio for a phone without a voice for this language. */
@@ -209,6 +211,11 @@ const httpApi: BricksApi = {
   skipThanks: (eventId) =>
     request(`/endorsements/pending/${encodeURIComponent(eventId)}`, { method: 'DELETE' }),
   getFamilyInvites: () => request('/family/invites'),
+  setSeniorSimpleMode: (seniorId, on) =>
+    request(`/family/seniors/${encodeURIComponent(seniorId)}/simple-mode`, {
+      method: 'PUT',
+      body: { on },
+    }),
   createFamilyInvite: (input) => request('/family/invite', { method: 'POST', body: input }),
   acceptFamilyInvite: (id) =>
     request(`/invites/${encodeURIComponent(id)}/accept`, { method: 'POST' }),

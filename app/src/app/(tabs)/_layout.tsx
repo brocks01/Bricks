@@ -1,5 +1,7 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+
+import { useMe } from '@/api';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -100,6 +102,8 @@ export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
   const { fontScale: textSize } = useTypography();
+  // Simple Mode (S13): Home's three buttons are the whole app, so no tab bar.
+  const simple = useMe().data?.simple_mode ?? false;
 
   return (
     <Tabs
@@ -110,24 +114,26 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: color.text,
         tabBarInactiveTintColor: color.textSecondary,
-        tabBarStyle: {
-          ...shadow.floating,
-          height:
-            tabBarHeight(fontScale, textSize, [
-              t('tabs.home'),
-              t('tabs.kampung'),
-              t('tabs.passItOn'),
-              t('tabs.thrive'),
-            ]) + (textSize < 1 ? space.xxs * 2 : space.xs * 2),
-          marginHorizontal: space.sm,
-          marginBottom: insets.bottom + space.xs,
-          paddingHorizontal: space.xxs,
-          paddingTop: textSize < 1 ? space.xxs : space.xs,
-          paddingBottom: textSize < 1 ? space.xxs : space.xs,
-          borderTopWidth: 0,
-          borderRadius: radius.button,
-          backgroundColor: color.bg,
-        },
+        tabBarStyle: simple
+          ? { display: 'none' }
+          : {
+              ...shadow.floating,
+              height:
+                tabBarHeight(fontScale, textSize, [
+                  t('tabs.home'),
+                  t('tabs.kampung'),
+                  t('tabs.passItOn'),
+                  t('tabs.thrive'),
+                ]) + (textSize < 1 ? space.xxs * 2 : space.xs * 2),
+              marginHorizontal: space.sm,
+              marginBottom: insets.bottom + space.xs,
+              paddingHorizontal: space.xxs,
+              paddingTop: textSize < 1 ? space.xxs : space.xs,
+              paddingBottom: textSize < 1 ? space.xxs : space.xs,
+              borderTopWidth: 0,
+              borderRadius: radius.button,
+              backgroundColor: color.bg,
+            },
         tabBarItemStyle: styles.item,
         sceneStyle: { backgroundColor: color.canvas },
       }}
