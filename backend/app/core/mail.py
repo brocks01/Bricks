@@ -14,6 +14,7 @@ import os
 import smtplib
 import time
 from email.message import EmailMessage
+from email.utils import formataddr
 from html import escape
 
 import httpx
@@ -127,7 +128,7 @@ def send(to: str, subject: str, html: str, text: str) -> bool:
     s = get_settings()
     if s.smtp_host:
         msg = EmailMessage()
-        msg["Subject"], msg["From"], msg["To"] = subject, s.email_from or s.smtp_user, to
+        msg["Subject"], msg["From"], msg["To"] = subject, formataddr((BRAND, s.email_from or s.smtp_user)), to  # "Bricks <no-reply@...>", as Jambagrad does
         msg.set_content(text)
         msg.add_alternative(html, subtype="html")
         try:
