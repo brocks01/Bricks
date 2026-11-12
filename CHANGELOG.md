@@ -16,7 +16,7 @@ keys or personal URLs here.
 |---|---|---|
 | App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview), 3.3 code part (top 3 usability fixes, visual pass), 3.4 code part (stage steps fixed, 5-run rehearsal test); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; 3.3: test with seniors, backup videos, freeze tag + APK; 3.4: 5 live runs on Raj's phone, Q&A slides; native-speaker check of the new Tamil/Malay tab names |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
-| WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
+| WhatsApp | Code for 0.2 to 2.3 merged into `sarath` (webhook, router, flows, templates, scheduler); its tests pass against fake providers; nothing sent on real WhatsApp yet | 0.1 access: Twilio sandbox joined + Meta test number keys in `backend/.env`, ngrok URL, then set the two webhooks and test a real "Hi" |
 
 **App look:** Luma-style redesign (UI steps 0 to 12 below; brief in
 `docs/design/LUMA_REDESIGN_PROMPT.md`). Accessibility floors still enforced by tests: touch
@@ -57,6 +57,18 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### WhatsApp branch merged (Fri 13 Nov 2026)
+- Merged `whatsapp` into `sarath`: `backend/src/bricks_api/whatsapp/` (Meta Cloud API + Twilio
+  sandbox behind one interface, flows for joining, family invites, check-in, events, reminders,
+  SOS, Menu, voice notes, templates in four languages, the scheduler) and its tests. Conflicts
+  were only in settings and imports: the WhatsApp settings now sit beside the call settings
+  (one `PUBLIC_BASE_URL`, one Twilio account, the calls' Gemini models).
+- Routes: `GET/POST /wa/webhook` (Meta), `POST /wa/twilio` (sandbox), `/wa/admin/*` (demo mode).
+- Not tried on real WhatsApp yet: needs the keys in `backend/.env` (`.env.example` lists them).
+- **Fix:** the family overview counted "this week" from Monday midnight UTC, so a Monday morning
+  walk in Singapore was left out (family saw 2 walks, the member 3). It now uses Singapore's Monday.
+- **Checks:** backend ruff, mypy, 390 tests (16 skipped: need `SUPABASE_JWT_SECRET` or live Gemini).
 
 ### Production polish: one calm, consistent look
 - **Cards:** every card is white (the check-in was mint and the reminder pink) with a thin olive

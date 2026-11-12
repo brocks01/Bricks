@@ -26,7 +26,7 @@ from ..schemas import (
     VoiceClip,
 )
 from ..storage import Storage, read_audio
-from ..timeutil import iso, iso_opt, local_date, week_start
+from ..timeutil import at_local, iso, iso_opt, local_date, week_start
 from .me import safe_circle
 from .thrive import streak
 
@@ -256,7 +256,8 @@ async def ask_for_story(senior_id: str, body: StoryQuestionIn, ctx: CtxDep) -> S
 async def parent_overview(senior_id: str, ctx: CtxDep) -> FamilyOverview:
     await _family_of(ctx, senior_id, report=True)
     senior = _as(ctx, senior_id)
-    monday = week_start(local_date(ctx.now))
+    # Monday midnight in Singapore, the same week the member's own stats use.
+    monday = at_local(week_start(local_date(ctx.now)), 0)
     walks = await (
         await ctx.conn.execute(
             "select count(*) as n, coalesce(sum(distance_m), 0) as m from walks"
