@@ -21,7 +21,7 @@ from ...core.db import engine
 from ..voice.config import config
 from ..voice import tools as web
 from ..voice.live import LiveSession
-from .declarations import declarations, system_prompt
+from .declarations import LANGUAGE_NAMES, declarations, guest_system_prompt, system_prompt
 
 log = logging.getLogger("agent")
 router = APIRouter()
@@ -30,6 +30,7 @@ MAX_TALK_SECONDS = 15 * 60
 MAX_TALKS_PER_HOUR = 30
 MAX_WEB_CALLS_PER_TALK = 20  # the search key is ours: a talk cannot spend it without limit
 SERVER_TOOLS = web.names()  # web_search and read_page run HERE (the key stays on the server); every other tool runs in the app
+GUEST_TOOLS = {"read", "tree", "search", "docs", "end"}  # before sign-in the agent may only LOOK: no opening, filling, pressing or running
 _active: dict[str, WebSocket] = {}  # one talk per person: a new one replaces the old (a reload or a second screen must never lock the person out)
 _recent: dict[str, list[float]] = {}
 
@@ -55,10 +56,15 @@ async def live(ws: WebSocket):
     user_id = ""
     try:
         first = json.loads(await asyncio.wait_for(ws.receive_text(), 10))
-        claims, _why = auth_state.verify(str(first.get("token") or "")) if first.get("type") == "auth" else (None, "invalid")
-        user_id = str(claims["sub"]) if claims else None
-        row = _person(user_id) if user_id else None
-        if not row:
+        # A guest talk: no token, before sign-in (an elderly person who cannot follow the sign-in asks the agent for help).
+        # The agent may only look at the open page and explain; it gets none of the acting tools and no web search.
+        guest = first.get("type") == "auth" and not first.get("token") and bool(first.get("guest"))
+        claims, _why = (None, "guest") if guest else (auth_state.verify(str(first.get("token") or "")) if first.get("type") == "auth" else (None, "invalid"))
+        peer = ws.scope.get("client") if hasattr(ws, "scope") else None
+        host = peer[0] if isinstance(peer, (tuple, list)) and peer else "unknown"
+        user_id = str(claims["sub"]) if claims else (f"ip:{host}" if guest else None)
+        row = _person(user_id) if claims else None
+        if not row and not guest:
             await _send(ws, {"type": "error", "message": "unauthorized"})
             return await ws.close()
         if not cfg.gemini_key:
@@ -78,12 +84,21 @@ async def live(ws: WebSocket):
         _active[user_id] = ws
         _recent[user_id].append(now)
 
-        live_session = LiveSession(
-            cfg,
-            voice=cfg.voice,
-            system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None), *web.hints(SERVER_TOOLS)]),
-            tools=[*declarations(first.get("tools") or []), *web.declarations(SERVER_TOOLS)],
-        )
+        if guest:
+            language = str(first.get("language") or "en")
+            live_session = LiveSession(
+                cfg,
+                voice=cfg.voice,
+                system_prompt=guest_system_prompt(language=language if language in LANGUAGE_NAMES else "en", page=str(first.get("page") or "")[:60] or None),
+                tools=declarations([t for t in (first.get("tools") or []) if isinstance(t, dict) and t.get("name") in GUEST_TOOLS]),
+            )
+        else:
+            live_session = LiveSession(
+                cfg,
+                voice=cfg.voice,
+                system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None), *web.hints(SERVER_TOOLS)]),
+                tools=[*declarations(first.get("tools") or []), *web.declarations(SERVER_TOOLS)],
+            )
         await live_session.open()
         deadline = time.monotonic() + MAX_TALK_SECONDS
         memo: dict = {}  # lives as long as the talk: what the last search found, so read_page can open a result by its id

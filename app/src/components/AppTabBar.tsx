@@ -36,7 +36,17 @@ export function AppTabBar() {
   // including while the hand is still dragging it, and come back when it is put away.
   const { open, live } = useStore(surfaceStore);
   const canvasOpen = open || (live !== null && live > 0.1);
-  if (status !== 'in' || !user?.profile_complete || current?.bare) return null;
+  // Signed out, the agent bar stays: an elderly person who cannot follow the sign-in or the code
+  // can still ask for help at any moment (before login the agent can only SEE and explain).
+  if (status !== 'in') {
+    return (
+      <View style={{ backgroundColor: colors.card }}>
+        {canvasOpen ? null : <View style={{ paddingBottom: insets.bottom }} />}
+        {open ? null : <AgentDock />}
+      </View>
+    );
+  }
+  if (!user?.profile_complete || current?.bare) return null;
   return (
     <View style={{ backgroundColor: colors.card }}>
       {canvasOpen ? null : (
