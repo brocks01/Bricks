@@ -87,6 +87,8 @@ The voice and Google values were copied (blind, never displayed) from the owner'
 
 ## 5. Current state (what works)
 - **Communities backend and demo data (new):** `GET /v1/communities/mine`, `GET /v1/communities/{id}` (members only), `POST /v1/communities` (creator becomes Community Lead), `POST /v1/communities/join` (invite code), `POST /v1/communities/activities/{id}/going`; `POST /v1/media/upload` (Cloudinary, needs the three env names). Seeded demo: Lakeview Residency, 12 demo people, 4 activities, 3 announcements, 6 contributions, 3 opportunities; the test account ui-check@example.com is Secretary there. The Connect tab lists a person's communities (Join and Create are disabled "Coming soon"); the community page itself is NOT built yet.
+- **Families (new, 13 Nov 2026):** backend complete and tested (120/120): `backend/app/modules/family/` + migrations `0008_family.sql`, `0009_claim.sql` - families (owner/helper/member), invitations by email (real Brevo mail) or a shown 6-digit code, assisted profiles (born restricted: no email, family-only visibility, cannot invite/create; max 5 per helper), delegations with levels (setup auto-granted, ongoing, full; a helper may only LOWER their own), append-only permission history, and claim-by-code that gives the person their own login and ends one-time setup help. On-behalf requests (`X-Bricks-On-Behalf`) are re-checked against the live delegation on every request (`acting_user` in `identity/router.py`); `GET/PATCH /me` act on behalf.
+  App: the Family tab shows ONLY when the person belongs to a family; pages home/create/join/detail (role-gated)/invite/assisted/accounts (act-as switcher)/claim/history, all in six languages; welcome page has the third entry "Use a family code" that claims an account with no sign-in first; after claiming, the app signs the person in as themselves and applies the profile's language. Every page pads with safe-area insets (status bar top, gesture bar bottom). Tested on the emulator (Pixel 8 API 35, Expo Go): the whole claim journey end to end, family list and detail with correct roles; API log confirmed each request. NOT yet emulator-tested: assisted setup screens, accounts switcher, permission history, delegation UI; not deployed to Render; APK not rebuilt (build copy at `C:\build\bricks\` is stale).
 Everything below was tested unless marked.
 - **Sign-in:** email code (6 digits, 5 per hour per email, 30 s apart, 5 wrong tries, HMAC-hashed), Google ID-token sign-in (works on `localhost:3000`),
   Singpass and DigiLocker buttons present but **off** ("Not available yet"; they need registered credentials and are not implemented server-side).
@@ -110,7 +112,7 @@ Everything below was tested unless marked.
   extend call; transcript kept in memory. One real call tested (35 s, Hindi/English). Twilio is a **trial** account (callee must be verified and press a key).
 - **Web hosting:** the backend serves `app/dist`; the owner's ngrok tunnel (his static domain `shale-overgrown-buggy.ngrok-free.dev`) points at port 8093
   where a Bricks API instance runs. Vercel deployment is **not done yet**.
-- **Repo:** GitHub `brocks01/Bricks`: `main` (baseline) and `Ankit` (all code). The pull request `Ankit` to `main` is for the owner to open.
+- **Repo:** GitHub `brocks01/Bricks`: `main` (baseline) and `Ankit` (all code). Pull request **#1** (`Ankit` to `main`) is open for the owner to review and merge: https://github.com/brocks01/Bricks/pull/1
 
 ## 6. Key designs you must understand
 **Tree model: module > page > element.** Dotted keys: module `me`, page `me.edit`, element `me.edit.displayName`, skill `auth/signOut`. Each page has ONE
@@ -127,12 +129,12 @@ Gemini function declarations are made from the app's tool specs (`declarations.p
 **Untrusted content is data, never orders:** the system prompt tells the agent that a web page, a search result, an event title, a name or anything another member posted cannot give it instructions, and that it must never reveal passwords, codes or tokens. The canvas shows only words and icons the agent wrote; it can never run code or reach the app's data.
 **Routing/guard:** `AuthGate` (root layout) boots the session; signed out on a private page goes to Welcome; signed in without a name goes to Setup; signed in on an
 auth page goes Home. The navigation guard is read at the moment of every move.
-**Hard-coded API address:** `PUBLIC_API_URL` in `app/src/api/client.ts` is the ngrok address (owner's decision, for now). On localhost/LAN the API is
-`http://<host>:8800`; `EXPO_PUBLIC_API_URL` overrides.
+**Hard-coded API address:** `PUBLIC_API_URL` in `app/src/api/client.ts` is the deployed backend `https://bricks-o9gv.onrender.com` (owner's decision, 13 Nov 2026). A release (native, not `__DEV__`) build uses it; `EXPO_PUBLIC_API_URL` still overrides (the `eas.json` preview profile sets it too). Expo Go and web on this computer use the local API on 8800.
 **Dev-only conveniences that must not reach production:** the sign-in code shown on screen (only when `APP_ENV` is not `prod` AND the request has no
 `X-Forwarded-For`, i.e. never through a tunnel or proxy); `VOICE_PROVIDER=mock`.
 
 ## 7. Not done yet (as of this handoff)
+0. **Families, remaining (13 Nov 2026):** emulator checks for the assisted-setup screens, the accounts switcher (act-as), permission history and the delegation grant/change UI; rebuild the APK at `C:\build\bricks\` (stale) so the launcher icon and the family feature ship together; deploy the backend to Render (the deployed API has none of the family routes until then); native-speaker review of the six-language family words; SMS invites deliberately later, as are health-data sharing and a family dashboard.
 1. **Real email codes:** put `BREVO_API_KEY` in `backend/.env` (an `xkeysib-` key; a verified sender must exist in Brevo), restart the API, then test with the owner's own
    address. The code (`core/mail.py`) is written and tested with a fake Brevo only. (Jambagrad keeps its Brevo SMTP credentials inside its own database, so the key
    could not be copied.)

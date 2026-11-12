@@ -1,24 +1,23 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { useStore } from '../core/store';
 import { useGoBack, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
 import { colors, space, type } from '../theme/tokens';
 
-/** The Bricks mark: three green bricks stacked. */
+/**
+ * The Bricks mark: four connected bricks, the approved logo (owner, 12 Nov 2026) - drawn by hand as an SVG
+ * in `team-docs/05-design/brand/bricks-mark.svg` and rasterised to PNG, because the app has no SVG renderer.
+ * Used at any size, so one file updates every header and the welcome screen together.
+ */
 export function Logo({ size = 28 }: { size?: number }) {
-  const w = size;
-  const h = size / 3.2;
-  const brick = { height: h, borderRadius: 3, backgroundColor: colors.accent, marginBottom: 2 };
   return (
-    <View style={{ width: w, alignItems: 'center' }} accessibilityLabel="Bricks">
-      <View style={[brick, { width: w * 0.42 }]} />
-      <View style={{ flexDirection: 'row', gap: 2 }}>
-        <View style={[brick, { width: w * 0.48 }]} />
-        <View style={[brick, { width: w * 0.48 }]} />
-      </View>
-      <View style={[brick, { width: w * 0.9 }]} />
-    </View>
+    <Image
+      source={require('../../assets/brand/mark.png')}
+      accessibilityLabel="Bricks"
+      resizeMode="contain"
+      style={{ width: size, height: size }}
+    />
   );
 }
 
