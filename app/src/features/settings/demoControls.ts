@@ -15,6 +15,15 @@ import { useUndo } from '@/state/undo';
 /** The seeded member the demo starts as. */
 export const DEMO_SENIOR = 'u_raj';
 
+/** Judge 1…JUDGE_COUNT each have a QR link: `/judge/3` (backend deps.JUDGE_COUNT). */
+export const JUDGE_COUNT = 10;
+
+/** "3" → 3 when it's a judge's number, else null. */
+export function judgeNumber(raw: string | undefined): number | null {
+  const n = Number(raw);
+  return Number.isInteger(n) && n >= 1 && n <= JUDGE_COUNT ? n : null;
+}
+
 /** Forgets everything this phone remembers about the session (not language or text size). */
 async function clearLocalSession(): Promise<void> {
   await signOutOfSupabase();
@@ -68,4 +77,34 @@ export function useSwitchDemoAccount() {
     if (router.canDismiss()) router.dismissAll();
     router.replace(fresh ? '/onboarding' : '/home');
   };
+}
+
+/**
+ * A judge's QR link (iteration 3.1): their account back to fresh on the server, this
+ * phone signed in as them with onboarding skipped. Home then shows today's check-in
+ * and tomorrow's walk, so "No → join walk" works straight away.
+ */
+export function useOpenAsJudge() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: async (n: number) => {
+      const judge = await api.resetJudge(n);
+      await clearLocalSession();
+      useSettings.getState().setDemoUser(judge.id);
+      useOnboarding.getState().complete();
+      client.clear();
+      return judge;
+    },
+  });
+}
+
+/** Settings → Demo → Check connection: how long the server takes to answer. */
+export function useConnectionCheck() {
+  return useMutation({
+    mutationFn: async () => {
+      const started = Date.now();
+      const health = await api.getHealth();
+      return { ms: Date.now() - started, database: health.database };
+    },
+  });
 }

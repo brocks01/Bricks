@@ -85,4 +85,11 @@ export const mockApi: BricksApi = {
   // The mock data is Raj's world only, so there is nobody to switch to.
   getDemoAccounts: () =>
     respond(() => [{ id: 'u_raj', name: 'Raj Kumar', role: 'senior' as const }], '/demo/accounts'),
+  getHealth: () => respond(() => ({ status: 'ok', database: true }), '/health'),
+  // Judge links on mock data: Raj's world, fresh.
+  resetJudge: (n) =>
+    respond(() => {
+      resetMockDb();
+      return { id: `u_judge${n}`, name: `Judge ${n}`, role: 'judge' as const };
+    }, `/demo/judges/${n}/reset`),
 };

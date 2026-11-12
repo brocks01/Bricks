@@ -18,6 +18,7 @@ import type {
   CircleSummary,
   DemoAccount,
   DemoReset,
+  Health,
   EventDetail,
   EventFilter,
   EventSummary,
@@ -115,6 +116,12 @@ export interface BricksApi {
   resetDemo(): Promise<DemoReset>;
   /** Demo servers only: who the demo can act as. */
   getDemoAccounts(): Promise<DemoAccount[]>;
+
+  // Iteration 3.1: at the venue.
+  /** Is the server there (and its database)? Settings → Demo → Check connection. */
+  getHealth(): Promise<Health>;
+  /** Demo servers only: Judge n (1–10) back to fresh, for their QR link. */
+  resetJudge(n: number): Promise<DemoAccount>;
 }
 
 /** Filter → query string for GET /events. */
@@ -198,6 +205,8 @@ const httpApi: BricksApi = {
   // Reseeding a remote database can take a few seconds.
   resetDemo: () => request('/demo/reset', { method: 'POST', timeoutMs: 20_000 }),
   getDemoAccounts: () => request('/demo/accounts'),
+  getHealth: () => request('/health', { timeoutMs: 10_000 }),
+  resetJudge: (n) => request(`/demo/judges/${n}/reset`, { method: 'POST', timeoutMs: 20_000 }),
 };
 
 // Every API request carries the Supabase access token of the signed-in member,

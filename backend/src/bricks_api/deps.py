@@ -14,7 +14,10 @@ from .ids import new_id
 
 # The seeded accounts a demo can act as (seed.DEMO_ACCOUNTS; kept here to avoid an
 # import cycle: the seed imports the routers, which import this module).
-DEMO_ACCOUNT_IDS = frozenset({"u_raj", "u_priya", "u_ahmad", "u_lim", "u_judge"})
+# Judge 1…10 open the app from their own QR link (iteration 3.1).
+JUDGE_COUNT = 10
+JUDGE_IDS = frozenset(f"u_judge{n}" for n in range(1, JUDGE_COUNT + 1))
+DEMO_ACCOUNT_IDS = frozenset({"u_raj", "u_priya", "u_ahmad", "u_lim", "u_judge"}) | JUDGE_IDS
 
 
 @dataclass

@@ -226,6 +226,11 @@ export interface DemoAccount {
 }
 
 /** POST /demo/reset: how long the server took. */
+export interface Health {
+  status: string;
+  database: boolean;
+}
+
 export interface DemoReset {
   seconds: number;
 }

@@ -12,8 +12,14 @@ import {
   Screen,
   StatusBanner,
   Text,
+  WifiHighIcon,
 } from '@/components';
-import { DEMO_SENIOR, useDemoReset, useSwitchDemoAccount } from '@/features/settings/demoControls';
+import {
+  DEMO_SENIOR,
+  useConnectionCheck,
+  useDemoReset,
+  useSwitchDemoAccount,
+} from '@/features/settings/demoControls';
 import { useSettings } from '@/state/settings';
 import { useActiveWalk } from '@/features/walk/activeWalk';
 import { config } from '@/lib/config';
@@ -35,6 +41,7 @@ export default function DemoScreen() {
   const accounts = useDemoAccounts(true);
   const switchTo = useSwitchDemoAccount();
   const actingAs = useSettings((s) => s.demoUser) ?? DEMO_SENIOR;
+  const connection = useConnectionCheck();
   const walkSource = useActiveWalk((s) => s.source);
   const setWalkSource = useActiveWalk((s) => s.setSource);
   const simulationSpeed = useActiveWalk((s) => s.simulationSpeed);
@@ -63,6 +70,39 @@ export default function DemoScreen() {
         onPress={() => setConfirmReset(true)}
         testID="demo-reset"
       />
+      {/* At the venue: is this network good enough (venue Wi-Fi or the hotspot)? */}
+      <BigButton
+        variant="outline"
+        icon={WifiHighIcon}
+        label={t('settings.checkConnection')}
+        disabled={connection.isPending}
+        onPress={() => connection.mutate()}
+        testID="demo-check-connection"
+      />
+      {connection.isError ? (
+        <StatusBanner
+          tone="notice"
+          text={t('settings.connectionFailed')}
+          testID="demo-connection"
+        />
+      ) : connection.data ? (
+        <StatusBanner
+          tone={connection.data.database && connection.data.ms < SLOW_MS ? 'success' : 'notice'}
+          text={
+            !connection.data.database
+              ? t('settings.connectionNoDatabase')
+              : t(
+                  connection.data.ms < SLOW_MS
+                    ? 'settings.connectionOk'
+                    : 'settings.connectionSlow',
+                  {
+                    ms: connection.data.ms,
+                  },
+                )
+          }
+          testID="demo-connection"
+        />
+      ) : null}
       {/* Several seeded accounts only on a demo server (mock data is Raj's world). */}
       {accounts.data && accounts.data.length > 1 ? (
         <>
@@ -141,3 +181,6 @@ export default function DemoScreen() {
     </Screen>
   );
 }
+
+/** Slower than this and the demo will feel stuck: use the hotspot. */
+const SLOW_MS = 1500;

@@ -50,6 +50,7 @@ async def test_without_demo_mode_a_sign_in_is_required(settings: Settings, seede
             # So are the demo controls: they don't exist on a real server.
             assert (await client.post("/demo/reset")).status_code == 404
             assert (await client.get("/demo/accounts")).status_code == 404
+            assert (await client.post("/demo/judges/1/reset")).status_code == 404
             assert (await client.get("/me", headers={"X-Demo-User": "u_priya"})).status_code == 401
 
 
@@ -70,6 +71,41 @@ async def test_demo_accounts_and_switching(api: Api) -> None:
     # Only the listed accounts: anything else is the sample member.
     other = await api.client.get("/me", headers={"X-Demo-User": "u_tan"})
     assert other.json()["name"] == "Raj Kumar"
+
+
+async def test_judge_link_lands_ready_and_resets_only_that_judge(api: Api) -> None:
+    # Iteration 3.1: Judge 3's QR link. Ready to go: today's check-in waiting and
+    # tomorrow's walk to join, so "No → join walk" works straight away.
+    judge = {"X-Demo-User": "u_judge3"}
+    r = await api.client.post("/demo/judges/3/reset")
+    assert r.json() == {"id": "u_judge3", "name": "Judge 3", "role": "judge"}
+    me = (await api.client.get("/me", headers=judge)).json()
+    assert (me["name"], me["area_name"]) == ("Judge 3", "Bishan")
+    today = (await api.client.get("/home/today", headers=judge)).json()
+    assert today["checkin"]["pending"] is True
+    no = (await api.client.post("/checkins", headers=judge, json={"answer": "no"})).json()
+    walk = no["suggestion"]
+    assert walk and walk["category"] == "walk"
+    going = await api.client.post(f"/events/{walk['id']}/rsvp", headers=judge)
+    assert going.status_code == 200
+
+    # Judge 4 does something too; resetting Judge 3 leaves Judge 4 alone.
+    other = {"X-Demo-User": "u_judge4"}
+    await api.client.post("/checkins", headers=other, json={"answer": "yes"})
+    await api.client.post("/demo/judges/3/reset")
+    again = (await api.client.get("/home/today", headers=judge)).json()
+    assert again["checkin"]["pending"] is True
+    assert (await api.client.get("/home/today", headers=other)).json()["checkin"][
+        "pending"
+    ] is False
+    event = (await api.client.get(f"/events/{walk['id']}", headers=judge)).json()
+    assert event["my_rsvp"] is None
+
+    for n in (0, 11):
+        assert (await api.client.post(f"/demo/judges/{n}/reset")).status_code == 404
+    # Judges aren't in the stage switcher (they come in through their links).
+    ids = [a["id"] for a in (await api.client.get("/demo/accounts")).json()]
+    assert not any(i.startswith("u_judge") and i != "u_judge" for i in ids)
 
 
 async def test_an_account_missing_from_an_older_seed_is_left_out(

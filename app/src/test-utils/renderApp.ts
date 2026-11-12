@@ -25,7 +25,7 @@ export async function resetAppState({ onboarded = true } = {}): Promise<void> {
   if (onboarded) useOnboarding.getState().complete();
   useUndo.getState().clear();
   resetShownSos();
-  useSettings.setState({ language: 'en', textSize: DEFAULT_TEXT_SIZE });
+  useSettings.setState({ language: 'en', textSize: DEFAULT_TEXT_SIZE, demoUser: null });
   await useActiveWalk.getState().discard();
   // Screen tests replay the simulated walk; GPS has its own tests (gpsTrack.test.ts).
   useActiveWalk.getState().setSource('simulated');

@@ -14,7 +14,7 @@ keys or personal URLs here.
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code); Luma-style redesign steps 0 to 12 | 2.3 exit: EAS preview build + `eas update --branch demo`, golden path 3× on real phones, tag `v0.9-demo`; voice-driven Buddy (with voice 2.1) |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); then 3.2 |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3 (done) | 2.1 real `/assistant/turn` (a real phone call when Twilio is upgraded) |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,27 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 3.1: stabilise at the venue (code part)
+- **Judge accounts (§3.5).** Judge 1 to Judge 10 are seeded on every reset: set up (Bishan,
+  Singpass-verified) with nothing done yet, so Home shows today's check-in and tomorrow's
+  morning walk, and "No → join walk" works straight away. `POST /demo/judges/{n}/reset` resets
+  one judge and leaves everyone else alone (demo servers only).
+- **Judge link (§3.4).** Opening `/judge/3` (APK: `bricks-preview://judge/3`) resets Judge 3,
+  signs this phone in as them, skips onboarding and opens Home ("Welcome, Judge 3."). If the
+  server can't be reached it says so, with Try again. Any other number goes to the normal start.
+  The Guest Judge in the stage switcher still goes through sign-in and onboarding.
+- **Check connection (§3.1).** Settings → Demo → Check connection says how fast the server
+  answered (slow above 1.5 s: "try the hotspot"), or that it can't be reached, or that its
+  database didn't answer. For testing venue Wi-Fi against the hotspot.
+- **Permissions (§3.3), checked:** location only when a walk starts, background location right
+  after (once), notifications at the onboarding reminders step or when making a reminder,
+  contacts only when adding to the Safe Circle. All with plain reasons (`app.config.ts`). There
+  is no camera use yet, so no camera prompt.
+- **Crash sweep (§3.2):** a test opens every screen (43, onboarding included) and fails on any
+  crash. Fixed a test helper that kept the demo account between tests.
+- **Checks:** app 600 tests, tsc, eslint, prettier, expo-doctor 20/20, Android export; backend
+  ruff, mypy, 262 tests.
 
 ### Iteration 2.3: integration + freeze (app and backend)
 - **Cross-channel (§3.1).** Coming back to the app now refreshes everything at once (before, only

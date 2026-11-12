@@ -732,7 +732,12 @@
       "helper": "penolong",
       "circle": "ahli Bulatan",
       "judge": "hakim"
-    }
+    },
+    "checkConnection": "Semak sambungan",
+    "connectionOk": "Pelayan menjawab dalam {{ms}} ms.",
+    "connectionSlow": "Pelayan menjawab dalam {{ms}} ms. Itu perlahan: cuba hotspot.",
+    "connectionNoDatabase": "Pelayan menjawab, tetapi pangkalan datanya tidak. Cuba rangkaian lain.",
+    "connectionFailed": "Kami tidak dapat menghubungi pelayan. Cuba hotspot."
   },
   "family": {
     "title": "Keluarga saya",
@@ -833,5 +838,10 @@
     "large": "Besar",
     "largeHint": "Tulisan paling besar.",
     "readout": "Saiz tulisan. Pilih kecil, biasa atau besar. Sekarang: {{size}}. Kemudian ketik Seterusnya."
+  },
+  "judge": {
+    "getting": "Menyediakan akaun Hakim {{n}}…",
+    "welcome": "Selamat datang, {{name}}. Soalan hari ini menunggu di Utama.",
+    "failed": "Kami tidak dapat membuka akaun hakim. Semak internet, kemudian cuba lagi."
   }
 }

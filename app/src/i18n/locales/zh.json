@@ -732,7 +732,12 @@
       "helper": "帮手",
       "circle": "圈子成员",
       "judge": "评委"
-    }
+    },
+    "checkConnection": "检查连接",
+    "connectionOk": "服务器在 {{ms}} 毫秒内回应。",
+    "connectionSlow": "服务器在 {{ms}} 毫秒内回应。有点慢：试试热点。",
+    "connectionNoDatabase": "服务器有回应，但数据库没有。请换个网络。",
+    "connectionFailed": "连不上服务器。试试热点。"
   },
   "family": {
     "title": "我的家人",
@@ -833,5 +838,10 @@
     "large": "大",
     "largeHint": "字最大。",
     "readout": "字体大小。请选小、标准或大。现在是：{{size}}。然后点下一步。"
+  },
+  "judge": {
+    "getting": "正在准备评委 {{n}} 的账户…",
+    "welcome": "欢迎，{{name}}。今天的问题在首页等着您。",
+    "failed": "无法打开评委账户。请检查网络，然后再试一次。"
   }
 }

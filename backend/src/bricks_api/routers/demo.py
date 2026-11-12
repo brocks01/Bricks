@@ -9,9 +9,9 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from ..db import Conn
-from ..deps import get_conn
+from ..deps import JUDGE_COUNT, get_conn
 from ..schemas import DemoAccount, DemoReset
-from ..seed import DEMO_ACCOUNTS, seed
+from ..seed import DEMO_ACCOUNTS, judge_account, seed, seed_judge
 
 router = APIRouter(tags=["demo"])
 
@@ -48,3 +48,16 @@ async def demo_accounts(
         for uid, name, role in DEMO_ACCOUNTS
         if uid in present
     ]
+
+
+@router.post("/demo/judges/{n}/reset")
+async def reset_judge(
+    n: int, request: Request, conn: Annotated[Conn, Depends(get_conn)]
+) -> DemoAccount:
+    """Judge n's QR link: their account back to fresh, everyone else untouched."""
+    _demo_only(request)
+    if not 1 <= n <= JUDGE_COUNT:
+        raise HTTPException(404, "Not found")
+    await seed_judge(conn, n, request.app.state.clock())
+    uid, name = judge_account(n)
+    return DemoAccount(id=uid, name=name, role="judge")

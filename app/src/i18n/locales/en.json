@@ -753,7 +753,12 @@
       "helper": "helper",
       "circle": "Circle member",
       "judge": "judge"
-    }
+    },
+    "checkConnection": "Check connection",
+    "connectionOk": "The server answered in {{ms}} ms.",
+    "connectionSlow": "The server answered in {{ms}} ms. That's slow: try the hotspot.",
+    "connectionNoDatabase": "The server answered, but its database didn't. Try another network.",
+    "connectionFailed": "We can't reach the server. Try the hotspot."
   },
   "family": {
     "title": "My family",
@@ -855,5 +860,10 @@
     "large": "Large",
     "largeHint": "The biggest words.",
     "readout": "Text size. Pick small, normal or large. Now: {{size}}. Then press Next."
+  },
+  "judge": {
+    "getting": "Getting Judge {{n}}'s account ready…",
+    "welcome": "Welcome, {{name}}. Today's question is waiting on Home.",
+    "failed": "We couldn't open the judge account. Check the internet, then try again."
   }
 }

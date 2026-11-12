@@ -22,7 +22,7 @@ from psycopg.rows import dict_row
 
 from .config import Settings, get_settings
 from .db import Conn, check_schema, loop_factory, migrate
-from .deps import Ctx
+from .deps import JUDGE_COUNT, Ctx
 from .routers.walks import save_walk
 from .schemas import TrackPoint, WalkUpload
 from .storage import Storage
@@ -80,6 +80,26 @@ DEMO_ACCOUNTS: list[tuple[str, str, str]] = [
 ]
 
 WA = "https://chat.whatsapp.com/"
+
+
+def judge_account(n: int) -> tuple[str, str]:
+    """Judge n's id and name (n from 1 to JUDGE_COUNT)."""
+    return f"u_judge{n}", f"Judge {n}"
+
+
+async def seed_judge(conn: Conn, n: int, now: datetime) -> None:
+    """Judge n, set up and ready but with nothing done yet: Home shows today's check-in
+    and tomorrow's walk to join ("No → join walk"). Running it again resets only them."""
+    uid, name = judge_account(n)
+    # Anything they made goes too (events they hosted aren't removed with the member).
+    await conn.execute("delete from events where host_id = %s", (uid,))
+    await conn.execute("delete from users where id = %s", (uid,))
+    home = _north_of(RAJ_HOME, 150)
+    await conn.execute(
+        "insert into users (id, name, preferred_name, home_lat, home_lng, area_name,"
+        " singpass_verified, created_at) values (%s, %s, %s, %s, %s, 'Bishan', true, %s)",
+        (uid, name, name, home[0], home[1], now - timedelta(days=1)),
+    )
 
 
 def _at(now: datetime, days: int, hour: int, minute: int = 0) -> datetime:
@@ -556,6 +576,9 @@ async def _seed(
             event_id=None,
         )
         await save_walk(ctx, upload, ["u_lim", "u_ahmad"] if group else [])
+
+    for n in range(1, JUDGE_COUNT + 1):
+        await seed_judge(conn, n, now)
 
 
 async def main() -> None:
