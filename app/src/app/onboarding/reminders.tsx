@@ -23,7 +23,7 @@ export default function ChannelScreen() {
   const router = useRouter();
   const language = useActiveLanguage();
   const draft = useOnboarding((s) => s.draft);
-  const updateMe = useUpdateMe();
+  const updateMe = useUpdateMe({ quiet: true });
   const setSafeCircle = useSetSafeCircle();
   const saveIntro = useSaveIntro();
   const [saving, setSaving] = useState<ChannelPref | null>(null);

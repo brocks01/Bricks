@@ -104,7 +104,7 @@ export default function AddParentScreen() {
         add_me_to_safe_circle: addMe,
       });
       complete();
-      router.dismissAll();
+      if (router.canDismiss()) router.dismissAll();
       router.replace('/family');
     } catch {
       // The banner says it didn't work; Send invite stays for another go.

@@ -5,7 +5,9 @@ import type { Language } from '@/i18n/languages';
 
 import { accessToken } from '@/lib/supabase';
 
-import { audioFile, formData, request, setAuthTokenProvider } from './http';
+import { useSettings } from '@/state/settings';
+
+import { audioFile, formData, request, setAuthTokenProvider, setDemoUserProvider } from './http';
 import { mockApi } from './mock';
 
 import type {
@@ -14,10 +16,12 @@ import type {
   CircleDetail,
   CircleList,
   CircleSummary,
-  FamilyInvite,
+  DemoAccount,
+  DemoReset,
   EventDetail,
   EventFilter,
   EventSummary,
+  FamilyInvite,
   Me,
   MeUpdate,
   NewEvent,
@@ -33,14 +37,14 @@ import type {
   SignInMethod,
   SignInResult,
   SkillOffer,
+  SosAlert,
+  SosResponse,
   SpokenAudio,
   ThankYou,
   ThanksPrompt,
+  Today,
   Transcript,
   VoiceClip,
-  SosAlert,
-  SosResponse,
-  Today,
   WalkStats,
   WalkSummary,
 } from './types';
@@ -103,6 +107,14 @@ export interface BricksApi {
   transcribe(input: { audio_uri: string; language: Language }): Promise<Transcript>;
   /** Spoken audio for a phone without a voice for this language. */
   tts(input: { text: string; language: Language }): Promise<SpokenAudio>;
+
+  // Iteration 2.3: cross-channel SOS and the demo controls.
+  /** Their alert that's still going, however it started (app, WhatsApp, a call). */
+  getActiveSos(): Promise<SosAlert | null>;
+  /** Demo servers only: the seeded story again, dated from now. */
+  resetDemo(): Promise<DemoReset>;
+  /** Demo servers only: who the demo can act as. */
+  getDemoAccounts(): Promise<DemoAccount[]>;
 }
 
 /** Filter → query string for GET /events. */
@@ -182,9 +194,15 @@ const httpApi: BricksApi = {
       timeoutMs: 20_000,
     }),
   tts: (input) => request('/tts', { method: 'POST', body: input }),
+  getActiveSos: () => request('/sos/active'),
+  // Reseeding a remote database can take a few seconds.
+  resetDemo: () => request('/demo/reset', { method: 'POST', timeoutMs: 20_000 }),
+  getDemoAccounts: () => request('/demo/accounts'),
 };
 
-// Every API request carries the Supabase access token of the signed-in member.
+// Every API request carries the Supabase access token of the signed-in member,
+// and on a demo server the demo account chosen in Settings → Demo.
 setAuthTokenProvider(accessToken);
+setDemoUserProvider(() => useSettings.getState().demoUser);
 
 export const api: BricksApi = config.useMocks || !config.apiUrl ? mockApi : httpApi;

@@ -62,7 +62,8 @@
     "nothingPlannedDetail": "Find a walk, a class or a chat near you.",
     "findSomething": "Find something to join",
     "seeAllEvents_one": "See your {{count}} event",
-    "seeAllEvents_other": "See all {{count}} of your events"
+    "seeAllEvents_other": "See all {{count}} of your events",
+    "loading": "Getting today's plan…"
   },
   "passItOn": {
     "title": "Activity",
@@ -737,7 +738,22 @@
     "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first.",
     "you": "You",
     "viewProfile": "See my profile",
-    "remindShort": "Reminders"
+    "remindShort": "Reminders",
+    "version": "Version {{version}}",
+    "demoUnlocked": "Demo controls are on.",
+    "resetDemo": "Reset demo",
+    "resetDemoConfirm": "Start the demo again from the beginning? Everything done since is cleared.",
+    "resetDone": "Demo reset in {{seconds}} seconds.",
+    "resetFailed": "We couldn't reset the demo. Is the server in demo mode? Try again?",
+    "actAs": "Use the app as",
+    "demoReadout": "Demo. Reset the demo, or use the app as someone else.",
+    "roles": {
+      "senior": "senior",
+      "family": "family",
+      "helper": "helper",
+      "circle": "Circle member",
+      "judge": "judge"
+    }
   },
   "family": {
     "title": "My family",

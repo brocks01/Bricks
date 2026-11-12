@@ -12,6 +12,17 @@ export function setAuthTokenProvider(provider: TokenProvider): void {
   getToken = provider;
 }
 
+/**
+ * The demo account to act as (Settings → Demo), sent as X-Demo-User. Demo servers
+ * only honour it when nobody is signed in; real servers ignore it.
+ */
+type DemoUserProvider = () => string | null;
+let getDemoUser: DemoUserProvider = () => null;
+
+export function setDemoUserProvider(provider: DemoUserProvider): void {
+  getDemoUser = provider;
+}
+
 export interface RequestOptions {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   /** JSON body, or FormData for uploads (voice recordings). */
@@ -37,6 +48,8 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
     // FormData sets its own multipart Content-Type (with the boundary).
     if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
     if (token) headers.Authorization = `Bearer ${token}`;
+    const demoUser = getDemoUser();
+    if (demoUser) headers['X-Demo-User'] = demoUser;
 
     let response: Response;
     try {

@@ -76,4 +76,13 @@ export const mockApi: BricksApi = {
   // No speech service on mock data: voice screens use demo phrases and the phone's own voice.
   transcribe: () => Promise.reject(new ApiError(503, NO_SPEECH, '/assistant/transcribe')),
   tts: () => Promise.reject(new ApiError(503, NO_SPEECH, '/tts')),
+  getActiveSos: () => respond(() => db.activeSos(), '/sos/active'),
+  resetDemo: () =>
+    respond(() => {
+      resetMockDb();
+      return { seconds: 0 };
+    }, '/demo/reset'),
+  // The mock data is Raj's world only, so there is nobody to switch to.
+  getDemoAccounts: () =>
+    respond(() => [{ id: 'u_raj', name: 'Raj Kumar', role: 'senior' as const }], '/demo/accounts'),
 };

@@ -218,6 +218,18 @@ export interface WalkStats {
 export type SosHelperStatus = 'notified' | 'on_way' | 'arrived';
 
 /** GET /sos/{id}. */
+/** A seeded account the demo can act as (GET /demo/accounts, demo servers only). */
+export interface DemoAccount {
+  id: string;
+  name: string;
+  role: 'senior' | 'family' | 'helper' | 'circle' | 'judge';
+}
+
+/** POST /demo/reset: how long the server took. */
+export interface DemoReset {
+  seconds: number;
+}
+
 export interface SosAlert {
   id: string;
   status: 'open' | 'helper_coming' | 'resolved' | 'cancelled';

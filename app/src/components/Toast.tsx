@@ -5,30 +5,37 @@ import { create } from 'zustand';
 
 import { color, iconSize, motion, radius, shadow, space, touch } from '@/theme';
 
-import { CheckCircleIcon } from './primitives/icons';
+import { CheckCircleIcon, WarningCircleIcon } from './primitives/icons';
 import { Text } from './primitives/Text';
 
 /** Long enough to read twice at a slow pace. */
 export const TOAST_DURATION_MS = 5000;
 
+export type ToastTone = 'success' | 'notice';
+
 interface ToastState {
   text: string | null;
+  tone: ToastTone;
   /** Bumps on every show, so the same message twice restarts the timer. */
   key: number;
-  show: (text: string) => void;
+  show: (text: string, tone?: ToastTone) => void;
   hide: () => void;
 }
 
 export const useToast = create<ToastState>((set) => ({
   text: null,
+  tone: 'success',
   key: 0,
-  show: (text) => set((s) => ({ text, key: s.key + 1 })),
+  show: (text, tone = 'success') => set((s) => ({ text, tone, key: s.key + 1 })),
   hide: () => set({ text: null }),
 }));
 
-/** "You're going", "Copied": confirms something that just happened. */
-export function showToast(text: string): void {
-  useToast.getState().show(text);
+/**
+ * "You're going", "Copied": confirms something that just happened. `notice` (amber,
+ * with a warning sign) says something didn't work.
+ */
+export function showToast(text: string, tone: ToastTone = 'success'): void {
+  useToast.getState().show(text, tone);
 }
 
 /**
@@ -38,6 +45,7 @@ export function showToast(text: string): void {
  */
 export function ToastHost() {
   const text = useToast((s) => s.text);
+  const tone = useToast((s) => s.tone);
   const key = useToast((s) => s.key);
   const hide = useToast((s) => s.hide);
   const insets = useSafeAreaInsets();
@@ -61,12 +69,24 @@ export function ToastHost() {
   return (
     <Animated.View
       pointerEvents="none"
-      style={[styles.toast, { top: insets.top + touch.min + space.md, opacity }]}
+      style={[
+        styles.toast,
+        tone === 'notice' && styles.notice,
+        { top: insets.top + touch.min + space.md, opacity },
+      ]}
       accessibilityLiveRegion="polite"
       testID="toast"
     >
-      <CheckCircleIcon size={iconSize.inline} color={color.textOnColor} weight="fill" />
-      <Text variant="bodyStrong" color="textOnColor" style={styles.text}>
+      {tone === 'notice' ? (
+        <WarningCircleIcon size={iconSize.inline} color={color.noticeText} weight="fill" />
+      ) : (
+        <CheckCircleIcon size={iconSize.inline} color={color.textOnColor} weight="fill" />
+      )}
+      <Text
+        variant="bodyStrong"
+        color={tone === 'notice' ? 'noticeText' : 'textOnColor'}
+        style={styles.text}
+      >
         {text}
       </Text>
     </Animated.View>
@@ -88,6 +108,9 @@ const styles = StyleSheet.create({
     paddingVertical: space.xs,
     borderRadius: radius.button,
     backgroundColor: color.toastBg,
+  },
+  notice: {
+    backgroundColor: color.noticeBg,
   },
   text: {
     flexShrink: 1,

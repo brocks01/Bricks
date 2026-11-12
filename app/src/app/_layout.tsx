@@ -13,6 +13,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
 import { BigButton, Text, ToastHost } from '@/components';
 import { BuddyHost } from '@/features/buddy/BuddyHost';
+import { ActiveSosWatcher } from '@/features/safety/ActiveSosWatcher';
 import { ReadOutProvider } from '@/features/readout/ReadOutProvider';
 import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
 // Importing @/i18n also initialises i18next before any screen renders.
@@ -122,6 +123,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <BuddyHost />
+      <ActiveSosWatcher />
       <ToastHost />
     </AppProviders>
   );
@@ -138,7 +140,7 @@ function AppProviders({
 }) {
   const [queryClient] = useState(createQueryClient);
   const textSize = useSettings((s) => s.textSize);
-  useAppStateFocus();
+  useAppStateFocus(queryClient);
 
   return (
     <SafeAreaProvider>

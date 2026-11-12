@@ -93,6 +93,20 @@ async def trigger_sos(body: SosIn, ctx: CtxDep) -> SosAlert:
     return await _alert(ctx, sos_id)
 
 
+@router.get("/sos/active")
+async def active_sos(ctx: CtxDep) -> SosAlert | None:
+    """Their alert that is still going (started anywhere: app, WhatsApp, a call), so
+    the app can show who's coming when it opens. Null when there isn't one."""
+    row = await (
+        await ctx.conn.execute(
+            "select id from sos_events where user_id = %s and status in ('open', 'helper_coming')"
+            " and created_at > %s - interval '2 hours' order by created_at desc limit 1",
+            (ctx.user_id, ctx.now),
+        )
+    ).fetchone()
+    return await _alert(ctx, row["id"]) if row else None
+
+
 @router.get("/sos/{sos_id}")
 async def get_sos(sos_id: str, ctx: CtxDep) -> SosAlert:
     return await _alert(ctx, sos_id)

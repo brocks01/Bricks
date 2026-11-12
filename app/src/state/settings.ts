@@ -15,6 +15,8 @@ export interface SettingsState {
   language: Language | null;
   /** How big text is across the app (onboarding asks; Settings changes it). */
   textSize: TextSize;
+  /** Demo servers: the seeded account to act as (Settings → Demo); null = Raj. */
+  demoUser: string | null;
   readOut: {
     /** expo-speech rate. 0.85 is "slow and clear" for seniors. */
     rate: number;
@@ -23,6 +25,7 @@ export interface SettingsState {
   };
   setLanguage: (language: Language) => void;
   setTextSize: (textSize: TextSize) => void;
+  setDemoUser: (demoUser: string | null) => void;
   setReadOutRate: (rate: number) => void;
   setAutoRead: (autoRead: boolean) => void;
 }
@@ -36,9 +39,11 @@ export const useSettings = create<SettingsState>()(
     (set) => ({
       language: null,
       textSize: DEFAULT_TEXT_SIZE,
+      demoUser: null,
       readOut: { rate: READ_OUT_RATE.normal, autoRead: false },
       setLanguage: (language) => set({ language }),
       setTextSize: (textSize) => set({ textSize }),
+      setDemoUser: (demoUser) => set({ demoUser }),
       setReadOutRate: (rate) =>
         set((s) => ({
           readOut: { ...s.readOut, rate: clamp(rate, READ_OUT_RATE.min, READ_OUT_RATE.max) },
@@ -49,7 +54,12 @@ export const useSettings = create<SettingsState>()(
       name: 'kc.settings',
       version: 1,
       storage: createJSONStorage(() => AsyncStorage),
-      partialize: ({ language, textSize, readOut }) => ({ language, textSize, readOut }),
+      partialize: ({ language, textSize, demoUser, readOut }) => ({
+        language,
+        textSize,
+        demoUser,
+        readOut,
+      }),
       // Never trust stored values blindly: a bad value must not break startup.
       merge: (persisted, current) => {
         const p = (persisted ?? {}) as Partial<SettingsState>;
@@ -57,6 +67,7 @@ export const useSettings = create<SettingsState>()(
           ...current,
           language: isLanguage(p.language) ? p.language : current.language,
           textSize: isTextSize(p.textSize) ? p.textSize : current.textSize,
+          demoUser: typeof p.demoUser === 'string' ? p.demoUser : null,
           readOut: {
             rate:
               typeof p.readOut?.rate === 'number'

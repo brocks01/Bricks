@@ -10,11 +10,11 @@ keys or personal URLs here.
 
 ---
 
-## Current state (Wed 11 Nov 2026)
+## Current state (Thu 12 Nov 2026)
 
 | Track | Done | Next |
 |---|---|---|
-| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2; Luma-style redesign steps 0 to 12 | Voice-driven Buddy (with voice 2.1), then 2.3 integration freeze |
+| App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code); Luma-style redesign steps 0 to 12 | 2.3 exit: EAS preview build + `eas update --branch demo`, golden path 3× on real phones, tag `v0.9-demo`; voice-driven Buddy (with voice 2.1) |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3 (done) | 2.1 real `/assistant/turn` (a real phone call when Twilio is upgraded) |
 | WhatsApp | Branch `whatsapp` (untested, not merged) | 0.1 access (needs Meta keys) |
 
@@ -57,6 +57,30 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Iteration 2.3: integration + freeze (app and backend)
+- **Cross-channel (§3.1).** Coming back to the app now refreshes everything at once (before, only
+  data older than 30 s), so a check-in answered on WhatsApp or a reminder set by phone a few seconds
+  ago shows straight away. An SOS raised elsewhere (WhatsApp "HELP", a call) opens the SOS screen
+  with who's coming, once, without a countdown or a second alert (`GET /sos/active`, checked on
+  open and every 15 s; `/sos?id=`).
+- **Demo reset (§3.2).** Settings → tap the version 5 times → **Reset demo** (also on Settings →
+  Demo) → `POST /demo/reset` reseeds the server from now; the phone signs out of Google, forgets
+  undo / walk in progress, and opens Home as Raj. Language and text size stay. The time is shown
+  ("Demo reset in 2.1 seconds"); a failure says so and offers Try again. Backend test: under 10 s.
+- **Account switcher (§3.2).** Settings → Demo → "Use the app as": Raj (senior), Priya (family),
+  Ahmad (helper), Lim (Circle member), Guest Judge (a fresh member with no history, who goes
+  through sign-in and onboarding). Sent as the `X-Demo-User` header; demo servers honour it only
+  for those five, only if they're in the database, and only without a real sign-in.
+- **No silent failures (§3.3).** Check-in, reminder Done / delete, joining or leaving a Circle,
+  "I can't go any more", language and reminder-method changes, and accepting a family invite now
+  say "That didn't work. Let's try again." (amber toast) when they fail. Home says "Getting today's
+  plan…" while it loads; Settings never shows "Nobody yet" or a channel before they've loaded.
+- **Backend:** `routers/demo.py` (`POST /demo/reset`, `GET /demo/accounts`, 404 unless
+  `DEMO_MODE`), `GET /sos/active`, `X-Demo-User` in `deps.py`, CORS allows it, seeded `u_judge`.
+- **Checks** (after rebasing on voice 1.3): app 552 tests, tsc, eslint, prettier, expo-doctor
+  20/20, Android export; backend ruff, mypy, 261 tests (+ reset on its own schema).
+- Still to do (needs phones and the Expo account): see `iterations/app/2.3-integration-freeze.md` §8.
 
 ### Voice 1.3: English call loop, keyword lists, translations wave 3
 - Calling the number: known members are greeted by name; "What's on today?", "Remind me

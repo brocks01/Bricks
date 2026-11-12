@@ -50,7 +50,7 @@ export function BuddyHost() {
   const openListening = useBuddy((s) => s.open);
   const [stage, setStage] = useState<Stage>({ kind: 'idle' });
 
-  const answerCheckin = useAnswerCheckin();
+  const answerCheckin = useAnswerCheckin({ quiet: true });
   const createReminder = useCreateReminder();
   const deleteReminder = useDeleteReminder();
   const joinEvent = useJoinEvent();

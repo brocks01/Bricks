@@ -44,6 +44,8 @@ export const queryKeys = {
   walk: (id: string) => ['walks', 'detail', id] as const,
   walkStats: ['walks', 'stats'] as const,
   sos: (id: string) => ['sos', id] as const,
+  activeSos: ['sos', 'active'] as const,
+  demoAccounts: ['demo', 'accounts'] as const,
 };
 
 export function useMe() {
@@ -101,6 +103,7 @@ function useRsvpMutation(going: boolean) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => (going ? api.rsvp(id) : api.cancelRsvp(id)),
+    meta: { errorToast: !going },
     onMutate: async (id) => {
       await client.cancelQueries({ queryKey: queryKeys.events });
       const snapshot = client.getQueriesData({ queryKey: queryKeys.events });
@@ -131,10 +134,12 @@ export function useCreateEvent() {
 
 const CHECKIN_MUTATION = ['checkins', 'answer'] as const;
 
-export function useAnswerCheckin() {
+/** `quiet`: the caller says it didn't work itself (Buddy). */
+export function useAnswerCheckin({ quiet = false }: { quiet?: boolean } = {}) {
   const client = useQueryClient();
   return useMutation({
     mutationKey: CHECKIN_MUTATION,
+    meta: { errorToast: !quiet },
     mutationFn: (answer: 'yes' | 'no') => api.answerCheckin(answer),
     onSettled: () =>
       Promise.all([
@@ -148,6 +153,7 @@ export function useCompleteReminder() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.completeReminder(id),
+    meta: { errorToast: true },
     onSettled: () => refreshReminders(client),
   });
 }
@@ -156,6 +162,7 @@ function useCircleMembership(join: boolean) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => (join ? api.joinCircle(id) : api.leaveCircle(id)),
+    meta: { errorToast: true },
     onSettled: () => refreshCommunity(client),
   });
 }
@@ -192,6 +199,7 @@ export function useDeleteReminder() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (reminder: Reminder) => api.deleteReminder(reminder.id),
+    meta: { errorToast: true },
     // Gone from the list straight away; put back if the request fails.
     onMutate: async (reminder) => {
       await client.cancelQueries({ queryKey: queryKeys.reminders });
@@ -233,6 +241,29 @@ export function useSos(id: string | null) {
       query.state.data?.status === 'resolved' || query.state.data?.status === 'cancelled'
         ? false
         : 3000,
+  });
+}
+
+/**
+ * Their alert that's still going, however it started (WhatsApp "HELP", a call):
+ * checked when the app opens or comes back, and every 15 s while it's open.
+ */
+export function useActiveSos(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.activeSos,
+    queryFn: () => api.getActiveSos(),
+    enabled,
+    refetchInterval: enabled ? 15_000 : false,
+  });
+}
+
+/** Demo servers: who the demo can act as (Settings → Demo). */
+export function useDemoAccounts(enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.demoAccounts,
+    queryFn: () => api.getDemoAccounts(),
+    enabled,
+    retry: false,
   });
 }
 
@@ -301,10 +332,12 @@ export function useSignIn() {
   });
 }
 
-export function useUpdateMe() {
+/** `quiet`: the caller says it didn't work itself (onboarding). */
+export function useUpdateMe({ quiet = false }: { quiet?: boolean } = {}) {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (update: MeUpdate) => api.updateMe(update),
+    meta: { errorToast: !quiet },
     onSuccess: (me) => client.setQueryData(queryKeys.me, me),
     onSettled: () => client.invalidateQueries({ queryKey: ['profile'] }),
   });
@@ -398,6 +431,7 @@ export function useAcceptFamilyInvite() {
   const client = useQueryClient();
   return useMutation({
     mutationFn: (id: string) => api.acceptFamilyInvite(id),
+    meta: { errorToast: true },
     onSettled: () => client.invalidateQueries({ queryKey: queryKeys13.familyInvites }),
   });
 }

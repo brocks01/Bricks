@@ -12,6 +12,10 @@ from .config import Settings
 from .db import Conn, connection
 from .ids import new_id
 
+# The seeded accounts a demo can act as (seed.DEMO_ACCOUNTS; kept here to avoid an
+# import cycle: the seed imports the routers, which import this module).
+DEMO_ACCOUNT_IDS = frozenset({"u_raj", "u_priya", "u_ahmad", "u_lim", "u_judge"})
+
 
 @dataclass
 class Ctx:
@@ -59,8 +63,17 @@ async def get_ctx(request: Request, conn: Annotated[Conn, Depends(get_conn)]) ->
     if header.lower().startswith("bearer "):
         user_id = await _user_for_token(conn, request.app.state.verifier, header[7:].strip())
     elif settings.demo_mode:
-        # Demo sign-in (Singpass mock): the sample member.
+        # Demo sign-in (Singpass mock): the sample member, or the demo account the
+        # stage demo switched to (Settings → Demo). Only the listed accounts.
+        wanted = request.headers.get("x-demo-user", "")
         user_id = settings.demo_user_id
+        if wanted in DEMO_ACCOUNT_IDS and wanted != user_id:
+            # A database seeded before an account was added doesn't have it yet.
+            found = await (
+                await conn.execute("select 1 from users where id = %s", (wanted,))
+            ).fetchone()
+            if found:
+                user_id = wanted
     else:
         raise HTTPException(401, "Please sign in.")
     return Ctx(conn=conn, user_id=user_id, now=clock(), settings=settings)

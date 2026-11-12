@@ -24,6 +24,8 @@ EXPO_PUBLIC_API_URL=http://192.168.x.x:8000
 
 The phone must be on the same Wi-Fi. For phones elsewhere, use `ngrok http 8000` and put the https URL there instead.
 
+**Demo controls (demo servers only, `DEMO_MODE=true`).** `POST /demo/reset` does the same re-seed from the app (Settings → tap the version 5 times → Reset demo), in a few seconds. `GET /demo/accounts` lists who the demo can act as; the app sends the choice as `X-Demo-User` (`u_raj`, `u_priya`, `u_ahmad`, `u_lim`, `u_judge`), honoured only without a real sign-in. On other servers these return 404.
+
 **Re-seed before every demo.** The demo data is dated from when it's seeded ("tomorrow, 7 am"), so run `uv run python -m bricks_api.seed` again before you film or present. It **wipes every table** in the schema, including any accounts made by signing in.
 
 ## Settings (`.env`)

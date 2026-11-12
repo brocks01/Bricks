@@ -66,6 +66,17 @@ PEOPLE: list[tuple[str, str, str | None, tuple[float, float] | None]] = [
     ("u_ganesh", "Ganesh Kumar", None, None),
     ("u_linda", "Linda Tay", None, None),
     ("u_osman", "Osman Said", None, None),
+    # A fresh member for judges to try the app as: no plans, no Circles, no walks yet.
+    ("u_judge", "Guest Judge", None, None),
+]
+
+# Who the stage demo can be signed in as (Settings → Demo; X-Demo-User header).
+DEMO_ACCOUNTS: list[tuple[str, str, str]] = [
+    ("u_raj", "Raj Kumar", "senior"),
+    ("u_priya", "Priya Kumar", "family"),
+    ("u_ahmad", "Ahmad Rahman", "helper"),
+    ("u_lim", "Lim Ah Kow", "circle"),
+    ("u_judge", "Guest Judge", "judge"),
 ]
 
 WA = "https://chat.whatsapp.com/"
@@ -371,7 +382,8 @@ async def _seed(
 
     # 14 chess sessions Raj taught, every Saturday before this week's.
     last_saturday = today - timedelta(days=(today.weekday() - 5) % 7 or 7)
-    others = [p[0] for p in PEOPLE if p[0] != "u_raj"]
+    # The guest judge starts fresh: never in the past sessions.
+    others = [p[0] for p in PEOPLE if p[0] not in ("u_raj", "u_judge")]
     sessions: list[tuple[str, datetime]] = []
     for k in range(14):
         start = at_local(last_saturday - timedelta(weeks=k), 10)

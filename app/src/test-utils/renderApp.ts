@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Speech from 'expo-speech';
 
 import { resetMockDb } from '@/api/mock';
+import { resetShownSos } from '@/features/safety/ActiveSosWatcher';
 import { useActiveWalk } from '@/features/walk/activeWalk';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
@@ -23,6 +24,7 @@ export async function resetAppState({ onboarded = true } = {}): Promise<void> {
   useOnboarding.getState().reset();
   if (onboarded) useOnboarding.getState().complete();
   useUndo.getState().clear();
+  resetShownSos();
   useSettings.setState({ language: 'en', textSize: DEFAULT_TEXT_SIZE });
   await useActiveWalk.getState().discard();
   // Screen tests replay the simulated walk; GPS has its own tests (gpsTrack.test.ts).

@@ -2,7 +2,19 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { BigButton, Chip, ChipGroup, Screen, StatusBanner, Text } from '@/components';
+import { useDemoAccounts } from '@/api';
+import {
+  ArrowCounterClockwiseIcon,
+  BigButton,
+  Chip,
+  ChipGroup,
+  ConfirmSheet,
+  Screen,
+  StatusBanner,
+  Text,
+} from '@/components';
+import { DEMO_SENIOR, useDemoReset, useSwitchDemoAccount } from '@/features/settings/demoControls';
+import { useSettings } from '@/state/settings';
 import { useActiveWalk } from '@/features/walk/activeWalk';
 import { config } from '@/lib/config';
 import { DEMO_ALERT_DELAY_S, scheduleDemoAlert } from '@/lib/notifications';
@@ -18,6 +30,11 @@ export default function DemoScreen() {
   const { t } = useTranslation();
   const router = useRouter();
   const [note, setNote] = useState<string | null>(null);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const reset = useDemoReset();
+  const accounts = useDemoAccounts(true);
+  const switchTo = useSwitchDemoAccount();
+  const actingAs = useSettings((s) => s.demoUser) ?? DEMO_SENIOR;
   const walkSource = useActiveWalk((s) => s.source);
   const setWalkSource = useActiveWalk((s) => s.setSource);
   const simulationSpeed = useActiveWalk((s) => s.simulationSpeed);
@@ -33,7 +50,36 @@ export default function DemoScreen() {
   };
 
   return (
-    <Screen section="settings" title={t('settings.demoHeading')} testID="settings-demo">
+    <Screen
+      section="settings"
+      title={t('settings.demoHeading')}
+      readOut={() => t('settings.demoReadout')}
+      testID="settings-demo"
+    >
+      <BigButton
+        variant="outline"
+        icon={ArrowCounterClockwiseIcon}
+        label={t('settings.resetDemo')}
+        onPress={() => setConfirmReset(true)}
+        testID="demo-reset"
+      />
+      {/* Several seeded accounts only on a demo server (mock data is Raj's world). */}
+      {accounts.data && accounts.data.length > 1 ? (
+        <>
+          <Text variant="bodyStrong">{t('settings.actAs')}</Text>
+          <ChipGroup>
+            {accounts.data.map((a) => (
+              <Chip
+                key={a.id}
+                label={`${a.name.split(' ')[0]} · ${t(`settings.roles.${a.role}`)}`}
+                selected={actingAs === a.id}
+                onPress={() => void switchTo(a)}
+                testID={`demo-account-${a.id}`}
+              />
+            ))}
+          </ChipGroup>
+        </>
+      ) : null}
       {config.demoVoice ? (
         <>
           <BigButton
@@ -85,6 +131,13 @@ export default function DemoScreen() {
           />
         </>
       ) : null}
+      <ConfirmSheet
+        visible={confirmReset}
+        icon={ArrowCounterClockwiseIcon}
+        text={reset.isError ? t('settings.resetFailed') : t('settings.resetDemoConfirm')}
+        onYes={() => reset.mutate(undefined, { onSuccess: () => setConfirmReset(false) })}
+        onNo={() => setConfirmReset(false)}
+      />
     </Screen>
   );
 }

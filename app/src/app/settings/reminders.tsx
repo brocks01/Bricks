@@ -2,14 +2,15 @@ import { useTranslation } from 'react-i18next';
 
 import { useMe, useUpdateMe } from '@/api';
 import type { ChannelPref } from '@/api/types';
-import { Chip, ChipGroup, Screen, Text } from '@/components';
+import { Chip, ChipGroup, QueryState, Screen, Text } from '@/components';
 import { CHANNEL_ICON, CHANNELS } from '@/features/settings/channels';
 import { useUndo } from '@/state/undo';
 
 /** Settings → How we remind you: app, WhatsApp or a phone call, with Undo. */
 export default function RemindChannelScreen() {
   const { t } = useTranslation();
-  const { data: me } = useMe();
+  const meQuery = useMe();
+  const me = meQuery.data;
   const updateMe = useUpdateMe();
   const showUndo = useUndo((s) => s.show);
   const channel = me?.channel_pref ?? 'app';
@@ -32,19 +33,25 @@ export default function RemindChannelScreen() {
       }
       testID="screen-settings-reminders"
     >
-      <ChipGroup>
-        {CHANNELS.map((c) => (
-          <Chip
-            key={c}
-            icon={CHANNEL_ICON[c]}
-            label={t(`channel.${c}.title`)}
-            selected={channel === c}
-            onPress={() => setChannel(c)}
-            testID={`settings-channel-${c}`}
-          />
-        ))}
-      </ChipGroup>
-      <Text color="textSecondary">{t(`channel.${channel}.description`)}</Text>
+      <QueryState query={meQuery}>
+        {() => (
+          <>
+            <ChipGroup>
+              {CHANNELS.map((c) => (
+                <Chip
+                  key={c}
+                  icon={CHANNEL_ICON[c]}
+                  label={t(`channel.${c}.title`)}
+                  selected={channel === c}
+                  onPress={() => setChannel(c)}
+                  testID={`settings-channel-${c}`}
+                />
+              ))}
+            </ChipGroup>
+            <Text color="textSecondary">{t(`channel.${channel}.description`)}</Text>
+          </>
+        )}
+      </QueryState>
     </Screen>
   );
 }

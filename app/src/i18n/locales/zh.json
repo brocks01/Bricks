@@ -61,7 +61,8 @@
     "nothingPlanned": "还没有安排",
     "nothingPlannedDetail": "找找附近的步行、课程或聊天聚会。",
     "findSomething": "找活动参加",
-    "seeAllEvents_other": "查看您的全部 {{count}} 个活动"
+    "seeAllEvents_other": "查看您的全部 {{count}} 个活动",
+    "loading": "正在准备今天的安排…"
   },
   "passItOn": {
     "title": "我的活动",
@@ -716,7 +717,22 @@
     "demoNoNotifications": "请先在手机设置中允许 Bricks 发送通知。",
     "you": "我",
     "viewProfile": "查看我的资料",
-    "remindShort": "提醒"
+    "remindShort": "提醒",
+    "version": "版本 {{version}}",
+    "demoUnlocked": "演示控制已开启。",
+    "resetDemo": "重置演示",
+    "resetDemoConfirm": "要从头重新开始演示吗？之后做的一切都会被清除。",
+    "resetDone": "演示已在 {{seconds}} 秒内重置。",
+    "resetFailed": "无法重置演示。服务器是否处于演示模式？再试一次？",
+    "actAs": "以这个身份使用",
+    "demoReadout": "演示。重置演示，或以别人的身份使用应用。",
+    "roles": {
+      "senior": "长者",
+      "family": "家人",
+      "helper": "帮手",
+      "circle": "圈子成员",
+      "judge": "评委"
+    }
   },
   "family": {
     "title": "我的家人",

@@ -500,6 +500,7 @@ export function createMockDb(now: () => Date = () => new Date()) {
       return alert;
     },
     resolveSos: (id: string) => thrive.resolveSos(id),
+    activeSos: () => thrive.activeSos(),
     /** Someone else's alert (the demo one, or a real one on another phone): just record it. */
     respondSos(id: string, status: SosResponse): void {
       helperReplies.set(id, status);

@@ -1,19 +1,24 @@
 import { useQueryClient } from '@tanstack/react-query';
+import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { Pressable, StyleSheet } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useMe, useSafeCircle } from '@/api';
 import { resetMockDb } from '@/api/mock';
 import {
   BellIcon,
+  ArrowCounterClockwiseIcon,
   ConfirmSheet,
   GroupedList,
   GroupedRow,
+  showToast,
   Screen,
   ShieldCheckIcon,
   SignOutIcon,
   SpeakerHighIcon,
+  Text,
   TextAaIcon,
   TranslateIcon,
   UserCircleIcon,
@@ -21,12 +26,14 @@ import {
   WrenchIcon,
 } from '@/components';
 import { signOutOfSupabase } from '@/features/auth/google';
+import { useDemoReset } from '@/features/settings/demoControls';
 import { nearestSpeed } from '@/features/settings/speeds';
 import { LANGUAGE_INFO } from '@/i18n/languages';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import { config } from '@/lib/config';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
+import { space } from '@/theme';
 
 /**
  * S40 Settings (SGDS / LifeSG lists), on one screen: who you are, then one row per
@@ -45,9 +52,24 @@ export default function SettingsScreen() {
   const rate = useSettings((s) => s.readOut.rate);
   const resetOnboarding = useOnboarding((s) => s.reset);
   const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
+  const reset = useDemoReset();
+  // Hidden demo controls: tap the version 5 times (the stage demo, judges' phones).
+  const [demoUnlocked, setDemoUnlocked] = useState(false);
+  const taps = useRef<number[]>([]);
+  const showDemo = demoUnlocked || config.demoVoice || config.devTools;
+
+  const tapVersion = () => {
+    const now = Date.now();
+    taps.current = [...taps.current.filter((at) => now - at < UNLOCK_WINDOW_MS), now];
+    if (taps.current.length >= UNLOCK_TAPS && !demoUnlocked) {
+      setDemoUnlocked(true);
+      showToast(t('settings.demoUnlocked'));
+    }
+  };
 
   const channel = me?.channel_pref ?? 'app';
-  const count = safeCircle.data?.length ?? 0;
+  const count = safeCircle.data?.length;
 
   const signOut = () => {
     setConfirmSignOut(false);
@@ -56,7 +78,7 @@ export default function SettingsScreen() {
     if (config.demoVoice) resetMockDb();
     client.clear();
     resetOnboarding();
-    router.dismissAll();
+    if (router.canDismiss()) router.dismissAll();
     router.replace('/onboarding');
   };
 
@@ -112,7 +134,7 @@ export default function SettingsScreen() {
           icon={BellIcon}
           tint="music"
           title={t('settings.remindShort')}
-          value={t(`channel.${channel}.title`)}
+          value={me ? t(`channel.${channel}.title`) : undefined}
           onPress={() => router.push('/settings/reminders')}
           testID="settings-reminders"
         />
@@ -123,7 +145,14 @@ export default function SettingsScreen() {
           icon={ShieldCheckIcon}
           tint="walk"
           title={t('settings.safeCircle')}
-          value={count > 0 ? t('settings.peopleCount', { count }) : t('settings.nobodyYet')}
+          value={
+            // Nothing until it has loaded: never "Nobody yet" for a circle that exists.
+            count === undefined
+              ? undefined
+              : count > 0
+                ? t('settings.peopleCount', { count })
+                : t('settings.nobodyYet')
+          }
           onPress={() => router.push('/settings/safe-circle')}
           testID="settings-safe-circle"
         />
@@ -134,12 +163,20 @@ export default function SettingsScreen() {
           onPress={() => router.push('/family')}
           testID="settings-family"
         />
-        {config.demoVoice || config.devTools ? (
+        {showDemo ? (
           <GroupedRow
             icon={WrenchIcon}
             title={t('settings.demoHeading')}
             onPress={() => router.push('/settings/demo')}
             testID="settings-demo-open"
+          />
+        ) : null}
+        {demoUnlocked ? (
+          <GroupedRow
+            icon={ArrowCounterClockwiseIcon}
+            title={t('settings.resetDemo')}
+            onPress={() => setConfirmReset(true)}
+            testID="settings-reset-demo"
           />
         ) : null}
         <GroupedRow
@@ -150,6 +187,24 @@ export default function SettingsScreen() {
         />
       </GroupedList>
 
+      <Pressable
+        accessibilityRole="text"
+        onPress={tapVersion}
+        style={styles.version}
+        testID="settings-version"
+      >
+        <Text variant="caption" color="textSecondary" align="center">
+          {t('settings.version', { version: APP_VERSION })}
+        </Text>
+      </Pressable>
+
+      <ConfirmSheet
+        visible={confirmReset}
+        icon={ArrowCounterClockwiseIcon}
+        text={reset.isError ? t('settings.resetFailed') : t('settings.resetDemoConfirm')}
+        onYes={() => reset.mutate(undefined, { onSuccess: () => setConfirmReset(false) })}
+        onNo={() => setConfirmReset(false)}
+      />
       <ConfirmSheet
         visible={confirmSignOut}
         icon={SignOutIcon}
@@ -160,3 +215,15 @@ export default function SettingsScreen() {
     </Screen>
   );
 }
+
+const APP_VERSION = Constants.expoConfig?.version ?? '';
+const UNLOCK_TAPS = 5;
+const UNLOCK_WINDOW_MS = 4000;
+
+const styles = StyleSheet.create({
+  version: {
+    alignSelf: 'center',
+    paddingVertical: space.xxs,
+    paddingHorizontal: space.sm,
+  },
+});

@@ -61,7 +61,8 @@
     "nothingPlanned": "Belum ada rancangan",
     "nothingPlannedDetail": "Cari jalan kaki, kelas atau sembang berdekatan.",
     "findSomething": "Cari sesuatu untuk disertai",
-    "seeAllEvents_other": "Lihat semua {{count}} acara anda"
+    "seeAllEvents_other": "Lihat semua {{count}} acara anda",
+    "loading": "Menyediakan rancangan hari ini…"
   },
   "passItOn": {
     "title": "Aktiviti Saya",
@@ -716,7 +717,22 @@
     "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
     "you": "Anda",
     "viewProfile": "Lihat profil saya",
-    "remindShort": "Peringatan"
+    "remindShort": "Peringatan",
+    "version": "Versi {{version}}",
+    "demoUnlocked": "Kawalan demo dihidupkan.",
+    "resetDemo": "Set semula demo",
+    "resetDemoConfirm": "Mulakan demo semula dari awal? Semua yang dibuat sejak itu akan dipadam.",
+    "resetDone": "Demo diset semula dalam {{seconds}} saat.",
+    "resetFailed": "Kami tidak dapat set semula demo. Adakah pelayan dalam mod demo? Cuba lagi?",
+    "actAs": "Guna aplikasi sebagai",
+    "demoReadout": "Demo. Set semula demo, atau guna aplikasi sebagai orang lain.",
+    "roles": {
+      "senior": "warga emas",
+      "family": "keluarga",
+      "helper": "penolong",
+      "circle": "ahli Bulatan",
+      "judge": "hakim"
+    }
   },
   "family": {
     "title": "Keluarga saya",

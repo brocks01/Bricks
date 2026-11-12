@@ -3,6 +3,7 @@
 from datetime import UTC, datetime, timedelta
 
 import pytest
+from psycopg import AsyncConnection, sql
 
 from bricks_api.config import Settings
 from bricks_api.main import create_app
@@ -46,6 +47,57 @@ async def test_without_demo_mode_a_sign_in_is_required(settings: Settings, seede
             assert (await client.get("/me")).status_code == 401
             # The "they said yes" shortcut is demo-only too.
             assert (await client.post("/invites/inv_x/accept")).status_code == 401
+            # So are the demo controls: they don't exist on a real server.
+            assert (await client.post("/demo/reset")).status_code == 404
+            assert (await client.get("/demo/accounts")).status_code == 404
+            assert (await client.get("/me", headers={"X-Demo-User": "u_priya"})).status_code == 401
+
+
+async def test_demo_accounts_and_switching(api: Api) -> None:
+    accounts = (await api.client.get("/demo/accounts")).json()
+    assert [(a["id"], a["role"]) for a in accounts] == [
+        ("u_raj", "senior"),
+        ("u_priya", "family"),
+        ("u_ahmad", "helper"),
+        ("u_lim", "circle"),
+        ("u_judge", "judge"),
+    ]
+    assert (await api.client.get("/me")).json()["name"] == "Raj Kumar"
+    priya = await api.client.get("/me", headers={"X-Demo-User": "u_priya"})
+    assert priya.json()["name"] == "Priya Kumar"
+    judge = await api.client.get("/me", headers={"X-Demo-User": "u_judge"})
+    assert judge.json()["name"] == "Guest Judge"
+    # Only the listed accounts: anything else is the sample member.
+    other = await api.client.get("/me", headers={"X-Demo-User": "u_tan"})
+    assert other.json()["name"] == "Raj Kumar"
+
+
+async def test_an_account_missing_from_an_older_seed_is_left_out(
+    api: Api, settings: Settings
+) -> None:
+    # A database seeded before Guest Judge existed: not offered, and asking for it
+    # acts as the sample member instead of failing (it used to be a 500).
+    rename = "update {}.users set id = %s where id = %s"
+    query = sql.SQL(rename).format(sql.Identifier(settings.db_schema))
+    async with await AsyncConnection.connect(
+        settings.database_url.get_secret_value(), prepare_threshold=None
+    ) as conn:
+        await conn.execute(query, ("u_judge_gone", "u_judge"))
+        await conn.commit()
+        try:
+            ids = [a["id"] for a in (await api.client.get("/demo/accounts")).json()]
+            assert "u_judge" not in ids and "u_priya" in ids
+            me = await api.client.get("/me", headers={"X-Demo-User": "u_judge"})
+            assert me.json()["name"] == "Raj Kumar"
+        finally:
+            await conn.execute(query, ("u_judge", "u_judge_gone"))
+            await conn.commit()
+
+
+async def test_a_real_sign_in_wins_over_the_demo_header(api: Api) -> None:
+    h = await api.as_new_member("Real Person")
+    me = await api.client.get("/me", headers={**h, "X-Demo-User": "u_priya"})
+    assert me.json()["name"] == "Real Person"
 
 
 async def test_first_google_sign_in_makes_the_account(api: Api) -> None:
@@ -351,10 +403,14 @@ async def _sos_story(api: Api) -> None:
     later = (await api.client.get(f"/sos/{alert['id']}")).json()
     assert later["status"] == "helper_coming"
     assert [h["status"] for h in later["helpers"]] == ["on_way", "notified", "notified"]
+    # The app finds it however it was started (app, WhatsApp, a call).
+    active = (await api.client.get("/sos/active")).json()
+    assert active["id"] == alert["id"] and active["status"] == "helper_coming"
 
     done = await api.client.patch(f"/sos/{alert['id']}", json={"status": "resolved"})
     assert done.status_code == 204
     assert (await api.client.get(f"/sos/{alert['id']}")).json()["status"] == "resolved"
+    assert (await api.client.get("/sos/active")).json() is None
     # Nobody else can see it.
     other = await api.as_new_member()
     assert (await api.client.get(f"/sos/{alert['id']}", headers=other)).status_code == 404

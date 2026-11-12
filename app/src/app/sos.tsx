@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useEffectEvent, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Linking, StyleSheet, View } from 'react-native';
@@ -6,6 +6,7 @@ import { Linking, StyleSheet, View } from 'react-native';
 import { useResolveSos, useSos, useTriggerSos } from '@/api';
 import type { SosAlert } from '@/api/types';
 import { BigButton, ConfirmSheet, PhoneIcon, Screen, StatusBanner, Text } from '@/components';
+import { markSosShown } from '@/features/safety/ActiveSosWatcher';
 import { config } from '@/lib/config';
 import { formatDistance, sayDigits, sayDistance } from '@/lib/format';
 import { warningFeedback } from '@/lib/haptics';
@@ -30,6 +31,9 @@ export default function SosScreen() {
   const { language } = useTypography();
   const router = useRouter();
   const number = config.emergencyNumber;
+  // Opened for an alert already raised elsewhere (WhatsApp "HELP", a call): show it,
+  // with no countdown and nothing sent again.
+  const { id: existingId } = useLocalSearchParams<{ id?: string }>();
 
   // Counted from when the screen opened, so the countdown stays honest even if the phone stutters.
   const [openedAt] = useState(() => Date.now());
@@ -41,10 +45,14 @@ export default function SosScreen() {
   const [confirmingSafe, setConfirmingSafe] = useState(false);
   const trigger = useTriggerSos();
   const resolve = useResolveSos();
-  const alertId = trigger.data?.id ?? null;
+  const alertId = existingId ?? trigger.data?.id ?? null;
   const sos = useSos(alertId);
   const alert: SosAlert | undefined = sos.data ?? trigger.data;
   const started = trigger.isPending || alertId !== null || trigger.isError;
+  // The alert this screen raised is already on screen: the watcher mustn't open it again.
+  useEffect(() => {
+    if (trigger.data) markSosShown(trigger.data.id);
+  }, [trigger.data]);
   const counting = secondsLeft > 0 && !started;
   const resolved = alert?.status === 'resolved' || resolve.isSuccess;
 

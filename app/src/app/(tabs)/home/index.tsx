@@ -77,7 +77,9 @@ export default function HomeScreen() {
       </View>
 
       <ReadOutTarget id="today">
-        <QueryState query={today}>{(data) => <TodaySection today={data} />}</QueryState>
+        <QueryState query={today} loadingText={t('home.loading')}>
+          {(data) => <TodaySection today={data} />}
+        </QueryState>
       </ReadOutTarget>
 
       {/* Coming up: their next plan, then one picked for them (I'm going in one tap). */}

@@ -281,6 +281,16 @@ class SosHelper(Wire):
     status: Literal["notified", "on_way", "arrived"]
 
 
+class DemoAccount(Wire):
+    id: str
+    name: str
+    role: Literal["senior", "family", "helper", "circle", "judge"]
+
+
+class DemoReset(Wire):
+    seconds: float
+
+
 class SosAlert(Wire):
     id: str
     status: Literal["open", "helper_coming", "resolved", "cancelled"]

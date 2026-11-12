@@ -290,6 +290,14 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
         helpers,
       };
     },
+    /** The newest alert still going in the last 2 hours (like GET /sos/active). */
+    activeSos(): SosAlert | null {
+      const cutoff = now().getTime() - 2 * 60 * 60 * 1000;
+      const open = [...alerts.entries()]
+        .filter(([, a]) => !a.resolved && a.created > cutoff)
+        .sort(([, a], [, b]) => b.created - a.created);
+      return open[0] ? this.getSos(open[0][0]) : null;
+    },
     resolveSos(id: string): void {
       const alert = alerts.get(id);
       if (alert) alert.resolved = true;
