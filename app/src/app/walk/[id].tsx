@@ -3,11 +3,14 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { useMe, useWalk } from '@/api';
+import { useMe, useShareWalk, useWalk } from '@/api';
 import type { WalkPraise, WalkSummary } from '@/api/types';
 import {
   BigButton,
   BigStatsRow,
+  ShareNetworkIcon,
+  VoiceNoteBubble,
+  showToast,
   PeopleRow,
   QueryState,
   RouteMap,
@@ -27,6 +30,7 @@ import {
   sayDistance,
   sayMinutes,
 } from '@/lib/format';
+import { CheerButtons } from '@/features/walks/cheers';
 import { decodePath } from '@/lib/geo';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
@@ -90,6 +94,9 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
   const time = formatMinutes(walk.moving_s, t);
   const steps = formatCount(walk.steps, language);
 
+  const { data: me } = useMe();
+  const mine = !me || walk.owner.id === me.id;
+
   return (
     <Screen
       readOut={() =>
@@ -104,6 +111,11 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
       testID="screen-walk"
       footer={footer}
     >
+      {mine ? null : (
+        <Text variant="bodyStrong" color="textSecondary" testID="walk-owner">
+          {t('walkFeed.whose', { name: walk.owner.name })}
+        </Text>
+      )}
       <Text variant="title">{title}</Text>
       <Text color="textSecondary">
         {formatDay(started, language, t)}, {formatTime(started, language)}
@@ -148,6 +160,8 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
         </View>
       ) : null}
 
+      <WalkCheers walk={walk} />
+
       {walk.walked_with.length > 0 ? (
         <View style={styles.section}>
           <Text variant="heading">{t('walk.walkedWith')}</Text>
@@ -158,6 +172,82 @@ function WalkSummaryView({ walk, footer }: { walk: WalkSummary; footer: React.Re
         </View>
       ) : null}
     </Screen>
+  );
+}
+
+/**
+ * S23 sharing and Cheers: the walker can share with their Circles (only the route
+ * away from home is shown) and sees who cheered; Circle-mates can cheer.
+ */
+function WalkCheers({ walk }: { walk: WalkSummary }) {
+  const { t } = useTranslation();
+  const { data: me } = useMe();
+  const share = useShareWalk();
+  const mine = !!me && walk.owner.id === me.id;
+  const taps = walk.cheers.filter((c) => c.kind === 'thumb');
+  const voices = walk.cheers.filter((c) => c.kind === 'voice' && c.voice);
+
+  if (mine && walk.visibility === 'private') {
+    return (
+      <BigButton
+        variant="outline"
+        icon={ShareNetworkIcon}
+        label={t('walkFeed.share')}
+        disabled={share.isPending}
+        onPress={() =>
+          share.mutate(
+            { id: walk.id, visibility: 'circle' },
+            { onSuccess: () => showToast(t('walkFeed.sharedToast')) },
+          )
+        }
+        testID="walk-share"
+      />
+    );
+  }
+  if (!mine && !walk.can_cheer) return null;
+
+  return (
+    <View style={styles.section} testID="walk-cheers">
+      <Text variant="heading">{t('walkFeed.cheersHeading')}</Text>
+      {mine ? <StatusBanner tone="info" text={t('walkFeed.shared')} /> : null}
+      {taps.length > 0 ? (
+        <PeopleRow
+          people={taps.map((c) => c.by)}
+          label={t('walkFeed.cheeredBy', {
+            names: taps.map((c) => c.by.name.split(' ')[0]).join(', '),
+          })}
+        />
+      ) : null}
+      {voices.map((c) => (
+        <VoiceNoteBubble
+          key={c.id}
+          name={c.by.name}
+          photoUrl={c.by.photo_url}
+          audioUrl={c.voice!.audio_url}
+          durationS={c.voice!.duration_s}
+          testID={`walk-cheer-${c.id}`}
+        />
+      ))}
+      {walk.cheers.length === 0 ? (
+        <Text color="textSecondary">{t('walkFeed.noCheers')}</Text>
+      ) : null}
+      {mine ? (
+        <BigButton
+          variant="outline"
+          label={t('walkFeed.stopSharing')}
+          disabled={share.isPending}
+          onPress={() => share.mutate({ id: walk.id, visibility: 'private' })}
+          testID="walk-unshare"
+        />
+      ) : (
+        <CheerButtons
+          walkId={walk.id}
+          owner={walk.owner}
+          cheered={walk.cheered_by_me}
+          testID="walk"
+        />
+      )}
+    </View>
   );
 }
 

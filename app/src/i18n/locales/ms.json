@@ -868,7 +868,6 @@
     "longest": "Jalan kaki paling jauh",
     "mostSteps": "Langkah paling banyak sehari",
     "thisMonth": "Jalan kaki bulan ini",
-    "steps_one": "{{value}} langkah",
     "steps_other": "{{value}} langkah",
     "walks": "Semua jalan kaki",
     "none": {
@@ -880,5 +879,31 @@
       "month": "Jalan kaki anda. Dalam 4 minggu lalu anda berjalan {{distance}} dalam {{walks}}. {{compare}}"
     },
     "lastLine": "Terakhir: {{line}}"
+  },
+  "walkFeed": {
+    "recent": "Jalan kaki berkumpulan terkini",
+    "none": "Tiada jalan kaki dikongsi di sini dalam dua minggu lalu.",
+    "you": "Anda",
+    "whose": "Jalan kaki {{name}}",
+    "people_other": "{{count}} orang",
+    "cheer": "Sorak",
+    "cheered": "Sudah bersorak",
+    "voiceCheer": "Sorakan suara",
+    "cheerName": "Sorak untuk {{name}}",
+    "cheeredName": "Anda sudah bersorak untuk {{name}}",
+    "cheerSent": "Anda bersorak untuk {{name}}.",
+    "voiceSent": "Sorakan suara anda dihantar kepada {{name}}.",
+    "voiceTitle": "Sorak untuk {{name}} dengan suara anda",
+    "voiceHint": "Sehingga 10 saat. Dengar dahulu sebelum hantar.",
+    "send": "Hantar sorakan",
+    "cancel": "Batal",
+    "cheerCount_other": "{{count}} sorakan",
+    "noCheers": "Belum ada sorakan.",
+    "cheersHeading": "Sorakan",
+    "cheeredBy": "{{names}} bersorak",
+    "share": "Kongsi dengan Bulatan saya",
+    "sharedToast": "Dikongsi dengan Bulatan anda.",
+    "shared": "Dikongsi dengan Bulatan anda. Mereka nampak laluan anda, tetapi tidak bahagian dekat rumah anda.",
+    "stopSharing": "Berhenti berkongsi"
   }
 }

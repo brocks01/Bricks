@@ -399,10 +399,10 @@ async def test_upload_a_walk_and_see_its_summary(api: Api) -> None:
     assert 1100 < walk["distance_m"] < 1300 and walk["praise"] == {"kind": "first_walk"}
     assert walk["route_polyline"] and walk["route_public_polyline"] != walk["route_polyline"]
 
-    # Someone else sees only the public route.
+    # A walk is private until it's shared, and only Circle-mates ever see it.
+    assert walk["visibility"] == "private" and walk["owner"]["name"] == "Test Member"
     other = await api.as_new_member()
-    seen = (await api.client.get(f"/walks/{walk['id']}", headers=other)).json()
-    assert seen["route_polyline"] is None
+    assert (await api.client.get(f"/walks/{walk['id']}", headers=other)).status_code == 404
     stats = (await api.client.get("/walks/stats?period=week", headers=h)).json()
     assert stats["walks"] == 1 and stats["last_walk"]["id"] == walk["id"]
 
@@ -437,6 +437,103 @@ async def test_walk_history_week_and_month(api: Api) -> None:
     )
     assert bests["most_steps_day"] >= max(w["steps"] for w in month["items"])
     assert bests["walks_this_month"] >= 1
+
+
+async def test_group_walk_feed_and_cheers(api: Api) -> None:
+    # Iteration 3.2 (S19 / S23, T2 / T3): a walk is private until shared; then people
+    # in the walker's Circles see it (public route only) and can cheer it.
+    walker = {"X-Demo-User": "u_judge5"}
+    lim = {"X-Demo-User": "u_lim"}
+    outsider = {"X-Demo-User": "u_judge6"}
+    await api.client.post("/demo/judges/5/reset")
+    try:
+        await api.client.post("/circles/c_walkers/join", headers=walker)
+        start = datetime.now(UTC) - timedelta(hours=2)
+        points = _bishan_loop(start, 0.6)
+        r = await api.client.post(
+            "/walks",
+            headers=walker,
+            json={
+                "segments": [[p.model_dump() for p in points]],
+                "steps": 2000,
+                "started_at": start.isoformat(),
+                "ended_at": (start + timedelta(minutes=20)).isoformat(),
+                "event_id": None,
+            },
+        )
+        walk = r.json()
+        wid = walk["id"]
+        assert walk["visibility"] == "private" and walk["cheers"] == []
+        assert (await api.client.get(f"/walks/{wid}", headers=lim)).status_code == 404
+        feed = (await api.client.get("/circles/c_walkers/walks", headers=lim)).json()
+        assert wid not in [w["id"] for w in feed]
+
+        # Share with my Circle.
+        shared = await api.client.patch(
+            f"/walks/{wid}", headers=walker, json={"visibility": "circle"}
+        )
+        assert shared.json()["visibility"] == "circle"
+        feed = (await api.client.get("/circles/c_walkers/walks", headers=lim)).json()
+        item = next(w for w in feed if w["id"] == wid)
+        assert item["owner"]["name"] == "Judge 5" and not item["is_mine"]
+        assert item["walkers"][0]["id"] == "u_judge5" and item["cheer_count"] == 0
+        seen = (await api.client.get(f"/walks/{wid}", headers=lim)).json()
+        # T3: only the public route, never the part near home.
+        assert seen["route_polyline"] is None and seen["can_cheer"] is True
+
+        # Lim cheers it: a tap (once, however many times) and a voice note.
+        for _ in range(2):
+            r = await api.client.post(f"/walks/{wid}/cheers", headers=lim, data={"kind": "thumb"})
+            assert r.status_code == 201, r.text
+        r = await api.client.post(
+            f"/walks/{wid}/cheers",
+            headers=lim,
+            data={"kind": "voice", "duration_s": "6"},
+            files={"audio": ("cheer.m4a", b"\x00" * 2048, "audio/m4a")},
+        )
+        assert r.status_code == 201, r.text
+        assert r.json()["cheered_by_me"] is True
+
+        # The walker sees who cheered.
+        mine = (await api.client.get(f"/walks/{wid}", headers=walker)).json()
+        assert [(c["by"]["name"], c["kind"]) for c in mine["cheers"]] == [
+            ("Lim Ah Kow", "thumb"),
+            ("Lim Ah Kow", "voice"),
+        ]
+        assert mine["cheers"][1]["voice"]["audio_url"].startswith("https://storage.test/cheers/")
+        assert mine["can_cheer"] is False and mine["route_polyline"]
+        own = await api.client.post(f"/walks/{wid}/cheers", headers=walker, data={"kind": "thumb"})
+        assert own.status_code == 403
+        too_long = await api.client.post(
+            f"/walks/{wid}/cheers",
+            headers=lim,
+            data={"kind": "voice", "duration_s": "30"},
+            files={"audio": ("cheer.m4a", b"\x00" * 2048, "audio/m4a")},
+        )
+        assert too_long.status_code == 422
+
+        # Not in any of their Circles: nothing to see, nothing to cheer.
+        assert (await api.client.get(f"/walks/{wid}", headers=outsider)).status_code == 404
+        r = await api.client.post(f"/walks/{wid}/cheers", headers=outsider, data={"kind": "thumb"})
+        assert r.status_code == 404
+        assert (await api.client.get("/circles/c_walkers/walks", headers=outsider)).json() == []
+        # Only the walker can share or unshare.
+        r = await api.client.patch(f"/walks/{wid}", headers=lim, json={"visibility": "private"})
+        assert r.status_code == 404
+    finally:
+        await api.client.post("/demo/judges/5/reset")
+
+
+async def test_raj_sees_the_seeded_group_walks(api: Api) -> None:
+    feed = (await api.client.get("/circles/c_walkers/walks")).json()
+    owners = [w["owner"]["id"] for w in feed]
+    assert {"u_lim", "u_ahmad", "u_raj"} <= set(owners)
+    lim = next(w for w in feed if w["owner"]["id"] == "u_lim")
+    assert len(lim["walkers"]) == 8
+    raj = next(w for w in feed if w["is_mine"])
+    assert raj["cheer_count"] >= 1
+    dates = [w["started_at"] for w in feed]
+    assert dates == sorted(dates, reverse=True)
 
 
 # ---------- SOS ----------

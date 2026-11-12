@@ -205,10 +205,51 @@ export interface WalkSummary extends WalkListItem {
   route_public_polyline: string;
   walked_with: PersonSummary[];
   praise: WalkPraise;
+  /** Iteration 3.2: whose walk, shared with their Circles or not, and the cheers. */
+  owner: PersonSummary;
+  visibility: WalkVisibility;
+  cheers: WalkCheer[];
+  cheered_by_me: boolean;
+  can_cheer: boolean;
 }
 
 /** GET /walks/stats?period=week. */
 export type WalkPeriod = 'week' | 'month';
+
+/** A cheer on a shared walk (3.2, S19 / S23): a tap, or a voice note up to 10 s. */
+export interface WalkCheer {
+  id: string;
+  by: PersonSummary;
+  kind: 'thumb' | 'voice';
+  voice: VoiceClip | null;
+  created_at: string;
+}
+
+export type WalkVisibility = 'private' | 'circle';
+
+/** POST /walks/{id}/cheers. */
+export interface NewCheer {
+  walk_id: string;
+  kind: 'thumb' | 'voice';
+  audio_uri: string | null;
+  duration_s: number | null;
+}
+
+/** GET /circles/{id}/walks: a walk someone in the Circle shared (public route only). */
+export interface GroupWalk {
+  id: string;
+  owner: PersonSummary;
+  time_of_day: 'morning' | 'afternoon' | 'evening';
+  start_place_name: string;
+  started_at: string;
+  distance_m: number;
+  route_public_polyline: string;
+  /** The walker first, then who walked with them. */
+  walkers: PersonSummary[];
+  cheer_count: number;
+  cheered_by_me: boolean;
+  is_mine: boolean;
+}
 
 /** Personal bests (S24): all time, except walks this calendar month. */
 export interface WalkBests {

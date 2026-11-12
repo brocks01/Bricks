@@ -55,3 +55,75 @@ describe('S24 Walk history & trends', () => {
     expect(text).not.toMatch(/less|fewer|worse/i);
   });
 });
+
+describe('S19 Group walk feed + Cheers', () => {
+  const limWalk = () =>
+    mockDb()
+      .circleWalks('c_walkers')
+      .find((w) => w.owner.id === 'u_lim')!;
+
+  it('members see recent group walks and can cheer one with a tap', async () => {
+    await renderApp('/kampung/circle/c_walkers');
+    expect(await screen.findByText('Recent group walks')).toBeTruthy();
+    const walk = limWalk();
+    const card = await screen.findByTestId(`group-walk-${walk.id}`);
+    expect(within(card).getByText('Lim')).toBeTruthy();
+    expect(within(card).getByText(/^8 people · \d\.\d km · /)).toBeTruthy();
+
+    await fireEvent.press(within(card).getByTestId(`group-walk-${walk.id}-cheer`));
+    expect(await screen.findByText('You cheered Lim.')).toBeTruthy();
+    expect(limWalk().cheered_by_me).toBe(true);
+    expect(await within(card).findByText('Cheered')).toBeTruthy();
+  });
+
+  it('a voice cheer: record up to 10 seconds, listen, send', async () => {
+    await renderApp('/kampung/circle/c_walkers');
+    const walk = limWalk();
+    await fireEvent.press(await screen.findByTestId(`group-walk-${walk.id}-voice`));
+    await fireEvent.press(await screen.findByTestId('cheer-start'));
+    await fireEvent.press(await screen.findByTestId('cheer-stop'));
+    expect(await screen.findByTestId('cheer-preview')).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('cheer-send'));
+    expect(await screen.findByText('Your voice cheer is on its way to Lim.')).toBeTruthy();
+    const cheers = mockDb().getWalk(walk.id).cheers;
+    expect(cheers.map((c) => [c.by.id, c.kind])).toEqual([['u_raj', 'voice']]);
+  });
+
+  it('Raj shares a walk; Lim cheers it; Raj sees the cheer (T2)', async () => {
+    const id = mockDb().walkStats('week').last_walk!.id;
+    await renderApp(`/walk/${id}`);
+    await fireEvent.press(await screen.findByTestId('walk-share'));
+    expect(await screen.findByText('Shared with your Circle.')).toBeTruthy();
+    expect(mockDb().getWalk(id).visibility).toBe('circle');
+    expect(await screen.findByText('No cheers yet.')).toBeTruthy();
+
+    // Lim, on his phone, cheers it; Raj opens the walk again.
+    mockDb().cheerAs('u_lim', id);
+    await renderApp(`/walk/${id}`);
+    expect(await screen.findByText('Lim cheered')).toBeTruthy();
+    // It's in the Circle feed now, with its cheer.
+    const mine = mockDb()
+      .circleWalks('c_walkers')
+      .find((w) => w.id === id)!;
+    expect(mine.is_mine).toBe(true);
+    expect(mine.cheer_count).toBe(1);
+  });
+
+  it("someone else's walk shows only its public route, and theirs to cheer (T3)", async () => {
+    const walk = limWalk();
+    const seen = mockDb().getWalk(walk.id);
+    expect(seen.route_polyline).toBeNull();
+    expect(seen.can_cheer).toBe(true);
+    await renderApp(`/walk/${walk.id}`);
+    expect(await screen.findByText("Lim Ah Kow's walk")).toBeTruthy();
+    expect(screen.queryByTestId('walk-share')).toBeNull();
+    expect(screen.getByTestId('walk-cheer')).toBeTruthy();
+  });
+
+  it("isn't shown on a Circle they aren't in", async () => {
+    await renderApp('/kampung/circle/c_gardeners');
+    await screen.findByTestId('circle-join');
+    expect(screen.queryByText('Recent group walks')).toBeNull();
+    expect(mockDb().circleWalks('c_gardeners')).toEqual([]);
+  });
+});

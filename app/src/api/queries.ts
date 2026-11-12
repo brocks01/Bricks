@@ -11,7 +11,10 @@ import { api } from './client';
 import type { WalkUpload } from '@/features/walk/engine';
 
 import type {
+  NewCheer,
   WalkPeriod,
+  WalkSummary,
+  WalkVisibility,
   CheckinResult,
   EventDetail,
   EventFilter,
@@ -44,6 +47,7 @@ export const queryKeys = {
   walks: ['walks'] as const,
   walk: (id: string) => ['walks', 'detail', id] as const,
   walkStats: (period: WalkPeriod) => ['walks', 'stats', period] as const,
+  circleWalks: (circleId: string) => ['walks', 'circle', circleId] as const,
   sos: (id: string) => ['sos', id] as const,
   activeSos: ['sos', 'active'] as const,
   demoAccounts: ['demo', 'accounts'] as const,
@@ -223,6 +227,42 @@ export function useWalkStats(period: WalkPeriod = 'week') {
   return useQuery({
     queryKey: queryKeys.walkStats(period),
     queryFn: () => api.getWalkStats(period),
+  });
+}
+
+/** S19 Recent group walks (empty for people who aren't members). */
+export function useCircleWalks(circleId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: queryKeys.circleWalks(circleId),
+    queryFn: () => api.getCircleWalks(circleId),
+    enabled,
+  });
+}
+
+/** Any change to a walk: show it at once, then refresh feeds and stats. */
+function walkChanged(client: QueryClient, walk: WalkSummary) {
+  client.setQueryData(queryKeys.walk(walk.id), walk);
+  return client.invalidateQueries({ queryKey: queryKeys.walks });
+}
+
+/** S23 Share with my Circle (or stop sharing). */
+export function useShareWalk() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, visibility }: { id: string; visibility: WalkVisibility }) =>
+      api.shareWalk(id, visibility),
+    meta: { errorToast: true },
+    onSuccess: (walk) => walkChanged(client, walk),
+  });
+}
+
+/** Cheer a shared walk: a tap, or a voice note. */
+export function useCheerWalk() {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (input: NewCheer) => api.cheerWalk(input),
+    meta: { errorToast: true },
+    onSuccess: (walk) => walkChanged(client, walk),
   });
 }
 

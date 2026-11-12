@@ -868,7 +868,6 @@
     "longest": "最长的一次散步",
     "mostSteps": "一天最多步数",
     "thisMonth": "本月散步次数",
-    "steps_one": "{{value}} 步",
     "steps_other": "{{value}} 步",
     "walks": "每一次散步",
     "none": {
@@ -880,5 +879,31 @@
       "month": "您的散步。过去 4 周您走了 {{distance}}，共 {{walks}}。{{compare}}"
     },
     "lastLine": "上一次：{{line}}"
+  },
+  "walkFeed": {
+    "recent": "最近的结伴散步",
+    "none": "过去两周这里没有分享的散步。",
+    "you": "您",
+    "whose": "{{name}} 的散步",
+    "people_other": "{{count}} 人",
+    "cheer": "鼓掌",
+    "cheered": "已鼓掌",
+    "voiceCheer": "语音鼓励",
+    "cheerName": "为 {{name}} 鼓掌",
+    "cheeredName": "您已为 {{name}} 鼓掌",
+    "cheerSent": "您为 {{name}} 鼓了掌。",
+    "voiceSent": "您的语音鼓励正发给 {{name}}。",
+    "voiceTitle": "用声音鼓励 {{name}}",
+    "voiceHint": "最多 10 秒。发送前可以先听一遍。",
+    "send": "发送鼓励",
+    "cancel": "取消",
+    "cheerCount_other": "{{count}} 个鼓励",
+    "noCheers": "还没有鼓励。",
+    "cheersHeading": "鼓励",
+    "cheeredBy": "{{names}} 为您鼓掌",
+    "share": "分享给我的圈子",
+    "sharedToast": "已分享给您的圈子。",
+    "shared": "已分享给您的圈子。他们能看到路线，但看不到您家附近的部分。",
+    "stopSharing": "停止分享"
   }
 }

@@ -577,6 +577,36 @@ async def _seed(
         )
         await save_walk(ctx, upload, ["u_lim", "u_ahmad"] if group else [])
 
+    # Shared with the Circle (S19 feed): Raj's last group walk, cheered by Ahmad, and
+    # recent walks by Lim (with a group) and Ahmad for Raj to cheer. The rest stay private.
+    await ex(
+        "update walks set visibility = 'circle' where id = (select id from walks"
+        " where user_id = 'u_raj' and cardinality(walked_with) > 0"
+        " order by started_at desc limit 1)"
+    )
+    await ex(
+        "insert into walk_cheers (id, walk_id, from_user, kind, created_at)"
+        " select 'c_seed_ahmad', id, 'u_ahmad', 'thumb', started_at + interval '3 hours'"
+        " from walks where user_id = 'u_raj' and visibility = 'circle'"
+    )
+    for uid, days_ago, fraction, with_ in [
+        ("u_lim", 2, 1.0, ["u_tan", "u_siti", "u_ravi", "u_chen", "u_mei", "u_kumar", "u_aisha"]),
+        ("u_ahmad", 3, 0.8, []),
+    ]:
+        start = at_local(today - timedelta(days=days_ago), 7, 30)
+        points = _bishan_loop(start, fraction)
+        upload = WalkUpload(
+            segments=[points],
+            steps=round(2400 * fraction / 0.72),
+            started_at=start.isoformat(),
+            ended_at=datetime.fromtimestamp(points[-1].t / 1000, SGT).isoformat(),
+            event_id=None,
+        )
+        walk = await save_walk(
+            Ctx(conn=conn, user_id=uid, now=now, settings=settings), upload, with_
+        )
+        await ex("update walks set visibility = 'circle' where id = %s", (walk["id"],))
+
     for n in range(1, JUDGE_COUNT + 1):
         await seed_judge(conn, n, now)
 

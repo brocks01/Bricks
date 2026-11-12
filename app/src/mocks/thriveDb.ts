@@ -1,5 +1,9 @@
 import type {
   CheckinWeek,
+  GroupWalk,
+  NewCheer,
+  WalkCheer,
+  WalkVisibility,
   NewReminder,
   PersonSummary,
   Reminder,
@@ -14,7 +18,7 @@ import { bishanParkLoop } from '@/features/walk/simulatedTrack';
 import type { WalkUpload } from '@/features/walk/engine';
 import type { LatLng, TrackPoint } from '@/lib/geo';
 
-import { processWalk } from './walkProcessing';
+import { processWalk, type ProcessedWalk } from './walkProcessing';
 
 /**
  * Thrive and Safety part of the mock backend: check-ins, reminders, walks
@@ -59,9 +63,25 @@ export interface ThriveDeps {
   attendees: (eventId: string) => PersonSummary[];
   /** Who to tell in an SOS, in order (set at onboarding, S6). */
   safeCircle: () => SafeCircleMember[];
+  /** Members of a Circle (null if there's no such Circle). */
+  circleMembers: (circleId: string) => Set<string> | null;
+  /** True if Raj and `userId` are in a Circle together. */
+  inCircleWithMe: (userId: string) => boolean;
 }
 
-export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDeps) {
+const ME = 'u_raj';
+
+/** A walk as stored: whose it is and whether it's shared. */
+type StoredWalk = ProcessedWalk & { owner: PersonSummary; visibility: WalkVisibility };
+
+export function createThriveDb({
+  now,
+  person,
+  attendees,
+  safeCircle,
+  circleMembers,
+  inCircleWithMe,
+}: ThriveDeps) {
   let nextId = 1;
   const today = () => isoDate(now());
 
@@ -124,7 +144,7 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
   };
 
   /* ---------- Walks ---------- */
-  const walks: WalkSummary[] = [];
+  const walks: StoredWalk[] = [];
   // Three weeks of morning walks; two of them were group walks with Lim and Ahmad.
   const SEED: { daysAgo: number; fraction: number; group?: boolean }[] = [
     { daysAgo: 20, fraction: 0.6 },
@@ -144,8 +164,8 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
     const points = loopWalk(start, s.fraction);
     const end = new Date(points[points.length - 1]!.t);
     const history = walks.slice().reverse();
-    walks.push(
-      processWalk([points], {
+    walks.push({
+      ...processWalk([points], {
         id: `w_${nextId++}`,
         home: RAJ_HOME,
         areaName: AREA,
@@ -155,10 +175,85 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
         walkedWith: s.group ? [person('u_lim'), person('u_ahmad')] : [],
         history,
       }),
-    );
+      owner: person(ME),
+      visibility: 'private',
+    });
   }
 
-  const listItem = (w: WalkSummary): WalkListItem => ({
+  /* ---------- Group walk feed + Cheers (3.2) ---------- */
+  const cheers = new Map<string, WalkCheer[]>();
+  const addCheer = (
+    walkId: string,
+    by: string,
+    kind: 'thumb' | 'voice',
+    voice: WalkCheer['voice'],
+  ) => {
+    const list = cheers.get(walkId) ?? [];
+    if (kind === 'thumb' && list.some((c) => c.by.id === by && c.kind === 'thumb')) return;
+    list.push({
+      id: `c_${nextId++}`,
+      by: person(by),
+      kind,
+      voice,
+      created_at: now().toISOString(),
+    });
+    cheers.set(walkId, list);
+  };
+  // Raj's last group walk is shared, and Ahmad cheered it.
+  const lastGroup = walks.filter((w) => w.walked_with.length > 0).pop();
+  if (lastGroup) {
+    lastGroup.visibility = 'circle';
+    addCheer(lastGroup.id, 'u_ahmad', 'thumb', null);
+  }
+  // Recent walks Lim (with a group) and Ahmad shared, for Raj to cheer.
+  const others: StoredWalk[] = [
+    {
+      owner: 'u_lim',
+      daysAgo: 2,
+      fraction: 1,
+      with: ['u_tan', 'u_siti', 'u_ravi', 'u_chen', 'u_mei', 'u_kumar', 'u_aisha'],
+    },
+    { owner: 'u_ahmad', daysAgo: 3, fraction: 0.8, with: [] as string[] },
+  ].map((o) => {
+    const start = addDays(now(), -o.daysAgo);
+    start.setHours(7, 30, 0, 0);
+    const points = loopWalk(start, o.fraction);
+    return {
+      ...processWalk([points], {
+        id: `w_${o.owner.slice(2)}_${nextId++}`,
+        home: { lat: RAJ_HOME.lat + 0.006, lng: RAJ_HOME.lng },
+        areaName: AREA,
+        steps: Math.round((2400 * o.fraction) / 0.72),
+        startedAt: start,
+        endedAt: new Date(points[points.length - 1]!.t),
+        walkedWith: o.with.map(person),
+        history: [],
+      }),
+      owner: person(o.owner),
+      visibility: 'circle' as const,
+    };
+  });
+
+  const findWalk = (id: string) =>
+    walks.find((w) => w.id === id) ?? others.find((w) => w.id === id);
+  /** Theirs, or shared by someone in one of their Circles (like the server). */
+  const visible = (w: StoredWalk | undefined): StoredWalk | null =>
+    w && (w.owner.id === ME || (w.visibility === 'circle' && inCircleWithMe(w.owner.id)))
+      ? w
+      : null;
+  const view = (w: StoredWalk): WalkSummary => {
+    const list = cheers.get(w.id) ?? [];
+    return {
+      ...w,
+      // Only the walker gets the full route.
+      route_polyline: w.owner.id === ME ? w.route_polyline : null,
+      cheers: list,
+      cheered_by_me: list.some((c) => c.by.id === ME && c.kind === 'thumb'),
+      can_cheer: w.owner.id !== ME && w.visibility === 'circle',
+    };
+  };
+
+  const listItem = (w: StoredWalk): WalkListItem => ({
     id: w.id,
     time_of_day: w.time_of_day,
     start_place_name: w.start_place_name,
@@ -233,21 +328,78 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
         walkedWith: upload.event_id ? attendees(upload.event_id) : [],
         history: walks.slice().reverse(),
       });
-      walks.push(summary);
-      return summary;
+      const stored: StoredWalk = { ...summary, owner: person(ME), visibility: 'private' };
+      walks.push(stored);
+      return view(stored);
     },
     getWalk(id: string): WalkSummary | null {
-      return walks.find((w) => w.id === id) ?? null;
+      const w = visible(findWalk(id));
+      return w ? view(w) : null;
+    },
+    shareWalk(id: string, visibility: WalkVisibility): WalkSummary | null {
+      const w = walks.find((x) => x.id === id);
+      if (!w) return null;
+      w.visibility = visibility;
+      return view(w);
+    },
+    /** Raj cheers a walk; `cheerAs` lets tests (and the demo) cheer as someone else. */
+    cheerWalk(input: NewCheer, by = ME): WalkSummary | 'forbidden' | null {
+      const w = findWalk(input.walk_id);
+      const canSee =
+        w &&
+        (w.owner.id === by ||
+          (w.visibility === 'circle' && (by !== ME || inCircleWithMe(w.owner.id))));
+      if (!w || !canSee) return null;
+      if (w.owner.id === by || w.visibility !== 'circle') return 'forbidden';
+      addCheer(
+        w.id,
+        by,
+        input.kind,
+        input.kind === 'voice' && input.audio_uri
+          ? { audio_url: input.audio_uri, duration_s: input.duration_s ?? 0, transcript: null }
+          : null,
+      );
+      return view(w);
+    },
+    circleWalks(circleId: string): GroupWalk[] {
+      const members = circleMembers(circleId);
+      if (!members?.has(ME)) return [];
+      const since = addDays(now(), -14).getTime();
+      return [...walks, ...others]
+        .filter(
+          (w) =>
+            w.visibility === 'circle' &&
+            members.has(w.owner.id) &&
+            new Date(w.started_at).getTime() >= since,
+        )
+        .sort((a, b) => b.started_at.localeCompare(a.started_at))
+        .slice(0, 10)
+        .map((w) => {
+          const list = cheers.get(w.id) ?? [];
+          return {
+            id: w.id,
+            owner: w.owner,
+            time_of_day: w.time_of_day,
+            start_place_name: w.start_place_name,
+            started_at: w.started_at,
+            distance_m: w.distance_m,
+            route_public_polyline: w.route_public_polyline,
+            walkers: [w.owner, ...w.walked_with],
+            cheer_count: list.length,
+            cheered_by_me: list.some((c) => c.by.id === ME && c.kind === 'thumb'),
+            is_mine: w.owner.id === ME,
+          };
+        });
     },
     walkStats(period: WalkPeriod = 'week'): WalkStats {
       const monday = weekStart(now());
       const weeks = period === 'week' ? 1 : 4;
       const start = addDays(monday, -7 * (weeks - 1));
       const before = addDays(start, -7 * weeks);
-      const day = (w: WalkSummary) => isoDate(new Date(w.started_at));
+      const day = (w: StoredWalk) => isoDate(new Date(w.started_at));
       const current = walks.filter((w) => day(w) >= isoDate(start));
       const previous = walks.filter((w) => day(w) >= isoDate(before) && day(w) < isoDate(start));
-      const sum = (list: WalkSummary[], key: 'distance_m' | 'moving_s') =>
+      const sum = (list: StoredWalk[], key: 'distance_m' | 'moving_s') =>
         list.reduce((total, w) => total + w[key], 0);
       const buckets =
         period === 'week'
@@ -258,7 +410,7 @@ export function createThriveDb({ now, person, attendees, safeCircle }: ThriveDep
             ]);
       const stepsByDay = new Map<string, number>();
       for (const w of walks) stepsByDay.set(day(w), (stepsByDay.get(day(w)) ?? 0) + w.steps);
-      const longest = walks.reduce<WalkSummary | null>(
+      const longest = walks.reduce<StoredWalk | null>(
         (best, w) => (!best || w.distance_m > best.distance_m ? w : best),
         null,
       );

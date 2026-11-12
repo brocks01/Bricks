@@ -1,31 +1,92 @@
-"""Walks: upload a finished walk, its summary, history and weekly stats (docs/03 §4, §6)."""
+"""Walks: upload a finished walk, its summary, history and stats (docs/03 §4, §6), and
+the group walk feed with Cheers (iteration 3.2, S19 / S23)."""
 
 import json
 from datetime import date, timedelta
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 from psycopg.types.json import Jsonb
 
 from ..deps import Ctx, CtxDep, not_found
 from ..ids import new_id
-from ..repo import people, user_row
+from ..repo import people, person, user_row
 from ..schemas import (
+    GroupWalk,
     Split,
+    VoiceClip,
     WalkBests,
+    WalkCheer,
     WalkDay,
     WalkListItem,
     WalkPraise,
+    WalkShare,
     WalkStats,
     WalkSummary,
     WalkUpload,
 )
+from ..storage import Storage, read_audio
 from ..timeutil import iso, local_date, parse_iso, week_start
 from ..walks import HistoryWalk, process_walk
 
 router = APIRouter(tags=["walks"])
 
 MAX_POINTS = 20_000  # ~28 hours at one point every 5 s
+VOICE_CHEER_S = 10  # a voice cheer is short (docs/02b S19)
+FEED_DAYS = 14
+FEED_SIZE = 10
+
+
+async def _circle_mates(ctx: Ctx, other: str) -> bool:
+    """True if the member and `other` are in at least one Circle together."""
+    row = await (
+        await ctx.conn.execute(
+            "select 1 from circle_members a join circle_members b on a.circle_id = b.circle_id"
+            " where a.user_id = %s and b.user_id = %s limit 1",
+            (ctx.user_id, other),
+        )
+    ).fetchone()
+    return row is not None
+
+
+def _cheer(row: dict[str, Any]) -> WalkCheer:
+    voice = (
+        VoiceClip(audio_url=row["audio_url"], duration_s=row["duration_s"] or 0, transcript=None)
+        if row["kind"] == "voice" and row["audio_url"]
+        else None
+    )
+    return WalkCheer(
+        id=row["id"],
+        by=person(row, "by_"),
+        kind=row["kind"],
+        voice=voice,
+        created_at=iso(row["created_at"]),
+    )
+
+
+async def _cheers(ctx: Ctx, walk_id: str) -> list[WalkCheer]:
+    rows = await (
+        await ctx.conn.execute(
+            "select c.*, u.id as by_id, u.name as by_name, u.photo_url as by_photo_url"
+            " from walk_cheers c join users u on u.id = c.from_user"
+            " where c.walk_id = %s order by c.created_at, c.id",
+            (walk_id,),
+        )
+    ).fetchall()
+    return [_cheer(r) for r in rows]
+
+
+async def _visible_walk(ctx: Ctx, walk_id: str) -> dict[str, Any]:
+    """The walk if it's theirs, or shared by someone in one of their Circles."""
+    row = await (await ctx.conn.execute("select * from walks where id = %s", (walk_id,))).fetchone()
+    if not row:
+        raise not_found(f"walk {walk_id}")
+    mine = row["user_id"] == ctx.user_id
+    if not mine and not (
+        row["visibility"] == "circle" and await _circle_mates(ctx, row["user_id"])
+    ):
+        raise not_found(f"walk {walk_id}")
+    return row
 
 
 def _list_item(row: dict[str, Any]) -> WalkListItem:
@@ -42,6 +103,7 @@ def _list_item(row: dict[str, Any]) -> WalkListItem:
 
 
 async def _summary(ctx: Ctx, row: dict[str, Any]) -> WalkSummary:
+    cheers = await _cheers(ctx, row["id"])
     splits = row["splits"] if isinstance(row["splits"], list) else json.loads(row["splits"])
     praise = row["praise"] if isinstance(row["praise"], dict) else json.loads(row["praise"])
     return WalkSummary(
@@ -54,6 +116,11 @@ async def _summary(ctx: Ctx, row: dict[str, Any]) -> WalkSummary:
         route_polyline=row["route_polyline"] if row["user_id"] == ctx.user_id else None,
         walked_with=await people(ctx.conn, list(row["walked_with"])),
         praise=WalkPraise(**praise),
+        owner=(await people(ctx.conn, [row["user_id"]]))[0],
+        visibility=row["visibility"],
+        cheers=cheers,
+        cheered_by_me=any(c.by.id == ctx.user_id and c.kind == "thumb" for c in cheers),
+        can_cheer=row["user_id"] != ctx.user_id and row["visibility"] == "circle",
     )
 
 
@@ -199,12 +266,104 @@ async def list_walks(ctx: CtxDep, period: Literal["week", "month"] = "week") -> 
 
 @router.get("/walks/{walk_id}")
 async def get_walk(walk_id: str, ctx: CtxDep) -> WalkSummary:
+    return await _summary(ctx, await _visible_walk(ctx, walk_id))
+
+
+@router.patch("/walks/{walk_id}")
+async def share_walk(walk_id: str, body: WalkShare, ctx: CtxDep) -> WalkSummary:
+    """S23 "Share with my Circle" (or stop sharing). Only the walker can."""
     row = await (
         await ctx.conn.execute(
-            "select * from walks where id = %s and (user_id = %s or visibility = 'circle')",
-            (walk_id, ctx.user_id),
+            "update walks set visibility = %s where id = %s and user_id = %s returning *",
+            (body.visibility, walk_id, ctx.user_id),
         )
     ).fetchone()
     if not row:
         raise not_found(f"walk {walk_id}")
     return await _summary(ctx, row)
+
+
+@router.post("/walks/{walk_id}/cheers", status_code=201)
+async def cheer_walk(
+    walk_id: str,
+    request: Request,
+    ctx: CtxDep,
+    kind: Annotated[Literal["thumb", "voice"], Form()] = "thumb",
+    duration_s: Annotated[float | None, Form(ge=0, le=VOICE_CHEER_S + 1)] = None,
+    audio: Annotated[UploadFile | None, File()] = None,
+) -> WalkSummary:
+    """Cheer someone's shared walk: a tap (once) or a short voice note."""
+    row = await _visible_walk(ctx, walk_id)
+    if row["user_id"] == ctx.user_id or row["visibility"] != "circle":
+        raise HTTPException(403, "You can cheer walks people in your Circles share.")
+    audio_url = None
+    if kind == "voice":
+        if audio is None:
+            raise HTTPException(422, "A voice cheer needs its recording.")
+        storage: Storage = request.app.state.storage
+        data, content_type = await read_audio(audio)
+        audio_url = await storage.put(f"cheers/{ctx.user_id}", data, content_type)
+    await ctx.conn.execute(
+        "insert into walk_cheers (id, walk_id, from_user, kind, audio_url, duration_s, created_at)"
+        " values (%s, %s, %s, %s, %s, %s, %s)"
+        " on conflict (walk_id, from_user) where kind = 'thumb' do nothing",
+        (
+            new_id("c"),
+            walk_id,
+            ctx.user_id,
+            kind,
+            audio_url,
+            duration_s if kind == "voice" else None,
+            ctx.now,
+        ),
+    )
+    return await _summary(ctx, row)
+
+
+@router.get("/circles/{circle_id}/walks")
+async def circle_walks(circle_id: str, ctx: CtxDep) -> list[GroupWalk]:
+    """S19 Recent group walks: what members shared in the last two weeks. Members only."""
+    member = await (
+        await ctx.conn.execute(
+            "select 1 from circle_members where circle_id = %s and user_id = %s",
+            (circle_id, ctx.user_id),
+        )
+    ).fetchone()
+    if not member:
+        return []
+    rows = await (
+        await ctx.conn.execute(
+            "select w.*,"
+            " (select count(*) from walk_cheers c where c.walk_id = w.id) as cheer_count,"
+            " exists(select 1 from walk_cheers c where c.walk_id = w.id and c.kind = 'thumb'"
+            "   and c.from_user = %(me)s) as cheered_by_me"
+            " from walks w join circle_members m on m.user_id = w.user_id and m.circle_id = %(c)s"
+            " where w.visibility = 'circle' and w.started_at >= %(since)s"
+            " order by w.started_at desc limit %(n)s",
+            {
+                "me": ctx.user_id,
+                "c": circle_id,
+                "since": ctx.now - timedelta(days=FEED_DAYS),
+                "n": FEED_SIZE,
+            },
+        )
+    ).fetchall()
+    out = []
+    for r in rows:
+        walkers = await people(ctx.conn, [r["user_id"], *r["walked_with"]])
+        out.append(
+            GroupWalk(
+                id=r["id"],
+                owner=walkers[0],
+                time_of_day=r["time_of_day"],
+                start_place_name=r["start_place_name"],
+                started_at=iso(r["started_at"]),
+                distance_m=r["distance_m"],
+                route_public_polyline=r["route_public_polyline"],
+                walkers=walkers,
+                cheer_count=r["cheer_count"],
+                cheered_by_me=r["cheered_by_me"],
+                is_mine=r["user_id"] == ctx.user_id,
+            )
+        )
+    return out

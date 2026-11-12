@@ -1,5 +1,7 @@
 import type {
+  NewCheer,
   WalkPeriod,
+  WalkVisibility,
   CheckinResult,
   CircleDetail,
   CircleList,
@@ -326,6 +328,9 @@ export function createMockDb(now: () => Date = () => new Date()) {
       return e ? [...e.going].filter((id) => id !== ME_ID).map(person) : [];
     },
     safeCircle: () => passItOn.getSafeCircle(),
+    circleMembers: (circleId) => state.circles.get(circleId)?.members ?? null,
+    inCircleWithMe: (userId) =>
+      [...state.circles.values()].some((c) => c.members.has(ME_ID) && c.members.has(userId)),
   });
 
   /** Safety replies (2.2): S30 helper replies to other members' alerts, S29 "I'm OK" times. */
@@ -494,6 +499,31 @@ export function createMockDb(now: () => Date = () => new Date()) {
       return walk;
     },
     walkStats: (period: WalkPeriod = 'week') => thrive.walkStats(period),
+    shareWalk(id: string, visibility: WalkVisibility): WalkSummary {
+      const walk = thrive.shareWalk(id, visibility);
+      if (!walk) throw new MockNotFound(`walk ${id}`);
+      return walk;
+    },
+    cheerWalk(input: NewCheer): WalkSummary {
+      const walk = thrive.cheerWalk(input);
+      if (!walk) throw new MockNotFound(`walk ${input.walk_id}`);
+      if (walk === 'forbidden')
+        throw new MockForbidden('You can cheer walks people in your Circles share.');
+      return walk;
+    },
+    /** Tests and demos: someone else cheers one of Raj's shared walks. */
+    cheerAs(userId: string, walkId: string, kind: 'thumb' | 'voice' = 'thumb'): void {
+      thrive.cheerWalk(
+        {
+          walk_id: walkId,
+          kind,
+          audio_uri: kind === 'voice' ? 'file:///cheer.m4a' : null,
+          duration_s: kind === 'voice' ? 6 : null,
+        },
+        userId,
+      );
+    },
+    circleWalks: (circleId: string) => thrive.circleWalks(circleId),
     triggerSos: () => thrive.triggerSos(),
     getSos(id: string): SosAlert {
       const alert = thrive.getSos(id);
@@ -572,5 +602,13 @@ export class MockNotFound extends Error {
   constructor(what: string) {
     super(`Not found: ${what}`);
     this.name = 'MockNotFound';
+  }
+}
+
+/** Thrown when the member may not do something, mapped to a 403 like the real API. */
+export class MockForbidden extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'MockForbidden';
   }
 }

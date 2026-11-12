@@ -46,7 +46,10 @@ import type {
   Today,
   Transcript,
   VoiceClip,
+  GroupWalk,
+  NewCheer,
   WalkPeriod,
+  WalkVisibility,
   WalkStats,
   WalkSummary,
 } from './types';
@@ -76,6 +79,12 @@ export interface BricksApi {
   uploadWalk(upload: WalkUpload): Promise<WalkSummary>;
   getWalk(id: string): Promise<WalkSummary>;
   getWalkStats(period?: WalkPeriod): Promise<WalkStats>;
+  /** S23: share a walk with my Circles (or stop sharing). */
+  shareWalk(id: string, visibility: WalkVisibility): Promise<WalkSummary>;
+  /** Cheer someone's shared walk: a tap or a short voice note. */
+  cheerWalk(input: NewCheer): Promise<WalkSummary>;
+  /** S19 Recent group walks (members of the Circle only). */
+  getCircleWalks(circleId: string): Promise<GroupWalk[]>;
   triggerSos(input: {
     trigger: 'button';
     lat: number | null;
@@ -158,6 +167,14 @@ const httpApi: BricksApi = {
   uploadWalk: (upload) => request('/walks', { method: 'POST', body: upload }),
   getWalk: (id) => request(`/walks/${encodeURIComponent(id)}`),
   getWalkStats: (period = 'week') => request(`/walks/stats?period=${period}`),
+  shareWalk: (id, visibility) =>
+    request(`/walks/${encodeURIComponent(id)}`, { method: 'PATCH', body: { visibility } }),
+  cheerWalk: ({ walk_id, kind, audio_uri, duration_s }) =>
+    request(`/walks/${encodeURIComponent(walk_id)}/cheers`, {
+      method: 'POST',
+      body: formData({ kind, duration_s, audio: audio_uri ? audioFile(audio_uri) : null }),
+    }),
+  getCircleWalks: (circleId) => request(`/circles/${encodeURIComponent(circleId)}/walks`),
   triggerSos: (input) => request('/sos', { method: 'POST', body: input }),
   getSos: (id) => request(`/sos/${encodeURIComponent(id)}`),
   resolveSos: (id) =>

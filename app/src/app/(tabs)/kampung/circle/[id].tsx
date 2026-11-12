@@ -2,7 +2,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { useCircle, useJoinCircle, useLeaveCircle } from '@/api';
+import { useCircle, useCircleWalks, useJoinCircle, useLeaveCircle } from '@/api';
 import {
   Avatar,
   AvatarStack,
@@ -20,6 +20,7 @@ import {
 import { CIRCLE_TINT } from '@/components/ClubCard';
 import { speakEvent } from '@/features/events/readout';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
+import { GroupWalkCard } from '@/features/walks/GroupWalkCard';
 import { openExternal } from '@/lib/openExternal';
 import { useUndo } from '@/state/undo';
 import { borderWidth, categoryColor, color, iconSize, radius, shadow, space } from '@/theme';
@@ -29,7 +30,7 @@ import { useTypography } from '@/theme/TypographyProvider';
  * S19 Circle page (Luma's calendar page): tinted in the Circle's colour, a square
  * cover, the name, members, description and captain; one main action (WhatsApp
  * group for members, Join for everyone else); what's coming up; who's in it.
- * Group-walk feed and Cheers arrive in 3.2.
+ * Members also see the walks people shared, to cheer (3.2).
  */
 export default function CircleScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -42,6 +43,7 @@ export default function CircleScreen() {
   const joinEvent = useJoinEvent();
   const showUndo = useUndo((s) => s.show);
   const circle = query.data;
+  const walks = useCircleWalks(id, !!circle?.is_member);
 
   const members = circle ? t('circle.members', { count: circle.member_count }) : '';
   const readOut = () =>
@@ -131,6 +133,27 @@ export default function CircleScreen() {
             ) : (
               <Text color="textSecondary">{t('circlePage.noUpcoming')}</Text>
             )}
+
+            {c.is_member ? (
+              <>
+                <Text variant="heading" style={styles.heading}>
+                  {t('walkFeed.recent')}
+                </Text>
+                <QueryState query={walks}>
+                  {(list) =>
+                    list.length > 0 ? (
+                      <View style={styles.list} testID="circle-walks">
+                        {list.map((w) => (
+                          <GroupWalkCard key={w.id} walk={w} />
+                        ))}
+                      </View>
+                    ) : (
+                      <Text color="textSecondary">{t('walkFeed.none')}</Text>
+                    )
+                  }
+                </QueryState>
+              </>
+            ) : null}
 
             <Text variant="heading" style={styles.heading}>
               {t('circlePage.members')}

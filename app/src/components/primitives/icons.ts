@@ -37,6 +37,7 @@ export { GearSixIcon } from 'phosphor-react-native/src/icons/GearSix';
 export { GoogleLogoIcon } from 'phosphor-react-native/src/icons/GoogleLogo';
 export { HandHeartIcon } from 'phosphor-react-native/src/icons/HandHeart';
 export { HandshakeIcon } from 'phosphor-react-native/src/icons/Handshake';
+export { HandsClappingIcon } from 'phosphor-react-native/src/icons/HandsClapping';
 export { HeartbeatIcon } from 'phosphor-react-native/src/icons/Heartbeat';
 export { HourglassIcon } from 'phosphor-react-native/src/icons/Hourglass';
 export { HouseIcon } from 'phosphor-react-native/src/icons/House';

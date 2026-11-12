@@ -237,6 +237,16 @@ class WalkListItem(Wire):
     route_public_polyline: str
 
 
+class WalkCheer(Wire):
+    """A cheer on a shared walk: a tap, or a voice note up to 10 seconds."""
+
+    id: str
+    by: PersonSummary
+    kind: Literal["thumb", "voice"]
+    voice: "VoiceClip | None"
+    created_at: str
+
+
 class WalkSummary(WalkListItem):
     ended_at: str
     duration_s: int
@@ -245,6 +255,33 @@ class WalkSummary(WalkListItem):
     route_polyline: str | None
     walked_with: list[PersonSummary]
     praise: WalkPraise
+    # Iteration 3.2: whose walk, shared or not, and the cheers on it.
+    owner: PersonSummary
+    visibility: Literal["private", "circle"]
+    cheers: list[WalkCheer]
+    cheered_by_me: bool
+    can_cheer: bool
+
+
+class WalkShare(Input):
+    visibility: Literal["private", "circle"]
+
+
+class GroupWalk(Wire):
+    """S19 feed: a walk someone in the Circle shared (public route only)."""
+
+    id: str
+    owner: PersonSummary
+    time_of_day: Literal["morning", "afternoon", "evening"]
+    start_place_name: str
+    started_at: str
+    distance_m: int
+    route_public_polyline: str
+    # The walker first, then who walked with them.
+    walkers: list[PersonSummary]
+    cheer_count: int
+    cheered_by_me: bool
+    is_mine: bool
 
 
 class WalkDay(Wire):
@@ -453,3 +490,6 @@ class TtsIn(Input):
 class Health(Wire):
     status: Literal["ok"]
     database: bool
+
+
+WalkCheer.model_rebuild()

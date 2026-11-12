@@ -902,5 +902,33 @@
       "month": "Your walks. In the last 4 weeks you walked {{distance}} in {{walks}}. {{compare}}"
     },
     "lastLine": "Last: {{line}}"
+  },
+  "walkFeed": {
+    "recent": "Recent group walks",
+    "none": "No walks shared here in the last two weeks.",
+    "you": "You",
+    "whose": "{{name}}'s walk",
+    "people_one": "{{count}} person",
+    "people_other": "{{count}} people",
+    "cheer": "Cheer",
+    "cheered": "Cheered",
+    "voiceCheer": "Voice cheer",
+    "cheerName": "Cheer {{name}}",
+    "cheeredName": "You cheered {{name}}",
+    "cheerSent": "You cheered {{name}}.",
+    "voiceSent": "Your voice cheer is on its way to {{name}}.",
+    "voiceTitle": "Cheer {{name}} with your voice",
+    "voiceHint": "Up to 10 seconds. Listen before you send.",
+    "send": "Send cheer",
+    "cancel": "Cancel",
+    "cheerCount_one": "{{count}} cheer",
+    "cheerCount_other": "{{count}} cheers",
+    "noCheers": "No cheers yet.",
+    "cheersHeading": "Cheers",
+    "cheeredBy": "{{names}} cheered",
+    "share": "Share with my Circle",
+    "sharedToast": "Shared with your Circle.",
+    "shared": "Shared with your Circle. They see your route, but never the part near your home.",
+    "stopSharing": "Stop sharing"
   }
 }

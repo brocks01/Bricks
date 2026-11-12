@@ -1,4 +1,4 @@
-import { createMockDb, MockNotFound, type MockDb } from '@/mocks/db';
+import { createMockDb, MockForbidden, MockNotFound, type MockDb } from '@/mocks/db';
 
 import type { BricksApi } from './client';
 import { ApiError } from './errors';
@@ -26,7 +26,13 @@ function respond<T>(operation: () => T, path: string): Promise<T> {
         // A deep copy keeps callers from mutating mock state.
         resolve(JSON.parse(JSON.stringify(operation() ?? null)) as T);
       } catch (error) {
-        reject(error instanceof MockNotFound ? new ApiError(404, error.message, path) : error);
+        reject(
+          error instanceof MockNotFound
+            ? new ApiError(404, error.message, path)
+            : error instanceof MockForbidden
+              ? new ApiError(403, error.message, path)
+              : error,
+        );
       }
     }, MOCK_LATENCY_MS);
   });
@@ -53,6 +59,10 @@ export const mockApi: BricksApi = {
   uploadWalk: (upload) => respond(() => db.uploadWalk(upload), '/walks'),
   getWalk: (id) => respond(() => db.getWalk(id), `/walks/${id}`),
   getWalkStats: (period = 'week') => respond(() => db.walkStats(period), '/walks/stats'),
+  shareWalk: (id, visibility) => respond(() => db.shareWalk(id, visibility), `/walks/${id}`),
+  cheerWalk: (input) => respond(() => db.cheerWalk(input), `/walks/${input.walk_id}/cheers`),
+  getCircleWalks: (circleId) =>
+    respond(() => db.circleWalks(circleId), `/circles/${circleId}/walks`),
   triggerSos: () => respond(() => db.triggerSos(), '/sos'),
   getSos: (id) => respond(() => db.getSos(id), `/sos/${id}`),
   resolveSos: (id) => respond(() => db.resolveSos(id), `/sos/${id}`),

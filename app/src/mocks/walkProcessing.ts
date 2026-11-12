@@ -50,7 +50,13 @@ export interface ProcessContext {
   history: { distance_m: number; started_at: string }[];
 }
 
-export function processWalk(segments: TrackPoint[][], ctx: ProcessContext): WalkSummary {
+/** A processed walk before it's stored (whose it is and the cheers come from the store). */
+export type ProcessedWalk = Omit<
+  WalkSummary,
+  'owner' | 'visibility' | 'cheers' | 'cheered_by_me' | 'can_cheer'
+>;
+
+export function processWalk(segments: TrackPoint[][], ctx: ProcessContext): ProcessedWalk {
   const clean = segments.map((s) => cleanTrack(s)).filter((s) => s.length > 0);
 
   let distance = 0;
