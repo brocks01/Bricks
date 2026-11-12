@@ -8,7 +8,8 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "infoPlist": {}
     },
     "android": {
       "adaptiveIcon": {
@@ -29,6 +30,17 @@
       "expo-router",
       "expo-localization",
       "expo-secure-store"
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "96043fcf-20aa-47d1-8edc-84dd6796dc51"
+      }
+    },
+    "owner": "bricks01s-team"
   }
 }
