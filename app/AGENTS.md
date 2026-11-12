@@ -10,6 +10,7 @@ Expo ships breaking changes every SDK release. APIs you remember are likely rena
 
 ## Commands
 
+
 Use `bunx` instead of `npx` if the project uses bun (`bun.lock` present).
 
 ```bash
