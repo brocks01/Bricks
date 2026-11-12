@@ -1,5 +1,7 @@
 """Bricks API. One service, one database, split into modules. Start it with:  python backend/run.py"""
+import asyncio
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI
@@ -7,6 +9,7 @@ from fastapi.responses import FileResponse, JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import text
 
+from . import migrate
 from .core.db import engine
 from .modules.identity.router import router as identity_router
 from .modules.agent.router import router as agent_router
@@ -19,7 +22,39 @@ from .modules.voice.router import router as voice_router
 from .modules.translation.router import router as translation_router
 from .modules.family.router import router as family_router
 
-app = FastAPI(title="Bricks API", version="0.1.0")
+# Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
+# One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
+# apply the same file twice; the database may still be waking up on a cold boot, so a few tries are allowed.
+MIGRATION_LOCK = 727272
+
+
+def apply_migrations() -> list[str]:
+    with engine().begin() as conn:
+        conn.execute(text("select pg_advisory_lock(:k)"), {"k": MIGRATION_LOCK})
+        try:
+            return migrate.run()
+        finally:
+            conn.execute(text("select pg_advisory_unlock(:k)"), {"k": MIGRATION_LOCK})
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    last: Exception | None = None
+    for _ in range(6):
+        try:
+            applied = apply_migrations()
+            if applied:
+                print("migrations applied:", ", ".join(applied))
+            break
+        except Exception as e:  # noqa: BLE001 - any failure means the database is not ready yet
+            last = e
+            await asyncio.sleep(5)
+    else:
+        raise RuntimeError(f"the database migrations did not apply: {last}")
+    yield
+
+
+app = FastAPI(title="Bricks API", version="0.1.0", lifespan=lifespan)
 
 # Who may call the API from a browser: this computer and its network, any Vercel address (the website is deployed there), and the exact
 # addresses listed in CORS_ORIGINS (a comma list, for example the final domain). The API uses Authorization tokens, not cookies, so this is not a

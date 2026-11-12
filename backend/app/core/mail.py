@@ -14,7 +14,7 @@ import os
 import smtplib
 import time
 from email.message import EmailMessage
-from email.utils import formataddr
+from email.utils import formataddr, formatdate, make_msgid
 from html import escape
 
 import httpx
@@ -88,7 +88,7 @@ def code_email(code: str, minutes: int) -> tuple[str, str, str]:
         f'<div style="font-size:34px;font-weight:700;letter-spacing:8px;color:#16202A;margin:8px 0 16px">{escape(code)}</div>'
         f'<div style="font-size:13px;color:#5f6368;margin:16px 0">It works for {minutes} minutes. If you did not ask for it, you can ignore this email.</div>'
         '<hr style="border:none;border-top:1px solid #dadce0;margin:24px 0"/>'
-        f'<div style="font-size:12px;color:#5f6368">This is an automated message. Do not reply.<br/>&copy; {time.gmtime().tm_year} {BRAND}</div>'
+        f'<div style="font-size:12px;color:#5f6368">{BRAND}, the neighbourhood club for seniors.<br/>&copy; {time.gmtime().tm_year} {BRAND}</div>'
         "</div></body></html>"
     )
     return subject, html, text
@@ -128,7 +128,9 @@ def send(to: str, subject: str, html: str, text: str) -> bool:
     s = get_settings()
     if s.smtp_host:
         msg = EmailMessage()
-        msg["Subject"], msg["From"], msg["To"] = subject, formataddr((BRAND, s.email_from or s.smtp_user)), to  # "Bricks <no-reply@...>", as Jambagrad does
+        msg["Subject"], msg["From"], msg["To"] = subject, formataddr((BRAND, s.email_from or s.smtp_user)), to
+        msg["Date"] = formatdate(localtime=False)
+        msg["Message-ID"] = make_msgid(domain=(s.email_from or s.smtp_user).split("@")[-1])  # a proper, unique id from the sender's own domain  # "Bricks <no-reply@...>", as Jambagrad does
         msg.set_content(text)
         msg.add_alternative(html, subtype="html")
         try:
@@ -156,7 +158,7 @@ def family_invite_email(family_name: str, code: str, hours: int) -> tuple[str, s
     text = (f"{family_name} invited you to their family on {BRAND}.\n"
             f"Open {BRAND}, choose the family invitation, and enter this code: {code}.\n"
             f"It works for {hours} hours. If you were not expecting this, you can ignore this email.\n\n"
-            f"{BRAND}. This is an automated message; do not reply.")
+            f"{BRAND}, the neighbourhood club for seniors.")
     html = (
         '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>'
         f"<title>{escape(subject)}</title></head>"
@@ -169,7 +171,7 @@ def family_invite_email(family_name: str, code: str, hours: int) -> tuple[str, s
         f'<div style="font-size:13px;color:#5f6368;margin:16px 0">Open {escape(BRAND)} and enter it to join. It works for {hours} hours. '
         "If you were not expecting this, you can ignore this email.</div>"
         '<hr style="border:none;border-top:1px solid #dadce0;margin:24px 0"/>'
-        f'<div style="font-size:12px;color:#5f6368">This is an automated message. Do not reply.<br/>&copy; {time.gmtime().tm_year} {BRAND}</div>'
+        f'<div style="font-size:12px;color:#5f6368">{BRAND}, the neighbourhood club for seniors.<br/>&copy; {time.gmtime().tm_year} {BRAND}</div>'
         "</div></body></html>"
     )
     return subject, html, text
