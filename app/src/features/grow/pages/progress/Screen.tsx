@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { getProgress, type ProgressData } from '../../../../api/grow';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
@@ -20,8 +20,12 @@ export default function Progress() {
   const [d, setD] = useState<ProgressData | null>(null);
   const [failed, setFailed] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
-    getProgress().then(setD).catch(() => setFailed(true));
+    getProgress()
+      .then((x) => {
+        setFailed(false);
+        setD(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

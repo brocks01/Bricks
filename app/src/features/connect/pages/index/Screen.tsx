@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, TextInput, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
@@ -187,7 +187,6 @@ export default function ConnectIndex() {
 }
 
 // A bare text input (the border and icon are drawn by the row around it).
-import { TextInput } from 'react-native';
 function FindInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.muted} accessibilityLabel={placeholder} autoCapitalize="none" autoCorrect={false} style={{ fontSize: 17, paddingVertical: 12, color: colors.ink }} />;
 }

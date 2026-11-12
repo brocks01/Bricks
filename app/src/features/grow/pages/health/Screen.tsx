@@ -33,8 +33,12 @@ export default function Health() {
   const [b, setB] = useState('');
   const [error, setError] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
-    getHealth().then(setData).catch(() => setFailed(true));
+    getHealth()
+      .then((x) => {
+        setFailed(false);
+        setData(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

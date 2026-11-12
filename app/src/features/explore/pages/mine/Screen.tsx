@@ -24,8 +24,12 @@ export default function ExploreMineScreen() {
   const [failed, setFailed] = useState(false);
   const [tab, setTab] = useState<Tab>('in_progress');
   const load = useCallback(() => {
-    setFailed(false);
-    getExploreMine().then(setData).catch(() => setFailed(true));
+    getExploreMine()
+      .then((x) => {
+        setFailed(false);
+        setData(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

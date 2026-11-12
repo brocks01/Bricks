@@ -16,8 +16,10 @@ export default function PermissionHistory() {
   const [failed, setFailed] = useState(false);
 
   const load = useCallback(() => {
-    setFailed(false);
-    familyApi.permissionEvents().then((r) => setEvents(r.events)).catch(() => setFailed(true));
+    familyApi.permissionEvents().then((r) => {
+      setFailed(false);
+      setEvents(r.events);
+    }).catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     load();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { getExploreHome, type ExploreHome } from '../../../../api/explore';
+import { getExploreHome, type ExploreHome as ExploreHomeData } from '../../../../api/explore';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
@@ -19,12 +19,16 @@ export default function ExploreHome() {
   const w = usePageWords(page);
   const navigate = useNavigate();
   const { status } = useStore(sessionStore);
-  const [home, setHome] = useState<ExploreHome | null>(null);
+  const [home, setHome] = useState<ExploreHomeData | null>(null);
   const [failed, setFailed] = useState(false);
 
   const load = useCallback(() => {
-    setFailed(false);
-    getExploreHome().then(setHome).catch(() => setFailed(true));
+    getExploreHome()
+      .then((x) => {
+        setFailed(false);
+        setHome(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

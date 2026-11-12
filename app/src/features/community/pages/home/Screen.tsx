@@ -29,10 +29,15 @@ export default function CommunityHome() {
   const [data, setData] = useState<CommunityDetail | null>(null);
   const [failed, setFailed] = useState(false);
   const [showSoon, setShowSoon] = useState(false);
+  const [now] = useState(() => Date.now());
 
   const load = useCallback(() => {
-    setFailed(false);
-    getCommunity(String(id)).then(setData).catch(() => setFailed(true));
+    getCommunity(String(id))
+      .then((x) => {
+        setFailed(false);
+        setData(x);
+      })
+      .catch(() => setFailed(true));
   }, [id]);
   useEffect(() => {
     if (status === 'in' && id) load(); // wait until the saved sign-in has been checked, so the request carries a token
@@ -50,7 +55,8 @@ export default function CommunityHome() {
 
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const ago = (iso: string) => {
-    const mins = Math.round((new Date(iso).getTime() - Date.now()) / 60000);
+    // Read once per mount: reading the clock on every render would be impure (the words could change underneath the compiler).
+    const mins = Math.round((new Date(iso).getTime() - now) / 60000);
     const rtf = new Intl.RelativeTimeFormat(lang, { numeric: 'auto' });
     const abs = Math.abs(mins);
     return abs < 60 ? rtf.format(mins, 'minute') : abs < 1440 ? rtf.format(Math.round(mins / 60), 'hour') : rtf.format(Math.round(mins / 1440), 'day');

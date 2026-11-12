@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, DimensionValue, View, ViewStyle } from 'react-native';
 import { colors, radius, space } from '../theme/tokens';
 
@@ -12,7 +12,7 @@ import { colors, radius, space } from '../theme/tokens';
 const BONE = '#E4E9E5';
 
 function usePulse() {
-  const v = useRef(new Animated.Value(0.55)).current;
+  const v = useState(() => new Animated.Value(0.55))[0];
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([Animated.timing(v, { toValue: 1, duration: 700, useNativeDriver: true }), Animated.timing(v, { toValue: 0.55, duration: 700, useNativeDriver: true })]));
     loop.start();

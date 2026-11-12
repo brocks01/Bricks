@@ -5,7 +5,7 @@ import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { growHero } from '../../../explore/pics';
 import { Glyph } from '../../../explore/ui';
-import { colors, radius, space, type } from '../../../../theme/tokens';
+import { colors, radius, space } from '../../../../theme/tokens';
 import { growIndex as page } from './page';
 
 // The Grow home exactly as in ui-samples/11-grow-screens.webp (screen 1): a photo banner with the title, then six small cards,

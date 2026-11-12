@@ -29,8 +29,8 @@ export default function Contributions() {
   const [hours, setHours] = useState('');
   const [error, setError] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
     getContributions().then((x) => {
+      setFailed(false);
       setD(x);
       setCid((c) => c || x.my_communities[0]?.id || '');
     }).catch(() => setFailed(true));

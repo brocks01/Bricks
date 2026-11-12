@@ -22,10 +22,10 @@ export default function FamilyDetail() {
   const [claim, setClaim] = useState<{ name: string; code: string } | null>(null);
 
   const load = useCallback(() => {
-    setFailed(false);
     familyApi
       .get(String(id))
       .then((f) => {
+        setFailed(false);
         setData(f);
         setNewName(f.name);
       })

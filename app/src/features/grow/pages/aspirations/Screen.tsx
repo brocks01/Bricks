@@ -26,8 +26,12 @@ export default function Aspirations() {
   const [kind, setKind] = useState<AspirationKind>('own');
   const [error, setError] = useState(false);
   const load = useCallback(() => {
-    setFailed(false);
-    getAspirations().then(setList).catch(() => setFailed(true));
+    getAspirations()
+      .then((x) => {
+        setFailed(false);
+        setList(x);
+      })
+      .catch(() => setFailed(true));
   }, []);
   useEffect(() => {
     if (status === 'in') load();

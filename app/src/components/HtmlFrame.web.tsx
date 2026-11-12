@@ -1,4 +1,4 @@
-import { createElement, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { colors } from '../theme/tokens';
 
 // A page written by the agent, shown in a locked box. It may now RUN SCRIPTS (so a calculator, a quiz or a converter can really be used), but only in a
@@ -35,5 +35,13 @@ export function HtmlFrame({ html, height = 260 }: { html: string; height?: numbe
     return () => window.removeEventListener('message', on);
   }, []);
   const doc = `<!DOCTYPE html><html><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval'; style-src 'unsafe-inline'; img-src data:; font-src data:"/><style>${BASE}</style></head><body>${html}${FIT}</body></html>`;
-  return createElement('iframe', { ref, sandbox: 'allow-scripts', srcDoc: doc, title: 'Agent page', style: { width: '100%', height: h, border: 0, borderRadius: 12, background: 'transparent' } });
+  return (
+    <iframe
+      ref={ref}
+      sandbox="allow-scripts"
+      srcDoc={doc}
+      title="Agent page"
+      style={{ width: '100%', height: h, border: 0, borderRadius: 12, background: 'transparent' }}
+    />
+  );
 }

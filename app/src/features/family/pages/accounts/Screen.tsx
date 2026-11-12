@@ -22,9 +22,9 @@ export default function Accounts() {
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
-    setFailed(false);
     Promise.all([familyApi.held(), familyApi.aboutMe()])
       .then(([h, a]) => {
+        setFailed(false);
         setHeld(h.delegations);
         setAbout(a.delegations);
       })
@@ -37,7 +37,7 @@ export default function Accounts() {
   const acting = session.activeProfile ? held?.find((d) => d.user_id === session.activeProfile) : null;
   const actingName = acting?.user_name ?? session.user?.display_name ?? '';
 
-  const useAccount = (d: Delegation | null) => {
+  const switchTo = (d: Delegation | null) => {
     setActiveProfile(d?.user_id ?? null);
     setError(null);
   };
@@ -111,7 +111,7 @@ export default function Accounts() {
           </El>
           <El page={page} id="backToMe">
             <View>
-              <Button label={w('backToMe')} icon="person-outline" onPress={() => useAccount(null)} kind="plain" />
+              <Button label={w('backToMe')} icon="person-outline" onPress={() => switchTo(null)} kind="plain" />
             </View>
           </El>
         </View>
@@ -136,7 +136,7 @@ export default function Accounts() {
               {session.activeProfile === d.user_id ? (
                 <Text style={[type.small, { color: colors.accent, fontWeight: '700' }]}>{w('using')}</Text>
               ) : (
-                <Pressable accessibilityRole="button" onPress={() => useAccount(d)} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radius.button, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.accentLine }}>
+                <Pressable accessibilityRole="button" onPress={() => switchTo(d)} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 12, borderRadius: radius.button, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.accentLine }}>
                   <Text style={{ fontSize: 14, fontWeight: '700', color: colors.accent }}>{w('switch')}</Text>
                 </Pressable>
               )}
