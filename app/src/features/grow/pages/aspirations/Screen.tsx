@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { addAspiration, getAspirations, setAspirationDone, type Aspiration, type AspirationKind } from '../../../../api/grow';
+import { addAspiration, getAspirations, removeAspiration, setAspirationDone, type Aspiration, type AspirationKind } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Field, Screen } from '../../../../components/ui';
@@ -9,7 +9,7 @@ import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
-import { Card, Chips } from '../../ui';
+import { Card, Chips, RemoveButton } from '../../ui';
 import { growAspirations as page } from './page';
 
 const KINDS: AspirationKind[] = ['travel', 'hobby', 'health', 'family', 'own'];
@@ -59,6 +59,15 @@ export default function Aspirations() {
     }
   }, []);
 
+  const remove = useCallback(async (a: Aspiration) => {
+    setList((l) => (l ? l.filter((x) => x.id !== a.id) : l)); // gone at once, put back if the server refuses
+    try {
+      await removeAspiration(a.id);
+    } catch {
+      setList((l) => (l ? [a, ...l] : l));
+    }
+  }, []);
+
   usePageData(
     page,
     list === null
@@ -66,7 +75,7 @@ export default function Aspirations() {
       : {
           values: adding ? [{ label: w('addTitle'), value: title }] : [],
           images: [],
-          lists: [{ label: w('heading'), items: list.map((a, n) => ({ label: a.title, detail: `${w('cat_' + a.category)}${a.done ? ' · ' + w('done') : ''}`, actions: [{ id: `toggle${n + 1}`, label: a.done ? a.title : `${w('markDone')}: ${a.title}`, run: () => toggle(a) }] })) }],
+          lists: [{ label: w('heading'), items: list.map((a, n) => ({ label: a.title, detail: `${w('cat_' + a.category)}${a.done ? ' · ' + w('done') : ''}`, actions: [{ id: `toggle${n + 1}`, label: a.done ? a.title : `${w('markDone')}: ${a.title}`, run: () => toggle(a) }, { id: `remove${n + 1}`, label: `${w('remove')}: ${a.title}`, run: () => remove(a) }] })) }],
           actions: [{ id: 'add', label: w('add'), run: () => setAdding(true) }, ...(adding ? [{ id: 'saveAsp', label: w('save'), run: () => save() }] : [])],
         }
   );
@@ -85,7 +94,9 @@ export default function Aspirations() {
         <>
           {list.length === 0 && !adding ? <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('empty')}</Text> : null}
           {list.map((a) => (
-            <Card key={a.id} onPress={() => void toggle(a)}>
+            <View key={a.id} style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flex: 1 }}>
+            <Card onPress={() => void toggle(a)}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
                 <Ionicons name={ICON[a.category]} size={26} color={colors.accent} />
                 <View style={{ flex: 1 }}>
@@ -95,6 +106,9 @@ export default function Aspirations() {
                 <Ionicons name={a.done ? 'checkmark-circle' : 'ellipse-outline'} size={26} color={colors.accent} />
               </View>
             </Card>
+              </View>
+              <RemoveButton label={w('remove')} onPress={() => void remove(a)} />
+            </View>
           ))}
           {adding ? (
             <View style={{ marginTop: space.sm }}>

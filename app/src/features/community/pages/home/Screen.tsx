@@ -8,6 +8,7 @@ import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
 import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
+import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import { communityHome as page } from './page';
@@ -28,7 +29,8 @@ export default function CommunityHome() {
   const { status } = useStore(sessionStore);
   const [data, setData] = useState<CommunityDetail | null>(null);
   const [failed, setFailed] = useState(false);
-  const [showSoon, setShowSoon] = useState(false);
+  const go = useNavigate();
+  const open = (area: 'events' | 'activities' | 'people' | 'initiatives') => { go(`community.${area}`, { id: String(id) }); };
   const [now] = useState(() => Date.now());
 
   const load = useCallback(() => {
@@ -93,10 +95,10 @@ export default function CommunityHome() {
           },
         ],
         actions: [
-          { id: 'events', label: w('events'), run: () => setShowSoon(true) },
-          { id: 'activities', label: w('activities'), run: () => setShowSoon(true) },
-          { id: 'people', label: w('people'), run: () => setShowSoon(true) },
-          { id: 'initiatives', label: w('initiatives'), run: () => setShowSoon(true) },
+          { id: 'events', label: w('events'), run: () => open('events') },
+          { id: 'activities', label: w('activities'), run: () => open('activities') },
+          { id: 'people', label: w('people'), run: () => open('people') },
+          { id: 'initiatives', label: w('initiatives'), run: () => open('initiatives') },
         ],
       }
     : null;
@@ -140,7 +142,7 @@ export default function CommunityHome() {
         {AREAS.map((a) => (
           <View key={a.id} style={{ flex: 1 }}>
             <El page={page} id={a.id}>
-              <Pressable onPress={() => setShowSoon(true)} accessibilityRole="button" style={{ alignItems: 'center', gap: 6, paddingVertical: space.sm, borderRadius: radius.button, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
+              <Pressable onPress={() => open(a.id)} accessibilityRole="button" style={{ alignItems: 'center', gap: 6, paddingVertical: space.sm, borderRadius: radius.button, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
                 <Ionicons name={a.icon} size={24} color={colors.accent} />
                 <Text style={[type.small, { color: colors.ink }]} numberOfLines={1}>{w(a.id)}</Text>
               </Pressable>
@@ -148,11 +150,11 @@ export default function CommunityHome() {
           </View>
         ))}
       </View>
-      {showSoon ? <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginTop: space.xs }]}>{w('soon')}</Text> : null}
 
       <El page={page} id="happening"><Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('happening')}</Text></El>
       {next.length ? next.map((a, i) => (
         <View key={a.id} style={[card, { flexDirection: 'row', alignItems: 'center', gap: space.md }]}>
+          <Pressable onPress={() => go('community.event', { id: String(id), eid: a.id })} accessibilityRole="button" accessibilityLabel={a.title} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md }}>
           {a.image_url ? (
             <Image source={{ uri: a.image_url }} accessibilityIgnoresInvertColors style={{ width: 64, height: 64, borderRadius: 12, backgroundColor: colors.accentSoft }} />
           ) : (
@@ -165,6 +167,7 @@ export default function CommunityHome() {
             <Text style={[type.small, { color: colors.muted }]}>{when(a.starts_at)}</Text>
             {a.location ? <Text style={[type.small, { color: colors.muted }]}>{a.location}</Text> : null}
           </View>
+          </Pressable>
           <El page={page} id={`going${i + 1}`}>
             <Pressable onPress={() => void toggle(a.id, a.i_going)} accessibilityRole="button" style={{ minWidth: 72, minHeight: 44, borderRadius: radius.button, backgroundColor: a.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
               <Text style={{ fontSize: 15, fontWeight: '700', color: a.i_going ? '#FFFFFF' : colors.accent }}>{a.i_going ? w('going') : w('join')}</Text>
@@ -175,7 +178,7 @@ export default function CommunityHome() {
 
       <El page={page} id="updates"><Text style={[type.h2, { color: colors.ink, marginTop: space.md, marginBottom: space.sm }]}>{w('updates')}</Text></El>
       {updates.length ? updates.map((u) => (
-        <View key={u.id} style={card}>
+        <Pressable key={u.id} onPress={() => go('community.update', { id: String(id), uid: u.id })} accessibilityRole="button" style={card}>
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
             <Ionicons name={u.pinned ? 'pin' : 'megaphone-outline'} size={20} color={colors.accent} />
             <Text style={{ flex: 1, fontSize: 16, fontWeight: '700', color: colors.ink }}>{u.title}</Text>
@@ -183,7 +186,7 @@ export default function CommunityHome() {
           </View>
           <Text style={[type.body, { color: colors.ink, marginTop: space.xs }]} numberOfLines={3}>{u.body}</Text>
           {u.author ? <Text style={[type.small, { color: colors.muted, marginTop: space.xs }]}>{u.author}</Text> : null}
-        </View>
+        </Pressable>
       )) : <Text style={[type.body, { color: colors.muted }]}>{w('noUpdates')}</Text>}
     </Screen>
   );

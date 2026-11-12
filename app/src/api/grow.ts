@@ -41,3 +41,7 @@ export const getContributions = () => api<ContributionsData>('GET', '/v1/grow/co
 export const addContribution = (community_id: string, kind: ContributionKind, description: string, hours?: number) => api<unknown>('POST', '/v1/grow/contributions', { community_id, kind, description, hours });
 
 export const getProgress = () => api<ProgressData>('GET', '/v1/grow/progress');
+
+export const removeAspiration = (id: string) => api<unknown>('DELETE', `/v1/grow/aspirations/${id}`);
+export const removeReading = (id: string) => api<unknown>('DELETE', `/v1/grow/health/readings/${id}`);
+export const removeActivity = (id: string) => api<unknown>('DELETE', `/v1/grow/activity/${id}`);

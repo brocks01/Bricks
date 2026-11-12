@@ -5,7 +5,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AgentDock } from '../agent/dock';
 import { surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
-import { loadFamilies, useFamilies } from '../features/family/state';
+import { loadFamilies } from '../features/family/state';
 import { useT } from '../i18n';
 import { tabPages, useCurrentPage, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
@@ -26,9 +26,8 @@ export function AppTabBar() {
   const current = useCurrentPage();
   const { status, user } = useStore(sessionStore);
   const insets = useSafeAreaInsets();
-  // The Family tab is only there when the person actually belongs to a family, so we keep the list fresh:
+  // The Family tab is always there (a person with no family sees how to create or join one); the list is kept fresh:
   // refetched once on every sign-in, and again whenever the family screens change something.
-  const { families } = useFamilies();
   useEffect(() => {
     if (status === 'in') void loadFamilies().catch(() => undefined);
   }, [status]);
@@ -52,7 +51,6 @@ export function AppTabBar() {
       {canvasOpen ? null : (
         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
           {tabPages()
-            .filter((p) => p.key !== 'family.home' || (families?.length ?? 0) > 0) // the rule: the tab exists only with a family
             .map((p) => {
             const active = current?.key === p.key;
             const icon = (active ? p.icon : `${p.icon}-outline`) as keyof typeof Ionicons.glyphMap;

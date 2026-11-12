@@ -4,7 +4,7 @@ import type { PageStrings } from '../../../../navigation/types';
 export const strings: PageStrings = {
   en: {
     heading: 'My Bricks accounts',
-    acting: 'You are now helping {name} in the app. Everything you do is on their account.',
+    acting: 'You are now helping {name}. Open your profile (the avatar) to see and set up their details.',
     backToMe: 'Back to my account',
     me: 'My account',
     helpers: 'Accounts I help with',
@@ -26,7 +26,7 @@ export const strings: PageStrings = {
   },
   hi: {
     heading: 'मेरे Bricks खाते',
-    acting: 'अब आप ऐप में {name} की मदद कर रहे हैं। आपका सब कुछ उनके खाते पर हो रहा है।',
+    acting: 'अब आप {name} की मदद कर रहे हैं। उनकी जानकारी देखने और भरने के लिए अपनी प्रोफ़ाइल (अवतार) खोलें।',
     backToMe: 'वापस मेरे खाते पर',
     me: 'मेरा खाता',
     helpers: 'जिन खातों में मैं मदद करता हूँ',
@@ -48,7 +48,7 @@ export const strings: PageStrings = {
   },
   bn: {
     heading: 'আমার Bricks অ্যাকাউন্ট',
-    acting: 'এখন আপনি অ্যাপে {name} কে সাহায্য করছেন। আপনার সব কিছু তাঁর অ্যাকাউন্টে হচ্ছে।',
+    acting: 'এখন আপনি {name} কে সাহায্য করছেন। তাঁর তথ্য দেখতে ও ঠিক করতে প্রোফাইল (অ্যাভাটার) খুলুন।',
     backToMe: 'আমার অ্যাকাউন্টে ফিরে যান',
     me: 'আমার অ্যাকাউন্ট',
     helpers: 'যেসব অ্যাকাউন্টে আমি সাহায্য করি',
@@ -70,7 +70,7 @@ export const strings: PageStrings = {
   },
   ta: {
     heading: 'என் Bricks கணக்குகள்',
-    acting: 'இப்போது நீங்கள் செயலியில் {name} அவர்களுக்கு உதவுகிறீர்கள். நீங்கள் செய்யும் அனைத்தும் அவருடைய கணக்கில் நடக்கிறது.',
+    acting: 'இப்போது நீங்கள் {name} அவர்களுக்கு உதவுகிறீர்கள். அவர்களின் விவரங்களைப் பார்க்கவும் அமைக்கவும் உங்கள் சுயவிவரத்தை (அவதார்) திறக்கவும்.',
     backToMe: 'என் கணக்குக்குத் திரும்பு',
     me: 'என் கணக்கு',
     helpers: 'நான் உதவும் கணக்குகள்',
@@ -92,7 +92,7 @@ export const strings: PageStrings = {
   },
   zh: {
     heading: '我的 Bricks 账户',
-    acting: '您现在正在应用里帮助{name}。您做的一切都在他们的账户上。',
+    acting: '您现在正在帮助{name}。点击头像打开资料，即可查看并设置他们的信息。',
     backToMe: '回到我的账户',
     me: '我的账户',
     helpers: '我在帮助的账户',
@@ -114,7 +114,7 @@ export const strings: PageStrings = {
   },
   ms: {
     heading: 'Akaun Bricks saya',
-    acting: 'Anda kini membantu {name} dalam aplikasi. Semua yang anda buat adalah atas akaun mereka.',
+    acting: 'Anda kini membantu {name}. Buka profil anda (avatar) untuk melihat dan menetapkan butiran mereka.',
     backToMe: 'Kembali ke akaun saya',
     me: 'Akaun saya',
     helpers: 'Akaun yang saya bantu',

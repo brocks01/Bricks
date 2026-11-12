@@ -15,7 +15,8 @@ export default function Me() {
   const t = useT();
   const go = useNavigate();
   const code = useLanguage();
-  const { user } = useStore(sessionStore);
+  const { user: own, actingUser } = useStore(sessionStore);
+  const user = actingUser ?? own; // while helping a family member, their details are shown
   const current = LANGUAGES.find((l) => l.code === code);
   const notSet = t('common.notSet');
   useAction(page, 'editProfile', () => go('me.edit'));

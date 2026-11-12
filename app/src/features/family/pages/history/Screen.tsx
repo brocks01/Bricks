@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { familyApi, type PermissionEvent } from '../../../../api/family';
 import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { usePageData, usePageWords, type PageDataInput } from '../../../../kit';
+import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import { familyHistory as page } from './page';
 
@@ -12,6 +14,7 @@ const KNOWN = ['family_created', 'invite_sent', 'member_joined', 'role_changed',
 export default function PermissionHistory() {
   const w = usePageWords(page);
   const lang = useLanguage();
+  const { status } = useStore(sessionStore);
   const [events, setEvents] = useState<PermissionEvent[] | null>(null);
   const [failed, setFailed] = useState(false);
 
@@ -22,8 +25,8 @@ export default function PermissionHistory() {
     }).catch(() => setFailed(true));
   }, []);
   useEffect(() => {
-    load();
-  }, [load]);
+    if (status === 'in') load(); // wait until the saved sign-in has been checked, so the request carries a token
+  }, [status, load]);
 
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const word = (a: string) => (KNOWN.includes(a) ? w(a) : w('action', { a }));

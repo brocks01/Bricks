@@ -1,7 +1,7 @@
 import { definePage } from '../../../../kit/page';
 import { strings } from './strings';
 
-// Community Home, as in ui-samples/10-community-screens.webp (screen 1). Events, Activities, People and Initiatives open their own screens (not built yet).
+// Community Home, as in ui-samples/10-community-screens.webp (screen 1). Events, Activities, People and Initiatives open their own screens (features/community/screens).
 export const communityHome = definePage({
   key: 'community.home',
   module: 'community',
@@ -12,10 +12,10 @@ export const communityHome = definePage({
   keywords: ['community', 'home', 'updates', 'happening'],
   elements: {
     heading: { kind: 'text', summary: 'The name of the community.' },
-    events: { kind: 'action', summary: 'Open the events of this community. Coming soon.' },
-    activities: { kind: 'action', summary: 'Open the activities of this community. Coming soon.' },
-    people: { kind: 'action', summary: 'Open the people of this community. Coming soon.' },
-    initiatives: { kind: 'action', summary: 'Open the initiatives of this community. Coming soon.' },
+    events: { kind: 'action', summary: 'Open the events of this community.' },
+    activities: { kind: 'action', summary: 'Open the activities of this community.' },
+    people: { kind: 'action', summary: 'Open the people of this community.' },
+    initiatives: { kind: 'action', summary: 'Open the initiatives of this community.' },
     happening: { kind: 'text', summary: 'The next events and activities in this community.' },
     updates: { kind: 'text', summary: 'The latest updates posted in this community.' },
   },

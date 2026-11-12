@@ -47,6 +47,7 @@ export default function GrowIndex() {
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 13.5, fontWeight: '800', color: colors.ink }} numberOfLines={2}>{w(c.id)}</Text>
                   <Text style={{ fontSize: 11.5, lineHeight: 15, color: '#3B4A63' }} numberOfLines={3}>{w(c.id + '_line')}</Text>
+                  {c.id === 'health' ? <Text style={{ fontSize: 11, fontWeight: '800', color: G, marginTop: 2 }}>{w('soon')}</Text> : null}
                 </View>
               </Pressable>
             </El>

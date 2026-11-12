@@ -1,7 +1,7 @@
 import { definePage } from '../../../../kit/page';
 import { strings } from './strings';
 
-// The third tab: only shown when the person belongs to at least one family. Empty state invites
+// The third tab: always shown (a person with no family sees how to create or join one). Empty state invites
 // creating a family (I become its owner) or joining one with a code a family member gave me.
 export const familyHome = definePage({
   key: 'family.home',

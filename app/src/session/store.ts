@@ -22,6 +22,7 @@ interface SessionState {
   status: 'loading' | 'out' | 'in';
   user: User | null;
   activeProfile: string | null; // the account the app is acting on (acting as a family helper); null = myself
+  actingUser: User | null; // that account's own profile (name, phone...), loaded when it is switched to; null while myself or still loading
   pendingEmail: string | null; // the address a code was just sent to
   devCode: string | null; // only set when the server is in development mode
 }
@@ -33,7 +34,7 @@ interface Tokens {
   is_new: boolean;
 }
 
-export const sessionStore = createStore<SessionState>({ status: 'loading', user: null, activeProfile: null, pendingEmail: null, devCode: null });
+export const sessionStore = createStore<SessionState>({ status: 'loading', user: null, activeProfile: null, actingUser: null, pendingEmail: null, devCode: null });
 
 let accessToken: string | null = null;
 let refreshToken: string | null = null;
@@ -43,14 +44,14 @@ async function accept(t: Tokens): Promise<void> {
   accessToken = t.access_token;
   refreshToken = t.refresh_token;
   await saveRefreshToken(t.refresh_token);
-  sessionStore.set((s) => ({ ...s, status: 'in', user: t.user, activeProfile: null, pendingEmail: null, devCode: null }));
+  sessionStore.set((s) => ({ ...s, status: 'in', user: t.user, activeProfile: null, actingUser: null, pendingEmail: null, devCode: null }));
 }
 
 async function clear(): Promise<void> {
   accessToken = null;
   refreshToken = null;
   await saveRefreshToken(null);
-  sessionStore.set((s) => ({ ...s, status: 'out', user: null, activeProfile: null }));
+  sessionStore.set((s) => ({ ...s, status: 'out', user: null, activeProfile: null, actingUser: null }));
 }
 
 /**
@@ -59,7 +60,13 @@ async function clear(): Promise<void> {
  * the server re-checks the live delegation on every request, so ended access takes hold at once.
  */
 export function setActiveProfile(id: string | null): void {
-  sessionStore.set((s) => (id && s.user?.id === id ? { ...s, activeProfile: null } : { ...s, activeProfile: id }));
+  const mine = !id || sessionStore.get().user?.id === id;
+  sessionStore.set((s) => ({ ...s, activeProfile: mine ? null : id, actingUser: null }));
+  if (mine || !id) return;
+  // The profile the person now acts on (the server sends the on-behalf header's account); shown by Me and Edit profile instead of my own.
+  api<User>('GET', '/v1/me')
+    .then((u) => sessionStore.set((s) => (s.activeProfile === id ? { ...s, actingUser: u } : s)))
+    .catch(() => undefined);
 }
 
 /** Gets a new access token from the saved refresh token. Used at start-up and whenever the server says the token has expired. */
@@ -164,7 +171,7 @@ export type ProfilePatch = Partial<{ display_name: string; language: LangCode; a
 export async function updateProfile(patch: ProfilePatch): Promise<User> {
   const user = await api<User>('PATCH', '/v1/me', patch);
   // While acting on behalf of someone else the answer is THEIR profile; my session stays mine.
-  sessionStore.set((s) => (user.id === s.user?.id ? { ...s, user } : s));
+  sessionStore.set((s) => (user.id === s.user?.id ? { ...s, user } : user.id === s.actingUser?.id ? { ...s, actingUser: user } : s));
   return user;
 }
 
