@@ -17,21 +17,23 @@ export function AgentProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const current = useCurrentPage();
   const currentRef = useRef(current);
-  currentRef.current = current;
+  useEffect(() => {
+    currentRef.current = current; // kept fresh after every commit
+  });
   const [pending, setPending] = useState<Pending | null>(null);
 
   const tools = useMemo(
     () =>
       createAgentTools({
-        currentPage: () => currentRef.current?.key,
+        currentPage: () => current?.key,
         open: (key, params) => navigate(key, params, { origin: 'agent' }),
         confirm: (title, input) => new Promise<boolean>((resolve) => setPending({ title, input, resolve })),
       }),
-    [navigate]
+    [navigate, current]
   );
 
   useEffect(() => {
-    registerRunner({ call: tools.call, page: () => currentRef.current?.key });
+    registerRunner({ call: tools.call, page: () => currentRef.current?.key }); // read at call time, not render
   }, [tools]);
 
   const answer = useCallback((ok: boolean) => {

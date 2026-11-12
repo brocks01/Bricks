@@ -2,7 +2,7 @@ import { Image, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../../components/ui';
 import { LANGUAGES, useLanguage } from '../../../../i18n';
-import { El, useAction, usePageWords } from '../../../../kit';
+import { El, useAction, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import { authWelcome as page } from './page';
@@ -19,6 +19,17 @@ export default function Welcome() {
   const native = LANGUAGES.find((l) => l.code === code)?.native ?? '';
   useAction(page, 'start', () => go('auth.signIn'));
   useAction(page, 'languageLink', () => go('language.pick'));
+  // What the agent sees before sign-in: the three entries, nothing else. It can explain them, not press them.
+  usePageData(page, {
+    values: [{ label: w('subtitle'), value: native }],
+    images: [],
+    lists: [],
+    actions: [
+      { id: 'start', label: w('start'), run: () => { go('auth.signIn'); } },
+      { id: 'familyCode', label: w('familyCode'), run: () => { go('family.claim'); } },
+      { id: 'languageLink', label: w('languageLink'), run: () => { go('language.pick'); } },
+    ],
+  });
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg, paddingHorizontal: space.lg, paddingTop: insets.top, paddingBottom: insets.bottom }}>

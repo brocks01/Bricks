@@ -1,7 +1,7 @@
 // Plain-Node self-test of the tree, the agent tools, the page controls, the glow, the policies and the words of every page.
 // Run from bricks/app:  npx tsx src/navigation/selftest.ts
 import '../features';
-import { createAgentTools } from '../agent/tools';
+import { createAgentTools, toolSpecs } from '../agent/tools';
 import { registerControl } from '../agent/pageControls';
 import { languagesMissing, t } from '../i18n/tables';
 import { languageStore } from '../i18n/store';
@@ -9,7 +9,6 @@ import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
 import { pageDataOf, publishPageData } from '../kit/pageData';
 import { answerSurface, dragSurface, fitToContent, hideSurface, LIMITS, openArea, parseShow, putAway, releaseSurface, setPanelRatio, setSurfaceArea, setTyping, SHEET_RATIO, surfaceStore } from '../agent/surface';
-import { toolSpecs } from '../agent/tools';
 import { IDLE_MS } from '../agent/live';
 import { sessionStore } from '../session/store';
 import { allModules, allPages, defineModule, pageForPath, search, tabPages } from './registry';

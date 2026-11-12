@@ -1,5 +1,5 @@
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Animated, Pressable, Text, View } from 'react-native';
 import { audioAvailable } from '../agent/audio';
 import { agentUi, end, startTalk } from '../agent/live';
@@ -54,7 +54,7 @@ export function AgentControls() {
 
 /** A soft red ring that breathes around the hang-up button while the call is on: the sign that the agent is listening. */
 function Glow() {
-  const v = useRef(new Animated.Value(0)).current;
+  const v = useState(() => new Animated.Value(0))[0];
   useEffect(() => {
     const loop = Animated.loop(Animated.sequence([Animated.timing(v, { toValue: 1, duration: 1100, useNativeDriver: true }), Animated.timing(v, { toValue: 0, duration: 1100, useNativeDriver: true })]));
     loop.start();
@@ -65,15 +65,18 @@ function Glow() {
 
 /** Tiny listening bars and the call time, in the space to the right of the call button. Nothing else. */
 function Listening({ since }: { since: number | null }) {
-  const bars = useRef([0, 1, 2, 3, 4].map(() => new Animated.Value(0.4))).current;
-  const [sec, setSec] = useState(since ? Math.floor((Date.now() - since) / 1000) : 0);
+  const bars = useState(() => [0, 1, 2, 3, 4].map(() => new Animated.Value(0.4)))[0];
+  const [sec, setSec] = useState(0);
   useEffect(() => {
     const loops = bars.map((b, i) => Animated.loop(Animated.sequence([Animated.timing(b, { toValue: 1, duration: 380 + i * 90, useNativeDriver: true }), Animated.timing(b, { toValue: 0.3, duration: 420 + i * 70, useNativeDriver: true })])));
     loops.forEach((l) => l.start());
-    const tick = setInterval(() => setSec(since ? Math.floor((Date.now() - since) / 1000) : 0), 1000);
+    const tick = () => setSec(since ? Math.floor((Date.now() - since) / 1000) : 0);
+    const first = setTimeout(tick, 0); // the first second comes a tick later: the clock is not read during render
+    const iv = setInterval(tick, 1000);
     return () => {
       loops.forEach((l) => l.stop());
-      clearInterval(tick);
+      clearTimeout(first);
+      clearInterval(iv);
     };
   }, [bars, since]);
   return (

@@ -2,7 +2,6 @@
 import './auth/module';
 import './connect/module';
 import './community/module';
-import './community/module';
 import './grow/module';
 import './explore/module';
 import './me/module';

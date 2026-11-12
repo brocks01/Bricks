@@ -29,11 +29,13 @@ export function useField(page: PageLike, id: string, value: unknown, setValue: (
   const w = usePageWords(page);
   const label = w(id);
   const ref = useRef({ value, setValue });
-  ref.current = { value, setValue };
+  useEffect(() => {
+    ref.current = { value, setValue }; // kept fresh after every commit; the agent reads it between renders
+  });
   useEffect(
     () =>
       registerControl({ key: elementKey(page, id), page: page.key, id, kind: 'field', label, type: el.type, options: el.options, get: () => (el.secret ? undefined : ref.current.value), set: (v) => ref.current.setValue(v) }),
-    [page.key, id, label, el.type, el.options, el.secret]
+    [page, id, label, el.type, el.options, el.secret]
   );
 }
 
@@ -43,7 +45,9 @@ export function useAction(page: PageLike, id: string, run: () => unknown) {
   const w = usePageWords(page);
   const label = w(id);
   const ref = useRef(run);
-  ref.current = run;
+  useEffect(() => {
+    ref.current = run; // kept fresh after every commit
+  });
   useEffect(
     () =>
       registerControl({
@@ -56,7 +60,7 @@ export function useAction(page: PageLike, id: string, run: () => unknown) {
           await ref.current();
         },
       }),
-    [page.key, id, label]
+    [page, id, label]
   );
 }
 
@@ -64,7 +68,7 @@ export function useAction(page: PageLike, id: string, run: () => unknown) {
 export function El({ page, id, children }: { page: PageLike; id: string; children: ReactNode }) {
   const g = useStore(glowStore);
   const on = g.key === elementKey(page, id);
-  const pulse = useRef(new Animated.Value(0.4)).current;
+  const pulse = useState(() => new Animated.Value(0.4))[0];
   const [still, setStill] = useState(false);
   useEffect(() => {
     AccessibilityInfo.isReduceMotionEnabled().then(setStill).catch(() => undefined);

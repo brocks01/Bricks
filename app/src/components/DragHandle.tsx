@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { PanResponder, Platform, type ViewStyle, View } from 'react-native';
+import { PanResponder, Platform, View, type ViewStyle } from 'react-native';
 import { colors } from '../theme/tokens';
 
 /**
@@ -26,36 +26,38 @@ export interface DragHandleProps {
 const webDrag = { userSelect: 'none', touchAction: 'none', cursor: 'grab' } as unknown as ViewStyle;
 
 export function DragHandle({ label, onMove, onRelease, children, style, bare }: DragHandleProps) {
-  // The callbacks change every render; the responder must not, so it reads them from a box it mutates.
-  const cb = useRef<DragHandleProps>({ label }).current;
-  cb.onMove = onMove;
-  cb.onRelease = onRelease;
   const [live, setLive] = useState(false);
 
-  const pan = useRef(
-    PanResponder.create({
-      onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx) * 1.5,
-      onPanResponderMove: (_e, g) => {
-        setLive(true);
-        cb.onMove?.(g.dy);
-      },
-      onPanResponderTerminate: () => {
-        setLive(false);
-        cb.onMove?.(0);
-      },
-      onPanResponderRelease: (_e, g) => {
-        setLive(false);
-        cb.onRelease?.(g.dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
-        cb.onMove?.(0);
-      },
-      // The sheet's own scroll view must not steal the gesture once it has started.
-      onPanResponderTerminationRequest: () => false,
-    })
-  ).current;
+  // Created fresh on every render (a tiny object): the responder's closures always see this render's
+  // callbacks, so no ref box is needed and nothing is read during render. The gesture state itself
+  // lives in React Native's responder system, not in this object.
+  const pan = PanResponder.create({
+    onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dy) > 6 && Math.abs(g.dy) > Math.abs(g.dx) * 1.5,
+    onPanResponderMove: (_e, g) => {
+      setLive(true);
+      onMove?.(g.dy);
+    },
+    onPanResponderTerminate: () => {
+      setLive(false);
+      onMove?.(0);
+    },
+    onPanResponderRelease: (_e, g) => {
+      setLive(false);
+      onRelease?.(g.dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
+      onMove?.(0);
+    },
+    // The sheet's own scroll view must not steal the gesture once it has started.
+    onPanResponderTerminationRequest: () => false,
+  });
 
   // On the web a mouse does not drive PanResponder reliably, so the web uses pointer events on the element itself. Capture starts only
   // once the pointer has moved a few pixels, so a plain click on a button inside the header still works.
+  // The listeners are attached once; the callbacks they call are kept latest through this ref (read at event time, never during render).
   const node = useRef<unknown>(null);
+  const latest = useRef({ onMove, onRelease });
+  useEffect(() => {
+    latest.current = { onMove, onRelease };
+  });
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const el = node.current as HTMLElement | null;
@@ -79,7 +81,7 @@ export function DragHandle({ label, onMove, onRelease, children, style, bare }: 
         setLive(true);
       }
       e.preventDefault();
-      cb.onMove?.(dy);
+      latest.current.onMove?.(dy);
     };
     const onUp = (e: PointerEvent) => {
       if (!down) return;
@@ -88,8 +90,8 @@ export function DragHandle({ label, onMove, onRelease, children, style, bare }: 
       try { el.releasePointerCapture(e.pointerId); } catch { /* nothing captured */ }
       if (!moved) return;
       setLive(false);
-      cb.onRelease?.(dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
-      cb.onMove?.(0);
+      latest.current.onRelease?.(dy); // release first: it reads where the hand left the sheet, then the live offset is cleared
+      latest.current.onMove?.(0);
     };
     el.addEventListener('pointerdown', onDown);
     el.addEventListener('pointermove', onMove);
@@ -101,7 +103,7 @@ export function DragHandle({ label, onMove, onRelease, children, style, bare }: 
       el.removeEventListener('pointerup', onUp);
       el.removeEventListener('pointercancel', onUp);
     };
-  }, [cb]);
+  }, [node]);
 
   return (
     <View ref={node as never} {...(Platform.OS === 'web' ? {} : pan.panHandlers)} style={[{ opacity: live ? 0.7 : 1 }, webDrag, style]}>

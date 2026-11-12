@@ -23,9 +23,9 @@ export default function ExploreItemScreen() {
   const [step, setStep] = useState(0); // 0 = not started, 1..n = on that step, n+1 = finished
 
   const load = useCallback(() => {
-    setFailed(false);
     getExploreItem(String(id))
       .then((d) => {
+        setFailed(false);
         setItem(d);
         const n = Math.max(1, d.steps.length);
         setStep(d.completed ? n + 1 : d.percent > 0 ? Math.min(n, Math.round((d.percent / 100) * n) + 1) : 0);

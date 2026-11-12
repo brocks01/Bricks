@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
 import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
 import { useT } from '../../../../i18n';
-import { El, useAction, useField, usePageWords } from '../../../../kit';
+import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { errorWords } from '../../../../session/errors';
 import { claimWithCode } from '../../../../session/store';
@@ -45,9 +45,16 @@ export default function Claim() {
   useField(page, 'code', code, (v) => setCode(String(v).replace(/\D/g, '').slice(0, 6)));
   useField(page, 'email', email, (v) => setEmail(String(v)));
   useAction(page, 'claim', () => void claim());
+  // The agent may see the contact address, never the 6-digit family code (it is the person's key to the account).
+  usePageData(page, {
+    values: [{ label: w('email'), value: email }],
+    images: [],
+    lists: [],
+    actions: [{ id: 'claim', label: w('claim'), run: () => void claim() }],
+  });
 
   return (
-    <Screen title={w('heading')} plain>
+    <Screen title={w('heading')} back>
       <View style={{ gap: space.md }}>
         <Text style={[type.body, { color: colors.muted }]}>{w('intro')}</Text>
         <El page={page} id="code">

@@ -99,6 +99,33 @@ class FakeLive:
                 return
 
 
+def test_guest_talk_is_allowed_and_can_only_look(monkeypatch):
+    """Before sign-in the agent works without a token, but only LOOKS at the open page: no fill, no press, no run."""
+    seen = {}
+
+    class GuestLive(FakeLive):
+        async def open(self):
+            seen["prompt"] = self.system_prompt
+            seen["tools"] = [t["name"] for t in self.tools]
+            await super().open()
+
+    monkeypatch.setattr(agent_router, "LiveSession", GuestLive)
+    with client.websocket_connect("/v1/agent/live") as ws:
+        ws.send_text(json.dumps({"type": "auth", "guest": True, "language": "hi", "page": "auth.signIn", "tools": TOOLS}))
+        assert json.loads(ws.receive_text())["type"] == "ready"
+        ws.send_text(json.dumps({"type": "end"}))
+    assert "Hindi" in seen["prompt"] and "ONLY LOOK" in seen["prompt"]
+    assert "auth.signIn" in seen["prompt"]
+    assert set(seen["tools"]) <= agent_router.GUEST_TOOLS  # only the look-and-end tools get through
+    assert "fill" not in seen["tools"] and "run" not in seen["tools"] and "open" not in seen["tools"]
+
+
+def test_auth_without_a_token_and_no_guest_flag_is_refused():
+    with client.websocket_connect("/v1/agent/live") as ws:
+        ws.send_text(json.dumps({"type": "auth", "token": "", "tools": []}))
+        assert json.loads(ws.receive_text()) == {"type": "error", "message": "unauthorized"}
+
+
 def test_a_talk_with_a_tool_call(monkeypatch):
     monkeypatch.setattr(agent_router, "LiveSession", FakeLive)
     with client.websocket_connect("/v1/agent/live") as ws:

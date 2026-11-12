@@ -5,6 +5,7 @@ import { t } from '../i18n/tables';
 import { createStore } from '../core/store';
 import { apiBase } from '../api/client';
 import { freshToken } from '../session/store';
+import { languageStore } from '../i18n/store';
 import { audioAvailable, isSpeaking, playPcm24k, speechSeenAt, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
 import { hideSurface } from './surface';
@@ -20,6 +21,8 @@ export const agentUi = createStore<{ phase: Phase; open: boolean; mic: boolean; 
 
 type Runner = { call: (name: string, args?: Record<string, unknown>) => Promise<unknown>; page: () => string | undefined };
 let runner: Runner | null = null;
+/** The agent's own tool names allowed before sign-in: it may only look (see the open page) and end the talk. */
+const GUEST_TOOLS = ['read', 'tree', 'search', 'docs', 'end'];
 /** The agent provider hands over its tools (they know how to navigate, glow and ask for approval). */
 export const registerRunner = (r: Runner) => {
   runner = r;
@@ -198,7 +201,8 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
       .catch(() => set({ notice: 'micdenied' }));
   }
   const token = await freshToken(); // no network unless the token is about to expire
-  if (!token) {
+  if (!token && !runner?.page()) {
+    // no session and no page context: nothing to talk about
     stopMic();
     stopWatchdog();
     return void set({ phase: 'idle', notice: 'signin' });
@@ -206,7 +210,14 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
   if (starting !== mine) return; // ended while we waited
   const sock = new WebSocket(wsUrl());
   ws = sock;
-  sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs });
+  if (token) {
+    sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs });
+  } else {
+    // Not signed in: a guest talk on the sign-in pages. The agent may only SEE the open page and explain
+    // what to do (an elderly person who cannot follow the sign-in or the code asks for help at any moment).
+    const seeOnly = toolSpecs.filter((s) => GUEST_TOOLS.includes(s.name));
+    sock.onopen = () => send({ type: 'auth', guest: true, language: languageStore.get().code, page: runner?.page(), tools: seeOnly });
+  }
   sock.onmessage = (e) => onMessage(String(e.data));
   sock.onerror = () => set({ notice: 'failed' });
   sock.onclose = () => {

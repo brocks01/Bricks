@@ -128,8 +128,9 @@ export const pageDataOf = (page: string): PageData | null => published.get(page)
  */
 export function usePageData(page: { key: string }, data: PageDataInput | null): void {
   const ref = useRef(data);
-  ref.current = data;
   // No dependency list on purpose: the publication has to be rebuilt every render to stay true.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => publishPageData(page.key, ref.current));
+  useEffect(() => {
+    ref.current = data; // kept fresh after every commit
+    publishPageData(page.key, ref.current);
+  });
 }
