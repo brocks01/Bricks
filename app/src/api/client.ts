@@ -48,6 +48,10 @@ import type {
   VoiceClip,
   GroupWalk,
   NewCheer,
+  Org,
+  OrgDetail,
+  OrgJoined,
+  OrgPerson,
   WalkPeriod,
   WalkVisibility,
   WalkStats,
@@ -114,6 +118,13 @@ export interface BricksApi {
   createFamilyInvite(input: NewFamilyInvite): Promise<FamilyInvite>;
   /** The senior's yes (ON-5). Normally sent from WhatsApp or SMS; a demo control in the app. */
   acceptFamilyInvite(id: string): Promise<FamilyInvite>;
+  /** S11: the organisations this member runs (staff only). */
+  getMyOrgs(): Promise<Org[]>;
+  getOrg(id: string): Promise<OrgDetail>;
+  /** Upload a list: each person is Invited until they scan or tap the link. */
+  addOrgPeople(id: string, people: OrgPerson[]): Promise<OrgDetail>;
+  /** A member scanned the QR (or tapped the link). */
+  joinOrg(code: string): Promise<OrgJoined>;
   /** S10: family turns Simple Mode on or off for a parent who has joined. */
   setSeniorSimpleMode(seniorId: string, on: boolean): Promise<void>;
   /** What was said in a recording. Rejects when there's no speech service (mock data). */
@@ -211,6 +222,11 @@ const httpApi: BricksApi = {
   skipThanks: (eventId) =>
     request(`/endorsements/pending/${encodeURIComponent(eventId)}`, { method: 'DELETE' }),
   getFamilyInvites: () => request('/family/invites'),
+  getMyOrgs: () => request('/orgs/mine'),
+  getOrg: (id) => request(`/orgs/${encodeURIComponent(id)}`),
+  addOrgPeople: (id, people) =>
+    request(`/orgs/${encodeURIComponent(id)}/members/bulk`, { method: 'POST', body: { people } }),
+  joinOrg: (code) => request(`/orgs/join/${encodeURIComponent(code)}`, { method: 'POST' }),
   setSeniorSimpleMode: (seniorId, on) =>
     request(`/family/seniors/${encodeURIComponent(seniorId)}/simple-mode`, {
       method: 'PUT',

@@ -1,5 +1,10 @@
 import type {
   NewCheer,
+  Org,
+  OrgDetail,
+  OrgJoined,
+  OrgMember,
+  OrgPerson,
   WalkPeriod,
   WalkVisibility,
   CheckinResult,
@@ -320,6 +325,58 @@ export function createMockDb(now: () => Date = () => new Date()) {
     eventStart: (id) => state.events.get(id)?.start.toISOString() ?? null,
   });
 
+  /* ---------- Organisations (S11) ---------- */
+  interface OrgRow {
+    id: string;
+    name: string;
+    verified: boolean;
+    admin: string;
+    join_code: string;
+    members: (Omit<OrgMember, 'status'> & {
+      userId: string | null;
+      phone: string | null;
+      status: 'invited' | 'joined';
+    })[];
+  }
+  const NEEDS_HELP_AFTER_MS = 3 * 24 * 60 * 60 * 1000;
+  // The centre Lee runs (staff, not Raj). Raj can scan its code: BISHAN.
+  const orgs = new Map<string, OrgRow>([
+    [
+      'org_bishan_aac',
+      {
+        id: 'org_bishan_aac',
+        name: 'Bishan Active Ageing Centre',
+        verified: true,
+        admin: 'u_lee',
+        join_code: 'BISHAN',
+        members: [],
+      },
+    ],
+  ]);
+  const orgOf = (o: OrgRow): Org => ({
+    id: o.id,
+    name: o.name,
+    verified: o.verified,
+    join_code: o.join_code,
+  });
+  const orgDetail = (o: OrgRow): OrgDetail => {
+    const order = { needs_help: 0, invited: 1, joined: 2 } as const;
+    const members: OrgMember[] = o.members.map((m) => ({
+      id: m.id,
+      name: m.name,
+      status:
+        m.status === 'joined'
+          ? 'joined'
+          : now().getTime() - new Date(m.invited_at).getTime() >= NEEDS_HELP_AFTER_MS
+            ? 'needs_help'
+            : 'invited',
+      invited_at: m.invited_at,
+      joined_at: m.joined_at,
+    }));
+    members.sort((a, b) => order[a.status] - order[b.status]);
+    return { ...orgOf(o), members };
+  };
+
   const thrive = createThriveDb({
     now,
     person,
@@ -557,6 +614,64 @@ export function createMockDb(now: () => Date = () => new Date()) {
     skipThanks: passItOn.skipThanks,
     getFamilyInvites: () => passItOn.getFamilyInvites(),
     createFamilyInvite: passItOn.createFamilyInvite,
+    /* Organisations (S11). Raj runs none at first; tests and demos make one. */
+    myOrgs: (): Org[] => [...orgs.values()].filter((o) => o.admin === ME_ID).map(orgOf),
+    /** Tests and demos: Raj runs an organisation. */
+    createOrg(name: string, verified = false): OrgDetail {
+      const org = {
+        id: `org_${orgs.size + 1}`,
+        name,
+        verified,
+        admin: ME_ID,
+        join_code: `CODE${orgs.size + 1}`,
+        members: [],
+      };
+      orgs.set(org.id, org);
+      return orgDetail(org);
+    },
+    getOrg(id: string): OrgDetail {
+      const org = orgs.get(id);
+      if (!org || org.admin !== ME_ID) throw new MockNotFound(`organisation ${id}`);
+      return orgDetail(org);
+    },
+    addOrgPeople(id: string, people: OrgPerson[]): OrgDetail {
+      const org = orgs.get(id);
+      if (!org || org.admin !== ME_ID) throw new MockNotFound(`organisation ${id}`);
+      for (const p of people) {
+        if (p.phone && org.members.some((m) => m.phone === p.phone)) continue;
+        org.members.push({
+          id: `om_${org.members.length + 1}`,
+          userId: null,
+          name: p.name.trim(),
+          phone: p.phone,
+          status: 'invited',
+          invited_at: now().toISOString(),
+          joined_at: null,
+        });
+      }
+      return orgDetail(org);
+    },
+    /** Someone scans the QR: `as` lets tests be another phone. */
+    joinOrg(code: string, as = ME_ID): OrgJoined {
+      const org = [...orgs.values()].find((o) => o.join_code === code.toUpperCase());
+      if (!org) throw new MockNotFound(`join code ${code}`);
+      const existing = org.members.find((m) => m.userId === as);
+      if (existing) {
+        existing.status = 'joined';
+        existing.joined_at ??= now().toISOString();
+      } else {
+        org.members.push({
+          id: `om_${org.members.length + 1}`,
+          userId: as,
+          name: person(as).name,
+          phone: null,
+          status: 'joined',
+          invited_at: now().toISOString(),
+          joined_at: now().toISOString(),
+        });
+      }
+      return { name: org.name, verified: org.verified };
+    },
     setSeniorSimpleMode(seniorId: string, on: boolean): void {
       if (!passItOn.setSeniorSimpleMode(seniorId, on)) {
         throw new MockNotFound(`family member ${seniorId}`);

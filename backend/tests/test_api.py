@@ -62,6 +62,7 @@ async def test_demo_accounts_and_switching(api: Api) -> None:
         ("u_ahmad", "helper"),
         ("u_lim", "circle"),
         ("u_judge", "judge"),
+        ("u_lee", "admin"),
     ]
     assert (await api.client.get("/me")).json()["name"] == "Raj Kumar"
     priya = await api.client.get("/me", headers={"X-Demo-User": "u_priya"})
@@ -565,6 +566,69 @@ async def test_simple_mode_by_the_member_or_their_family(api: Api) -> None:
     finally:
         await api.client.put("/family/seniors/u_raj/simple-mode", headers=priya, json={"on": False})
     assert (await api.client.get("/me")).json()["simple_mode"] is False
+
+
+async def test_admin_qr_onboarding(api: Api) -> None:
+    # Iteration 3.2 (S11, T5): staff add a list, show the QR; phones that scan it
+    # become Joined. Staff see names and statuses only.
+    lee = {"X-Demo-User": "u_lee"}
+    mine = (await api.client.get("/orgs/mine", headers=lee)).json()
+    assert [(o["name"], o["verified"], o["join_code"]) for o in mine] == [
+        ("Bishan Active Ageing Centre", True, "BISHAN")
+    ]
+    seeded = (await api.client.get("/orgs/org_bishan_aac", headers=lee)).json()
+    statuses = {m["name"]: m["status"] for m in seeded["members"]}
+    assert statuses == {
+        "Siti Nurhaliza": "needs_help",
+        "Tan Mei Ling": "invited",
+        "Raj Kumar": "joined",
+        "Lim Ah Kow": "joined",
+    }
+    assert seeded["members"][0]["status"] == "needs_help"  # who to call first
+    assert set(seeded["members"][0]) == {"id", "name", "status", "invited_at", "joined_at"}
+
+    # A new centre: upload a list (the same phone twice is one person).
+    r = await api.client.post("/orgs", headers=lee, json={"name": "Toa Payoh CC"})
+    assert r.status_code == 201
+    org = r.json()
+    assert org["verified"] is False and len(org["join_code"]) == 6 and org["members"] == []
+    r = await api.client.post(
+        f"/orgs/{org['id']}/members/bulk",
+        headers=lee,
+        json={
+            "people": [
+                {"name": "Judge 8", "phone": None},
+                {"name": "Mdm Wong", "phone": "+6598765432"},
+                {"name": "Mdm Wong again", "phone": "+6598765432"},
+            ]
+        },
+    )
+    assert [m["status"] for m in r.json()["members"]] == ["invited", "invited"]
+
+    # Three phones scan the QR.
+    for n in (8, 9, 10):
+        await api.client.post(f"/demo/judges/{n}/reset")
+        r = await api.client.post(
+            f"/orgs/join/{org['join_code'].lower()}", headers={"X-Demo-User": f"u_judge{n}"}
+        )
+        assert r.json() == {"name": "Toa Payoh CC", "verified": False}
+    again = await api.client.post(
+        f"/orgs/join/{org['join_code']}", headers={"X-Demo-User": "u_judge8"}
+    )
+    assert again.status_code == 200
+    detail = (await api.client.get(f"/orgs/{org['id']}", headers=lee)).json()
+    joined = [m["name"] for m in detail["members"] if m["status"] == "joined"]
+    assert sorted(joined) == ["Judge 10", "Judge 8", "Judge 9"]
+    assert [m["name"] for m in detail["members"] if m["status"] != "joined"] == [
+        "Judge 8",
+        "Mdm Wong",
+    ]
+
+    # Only the staff member sees it; a wrong code is a plain 404.
+    assert (await api.client.get(f"/orgs/{org['id']}")).status_code == 404
+    assert (await api.client.post("/orgs/join/NOPE00")).status_code == 404
+    for n in (8, 9, 10):
+        await api.client.post(f"/demo/judges/{n}/reset")
 
 
 # ---------- SOS ----------

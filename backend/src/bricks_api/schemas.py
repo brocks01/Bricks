@@ -344,7 +344,7 @@ class SosHelper(Wire):
 class DemoAccount(Wire):
     id: str
     name: str
-    role: Literal["senior", "family", "helper", "circle", "judge"]
+    role: Literal["senior", "family", "helper", "circle", "judge", "admin"]
 
 
 class DemoReset(Wire):
@@ -501,3 +501,45 @@ class Health(Wire):
 
 
 WalkCheer.model_rebuild()
+
+
+# ---------- Organisations (iteration 3.2, S11) ----------
+
+
+class NewOrg(Input):
+    name: Annotated[str, Field(min_length=2, max_length=80)]
+
+
+class Org(Wire):
+    id: str
+    name: str
+    verified: bool
+    # What the QR code and the WhatsApp join link carry.
+    join_code: str
+
+
+class OrgMember(Wire):
+    id: str
+    name: str
+    # needs_help: invited a while ago and still not in, so someone should call them.
+    status: Literal["joined", "invited", "needs_help"]
+    invited_at: str
+    joined_at: str | None
+
+
+class OrgDetail(Org):
+    members: list[OrgMember]
+
+
+class OrgPerson(Input):
+    name: Annotated[str, Field(min_length=1, max_length=80)]
+    phone: Annotated[str, Field(min_length=8, max_length=20)] | None = None
+
+
+class OrgPeopleIn(Input):
+    people: Annotated[list[OrgPerson], Field(min_length=1, max_length=500)]
+
+
+class OrgJoined(Wire):
+    name: str
+    verified: bool

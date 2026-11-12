@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor, within } from 'expo-router/testing-library';
 
 import { mockDb } from '@/api/mock';
+import { parsePeople } from '@/app/admin/[id]';
 import { useBuddy } from '@/state/buddy';
 import { currentPath, renderApp, resetAppState } from '@/test-utils/renderApp';
 
@@ -194,5 +195,66 @@ describe('S13 Simple Mode', () => {
     expect(await screen.findByText('Simple Mode is on for Dad.')).toBeTruthy();
     expect(mockDb().getFamilyInvites()[0]!.simple_mode).toBe(true);
     expect(await screen.findByText('Turn off Simple Mode for Dad')).toBeTruthy();
+  });
+});
+
+describe('S11 Admin: members & QR', () => {
+  it('reads a pasted list: name, then phone; blank lines skipped', () => {
+    expect(parsePeople('Tan Mei Ling, 9123 4567\n\n  Mdm Wong  \n, 8000 0000')).toEqual([
+      { name: 'Tan Mei Ling', phone: '+6591234567' },
+      { name: 'Mdm Wong', phone: null },
+    ]);
+  });
+
+  it('staff: Settings → the centre → add a list → show the QR; phones that scan are Joined (T5)', async () => {
+    const org = mockDb().createOrg('Toa Payoh CC', true);
+    await renderApp('/settings');
+    await fireEvent.press(await screen.findByTestId(`settings-org-${org.id}`));
+    expect(await screen.findByTestId('screen-admin')).toBeTruthy();
+    expect(await screen.findByTestId('admin-verified')).toBeTruthy();
+    expect(screen.getByText('No one yet. Add people, or show the QR.')).toBeTruthy();
+
+    await fireEvent.press(screen.getByTestId('admin-add-people'));
+    await fireEvent.changeText(
+      screen.getByTestId('admin-add-field'),
+      'Tan Mei Ling, 9123 4567\nMdm Wong',
+    );
+    await fireEvent.press(screen.getByTestId('admin-add-submit'));
+    expect(await screen.findByText('2 people added.')).toBeTruthy();
+    expect(screen.getAllByText('Invited')).toHaveLength(2);
+
+    await fireEvent.press(screen.getByTestId('admin-show-qr'));
+    expect(await screen.findByTestId('admin-qr')).toBeTruthy();
+    expect(screen.getByTestId('admin-qr-code').props.children).toBe(org.join_code);
+    await fireEvent.press(screen.getByTestId('admin-qr-close'));
+
+    // Three phones scan it.
+    for (const who of ['u_lim', 'u_tan', 'u_siti']) mockDb().joinOrg(org.join_code, who);
+    const detail = mockDb().getOrg(org.id);
+    expect(detail.members.filter((m) => m.status === 'joined')).toHaveLength(3);
+    // Staff see names and statuses only.
+    expect(Object.keys(detail.members[0]!).sort()).toEqual(
+      ['id', 'invited_at', 'joined_at', 'name', 'status'].sort(),
+    );
+  });
+
+  it('settings shows no organisation row to people who run none', async () => {
+    await renderApp('/settings');
+    await screen.findByTestId('settings-language');
+    expect(screen.queryByTestId(/^settings-org-/)).toBeNull();
+  });
+
+  it('a member scans the code and is in', async () => {
+    await renderApp('/join/BISHAN');
+    expect(await screen.findByText("You've joined Bishan Active Ageing Centre.")).toBeTruthy();
+    expect(screen.getByText('A verified organisation.')).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('join-done'));
+    expect(await screen.findByTestId('screen-home')).toBeTruthy();
+  });
+
+  it('a wrong code says so plainly', async () => {
+    await renderApp('/join/NOPE00');
+    expect(await screen.findByTestId('join-failed')).toBeTruthy();
+    expect(screen.getByText(/We couldn't find that code/)).toBeTruthy();
   });
 });

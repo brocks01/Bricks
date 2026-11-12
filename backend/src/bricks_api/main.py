@@ -23,6 +23,7 @@ from .routers import (
     events,
     family,
     me,
+    orgs,
     passiton,
     sos,
     thrive,
@@ -95,6 +96,7 @@ def create_app(
         calls,
         demo,
         assistant,
+        orgs,
     )
     for module in routers:
         app.include_router(module.router)

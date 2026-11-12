@@ -12,6 +12,7 @@ import type { WalkUpload } from '@/features/walk/engine';
 
 import type {
   NewCheer,
+  OrgPerson,
   WalkPeriod,
   WalkSummary,
   WalkVisibility,
@@ -367,6 +368,8 @@ export const queryKeys13 = {
   profile: (id: string) => ['profile', id] as const,
   thanksPrompts: ['endorsements', 'pending'] as const,
   familyInvites: ['family', 'invites'] as const,
+  myOrgs: ['orgs', 'mine'] as const,
+  org: (id: string) => ['orgs', 'detail', id] as const,
 };
 
 export function useSignIn() {
@@ -433,6 +436,28 @@ export function useDeleteSkill() {
 
 export function useThanksPrompts() {
   return useQuery({ queryKey: queryKeys13.thanksPrompts, queryFn: () => api.getThanksPrompts() });
+}
+
+/** S11: the organisations this member runs (Settings shows them to staff). */
+export function useMyOrgs() {
+  return useQuery({ queryKey: queryKeys13.myOrgs, queryFn: () => api.getMyOrgs() });
+}
+
+export function useOrg(id: string) {
+  return useQuery({ queryKey: queryKeys13.org(id), queryFn: () => api.getOrg(id) });
+}
+
+export function useAddOrgPeople(id: string) {
+  const client = useQueryClient();
+  return useMutation({
+    mutationFn: (people: OrgPerson[]) => api.addOrgPeople(id, people),
+    onSuccess: (org) => client.setQueryData(queryKeys13.org(id), org),
+  });
+}
+
+/** A member scanned an organisation's QR. */
+export function useJoinOrg() {
+  return useMutation({ mutationFn: (code: string) => api.joinOrg(code) });
 }
 
 /** S10: family turns Simple Mode on or off for a parent. */

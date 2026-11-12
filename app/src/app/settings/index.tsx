@@ -5,12 +5,13 @@ import { useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
-import { useMe, useSafeCircle, useUpdateMe } from '@/api';
+import { useMe, useMyOrgs, useSafeCircle, useUpdateMe } from '@/api';
 import { resetMockDb } from '@/api/mock';
 import {
   BellIcon,
   ArrowCounterClockwiseIcon,
   BigButton,
+  BuildingsIcon,
   ConfirmSheet,
   GroupedList,
   GroupedRow,
@@ -57,6 +58,7 @@ export default function SettingsScreen() {
   const [confirmReset, setConfirmReset] = useState(false);
   const [confirmSimple, setConfirmSimple] = useState(false);
   const updateMe = useUpdateMe();
+  const orgs = useMyOrgs();
   const reset = useDemoReset();
   // Hidden demo controls: tap the version 5 times (the stage demo, judges' phones).
   const [demoUnlocked, setDemoUnlocked] = useState(false);
@@ -153,6 +155,17 @@ export default function SettingsScreen() {
       </GroupedList>
 
       <GroupedList>
+        {orgs.data?.map((org) => (
+          <GroupedRow
+            key={org.id}
+            icon={BuildingsIcon}
+            tint="exercise"
+            title={org.name}
+            value={t('admin.members')}
+            onPress={() => router.push({ pathname: '/admin/[id]', params: { id: org.id } })}
+            testID={`settings-org-${org.id}`}
+          />
+        ))}
         <GroupedRow
           icon={ShieldCheckIcon}
           tint="walk"

@@ -83,6 +83,11 @@ export const mockApi: BricksApi = {
   getFamilyInvites: () => respond(() => db.getFamilyInvites(), '/family/invites'),
   createFamilyInvite: (input) => respond(() => db.createFamilyInvite(input), '/family/invite'),
   acceptFamilyInvite: (id) => respond(() => db.acceptFamilyInvite(id), `/invites/${id}/accept`),
+  getMyOrgs: () => respond(() => db.myOrgs(), '/orgs/mine'),
+  getOrg: (id) => respond(() => db.getOrg(id), `/orgs/${id}`),
+  addOrgPeople: (id, people) =>
+    respond(() => db.addOrgPeople(id, people), `/orgs/${id}/members/bulk`),
+  joinOrg: (code) => respond(() => db.joinOrg(code), `/orgs/join/${code}`),
   setSeniorSimpleMode: (seniorId, on) =>
     respond(() => db.setSeniorSimpleMode(seniorId, on), `/family/seniors/${seniorId}/simple-mode`),
   // No speech service on mock data: voice screens use demo phrases and the phone's own voice.

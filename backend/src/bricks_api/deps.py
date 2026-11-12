@@ -17,7 +17,9 @@ from .ids import new_id
 # Judge 1…10 open the app from their own QR link (iteration 3.1).
 JUDGE_COUNT = 10
 JUDGE_IDS = frozenset(f"u_judge{n}" for n in range(1, JUDGE_COUNT + 1))
-DEMO_ACCOUNT_IDS = frozenset({"u_raj", "u_priya", "u_ahmad", "u_lim", "u_judge"}) | JUDGE_IDS
+DEMO_ACCOUNT_IDS = (
+    frozenset({"u_raj", "u_priya", "u_ahmad", "u_lim", "u_judge", "u_lee"}) | JUDGE_IDS
+)
 
 
 @dataclass

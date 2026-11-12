@@ -68,6 +68,8 @@ PEOPLE: list[tuple[str, str, str | None, tuple[float, float] | None]] = [
     ("u_osman", "Osman Said", None, None),
     # A fresh member for judges to try the app as: no plans, no Circles, no walks yet.
     ("u_judge", "Guest Judge", None, None),
+    # Staff at the Active Ageing Centre (S11 admin): onboards members by QR.
+    ("u_lee", "Lee Hui Min", "+6590000006", None),
 ]
 
 # Who the stage demo can be signed in as (Settings → Demo; X-Demo-User header).
@@ -77,6 +79,7 @@ DEMO_ACCOUNTS: list[tuple[str, str, str]] = [
     ("u_ahmad", "Ahmad Rahman", "helper"),
     ("u_lim", "Lim Ah Kow", "circle"),
     ("u_judge", "Guest Judge", "judge"),
+    ("u_lee", "Lee Hui Min", "admin"),
 ]
 
 WA = "https://chat.whatsapp.com/"
@@ -403,7 +406,7 @@ async def _seed(
     # 14 chess sessions Raj taught, every Saturday before this week's.
     last_saturday = today - timedelta(days=(today.weekday() - 5) % 7 or 7)
     # The guest judge starts fresh: never in the past sessions.
-    others = [p[0] for p in PEOPLE if p[0] not in ("u_raj", "u_judge")]
+    others = [p[0] for p in PEOPLE if p[0] not in ("u_raj", "u_judge", "u_lee")]
     sessions: list[tuple[str, datetime]] = []
     for k in range(14):
         start = at_local(last_saturday - timedelta(weeks=k), 10)
@@ -614,6 +617,33 @@ async def _seed(
             Ctx(conn=conn, user_id=uid, now=now, settings=settings), upload, with_
         )
         await ex("update walks set visibility = 'circle' where id = %s", (walk["id"],))
+
+    # S11: the Active Ageing Centre Lee runs. Raj and Lim joined by QR; Tan was
+    # invited yesterday; Siti was invited last week and needs a call.
+    await ex(
+        "insert into orgs (id, name, verified, admin_id, join_code, created_at)"
+        " values ('org_bishan_aac', 'Bishan Active Ageing Centre', true, 'u_lee', 'BISHAN', %s)",
+        (now - timedelta(days=30),),
+    )
+    for mid, member_id, name, phone, status, invited_days, joined_days in [
+        ("om_raj", "u_raj", "Raj Kumar", "+6590000001", "joined", 20, 19),
+        ("om_lim", "u_lim", "Lim Ah Kow", "+6590000005", "joined", 20, 18),
+        ("om_tan", None, "Tan Mei Ling", "+6590000002", "invited", 1, None),
+        ("om_siti", None, "Siti Nurhaliza", "+6590000007", "invited", 6, None),
+    ]:
+        await ex(
+            "insert into org_members (id, org_id, user_id, name, phone, status, invited_at,"
+            " joined_at) values (%s, 'org_bishan_aac', %s, %s, %s, %s, %s, %s)",
+            (
+                mid,
+                member_id,
+                name,
+                phone,
+                status,
+                now - timedelta(days=invited_days),
+                now - timedelta(days=joined_days) if joined_days else None,
+            ),
+        )
 
     for n in range(1, JUDGE_COUNT + 1):
         await seed_judge(conn, n, now)

@@ -733,7 +733,8 @@
       "family": "keluarga",
       "helper": "penolong",
       "circle": "ahli Bulatan",
-      "judge": "hakim"
+      "judge": "hakim",
+      "admin": "kakitangan"
     },
     "checkConnection": "Semak sambungan",
     "connectionOk": "Pelayan menjawab dalam {{ms}} ms.",
@@ -927,5 +928,36 @@
     "confirmOff": "Matikan Mod Mudah? Utama kembali kepada aplikasi penuh.",
     "turnedOn": "Mod Mudah dihidupkan.",
     "turnedOff": "Mod Mudah dimatikan."
+  },
+  "admin": {
+    "members": "Ahli",
+    "verified": "Organisasi disahkan",
+    "showQr": "Tunjuk QR",
+    "shareWhatsApp": "Kongsi pautan sertai di WhatsApp",
+    "addPeople": "Tambah orang",
+    "summary": "{{joined}} sertai · {{invited}} dijemput · {{help}} perlu bantuan",
+    "status": {
+      "joined": "Sudah sertai",
+      "invited": "Dijemput",
+      "needs_help": "Perlu bantuan"
+    },
+    "none": "Belum ada sesiapa. Tambah orang, atau tunjuk QR.",
+    "qrTitle": "Imbas untuk sertai {{name}}",
+    "qrHint": "Halakan kamera telefon anda pada kod. Atau taip kod: {{code}}",
+    "close": "Tutup",
+    "whatsappText": "Sertai {{name}} di Bricks: {{link}}",
+    "listLabel": "Satu orang setiap baris: nama, kemudian nombor telefon",
+    "listHint": "Contohnya: Tan Mei Ling, 9123 4567",
+    "listEmpty": "Tulis sekurang-kurangnya satu nama.",
+    "add": "Tambah ke senarai",
+    "added_other": "{{count}} orang ditambah.",
+    "readout": "{{name}}. {{summary}}. Ketik Tunjuk QR supaya orang boleh imbas untuk sertai."
+  },
+  "join": {
+    "joining": "Sedang menyertai…",
+    "joined": "Anda telah menyertai {{name}}.",
+    "verifiedLine": "Organisasi yang disahkan.",
+    "failed": "Kami tidak jumpa kod itu. Sila semak dengan kakitangan.",
+    "goHome": "Pergi ke Utama"
   }
 }

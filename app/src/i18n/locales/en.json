@@ -754,7 +754,8 @@
       "family": "family",
       "helper": "helper",
       "circle": "Circle member",
-      "judge": "judge"
+      "judge": "judge",
+      "admin": "staff"
     },
     "checkConnection": "Check connection",
     "connectionOk": "The server answered in {{ms}} ms.",
@@ -952,5 +953,37 @@
     "confirmOff": "Turn off Simple Mode? Home goes back to the full app.",
     "turnedOn": "Simple Mode is on.",
     "turnedOff": "Simple Mode is off."
+  },
+  "admin": {
+    "members": "Members",
+    "verified": "Verified organisation",
+    "showQr": "Show QR",
+    "shareWhatsApp": "Share the join link on WhatsApp",
+    "addPeople": "Add people",
+    "summary": "{{joined}} joined · {{invited}} invited · {{help}} need help",
+    "status": {
+      "joined": "Joined",
+      "invited": "Invited",
+      "needs_help": "Needs help"
+    },
+    "none": "No one yet. Add people, or show the QR.",
+    "qrTitle": "Scan to join {{name}}",
+    "qrHint": "Point your phone camera at the code. Or type the code: {{code}}",
+    "close": "Close",
+    "whatsappText": "Join {{name}} on Bricks: {{link}}",
+    "listLabel": "One person per line: name, then phone number",
+    "listHint": "For example: Tan Mei Ling, 9123 4567",
+    "listEmpty": "Write at least one name.",
+    "add": "Add to the list",
+    "added_one": "{{count}} person added.",
+    "added_other": "{{count}} people added.",
+    "readout": "{{name}}. {{summary}}. Tap Show QR so people can scan it to join."
+  },
+  "join": {
+    "joining": "Joining…",
+    "joined": "You've joined {{name}}.",
+    "verifiedLine": "A verified organisation.",
+    "failed": "We couldn't find that code. Please check it with the staff.",
+    "goHome": "Go to Home"
   }
 }

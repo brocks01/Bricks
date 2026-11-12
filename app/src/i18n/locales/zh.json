@@ -733,7 +733,8 @@
       "family": "家人",
       "helper": "帮手",
       "circle": "圈子成员",
-      "judge": "评委"
+      "judge": "评委",
+      "admin": "工作人员"
     },
     "checkConnection": "检查连接",
     "connectionOk": "服务器在 {{ms}} 毫秒内回应。",
@@ -927,5 +928,36 @@
     "confirmOff": "关闭简易模式？首页会回到完整的应用。",
     "turnedOn": "简易模式已打开。",
     "turnedOff": "简易模式已关闭。"
+  },
+  "admin": {
+    "members": "成员",
+    "verified": "已认证的机构",
+    "showQr": "显示二维码",
+    "shareWhatsApp": "在 WhatsApp 分享加入链接",
+    "addPeople": "添加人员",
+    "summary": "{{joined}} 人已加入 · {{invited}} 人已邀请 · {{help}} 人需要帮助",
+    "status": {
+      "joined": "已加入",
+      "invited": "已邀请",
+      "needs_help": "需要帮助"
+    },
+    "none": "还没有人。添加人员，或显示二维码。",
+    "qrTitle": "扫描加入{{name}}",
+    "qrHint": "用手机相机对准二维码。或输入代码：{{code}}",
+    "close": "关闭",
+    "whatsappText": "在 Bricks 加入{{name}}：{{link}}",
+    "listLabel": "每行一个人：名字，然后电话号码",
+    "listHint": "例如：Tan Mei Ling, 9123 4567",
+    "listEmpty": "请至少写一个名字。",
+    "add": "加入名单",
+    "added_other": "已添加 {{count}} 人。",
+    "readout": "{{name}}。{{summary}}。点显示二维码，让大家扫描加入。"
+  },
+  "join": {
+    "joining": "正在加入…",
+    "joined": "您已加入{{name}}。",
+    "verifiedLine": "已认证的机构。",
+    "failed": "找不到这个代码。请向工作人员确认。",
+    "goHome": "回到首页"
   }
 }

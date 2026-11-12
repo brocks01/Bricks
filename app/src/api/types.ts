@@ -281,7 +281,7 @@ export type SosHelperStatus = 'notified' | 'on_way' | 'arrived';
 export interface DemoAccount {
   id: string;
   name: string;
-  role: 'senior' | 'family' | 'helper' | 'circle' | 'judge';
+  role: 'senior' | 'family' | 'helper' | 'circle' | 'judge' | 'admin';
 }
 
 /** POST /demo/reset: how long the server took. */
@@ -568,4 +568,40 @@ export interface AssistantTurnOut {
   /** False while Buddy waits for an answer (a confirmation or a choice). */
   done: boolean;
   conversation_id?: string | null;
+}
+
+/* ---------- Organisations (3.2, S11) ---------- */
+
+export interface Org {
+  id: string;
+  name: string;
+  verified: boolean;
+  /** What the QR code and the WhatsApp join link carry. */
+  join_code: string;
+}
+
+export type OrgMemberStatus = 'joined' | 'invited' | 'needs_help';
+
+/** Staff see a name and a status only: never a health card or Safe Circle. */
+export interface OrgMember {
+  id: string;
+  name: string;
+  /** needs_help: invited a while ago and still not in, so someone should call them. */
+  status: OrgMemberStatus;
+  invited_at: string;
+  joined_at: string | null;
+}
+
+export interface OrgDetail extends Org {
+  members: OrgMember[];
+}
+
+export interface OrgPerson {
+  name: string;
+  phone: string | null;
+}
+
+export interface OrgJoined {
+  name: string;
+  verified: boolean;
 }

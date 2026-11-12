@@ -67,6 +67,7 @@ export { PlusIcon } from 'phosphor-react-native/src/icons/Plus';
 export { PuzzlePieceIcon } from 'phosphor-react-native/src/icons/PuzzlePiece';
 export { QuestionIcon } from 'phosphor-react-native/src/icons/Question';
 export { SealCheckIcon } from 'phosphor-react-native/src/icons/SealCheck';
+export { QrCodeIcon } from 'phosphor-react-native/src/icons/QrCode';
 export { ShareNetworkIcon } from 'phosphor-react-native/src/icons/ShareNetwork';
 export { ShieldCheckIcon } from 'phosphor-react-native/src/icons/ShieldCheck';
 export { SignOutIcon } from 'phosphor-react-native/src/icons/SignOut';
