@@ -209,6 +209,40 @@ def fill(conn, cid, target: int, band_seed: int) -> None:
                  {"c": cid, "n": need, "d": f"%@{DOMAIN}", "x": str(band_seed)})
 
 
+# Long-running efforts of each demo community: (title, one line, description, current plan, icon).
+INITIATIVES = {
+    "bedok-heritage-kakis-demo": [("Recipe Book Project", "Our grandmothers' recipes, written down", "Elders dictate, youth type and photograph. One recipe a week goes into a printed book.", "Collect 30 recipes by March", "restaurant-outline"),
+                                  ("Old Photographs Archive", "Scan and name the faces", "Bring old family photos; volunteers scan them and members help name who is in them.", "Scan 200 photos this quarter", "images-outline")],
+    "toa-payoh-silver-mentors-demo": [("CV Clinic", "Free CV help for job seekers", "Retired HR and hiring managers review CVs and practise interviews one-to-one.", "Help 40 people this year", "document-text-outline"),
+                                      ("Reading Buddies", "Mentoring primary pupils", "A senior and a child read together for one hour a week.", "Pair 25 children by June", "book-outline")],
+    "tampines-kampung-spirit-demo": [("Kampung Childcare Circle", "Grandparents mind children after school", "Trained senior members look after children for working parents, with a small fee that stays in the community.", "Open a second block by April", "happy-outline"),
+                                     ("Morning Tai Chi", "Move together every morning", "A senior-led group exercise open to all ages.", "Reach 60 regular members", "body-outline")],
+    "jurong-green-gardeners-demo": [("Green Campus", "Make our neighbourhood greener", "Community gardening, composting and recycling run by members.", "Plant 50 new trees this month", "leaf-outline"),
+                                    ("Seed Library", "Share seeds, share harvests", "Swap seeds and cuttings at every planting morning.", "Stock 40 varieties", "flower-outline")],
+}
+
+
+def seed_initiatives(conn) -> None:
+    """Idempotent: adds the demo initiatives (and a few comments and likes on the latest update) to demo communities that have none yet."""
+    for slug, items in INITIATIVES.items():
+        c = conn.execute(text("select id from communities where slug = :s"), {"s": slug}).first()
+        if c is None or conn.execute(text("select 1 from initiatives where community_id = :c"), {"c": c.id}).first():
+            continue
+        people = [r.user_id for r in conn.execute(text("select user_id from memberships where community_id = :c and status = 'active' order by joined_at limit 12"), {"c": c.id}).all()]
+        for title, summary, desc, plan, icon in items:
+            i = conn.execute(text("insert into initiatives (community_id, created_by, title, summary, description, current_plan, icon) values (:c, :u, :t, :s, :d, :p, :i) returning id"),
+                             {"c": c.id, "u": people[0], "t": title, "s": summary, "d": desc, "p": plan, "i": icon}).one().id
+            for u in people[: 6 + len(title) % 5]:
+                conn.execute(text("insert into initiative_members (initiative_id, user_id) values (:i, :u) on conflict do nothing"), {"i": i, "u": u})
+        a = conn.execute(text("select id from announcements where community_id = :c order by created_at desc limit 1"), {"c": c.id}).first()
+        if a:
+            for u, body in zip(people[1:4], ["Great initiative, I will join.", "Thank you for organising this.", "Count me in, and I will bring a neighbour."]):
+                conn.execute(text("insert into announcement_comments (announcement_id, user_id, body) values (:a, :u, :b)"), {"a": a.id, "u": u, "b": body})
+            for u in people[:5]:
+                conn.execute(text("insert into announcement_likes (announcement_id, user_id) values (:a, :u) on conflict do nothing"), {"a": a.id, "u": u})
+    print("demo initiatives ready")
+
+
 def seed(extra_emails: list[str]) -> None:
     with engine().begin() as conn:
         for c in COMMUNITIES:
@@ -229,6 +263,7 @@ def seed(extra_emails: list[str]) -> None:
                         conn.execute(text("insert into role_terms (community_id, role_definition_id, user_id, starts_on, ends_on) values (:c, :d, :u, current_date, current_date + interval '12 months')"),
                                      {"c": cid, "d": d, "u": u.id})
             fill(conn, cid, c["target"], n)
+        seed_initiatives(conn)
         print("demo communities ready: " + ", ".join(f"{c['name']} {c['target']}" for c in COMMUNITIES) + " members (real accounts included)")
 
 

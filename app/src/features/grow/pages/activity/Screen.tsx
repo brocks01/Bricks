@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { addActivity, getActivity, type ActivityData, type ActivityKind } from '../../../../api/grow';
+import { addActivity, getActivity, removeActivity, type ActivityData, type ActivityKind } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Field, Screen } from '../../../../components/ui';
@@ -9,7 +9,7 @@ import { useLanguage } from '../../../../i18n';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
-import { Card, Chips, Stat, WeekBars, num } from '../../ui';
+import { Card, Chips, RemoveButton, Stat, WeekBars, num } from '../../ui';
 import { growActivity as page } from './page';
 
 const KINDS: ActivityKind[] = ['walk', 'jog', 'yoga', 'exercise', 'other'];
@@ -37,6 +37,14 @@ export default function Activity() {
     if (status === 'in') load();
   }, [status, load]);
   const when = (iso: string) => new Date(iso + 'T00:00:00').toLocaleDateString(lang, { weekday: 'short', day: 'numeric', month: 'short' });
+
+  const remove = useCallback(async (id: string) => {
+    try {
+      await removeActivity(id);
+    } finally {
+      load(); // the week's bars and the streak are read again from the server
+    }
+  }, [load]);
 
   const save = useCallback(async () => {
     const m = num(mins);
@@ -99,11 +107,16 @@ export default function Activity() {
           {data.recent.length ? <Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('recent')}</Text> : null}
           {data.recent.map((r) => (
             <Card key={r.id}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-                <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{w(r.kind)}</Text>
-                <Text style={{ fontSize: 16, color: colors.ink }}>{w('minutesUnit', { n: r.minutes })}</Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <View style={{ flex: 1 }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{w(r.kind)}</Text>
+                    <Text style={{ fontSize: 16, color: colors.ink }}>{w('minutesUnit', { n: r.minutes })}</Text>
+                  </View>
+                  <Text style={[type.small, { color: colors.muted }]}>{when(r.logged_on)}</Text>
+                </View>
+                <RemoveButton label={w('remove')} onPress={() => void remove(r.id)} />
               </View>
-              <Text style={[type.small, { color: colors.muted }]}>{when(r.logged_on)}</Text>
             </Card>
           ))}
         </>

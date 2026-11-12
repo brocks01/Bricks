@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { addReading, getHealth, type HealthData, type HealthKind } from '../../../../api/grow';
+import { addReading, getHealth, removeReading, type HealthData, type HealthKind } from '../../../../api/grow';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Button, Field, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -9,7 +9,7 @@ import { useLanguage } from '../../../../i18n';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
-import { Card, num } from '../../ui';
+import { Card, RemoveButton, num } from '../../ui';
 import { growHealth as page } from './page';
 
 const KINDS: { id: HealthKind; icon: keyof typeof Ionicons.glyphMap; color: string }[] = [
@@ -47,6 +47,14 @@ export default function Health() {
   const show = (v: string | number) => String(Number(v));
   const text = (kind: HealthKind, r: { value: string | number; value2: string | number | null }) => (kind === 'blood_pressure' ? `${show(r.value)}/${show(r.value2 ?? 0)}` : show(r.value)) + ' ' + w('u_' + kind);
   const when = (iso: string) => new Date(iso).toLocaleDateString(lang, { day: 'numeric', month: 'short' });
+
+  const remove = useCallback(async (id: string) => {
+    try {
+      await removeReading(id);
+    } finally {
+      load(); // the latest values and the list are read again from the server
+    }
+  }, [load]);
 
   const save = useCallback(async () => {
     if (!adding) return;
@@ -142,11 +150,16 @@ export default function Health() {
       ) : data.recent.length ? (
         data.recent.map((r) => (
           <Card key={r.id}>
-            <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-              <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{w(r.kind)}</Text>
-              <Text style={{ fontSize: 16, color: colors.ink }}>{text(r.kind, r)}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <View style={{ flex: 1 }}>
+                <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                  <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{w(r.kind)}</Text>
+                  <Text style={{ fontSize: 16, color: colors.ink }}>{text(r.kind, r)}</Text>
+                </View>
+                <Text style={[type.small, { color: colors.muted }]}>{when(r.recorded_at)}</Text>
+              </View>
+              <RemoveButton label={w('remove')} onPress={() => void remove(r.id)} />
             </View>
-            <Text style={[type.small, { color: colors.muted }]}>{when(r.recorded_at)}</Text>
           </Card>
         ))
       ) : (

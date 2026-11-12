@@ -55,3 +55,12 @@ export const num = (s: string) => {
   const v = parseFloat(s.replace(',', '.'));
   return Number.isFinite(v) && v > 0 ? v : null;
 };
+
+/** A small trash button at the end of a row the person added themselves. `label` is the word "Remove" in their language. */
+export function RemoveButton({ label, onPress }: { label: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={label} hitSlop={8} style={{ minWidth: 44, minHeight: 44, alignItems: 'center', justifyContent: 'center' }}>
+      <Ionicons name="trash-outline" size={22} color={colors.muted} />
+    </Pressable>
+  );
+}
