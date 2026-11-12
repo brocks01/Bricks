@@ -224,6 +224,7 @@ export default function CreateEventScreen() {
 
   return (
     <Screen
+      section="community"
       title={step === 'preview' ? t('create.preview') : t('create.title')}
       readOut={readOut}
       back

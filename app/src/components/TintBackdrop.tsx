@@ -1,3 +1,4 @@
+import { useId } from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Svg, { Defs, LinearGradient, Rect, Stop } from 'react-native-svg';
 
@@ -24,6 +25,9 @@ export interface TintBackdropProps {
  */
 export function TintBackdrop({ tint, strong }: TintBackdropProps) {
   const { width, height } = useWindowDimensions();
+  // Unique per page: on the web every mounted page shares one document, and a
+  // repeated gradient id would paint every page in the first page's colour.
+  const id = `tint-${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
 
   if (strong) {
     const coverBottom = Math.max(width - screenPadding * 2, 1);
@@ -38,7 +42,7 @@ export function TintBackdrop({ tint, strong }: TintBackdropProps) {
       >
         <Svg width="100%" height={band}>
           <Defs>
-            <LinearGradient id="tint-strong" x1="0" y1="0" x2="0" y2="1">
+            <LinearGradient id={id} x1="0" y1="0" x2="0" y2="1">
               <Stop offset="0" stopColor={strong} stopOpacity={1} />
               <Stop offset={at(coverBottom * 0.55)} stopColor={strong} stopOpacity={1} />
               <Stop offset={at(coverBottom)} stopColor={tint} stopOpacity={1} />
@@ -46,7 +50,7 @@ export function TintBackdrop({ tint, strong }: TintBackdropProps) {
               <Stop offset="1" stopColor={color.canvas} stopOpacity={1} />
             </LinearGradient>
           </Defs>
-          <Rect x="0" y="0" width="100%" height={band} fill="url(#tint-strong)" />
+          <Rect x="0" y="0" width="100%" height={band} fill={`url(#${id})`} />
         </Svg>
       </View>
     );
@@ -56,13 +60,13 @@ export function TintBackdrop({ tint, strong }: TintBackdropProps) {
     <View style={[StyleSheet.absoluteFill, styles.fill]} pointerEvents="none" accessible={false}>
       <Svg width="100%" height={height}>
         <Defs>
-          <LinearGradient id="tint" x1="0" y1="0" x2="0" y2="1">
+          <LinearGradient id={id} x1="0" y1="0" x2="0" y2="1">
             <Stop offset="0" stopColor={tint} stopOpacity={1} />
             <Stop offset="0.55" stopColor={tint} stopOpacity={0.5} />
             <Stop offset="1" stopColor={color.canvas} stopOpacity={1} />
           </LinearGradient>
         </Defs>
-        <Rect x="0" y="0" width="100%" height={height} fill="url(#tint)" />
+        <Rect x="0" y="0" width="100%" height={height} fill={`url(#${id})`} />
       </Svg>
     </View>
   );

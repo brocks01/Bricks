@@ -4,7 +4,6 @@ import { tapFeedback } from '@/lib/haptics';
 import {
   borderWidth,
   color,
-  iconSize,
   radius,
   shadow,
   space,
@@ -14,7 +13,7 @@ import {
 } from '@/theme';
 
 import type { Language } from '@/i18n/languages';
-import { useCompact } from '@/theme/TypographyProvider';
+import { useCompact, useTouchSizes } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
 import type { Icon } from './primitives/icons';
@@ -74,9 +73,10 @@ export function BigButton({
   ...rest
 }: BigButtonProps) {
   const palette = PALETTE[variant];
-  // Small and Normal text: lg drops to the standard 64dp (never below touch.min).
   const compact = useCompact();
-  const minHeight = compact && size === 'lg' ? MIN_HEIGHT.md : MIN_HEIGHT[size];
+  const tap = useTouchSizes();
+  // Small and Normal text: md and lg are 56dp (the SOS call keeps its 80dp).
+  const minHeight = size === 'xl' ? MIN_HEIGHT.xl : size === 'lg' ? tap.large : tap.min;
   const textColor: ColorToken = disabled ? 'textSecondary' : palette.text;
 
   return (
@@ -104,7 +104,7 @@ export function BigButton({
     >
       <View style={styles.content}>
         {IconComponent ? (
-          <IconComponent size={iconSize.button} color={color[textColor]} weight="bold" />
+          <IconComponent size={tap.icon} color={color[textColor]} weight="bold" />
         ) : null}
         <Text
           variant={labelVariant}

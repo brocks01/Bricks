@@ -28,10 +28,11 @@ describe('Home', () => {
   it('shows the check-in, a walk to join and the medicine reminder under Today', async () => {
     await renderApp('/home');
     expect(await screen.findByText('Did you move yesterday?')).toBeTruthy();
-    expect(screen.getByText('Picked for you')).toBeTruthy();
-    expect(screen.getByText('Your events')).toBeTruthy();
+    expect(screen.getByLabelText('Picked for you')).toBeTruthy();
+    expect(screen.getByTestId('your-events')).toBeTruthy();
     expect(screen.getByText(/Take medicine|Blood pressure tablet/)).toBeTruthy();
-    expect(screen.getByText('What would you like to do?')).toBeTruthy();
+    // Community, Activity and Health are the tab bar's job: Home doesn't repeat them.
+    expect(screen.queryByText('What would you like to do?')).toBeNull();
   });
 
   it('T1: joins a walk from Home in 1 tap', async () => {
@@ -75,12 +76,14 @@ describe('Home', () => {
     await screen.findByText('Did you move yesterday?');
     await press('topbar-readout');
     // Read sentence by sentence: wait for the last part, then check the whole script.
-    await waitFor(() => expect(spokenText()).toContain('Community: join activities near you.'));
+    await waitFor(() =>
+      expect(spokenText()).toContain('use the buttons at the bottom of the screen'),
+    );
     const spoken = spokenText();
     expect(spoken).toMatch(/^Good (morning|afternoon|evening), Raj\./);
     expect(spoken).toContain('did you move yesterday?');
     expect(spoken).toMatch(/Reminder at (8 am: Take medicine|8 pm: Blood pressure tablet)\./);
-    expect(spoken).toContain('Community: join activities near you.');
+    expect(spoken).toContain('To open Community, Activity or Health');
   });
 });
 
@@ -120,15 +123,15 @@ describe('Kampung: Happenings', () => {
   });
 
   it('Done on "You\'re going" goes back to where they came from', async () => {
-    await renderApp('/kampung');
+    await renderApp('/kampung/happenings');
     await fireEvent.press(await screen.findByTestId('event-card-e_taichi-join'));
     await fireEvent.press(await screen.findByTestId('going-done'));
-    expect(screen).toHavePathname('/kampung');
+    expect(screen).toHavePathname('/kampung/happenings');
     expect(await screen.findByTestId('event-card-e_taichi-going')).toBeTruthy();
   });
 
   it('T6: the Walking filter shows only walks; tapping it again shows everything', async () => {
-    await renderApp('/kampung');
+    await renderApp('/kampung/happenings');
     await screen.findByText('Morning walk');
     await press('filter-walk');
     await waitFor(() => expect(screen.queryByText('Tai chi in the park')).toBeNull());
@@ -169,7 +172,7 @@ describe('Kampung: Happenings', () => {
   });
 
   it('kinds: the busiest four, More kinds shows the rest, and one kind filters the list', async () => {
-    await renderApp('/kampung');
+    await renderApp('/kampung/happenings');
     await screen.findByTestId('filter-walk');
     expect(screen.queryByTestId('filter-meetup')).toBeNull();
     await press('filter-more-kinds');
@@ -187,7 +190,8 @@ describe('Kampung: Happenings', () => {
 
   it('Map shows the happenings on a map and keeps the list below it', async () => {
     await renderApp('/kampung');
-    await press('kampung-view-map');
+    await fireEvent.press(await screen.findByTestId('kampung-view-map'));
+    expect(await screen.findByTestId('screen-happenings')).toBeTruthy();
     expect(
       await screen.findByLabelText(
         /^Map of \d+ happenings near you\. They are also listed below\.$/,
@@ -400,8 +404,8 @@ describe('T8: Help on every new screen', () => {
 describe('Tamil', () => {
   it('Happenings and its filters are in Tamil', async () => {
     useSettings.setState({ language: 'ta' });
-    await renderApp('/kampung');
-    expect(await screen.findByText('உங்கள் அருகில்')).toBeTruthy();
+    await renderApp('/kampung/happenings');
+    expect(await screen.findByText('அருகிலுள்ள நிகழ்வுகள்')).toBeTruthy();
     expect(screen.getByText('நடைகள்')).toBeTruthy();
     expect(screen.getByText('ஒன்றைத் தொடங்கு')).toBeTruthy();
   });

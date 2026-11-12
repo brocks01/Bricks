@@ -5,7 +5,8 @@ import { StyleSheet, View } from 'react-native';
 import { useAnswerCheckin, useLastCheckinResult } from '@/api';
 import { BigButton, Card, EventCard, StatusBanner, Text, YesNo } from '@/components';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
-import { space } from '@/theme';
+import { categoryColor, space } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 /**
  * The daily "Did you move yesterday?" (TH-1, our differentiator), used on Home,
@@ -26,13 +27,14 @@ export function CheckinFlow({
   const join = useJoinEvent();
   const checkin = useAnswerCheckin();
   const answered = useLastCheckinResult();
+  const compact = useCompact();
 
   if (!pending && !answered) return null;
 
   if (!answered) {
     return (
-      <Card testID="checkin-card">
-        <Text variant="heading">{t('home.checkin.question')}</Text>
+      <Card testID="checkin-card" style={styles.tinted}>
+        <Text variant={compact ? 'bodyStrong' : 'heading'}>{t('home.checkin.question')}</Text>
         <YesNo
           onYes={() => checkin.mutate('yes')}
           onNo={() => checkin.mutate('no')}
@@ -78,6 +80,10 @@ export function CheckinFlow({
 }
 
 const styles = StyleSheet.create({
+  // The daily question is green, like Health (where it also appears).
+  tinted: {
+    backgroundColor: categoryColor.walk.bg,
+  },
   group: {
     gap: space.xs,
   },

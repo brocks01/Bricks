@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useLastCheckinResult } from '@/api';
 import type { Today } from '@/api/types';
-import { EventCard, Text } from '@/components';
+import { EventRow } from '@/components';
 import { CheckinFlow } from '@/features/checkin/CheckinFlow';
 import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { NextReminderCard } from '@/features/reminders/ReminderCard';
@@ -39,9 +39,8 @@ export function PickedForYou({ today }: { today: Today }) {
   if (!event || event.my_rsvp === 'going' || event.id === answered?.suggestion?.id) return null;
 
   return (
-    <View style={styles.group} testID="picked-for-you">
-      <Text variant="title">{t('home.pickedForYou')}</Text>
-      <EventCard
+    <View testID="picked-for-you" accessibilityLabel={t('home.pickedForYou')}>
+      <EventRow
         event={event}
         onOpen={() => router.push({ pathname: '/event/[id]', params: { id: event.id } })}
         onGoing={() => join(event)}
@@ -52,9 +51,6 @@ export function PickedForYou({ today }: { today: Today }) {
 
 const styles = StyleSheet.create({
   section: {
-    gap: space.md,
-  },
-  group: {
-    gap: space.xs,
+    gap: space.xs + space.xxs,
   },
 });

@@ -4,6 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useReadOut, type ReadOutScript } from '@/features/readout/ReadOutProvider';
 import { maxChromeFontScale, screenPadding, space } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { BigButton } from '../BigButton';
 import { SpeakerHighIcon, StopIcon, WarningIcon } from '../primitives/icons';
@@ -24,9 +25,10 @@ export function TopBar({ readOut, showHelp = true, owner }: TopBarProps) {
   const { t } = useTranslation();
   const router = useRouter();
   const { speaking, toggle } = useReadOut();
+  const compact = useCompact();
 
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, compact && styles.rowCompact]}>
       <View style={styles.slot}>
         {readOut ? (
           <BigButton
@@ -66,6 +68,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: screenPadding,
     paddingTop: space.xs,
     paddingBottom: space.xs,
+  },
+  rowCompact: {
+    paddingTop: space.xxs,
+    paddingBottom: space.xxs,
   },
   slot: {
     flexShrink: 1,

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
 import { color, iconSize, maxChromeFontScale, radius, shadow, space, touch } from '@/theme';
+import { useTouchSizes } from '@/theme/TypographyProvider';
 
 import { CaretLeftIcon } from '../primitives/icons';
 import { Text } from '../primitives/Text';
@@ -17,6 +18,7 @@ export function BackButton({ onPress }: { onPress?: () => void }) {
   const { t } = useTranslation();
   const router = useRouter();
   const label = t('common.back');
+  const tap = useTouchSizes();
 
   return (
     <Pressable
@@ -30,7 +32,7 @@ export function BackButton({ onPress }: { onPress?: () => void }) {
         else if (router.canGoBack()) router.back();
         else router.replace('/home');
       }}
-      style={({ pressed }) => [styles.base, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.base, { minHeight: tap.min }, pressed && styles.pressed]}
     >
       <CaretLeftIcon size={iconSize.inline} color={color.text} weight="bold" />
       <Text variant="bodyStrong" color="text" maxFontSizeMultiplier={maxChromeFontScale}>

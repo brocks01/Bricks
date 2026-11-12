@@ -36,6 +36,7 @@ export default function LanguageSettingsScreen() {
 
   return (
     <Screen
+      section="settings"
       title={t('settings.language')}
       readOut={() => t('settings.languageReadout')}
       testID="screen-settings-language"

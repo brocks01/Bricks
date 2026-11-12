@@ -2,6 +2,7 @@ import { Children, Fragment, isValidElement, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
+import { useCompact } from '@/theme/TypographyProvider';
 import {
   borderWidth,
   categoryColor,
@@ -75,10 +76,17 @@ export function GroupedRow({
   onPress,
   testID,
 }: GroupedRowProps) {
+  const compact = useCompact();
   const content = (
     <>
       {IconComponent ? (
-        <View style={[styles.iconTile, { backgroundColor: categoryColor[tint].fg }]}>
+        <View
+          style={[
+            styles.iconTile,
+            compact && styles.iconTileCompact,
+            { backgroundColor: categoryColor[tint].fg },
+          ]}
+        >
           <IconComponent size={iconSize.inline} color={color.textOnColor} weight="fill" />
         </View>
       ) : null}
@@ -92,14 +100,19 @@ export function GroupedRow({
         </Text>
       ) : null}
       {onPress ? (
-        <CaretRightIcon size={iconSize.inline} color={color.textSecondary} weight="bold" />
+        <CaretRightIcon
+          size={iconSize.inline}
+          color={color.textSecondary}
+          weight="bold"
+          style={styles.caret}
+        />
       ) : null}
     </>
   );
 
   if (!onPress) {
     return (
-      <View style={styles.row} accessible testID={testID}>
+      <View style={[styles.row, compact && styles.rowCompact]} accessible testID={testID}>
         {content}
       </View>
     );
@@ -113,7 +126,7 @@ export function GroupedRow({
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.row, pressed && styles.pressed]}
+      style={({ pressed }) => [styles.row, compact && styles.rowCompact, pressed && styles.pressed]}
     >
       {content}
     </Pressable>
@@ -121,6 +134,7 @@ export function GroupedRow({
 }
 
 const ICON_TILE = 44;
+const ICON_TILE_COMPACT = 36;
 
 const styles = StyleSheet.create({
   section: {
@@ -143,6 +157,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.sm,
     paddingVertical: space.sm,
   },
+  rowCompact: {
+    minHeight: touch.compact,
+    paddingVertical: space.xs,
+    gap: space.xs + space.xxs,
+  },
+  iconTileCompact: {
+    width: ICON_TILE_COMPACT,
+    height: ICON_TILE_COMPACT,
+  },
   pressed: {
     backgroundColor: color.primarySubtle,
   },
@@ -162,8 +185,12 @@ const styles = StyleSheet.create({
   // The title always keeps room (never squeezed to a letter per line); a long value wraps.
   words: {
     flex: 1,
-    minWidth: '40%',
+    minWidth: '30%',
     gap: space.xxs,
+  },
+  // The chevron never squeezes, whatever the words beside it.
+  caret: {
+    flexShrink: 0,
   },
   value: {
     flexShrink: 1,

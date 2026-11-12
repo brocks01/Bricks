@@ -80,6 +80,7 @@ export default function CircleScreen() {
 
   return (
     <Screen
+      section="community"
       readOut={readOut}
       footer={footer}
       tint={circle ? categoryColor[CIRCLE_TINT[circle.type]].bg : undefined}

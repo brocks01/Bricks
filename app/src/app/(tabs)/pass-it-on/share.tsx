@@ -155,6 +155,7 @@ export default function ShareSkillScreen() {
 
   return (
     <Screen
+      section="activity"
       title={t('passItOn.shareSkill')}
       readOut={() =>
         step === 'preview'

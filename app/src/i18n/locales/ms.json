@@ -41,22 +41,7 @@
       "afternoon": "Selamat petang",
       "evening": "Selamat malam"
     },
-    "section": {
-      "passItOn": {
-        "title": "Aktiviti Saya",
-        "description": "Kongsi apa yang anda tahu dan bantu orang lain."
-      },
-      "kampung": {
-        "title": "Komuniti",
-        "description": "Sertai jalan kaki, kelas dan pertemuan berdekatan."
-      },
-      "thrive": {
-        "title": "Kesihatan",
-        "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
-      }
-    },
-    "readout": "{{greeting}}. {{today}}Komuniti: sertai aktiviti berdekatan. Aktiviti Saya: kongsi apa yang anda tahu. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
-    "explore": "Apa yang anda mahu buat?",
+    "readout": "{{greeting}}. {{today}}Untuk membuka Komuniti, Aktiviti atau Kesihatan, guna butang di bahagian bawah skrin.",
     "readoutCheckin": "Ada soalan untuk anda: adakah anda bergerak semalam? ",
     "readoutEvent": "Akan datang: {{title}}, {{when}}. ",
     "readoutReminder": "Peringatan pada {{time}}: {{text}}. ",
@@ -125,13 +110,15 @@
       "skip": "Langkau",
       "sent": "Kami telah beritahu {{name}}. Terima kasih.",
       "none": "Anda sudah mengucapkan terima kasih. Terima kasih!",
-      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau."
-    }
+      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau.",
+      "openShort": "Ucap terima kasih"
+    },
+    "storyHint": "Salam suara anda dan perkara yang anda suka bualkan."
   },
   "kampung": {
     "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
-    "readout": "Komuniti. {{summary}} Ketik Saya pergi untuk menyertai, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
+    "readout": "Komuniti. {{summary}} Tekan satu aktiviti untuk melihat dan menyertainya, Lihat semua untuk senarai penuh, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
     "myCircles": {
       "title": "Bulatan Saya",
       "count_other": "Anda dalam {{count}} Bulatan",
@@ -164,7 +151,10 @@
       "meetup": "Kopi",
       "kids": "Bersama kanak-kanak",
       "other": "Lain-lain"
-    }
+    },
+    "comingUp": "Akan datang berdekatan",
+    "seeAll_other": "Lihat semua {{count}}",
+    "happenings": "Aktiviti berdekatan"
   },
   "thrive": {
     "title": "Kesihatan",
@@ -185,7 +175,8 @@
     "readout": "Kesihatan. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
     "readoutWeek": "Minggu ini anda berjalan {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
-    "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
+    "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}.",
+    "nextReminder": "Seterusnya: {{time}} · {{text}}"
   },
   "safety": {
     "areYouOk": {
@@ -717,7 +708,8 @@
     "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
     "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
     "you": "Anda",
-    "viewProfile": "Lihat profil saya"
+    "viewProfile": "Lihat profil saya",
+    "remindShort": "Peringatan"
   },
   "family": {
     "title": "Keluarga saya",

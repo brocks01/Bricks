@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
 import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -21,6 +22,7 @@ export interface TileProps {
  * <TileGrid>. The tile grows taller instead of cutting text at large font sizes.
  */
 export function Tile({ icon: IconComponent, label, onPress, selected, testID }: TileProps) {
+  const compact = useCompact();
   return (
     <Pressable
       accessibilityRole={selected === undefined ? 'button' : 'checkbox'}
@@ -31,17 +33,26 @@ export function Tile({ icon: IconComponent, label, onPress, selected, testID }: 
         tapFeedback();
         onPress();
       }}
-      style={({ pressed }) => [styles.tile, selected && styles.selected, pressed && styles.pressed]}
+      style={({ pressed }) => [
+        styles.tile,
+        compact && styles.tileCompact,
+        selected && styles.selected,
+        pressed && styles.pressed,
+      ]}
     >
       {selected ? (
         <View style={styles.tick}>
           <CheckCircleIcon size={iconSize.inline} color={color.primary} weight="fill" />
         </View>
       ) : null}
-      <View style={styles.iconWell}>
-        <IconComponent size={iconSize.hero} color={color.primary} weight="bold" />
+      <View style={[styles.iconWell, compact && styles.iconWellCompact]}>
+        <IconComponent
+          size={compact ? iconSize.inline : iconSize.hero}
+          color={color.primary}
+          weight="bold"
+        />
       </View>
-      <Text variant="bodyStrong" align="center">
+      <Text variant="bodyStrong" align={compact ? 'left' : 'center'} style={styles.label}>
         {label}
       </Text>
     </Pressable>
@@ -50,14 +61,15 @@ export function Tile({ icon: IconComponent, label, onPress, selected, testID }: 
 
 /** Lays tiles out two per row with even gaps; an odd last tile keeps its half width. */
 export function TileGrid({ children }: { children: ReactNode }) {
+  const compact = useCompact();
   const items = Children.toArray(children);
   const rows: ReactNode[][] = [];
   for (let i = 0; i < items.length; i += 2) rows.push(items.slice(i, i + 2));
 
   return (
-    <View style={styles.grid}>
+    <View style={[styles.grid, compact && styles.gridCompact]}>
       {rows.map((row, index) => (
-        <View key={index} style={styles.row}>
+        <View key={index} style={[styles.row, compact && styles.gridCompact]}>
           {row.map((item, cell) => (
             <View key={cell} style={styles.cell}>
               {item}
@@ -71,6 +83,7 @@ export function TileGrid({ children }: { children: ReactNode }) {
 }
 
 const ICON_WELL = 64;
+const ICON_WELL_COMPACT = 40;
 
 const styles = StyleSheet.create({
   grid: {
@@ -95,6 +108,24 @@ const styles = StyleSheet.create({
     borderColor: color.bg,
     backgroundColor: color.bg,
     ...shadow.card,
+  },
+  // Small and Normal text: icon beside the word, so a step's choices fit on one screen.
+  tileCompact: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    minHeight: touch.compact,
+    paddingVertical: space.xs,
+    paddingHorizontal: space.xs + space.xxs,
+  },
+  gridCompact: {
+    gap: space.xs + space.xxs,
+  },
+  iconWellCompact: {
+    width: ICON_WELL_COMPACT,
+    height: ICON_WELL_COMPACT,
+  },
+  label: {
+    flexShrink: 1,
   },
   pressed: {
     backgroundColor: color.primarySubtle,

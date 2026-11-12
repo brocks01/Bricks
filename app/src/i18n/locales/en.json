@@ -41,22 +41,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening"
     },
-    "section": {
-      "passItOn": {
-        "title": "Activity",
-        "description": "Share what you know and help others."
-      },
-      "kampung": {
-        "title": "Community",
-        "description": "Join walks, classes and meet-ups near you."
-      },
-      "thrive": {
-        "title": "Health",
-        "description": "Stay active, set reminders and stay safe."
-      }
-    },
-    "readout": "{{greeting}}. {{today}}Community: join activities near you. Activity: share what you know. Health: stay active and safe. Tap one to open it.",
-    "explore": "What would you like to do?",
+    "readout": "{{greeting}}. {{today}}To open Community, Activity or Health, use the buttons at the bottom of the screen.",
     "readoutCheckin": "You have a question to answer: did you move yesterday? ",
     "readoutEvent": "Coming up: {{title}}, {{when}}. ",
     "readoutReminder": "Reminder at {{time}}: {{text}}. ",
@@ -129,13 +114,15 @@
       "skip": "Skip",
       "sent": "We've told {{name}}. Thank you.",
       "none": "You've already said thank you. Thank you!",
-      "readout": "Tap Thank {{name}}, or Say thank you to record a short message, or Skip."
-    }
+      "readout": "Tap Thank {{name}}, or Say thank you to record a short message, or Skip.",
+      "openShort": "Say thank you"
+    },
+    "storyHint": "Your voice hello and what you like to talk about."
   },
   "kampung": {
     "title": "Community",
     "comingSoon": "Here you will find walks, classes and meet-ups near you.",
-    "readout": "Community. {{summary}} Tap I'm going to join, or Start something to create your own.",
+    "readout": "Community. {{summary}} Tap a happening to see it and join, See all for the full list, or Start something to create your own.",
     "myCircles": {
       "title": "My Circles",
       "count_one": "You're in {{count}} Circle",
@@ -171,7 +158,11 @@
       "meetup": "Coffee",
       "kids": "With children",
       "other": "Something else"
-    }
+    },
+    "comingUp": "Coming up near you",
+    "seeAll_one": "See {{count}}",
+    "seeAll_other": "See all {{count}}",
+    "happenings": "Happenings near you"
   },
   "thrive": {
     "title": "Health",
@@ -194,7 +185,8 @@
     "readout": "Health. {{week}} {{last}} {{reminder}} Tap Start walk to go for a walk.",
     "readoutWeek": "This week you walked {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Your last walk: {{place}}, {{distance}}, {{time}}.",
-    "readoutReminder": "Next reminder at {{time}}: {{text}}."
+    "readoutReminder": "Next reminder at {{time}}: {{text}}.",
+    "nextReminder": "Next: {{time}} · {{text}}"
   },
   "safety": {
     "areYouOk": {
@@ -733,7 +725,8 @@
     "demoScheduled": "Demo: the alert comes in {{seconds}} seconds. You can lock your phone.",
     "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first.",
     "you": "You",
-    "viewProfile": "See my profile"
+    "viewProfile": "See my profile",
+    "remindShort": "Reminders"
   },
   "family": {
     "title": "My family",

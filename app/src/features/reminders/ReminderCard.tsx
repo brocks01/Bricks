@@ -5,10 +5,13 @@ import { useCompleteReminder } from '@/api';
 import type { Reminder } from '@/api/types';
 import { BigButton, Card, StatusBanner, Text } from '@/components';
 import { formatTime } from '@/lib/format';
-import { color, iconSize, space } from '@/theme';
-import { useTypography } from '@/theme/TypographyProvider';
+import { categoryColor, color, iconSize, radius, space } from '@/theme';
+import { useCompact, useTypography } from '@/theme/TypographyProvider';
 
 import { REMINDER_ICON, timeToday } from './kinds';
+
+/** Reminders are rose: a soft card with the kind's icon in a deep-rose square. */
+const REMINDER_TINT = categoryColor.music;
 
 /**
  * The next reminder with one big Done button (Home "Today" and Thrive).
@@ -21,6 +24,7 @@ export function NextReminderCard({
 }) {
   const { t } = useTranslation();
   const { language } = useTypography();
+  const compact = useCompact();
   const complete = useCompleteReminder();
 
   // After Done, say so, then show what's next (if anything).
@@ -37,28 +41,57 @@ export function NextReminderCard({
   return (
     <View style={styles.stack}>
       {thanks}
-      <Card testID="next-reminder">
-        <View style={styles.row}>
-          <KindIcon size={iconSize.button} color={color.primary} weight="bold" />
+      <Card testID="next-reminder" style={styles.tinted}>
+        <View style={[styles.row, compact && styles.wrapRow]}>
+          <View style={styles.iconWell}>
+            <KindIcon size={iconSize.inline} color={REMINDER_TINT.fg} weight="bold" />
+          </View>
           <Text variant="bodyStrong" style={styles.flex}>
             {t('home.reminder.line', {
               time: formatTime(timeToday(reminder.time), language),
               text: reminder.text,
             })}
           </Text>
+          {compact ? (
+            <BigButton
+              variant="success"
+              fullWidth={false}
+              label={t('home.reminder.done')}
+              onPress={() => complete.mutate(reminder.id)}
+              testID="next-reminder-done"
+            />
+          ) : null}
         </View>
-        <BigButton
-          variant="success"
-          label={t('home.reminder.done')}
-          onPress={() => complete.mutate(reminder.id)}
-          testID="next-reminder-done"
-        />
+        {compact ? null : (
+          <BigButton
+            variant="success"
+            label={t('home.reminder.done')}
+            onPress={() => complete.mutate(reminder.id)}
+            testID="next-reminder-done"
+          />
+        )}
       </Card>
     </View>
   );
 }
 
+const ICON_WELL = 44;
+
 const styles = StyleSheet.create({
+  tinted: {
+    backgroundColor: REMINDER_TINT.bg,
+  },
+  wrapRow: {
+    flexWrap: 'wrap',
+  },
+  iconWell: {
+    width: ICON_WELL,
+    height: ICON_WELL,
+    borderRadius: radius.tile,
+    backgroundColor: color.bg,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   stack: {
     gap: space.md,
   },

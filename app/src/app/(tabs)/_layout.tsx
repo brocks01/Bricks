@@ -20,9 +20,12 @@ import {
   radius,
   shadow,
   space,
+  sectionColor,
   touch,
   typeScale,
+  type SectionColorKey,
 } from '@/theme';
+import { useTypography } from '@/theme/TypographyProvider';
 
 const ICON_PILL_WIDTH = 64;
 
@@ -36,23 +39,26 @@ export const unstable_settings = {
  * Tamil labels), one line otherwise (one-word labels shrink to fit instead). Grows
  * with the system font up to the chrome cap, so labels are never clipped.
  */
-function tabBarHeight(fontScale: number, labels: readonly string[]): number {
-  const scale = Math.min(Math.max(fontScale, 1), maxChromeFontScale);
+function tabBarHeight(fontScale: number, textSize: number, labels: readonly string[]): number {
+  const scale = Math.min(Math.max(fontScale, 1), maxChromeFontScale) * textSize;
   const labelLine = typeScale.caption.size * lineHeightRatio * scale;
   const lines = labels.some((l) => /\s/.test(l.trim())) ? 2 : 1;
-  const content = space.xs * 2 + iconSize.inline + space.xxs * 3 + labelLine * lines;
-  return Math.max(touch.large, Math.ceil(content));
+  // Small and Normal text: tighter padding around the icon and label.
+  const padding = textSize < 1 ? space.xxs * 2 : space.xs * 2 + space.xxs;
+  const content = padding + iconSize.inline + space.xxs * 2 + labelLine * lines;
+  return Math.max(textSize < 1 ? touch.compact : touch.large, Math.ceil(content));
 }
 
-function tabIcon(IconComponent: Icon) {
+function tabIcon(IconComponent: Icon, section: SectionColorKey) {
+  const tint = sectionColor[section];
   return function TabIcon({ focused }: { focused: boolean }) {
-    // Selected: a filled icon on a grey pill, and a bold label, so the active tab
-    // isn't shown by colour alone.
+    // Selected: a filled icon on a pill in the section's colour, and a bold label,
+    // so the active tab isn't shown by colour alone.
     return (
-      <View style={[styles.iconPill, focused && styles.iconPillOn]}>
+      <View style={[styles.iconPill, focused && { backgroundColor: tint.bg }]}>
         <IconComponent
           size={iconSize.inline}
-          color={focused ? color.text : color.textSecondary}
+          color={focused ? tint.fg : color.textSecondary}
           weight={focused ? 'fill' : 'bold'}
         />
       </View>
@@ -93,6 +99,7 @@ export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
+  const { fontScale: textSize } = useTypography();
 
   return (
     <Tabs
@@ -106,18 +113,17 @@ export default function TabsLayout() {
         tabBarStyle: {
           ...shadow.floating,
           height:
-            tabBarHeight(fontScale, [
+            tabBarHeight(fontScale, textSize, [
               t('tabs.home'),
               t('tabs.kampung'),
               t('tabs.passItOn'),
               t('tabs.thrive'),
-            ]) +
-            space.xs * 2,
+            ]) + (textSize < 1 ? space.xxs * 2 : space.xs * 2),
           marginHorizontal: space.sm,
           marginBottom: insets.bottom + space.xs,
           paddingHorizontal: space.xxs,
-          paddingTop: space.xs,
-          paddingBottom: space.xs,
+          paddingTop: textSize < 1 ? space.xxs : space.xs,
+          paddingBottom: textSize < 1 ? space.xxs : space.xs,
           borderTopWidth: 0,
           borderRadius: radius.button,
           backgroundColor: color.bg,
@@ -130,7 +136,7 @@ export default function TabsLayout() {
         name="home"
         options={{
           title: t('tabs.home'),
-          tabBarIcon: tabIcon(HouseIcon),
+          tabBarIcon: tabIcon(HouseIcon, 'home'),
           tabBarLabel: tabLabel(t('tabs.home')),
           tabBarButtonTestID: 'tab-home',
         }}
@@ -139,7 +145,7 @@ export default function TabsLayout() {
         name="kampung"
         options={{
           title: t('tabs.kampung'),
-          tabBarIcon: tabIcon(UsersThreeIcon),
+          tabBarIcon: tabIcon(UsersThreeIcon, 'community'),
           tabBarLabel: tabLabel(t('tabs.kampung')),
           tabBarButtonTestID: 'tab-kampung',
         }}
@@ -148,7 +154,7 @@ export default function TabsLayout() {
         name="pass-it-on"
         options={{
           title: t('tabs.passItOn'),
-          tabBarIcon: tabIcon(HandHeartIcon),
+          tabBarIcon: tabIcon(HandHeartIcon, 'activity'),
           tabBarLabel: tabLabel(t('tabs.passItOn')),
           tabBarButtonTestID: 'tab-pass-it-on',
         }}
@@ -157,7 +163,7 @@ export default function TabsLayout() {
         name="thrive"
         options={{
           title: t('tabs.thrive'),
-          tabBarIcon: tabIcon(HeartbeatIcon),
+          tabBarIcon: tabIcon(HeartbeatIcon, 'health'),
           tabBarLabel: tabLabel(t('tabs.thrive')),
           tabBarButtonTestID: 'tab-thrive',
         }}
@@ -179,8 +185,5 @@ const styles = StyleSheet.create({
     paddingVertical: space.xxs,
     alignItems: 'center',
     borderRadius: radius.button,
-  },
-  iconPillOn: {
-    backgroundColor: color.primarySubtle,
   },
 });

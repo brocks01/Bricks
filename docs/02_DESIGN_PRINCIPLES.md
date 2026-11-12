@@ -110,11 +110,21 @@ Kavya owns the board; Person A builds from it.
   Settings → Text size. The table above is **Large** (×1.0). **Normal** is the default (×0.9:
   body 18pt) and **Small** fits the most (×0.8: body 16pt). It multiplies on top of the phone's
   own font setting.
-- **Compact layout** comes with Small and Normal (`useCompact()`): tighter gaps and card padding,
-  `lg` buttons at 64dp, a shorter welcome picture and walk map, and the four languages as a 2×2
-  grid. Tap targets never drop below 64dp. Goal: every single-task screen (onboarding steps,
-  pickers, safety screens, the walk) fits on one phone screen without scrolling. Lists and feeds
-  (Home, Community, Activity, Settings, event pages) still scroll.
+- **Compact layout** comes with Small and Normal (`useCompact()`, `useTouchSizes()`): taps are
+  56dp (`touch.compact`, still above the iOS 44 / Android 48 minimums) so small words don't sit
+  in giant controls; tighter gaps and card padding; Back and the title share one line; choice
+  chips line up in two columns; tiles become short rows; shorter welcome picture, walk map and
+  week chart; a slimmer tab bar. The SOS call keeps 80dp. Large keeps 64/72dp and the roomy
+  layout.
+- **One screen, no scrolling** (Small and Normal): every tab page (Home, Community, Activity,
+  Health), Settings and its pages, onboarding, and the safety screens fit on one phone screen.
+  Tab pages show a short summary and open the full list on its own page; only those detail pages
+  scroll (all happenings, an event, a Circle, My story, the Thank-You Wall, the profile).
+  Home doesn't repeat Community, Activity and Health: that's the tab bar's job.
+- **Section colours** (`sectionColor`): warm yellow Home, teal Community, lilac Activity, green
+  Health, blue Settings, as a soft wash at the top of each page and the selected tab's pill.
+  Home's check-in card is soft green, reminders soft rose, and rows have coloured icon squares,
+  so the app never reads as a white form.
 
 ### 5.2 Colour
 

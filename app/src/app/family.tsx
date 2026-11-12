@@ -47,7 +47,7 @@ export default function FamilyScreen() {
   };
 
   return (
-    <Screen title={t('family.title')} readOut={readOut} testID="screen-family">
+    <Screen section="settings" title={t('family.title')} readOut={readOut} testID="screen-family">
       <QueryState query={invites}>
         {(list) =>
           list.length === 0 ? (

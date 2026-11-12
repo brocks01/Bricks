@@ -145,6 +145,38 @@ The brief assumed this pass was done; it wasn't in this repo, so it's done here.
 - Phone and code entry screens aren't built yet (phone sign-in is off until an SMS provider
   exists), so Luma's code-entry box isn't used.
 
+### UI step 12: every main page on one screen, in colour
+Asked for by the product owner: Small looked "zoomed in" (small words in giant controls), the
+app was all white "like a form", and long pages are hard for seniors to scroll.
+- **Proportional sizes with Small and Normal:** buttons, chips, rows, the top bar, Back and Buddy
+  are 56dp (`touch.compact`); the tab bar is slimmer; Back and the title share one line. Large is
+  unchanged (64/72dp). The SOS call stays 80dp.
+- **Colour:** each part of the app has a soft colour (`sectionColor`): yellow Home, teal
+  Community, lilac Activity, green Health, blue Settings, washing the top of its pages and
+  filling the selected tab's pill. Home's check-in card is green, the reminder card rose.
+- **Home:** "What would you like to do?" is gone (the tab bar already does it); Settings moved
+  beside the greeting. The next event is one short row, and "Picked for you" is a row with its
+  own "I'm going" (still one tap). The check-in now lives on Home only.
+- **Community:** My Circles, the next two happenings as short rows, then See all / Map. The full
+  list with filters, map and "I'm going" on every event moved to a new page,
+  `/kampung/happenings` (`?mine=1` for your own plans, `?view=map` for the map).
+- **Activity:** the thank-you prompt, rows for My story, What I can share and the Thank-You Wall,
+  then the three numbers. My story (with badges) and What I can share (with Share a skill) are
+  new pages.
+- **Health:** Start walk, the week card (shorter chart, one summary line), then rows for the last
+  walk and reminders.
+- **Settings:** one row per setting. Read aloud and How we remind you are their own pages; the
+  demo alerts, walk source and component gallery moved to Settings → Demo (demo and developer
+  builds only). The three "Coming soon" rows are gone (no placeholders on the main list).
+- **Forms:** choice chips are a two-column grid and tiles are short rows with Small and Normal.
+- **Measured on a 393×760 screen (iPhone 15 size after the status bar):** Home, Community,
+  Activity, Health, Settings and all its pages, every onboarding step, SOS, Are you OK, the helper
+  alert, Family, the check-in and the walk fit with no scrolling at Small and Normal. Detail pages
+  and lists scroll. Still scrolling a little: the first step of Start something (≈50–80px) and
+  Share a skill (≈130–175px), the reminders list, and on a small Android (360×690) the main pages
+  by 30–130px.
+- Tests follow each feature to its new place: 477 pass.
+
 ### UI step 11: text size (Small · Normal · Large) and one-screen layouts
 - **New onboarding step** right after the language: "Text size", three white cards each written
   in its own size. Choosing one changes the whole app at once; Next moves on. Normal is chosen to

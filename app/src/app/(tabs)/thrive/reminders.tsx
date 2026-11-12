@@ -90,6 +90,7 @@ export default function RemindersScreen() {
 
   return (
     <Screen
+      section="health"
       title={t('reminders.title')}
       readOut={readOut}
       readOnOpen={read === '1'}

@@ -10,12 +10,23 @@ import { config } from '@/lib/config';
 import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
-import { borderWidth, color, screenPadding, space } from '@/theme';
+import {
+  borderWidth,
+  color,
+  screenPadding,
+  sectionColor,
+  space,
+  type SectionColorKey,
+} from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from '../primitives/Text';
 
-import { BUDDY_BUTTON_CLEARANCE, BuddyButton } from '../BuddyButton';
+import {
+  BUDDY_BUTTON_CLEARANCE,
+  BUDDY_BUTTON_CLEARANCE_COMPACT,
+  BuddyButton,
+} from '../BuddyButton';
 import { StatusBanner } from '../StatusBanner';
 import { TintBackdrop } from '../TintBackdrop';
 import { UndoHost } from '../UndoHost';
@@ -51,6 +62,8 @@ export interface ScreenProps {
   tellMe?: boolean;
   /** A colour at the top fading to the page grey (the event page's cover tint, Luma). */
   tint?: string;
+  /** The part of the app this page belongs to: its soft colour washes the top. */
+  section?: SectionColorKey;
   /** A deep colour behind the top of the page, fading into `tint` (event page). */
   tintStrong?: string;
   children: ReactNode;
@@ -79,9 +92,11 @@ export function Screen({
   tellMe,
   tint,
   tintStrong,
+  section,
   children,
   testID,
 }: ScreenProps) {
+  const pageTint = tint ?? (section ? sectionColor[section].bg : undefined);
   const offline = useIsOffline();
   const compact = useCompact();
   const openBuddy = useBuddy((s) => s.open);
@@ -119,12 +134,24 @@ export function Screen({
       {offline && !config.demoVoice ? (
         <StatusBanner tone="notice" text={t('common.offline')} testID="offline-banner" />
       ) : null}
-      {showBack ? <BackButton onPress={onBack} /> : null}
-      {title ? (
-        <Text variant="title" style={compact ? null : styles.title}>
-          {title}
-        </Text>
-      ) : null}
+      {compact && showBack && title ? (
+        // Small and Normal text: Back and the title share one line.
+        <View style={styles.backRow}>
+          <BackButton onPress={onBack} />
+          <Text variant="title" style={styles.backTitle}>
+            {title}
+          </Text>
+        </View>
+      ) : (
+        <>
+          {showBack ? <BackButton onPress={onBack} /> : null}
+          {title ? (
+            <Text variant="title" style={compact ? null : styles.title}>
+              {title}
+            </Text>
+          ) : null}
+        </>
+      )}
       {children}
     </>
   );
@@ -135,7 +162,7 @@ export function Screen({
       edges={standalone ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}
       testID={testID}
     >
-      {tint && !strongBand ? <TintBackdrop tint={tint} /> : null}
+      {pageTint && !strongBand ? <TintBackdrop tint={pageTint} /> : null}
       {/* Read it out never disappears: without a script it reads the title. */}
       <TopBar readOut={script} showHelp={showHelp} owner={owner} />
       <View style={styles.flex}>
@@ -145,7 +172,7 @@ export function Screen({
             contentContainerStyle={[
               styles.content,
               compact && styles.compact,
-              showBuddy && styles.buddyRoom,
+              showBuddy && (compact ? styles.buddyRoomCompact : styles.buddyRoom),
             ]}
             keyboardShouldPersistTaps="handled"
           >
@@ -189,6 +216,15 @@ const styles = StyleSheet.create({
   title: {
     marginTop: space.xs,
   },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: space.sm,
+  },
+  backTitle: {
+    flexShrink: 1,
+  },
   // Small and Normal text: tighter rhythm so more fits on one screen.
   compact: {
     paddingBottom: space.sm,
@@ -197,6 +233,9 @@ const styles = StyleSheet.create({
   // The last item can always scroll clear of the round Buddy button.
   buddyRoom: {
     paddingBottom: BUDDY_BUTTON_CLEARANCE,
+  },
+  buddyRoomCompact: {
+    paddingBottom: BUDDY_BUTTON_CLEARANCE_COMPACT,
   },
   buddy: {
     position: 'absolute',

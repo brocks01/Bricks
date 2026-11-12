@@ -23,14 +23,14 @@ export interface EventCardProps {
   onGoing: () => void;
   /** For tests and previews; defaults to the current time. */
   now?: Date;
-  /** Smaller cover: for Home's Today section, where space matters most. */
+  /** Home's short card: small cover, no host line, the button beside "12 going". */
   compact?: boolean;
   /** The member hosts it: a "Hosting" badge instead of "Going". */
   hosting?: boolean;
 }
 
 const COVER = 104;
-const COVER_COMPACT = 80;
+const COVER_COMPACT = 64;
 /** From this system font size up, the cover sits above the words so they keep the full width. */
 const STACK_AT_FONT_SCALE = 1.5;
 
@@ -79,19 +79,21 @@ export function EventCard({
           overlay={badge ? <StatusBadge kind={badge} /> : null}
         />
         <View style={styles.facts}>
-          <View style={styles.host}>
-            <Avatar name={event.host.name} photoUrl={event.host.photo_url} size={32} />
-            <Text variant="caption" color="textSecondary" style={styles.flex}>
-              {event.host.name}
-            </Text>
-          </View>
-          <Text variant="heading">{event.title}</Text>
+          {compact ? null : (
+            <View style={styles.host}>
+              <Avatar name={event.host.name} photoUrl={event.host.photo_url} size={32} />
+              <Text variant="caption" color="textSecondary" style={styles.flex}>
+                {event.host.name}
+              </Text>
+            </View>
+          )}
+          <Text variant={compact ? 'bodyStrong' : 'heading'}>{event.title}</Text>
           <Fact icon={ClockIcon} text={when} />
           <Fact icon={MapPinIcon} text={event.place_name} />
         </View>
       </Pressable>
 
-      <View style={styles.footer}>
+      <View style={[styles.footer, compact && styles.footerCompact]}>
         <Text color="textSecondary">{going}</Text>
         {isGoing ? (
           <View
@@ -107,6 +109,7 @@ export function EventCard({
         ) : (
           <BigButton
             label={t('event.imGoing')}
+            fullWidth={!compact}
             onPress={onGoing}
             testID={`event-card-${event.id}-join`}
           />
@@ -162,6 +165,13 @@ const styles = StyleSheet.create({
   },
   footer: {
     gap: space.xs,
+  },
+  // Compact (Home): "12 going" and the button side by side.
+  footerCompact: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   goingRow: {
     flexDirection: 'row',

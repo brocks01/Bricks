@@ -37,6 +37,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen
+      section="activity"
       title={t('profile.title')}
       readOut={() => {
         const p = profile.data;

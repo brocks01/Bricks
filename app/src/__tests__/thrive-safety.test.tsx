@@ -38,14 +38,17 @@ beforeEach(async () => {
 });
 
 describe('Thrive', () => {
-  it('shows the check-in, Start walk, this week, the last walk and reminders', async () => {
+  it('shows Start walk, this week, the last walk and reminders (the check-in is on Home)', async () => {
     await renderApp('/thrive');
-    expect(await screen.findByText('Did you move yesterday?')).toBeTruthy();
-    expect(screen.getByTestId('thrive-start-walk')).toBeTruthy();
+    expect(await screen.findByTestId('thrive-start-walk')).toBeTruthy();
+    expect(screen.queryByText('Did you move yesterday?')).toBeNull();
     expect(await screen.findByTestId('thrive-week')).toBeTruthy();
     expect(screen.getByText(/days in a row/)).toBeTruthy();
     expect(screen.getByText(/Bishan Park · 2\.4 km · 32 min/)).toBeTruthy();
     expect(screen.getByTestId('thrive-reminders')).toBeTruthy();
+    expect(
+      screen.getByText(/^Next: (8 am · Take medicine|8 pm · Blood pressure tablet)$/),
+    ).toBeTruthy();
   });
 
   it('opens the last walk: route, numbers, splits and a warm line', async () => {

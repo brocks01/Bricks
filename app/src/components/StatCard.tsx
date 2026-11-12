@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { color, space } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { Card } from './Card';
 import { Text } from './primitives/Text';
@@ -30,12 +31,13 @@ export interface StatCardProps {
 }
 
 const CHART_HEIGHT = 72;
+const CHART_HEIGHT_COMPACT = 44;
 const STUB_HEIGHT = 8;
 
-function barHeight(bar: StatBar, max: number): number {
+function barHeight(bar: StatBar, max: number, full: number): number {
   if (!bar.done) return STUB_HEIGHT;
-  if (bar.value === undefined || max <= 0) return CHART_HEIGHT;
-  return Math.max(STUB_HEIGHT * 2, Math.round((bar.value / max) * CHART_HEIGHT));
+  if (bar.value === undefined || max <= 0) return full;
+  return Math.max(STUB_HEIGHT * 2, Math.round((bar.value / max) * full));
 }
 
 /**
@@ -45,6 +47,7 @@ function barHeight(bar: StatBar, max: number): number {
  */
 export function StatCard({ label, value, unit, sub, bars, testID }: StatCardProps) {
   const { t } = useTranslation();
+  const compact = useCompact();
   const max = Math.max(0, ...(bars ?? []).map((b) => b.value ?? 0));
   const activeDays = bars?.filter((b) => b.done).length ?? 0;
   const chartSummary = bars
@@ -57,25 +60,37 @@ export function StatCard({ label, value, unit, sub, bars, testID }: StatCardProp
 
   return (
     <Card testID={testID} accessible accessibilityLabel={spoken}>
-      <Text variant="bodyStrong" color="textSecondary">
-        {label}
-      </Text>
+      {compact ? null : (
+        <Text variant="bodyStrong" color="textSecondary">
+          {label}
+        </Text>
+      )}
       <View style={styles.valueRow}>
         <Text variant="stat">{value}</Text>
         {unit ? <Text style={styles.unit}>{unit}</Text> : null}
       </View>
-      {sub ? <Text color="textSecondary">{sub}</Text> : null}
+      {/* Small and Normal text: "This week · 2 walks · 5 days in a row" on one line. */}
+      {compact ? (
+        <Text color="textSecondary">
+          <Text variant="bodyStrong" color="textSecondary">
+            {label}
+          </Text>
+          {sub ? ` · ${sub}` : null}
+        </Text>
+      ) : sub ? (
+        <Text color="textSecondary">{sub}</Text>
+      ) : null}
 
       {bars ? (
         <View style={styles.chart}>
           {bars.map((bar, index) => (
             <View key={`${bar.label}-${index}`} style={styles.column}>
-              <View style={styles.track}>
+              <View style={[styles.track, compact && styles.trackCompact]}>
                 <View
                   style={[
                     styles.bar,
                     {
-                      height: barHeight(bar, max),
+                      height: barHeight(bar, max, compact ? CHART_HEIGHT_COMPACT : CHART_HEIGHT),
                       backgroundColor: bar.done ? color.primary : color.neutral,
                     },
                   ]}
@@ -111,6 +126,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     gap: space.xxs,
+  },
+  // Small and Normal text: a shorter chart, so the page fits on one screen.
+  trackCompact: {
+    height: CHART_HEIGHT_COMPACT,
   },
   track: {
     height: CHART_HEIGHT,

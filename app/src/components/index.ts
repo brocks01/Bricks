@@ -15,6 +15,7 @@ export { ComingSoon } from './ComingSoon';
 export { ConfirmSheet, type ConfirmSheetProps } from './ConfirmSheet';
 export { EmptyState, type EmptyStateProps } from './EmptyState';
 export { EventCard, type EventCardProps } from './EventCard';
+export { EventRow, type EventRowProps } from './EventRow';
 export { InfoRow } from './InfoRow';
 export { ListeningSheet, type ListeningSheetProps } from './ListeningSheet';
 export { PhotoHeader } from './PhotoHeader';

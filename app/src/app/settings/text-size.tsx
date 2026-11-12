@@ -15,6 +15,7 @@ export default function TextSizeSettingsScreen() {
 
   return (
     <Screen
+      section="settings"
       title={t('textSize.title')}
       readOut={() => t('textSize.readout', { size: t(`textSize.${textSize}`) })}
       testID="screen-settings-text-size"

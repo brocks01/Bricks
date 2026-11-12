@@ -249,8 +249,11 @@ describe('Settings (S40)', () => {
     expect(titleSize()).toBeGreaterThan(normalSize);
   });
 
-  it('sets reading speed, auto-read and the reminder channel', async () => {
+  it('sets reading speed, auto-read and the reminder channel, each on its own page', async () => {
     await renderApp('/settings');
+    expect(within(screen.getByTestId('settings-read-aloud')).getByText('Normal')).toBeTruthy();
+    await press('settings-read-aloud');
+    expect(await screen.findByTestId('screen-settings-read-aloud')).toBeTruthy();
     await press('settings-speed-slow');
     expect(useSettings.getState().readOut.rate).toBe(0.75);
     expect(Speech.speak).toHaveBeenLastCalledWith(
@@ -259,6 +262,11 @@ describe('Settings (S40)', () => {
     );
     await press('settings-autoread-on');
     expect(useSettings.getState().readOut.autoRead).toBe(true);
+    await press('screen-back');
+    expect(within(screen.getByTestId('settings-read-aloud')).getByText('Slow')).toBeTruthy();
+
+    await press('settings-reminders');
+    expect(await screen.findByTestId('screen-settings-reminders')).toBeTruthy();
 
     await waitFor(() =>
       expect(screen.getByTestId('settings-channel-app').props.accessibilityState).toMatchObject({
@@ -290,9 +298,9 @@ describe('Settings (S40)', () => {
     expect(alert.helpers.map((h) => h.name)).toContain('Siti Nurhaliza');
   });
 
-  it('Coming-soon rows say so, and Sign out (asked first) starts again at S1', async () => {
+  it('lists only what works (no placeholder rows), and Sign out (asked first) starts again at S1', async () => {
     await renderApp('/settings');
-    expect(screen.getAllByText('Coming soon')).toHaveLength(3);
+    expect(screen.queryByText('Coming soon')).toBeNull();
     await press('settings-sign-out');
     expect(screen.getByText(/Sign out\? This also starts the demo again/)).toBeTruthy();
     await press('confirm-yes');
@@ -304,6 +312,8 @@ describe('Settings (S40)', () => {
     '/settings',
     '/settings/language',
     '/settings/text-size',
+    '/settings/read-aloud',
+    '/settings/reminders',
     '/settings/safe-circle',
     '/family',
     '/onboarding/text-size',

@@ -74,6 +74,22 @@ export const categoryColor = {
 export type CategoryColorKey = keyof typeof categoryColor;
 
 /**
+ * Each part of the app has its own soft colour (warm yellow Home, teal Community,
+ * lilac Activity, green Health, blue Settings): a wash at the top of its pages and
+ * the selected tab's pill, so members always know where they are. Text on these is
+ * contrast-tested like the category tints (same values).
+ */
+export const sectionColor = {
+  home: categoryColor.kids,
+  community: categoryColor.meetup,
+  activity: categoryColor.games,
+  health: categoryColor.walk,
+  settings: categoryColor.exercise,
+} as const;
+
+export type SectionColorKey = keyof typeof sectionColor;
+
+/**
  * Poster art: a bold diagonal gradient per category with a big white icon, used
  * where an event has no photo (Luma's covers are vivid photos and posters).
  * Decorative only: no text is ever drawn on it.
@@ -178,6 +194,11 @@ export const touch = {
   sos: 80,
   /** Minimum gap between tappable things. */
   gap: 16,
+  /**
+   * Tap size with Small and Normal text (the member's choice): still above the
+   * iOS (44) and Android (48) minimums, but in proportion to the smaller words.
+   */
+  compact: 56,
 } as const;
 
 export const borderWidth = {
