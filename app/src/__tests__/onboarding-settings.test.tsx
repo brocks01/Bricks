@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
-import { fireEvent, screen, waitFor } from 'expo-router/testing-library';
+import { fireEvent, screen, waitFor, within } from 'expo-router/testing-library';
 import * as Speech from 'expo-speech';
+import { StyleSheet } from 'react-native';
 
 import { mockDb } from '@/api/mock';
 import { useOnboarding } from '@/state/onboarding';
@@ -42,6 +43,13 @@ describe('Onboarding: Myself (S1 → S8)', () => {
 
     await press('language-ta');
     expect(useSettings.getState().language).toBe('ta');
+    // S1b: text size, in Tamil already. Normal is chosen to start with.
+    expect(await screen.findByTestId('screen-onboarding-text-size')).toBeTruthy();
+    expect(screen.getByText('எழுத்து அளவு')).toBeTruthy();
+    expect(screen.getByTestId('text-size-normal').props.accessibilityState).toMatchObject({
+      selected: true,
+    });
+    await press('text-size-next');
     expect(await screen.findByText('யார் அமைக்கிறார்கள்?')).toBeTruthy();
     // The community path isn't built yet, and says so.
     expect(screen.getByTestId('who-community').props.accessibilityState).toMatchObject({
@@ -220,8 +228,32 @@ describe('Settings (S40)', () => {
     expect(useSettings.getState().language).toBe('en');
   });
 
-  it('sets reading speed, auto-read and the reminder channel', async () => {
+  it('changes the text size for the whole app, from Settings', async () => {
     await renderApp('/settings');
+    const row = () => within(screen.getByTestId('settings-text-size'));
+    expect(row().getByText('Normal')).toBeTruthy();
+    const titleSize = () =>
+      StyleSheet.flatten(screen.getByText('Settings').props.style).fontSize as number;
+    const normalSize = titleSize();
+
+    await press('settings-text-size');
+    expect(await screen.findByTestId('screen-settings-text-size')).toBeTruthy();
+    await press('text-size-large');
+    expect(useSettings.getState().textSize).toBe('large');
+    expect(screen.getByTestId('text-size-large').props.accessibilityState).toMatchObject({
+      selected: true,
+    });
+
+    await press('screen-back');
+    expect(await row().findByText('Large')).toBeTruthy();
+    expect(titleSize()).toBeGreaterThan(normalSize);
+  });
+
+  it('sets reading speed, auto-read and the reminder channel, each on its own page', async () => {
+    await renderApp('/settings');
+    expect(within(screen.getByTestId('settings-read-aloud')).getByText('Normal')).toBeTruthy();
+    await press('settings-read-aloud');
+    expect(await screen.findByTestId('screen-settings-read-aloud')).toBeTruthy();
     await press('settings-speed-slow');
     expect(useSettings.getState().readOut.rate).toBe(0.75);
     expect(Speech.speak).toHaveBeenLastCalledWith(
@@ -230,6 +262,11 @@ describe('Settings (S40)', () => {
     );
     await press('settings-autoread-on');
     expect(useSettings.getState().readOut.autoRead).toBe(true);
+    await press('screen-back');
+    expect(within(screen.getByTestId('settings-read-aloud')).getByText('Slow')).toBeTruthy();
+
+    await press('settings-reminders');
+    expect(await screen.findByTestId('screen-settings-reminders')).toBeTruthy();
 
     await waitFor(() =>
       expect(screen.getByTestId('settings-channel-app').props.accessibilityState).toMatchObject({
@@ -261,9 +298,9 @@ describe('Settings (S40)', () => {
     expect(alert.helpers.map((h) => h.name)).toContain('Siti Nurhaliza');
   });
 
-  it('Coming-soon rows are greyed out, and Sign out (asked first) starts again at S1', async () => {
+  it('lists only what works (no placeholder rows), and Sign out (asked first) starts again at S1', async () => {
     await renderApp('/settings');
-    expect(screen.getAllByText('Coming soon')).toHaveLength(3);
+    expect(screen.queryByText('Coming soon')).toBeNull();
     await press('settings-sign-out');
     expect(screen.getByText(/Sign out\? This also starts the demo again/)).toBeTruthy();
     await press('confirm-yes');
@@ -274,8 +311,12 @@ describe('Settings (S40)', () => {
   it.each([
     '/settings',
     '/settings/language',
+    '/settings/text-size',
+    '/settings/read-aloud',
+    '/settings/reminders',
     '/settings/safe-circle',
     '/family',
+    '/onboarding/text-size',
     '/onboarding/who',
   ])('Help and Read it out on %s', async (url) => {
     await renderApp(url);

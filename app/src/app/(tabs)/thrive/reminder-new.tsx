@@ -127,6 +127,7 @@ export default function NewReminderScreen() {
 
   return (
     <Screen
+      section="health"
       title={t('reminders.new.title')}
       readOut={() =>
         step === 'review'

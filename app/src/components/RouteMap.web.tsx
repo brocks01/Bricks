@@ -6,6 +6,7 @@ import type { LatLng } from '@/lib/geo';
 import { borderWidth, color, radius } from '@/theme';
 
 import type { RouteMapProps } from './RouteMap';
+import { useCompact } from '@/theme/TypographyProvider';
 
 const VIEW = 1000;
 const PAD = 60;
@@ -15,13 +16,15 @@ const PAD = 60;
  * its own (same line, start and end dots, no map tiles). Phones use RouteMap.tsx.
  */
 export function RouteMap({ points, label, height = 240, live = false, testID }: RouteMapProps) {
+  // Small and Normal text: a shorter map so the numbers and buttons fit below it.
+  const shownHeight = Math.round(height * (useCompact() ? COMPACT_MAP_SCALE : 1));
   const path = useMemo(() => project(points), [points]);
   const start = path[0];
   const end = path[path.length - 1];
 
   return (
     <View
-      style={[styles.frame, { height }]}
+      style={[styles.frame, { height: shownHeight }]}
       accessible
       accessibilityRole="image"
       accessibilityLabel={label}
@@ -64,6 +67,8 @@ function project(points: readonly LatLng[]): { x: number; y: number }[] {
     y: VIEW - PAD - (p.lat - minLat) * scale,
   }));
 }
+
+const COMPACT_MAP_SCALE = 0.6;
 
 const styles = StyleSheet.create({
   frame: {

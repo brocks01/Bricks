@@ -9,9 +9,9 @@ import {
   BellIcon,
   BigButton,
   ButtonRow,
-  Card,
   CheckCircleIcon,
   EmptyState,
+  GroupedList,
   MicrophoneIcon,
   PlusIcon,
   QueryState,
@@ -26,7 +26,7 @@ import { notificationsAllowed } from '@/lib/notifications';
 import { platform } from '@/lib/platform';
 import { useBuddy } from '@/state/buddy';
 import { useUndo } from '@/state/undo';
-import { color, iconSize, space } from '@/theme';
+import { categoryColor, color, iconSize, radius, space, type CategoryColorKey } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 /**
@@ -90,6 +90,7 @@ export default function RemindersScreen() {
 
   return (
     <Screen
+      section="health"
       title={t('reminders.title')}
       readOut={readOut}
       readOnOpen={read === '1'}
@@ -124,13 +125,20 @@ export default function RemindersScreen() {
               onAction={() => router.push('/thrive/reminder-new')}
             />
           ) : (
-            <View style={styles.list}>
+            <GroupedList>
               {list.map((r) => {
                 const KindIcon = REMINDER_ICON[r.kind];
                 return (
-                  <Card key={r.id} testID={`reminder-${r.id}`}>
+                  <View key={r.id} style={styles.row} testID={`reminder-${r.id}`}>
                     <View style={styles.header}>
-                      <KindIcon size={iconSize.button} color={color.primary} weight="bold" />
+                      <View
+                        style={[
+                          styles.kind,
+                          { backgroundColor: categoryColor[KIND_TINT[r.kind]].fg },
+                        ]}
+                      >
+                        <KindIcon size={iconSize.inline} color={color.textOnColor} weight="fill" />
+                      </View>
                       <Text variant="title" style={styles.flex}>
                         {time(r)}
                       </Text>
@@ -171,10 +179,10 @@ export default function RemindersScreen() {
                         testID={`reminder-${r.id}-remove`}
                       />
                     </ButtonRow>
-                  </Card>
+                  </View>
                 );
               })}
-            </View>
+            </GroupedList>
           )
         }
       </QueryState>
@@ -182,9 +190,27 @@ export default function RemindersScreen() {
   );
 }
 
+/** The coloured square behind each kind's icon. */
+const KIND_TINT: Record<Reminder['kind'], CategoryColorKey> = {
+  medicine: 'music',
+  doctor: 'exercise',
+  event: 'walk',
+  other: 'other',
+};
+
+const KIND_TILE = 44;
+
 const styles = StyleSheet.create({
-  list: {
-    gap: space.md,
+  row: {
+    gap: space.xs,
+    padding: space.sm,
+  },
+  kind: {
+    width: KIND_TILE,
+    height: KIND_TILE,
+    borderRadius: radius.tile,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   header: {
     flexDirection: 'row',

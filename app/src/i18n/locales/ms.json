@@ -26,7 +26,7 @@
   },
   "tabs": {
     "home": "Utama",
-    "passItOn": "Aktiviti",
+    "passItOn": "Aktiviti Saya",
     "kampung": "Komuniti",
     "thrive": "Kesihatan"
   },
@@ -41,24 +41,7 @@
       "afternoon": "Selamat petang",
       "evening": "Selamat malam"
     },
-    "section": {
-      "passItOn": {
-        "title": "Aktiviti",
-        "description": "Kongsi apa yang anda tahu dan bantu orang lain."
-      },
-      "kampung": {
-        "title": "Komuniti",
-        "description": "Sertai jalan kaki, kelas dan pertemuan berdekatan."
-      },
-      "thrive": {
-        "title": "Kesihatan",
-        "description": "Kekal aktif, tetapkan peringatan dan kekal selamat."
-      }
-    },
-    "readout": "{{greeting}}. {{today}}Komuniti: sertai acara berdekatan. Aktiviti: kongsi apa yang anda tahu. Kesihatan: kekal aktif dan selamat. Ketik satu untuk membukanya.",
-    "today": "Hari ini",
-    "comingUp": "Akan datang",
-    "explore": "Apa yang anda mahu buat?",
+    "readout": "{{greeting}}. {{today}}Untuk membuka Komuniti, Aktiviti atau Kesihatan, guna butang di bahagian bawah skrin.",
     "readoutCheckin": "Ada soalan untuk anda: adakah anda bergerak semalam? ",
     "readoutEvent": "Akan datang: {{title}}, {{when}}. ",
     "readoutReminder": "Peringatan pada {{time}}: {{text}}. ",
@@ -72,10 +55,16 @@
       "line": "{{time}} · {{text}}",
       "done": "Selesai",
       "doneThanks": "Selesai. Syabas."
-    }
+    },
+    "yourEvents": "Acara anda",
+    "pickedForYou": "Dipilih untuk anda",
+    "nothingPlanned": "Belum ada rancangan",
+    "nothingPlannedDetail": "Cari jalan kaki, kelas atau sembang berdekatan.",
+    "findSomething": "Cari sesuatu untuk disertai",
+    "seeAllEvents_other": "Lihat semua {{count}} acara anda"
   },
   "passItOn": {
-    "title": "Aktiviti",
+    "title": "Aktiviti Saya",
     "myStory": "Kisah saya",
     "noIntro": "Belum ada pengenalan suara.",
     "recordIntro": "Rakam salam ringkas",
@@ -121,14 +110,15 @@
       "skip": "Langkau",
       "sent": "Kami telah beritahu {{name}}. Terima kasih.",
       "none": "Anda sudah mengucapkan terima kasih. Terima kasih!",
-      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau."
-    }
+      "readout": "Tekan Terima kasih, {{name}}, atau Sebut terima kasih untuk merakam mesej ringkas, atau Langkau.",
+      "openShort": "Ucap terima kasih"
+    },
+    "storyHint": "Salam suara anda dan perkara yang anda suka bualkan."
   },
   "kampung": {
     "title": "Komuniti",
     "comingSoon": "Di sini anda akan menemui jalan kaki, kelas dan pertemuan berdekatan.",
-    "readout": "Komuniti. {{summary}} Ketik Saya ikut untuk menyertai, atau Mulakan sesuatu untuk membuat acara anda sendiri.",
-    "happenings": "Acara",
+    "readout": "Komuniti. {{summary}} Tekan satu aktiviti untuk melihat dan menyertainya, Lihat semua untuk senarai penuh, atau Mulakan sesuatu untuk membuat aktiviti anda sendiri.",
     "myCircles": {
       "title": "Kumpulan Saya",
       "count_other": "Anda menyertai {{count}} Kumpulan",
@@ -136,17 +126,35 @@
     },
     "filter": {
       "today": "Hari ini",
-      "week": "Minggu ini",
-      "walk": "Jalan kaki",
-      "class": "Kelas",
-      "kids": "Kanak-kanak"
+      "week": "Minggu ini"
     },
     "startSomething": "Mulakan sesuatu",
     "empty": "Belum ada aktiviti berdekatan. Mahu mulakan satu?",
     "emptyFiltered": "Tiada apa-apa untuk pilihan ini.",
     "showEverything": "Tunjukkan semua",
     "readoutSummary_other": "Ada {{count}} aktiviti. Yang pertama: {{first}}.",
-    "readoutNone": "Belum ada aktiviti."
+    "readoutNone": "Belum ada aktiviti.",
+    "list": "Senarai",
+    "map": "Peta",
+    "nearYou": "Berdekatan",
+    "moreKinds": "Lagi jenis",
+    "fewerKinds": "Kurang jenis",
+    "mapLabel_other": "Peta {{count}} aktiviti berdekatan. Ia juga disenaraikan di bawah.",
+    "kind": {
+      "walk": "Jalan kaki",
+      "exercise": "Tai chi",
+      "games": "Permainan",
+      "music": "Muzik",
+      "cooking": "Memasak",
+      "gardening": "Berkebun",
+      "class": "Kelas",
+      "meetup": "Kopi",
+      "kids": "Bersama kanak-kanak",
+      "other": "Lain-lain"
+    },
+    "comingUp": "Akan datang berdekatan",
+    "seeAll_other": "Lihat semua {{count}}",
+    "happenings": "Aktiviti berdekatan"
   },
   "thrive": {
     "title": "Kesihatan",
@@ -167,7 +175,8 @@
     "readout": "Kesihatan. {{week}} {{last}} {{reminder}} Ketik Mula jalan kaki untuk berjalan.",
     "readoutWeek": "Minggu ini anda berjalan {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Jalan kaki terakhir anda: {{place}}, {{distance}}, {{time}}.",
-    "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}."
+    "readoutReminder": "Peringatan seterusnya pada {{time}}: {{text}}.",
+    "nextReminder": "Seterusnya: {{time}} · {{text}}"
   },
   "safety": {
     "areYouOk": {
@@ -231,7 +240,8 @@
     "imGoing": "Saya ikut",
     "youreGoing": "Anda akan pergi",
     "joinWhatsApp": "Sertai kumpulan WhatsApp",
-    "openHint": "Buka butiran"
+    "openHint": "Buka butiran",
+    "youreHosting": "Anda penganjurnya"
   },
   "circle": {
     "members_other": "{{count}} ahli",
@@ -280,7 +290,14 @@
     "notFound": "Kami tidak menemui aktiviti ini. Mungkin sudah dibatalkan.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
     "readoutJoin": "Ketik Saya ikut untuk menyertai.",
-    "readoutGoing": "Anda akan pergi."
+    "readoutGoing": "Anda akan pergi.",
+    "whatsapp": "Kumpulan WhatsApp",
+    "more": "Lagi",
+    "addToCalendar": "Tambah ke kalendar",
+    "share": "Kongsi",
+    "shareMessage": "{{title}}: {{when}}, {{place}}. Jom sertai!",
+    "location": "Lokasi",
+    "mapOf": "Peta {{place}}"
   },
   "going": {
     "title": "Anda akan pergi.",
@@ -326,7 +343,12 @@
       "park": "Taman",
       "voidDeck": "Kolong blok berdekatan rumah saya",
       "hawker": "Pusat penjaja"
-    }
+    },
+    "whenRow": "Bila",
+    "whereRow": "Di mana",
+    "linkRow": "Kumpulan WhatsApp",
+    "linkAdded": "Ditambah",
+    "linkNone": "Tiada"
   },
   "category": {
     "walk": {
@@ -527,7 +549,7 @@
     "todayEvent": "Akan datang: {{title}}, {{when}}.",
     "todayReminder": "Peringatan pada {{time}}: {{text}}.",
     "todayNothing": "Tiada apa-apa lagi hari ini. Selamat menikmati hari anda.",
-    "nothingToJoin": "Tiada acara baharu untuk disertai sekarang. Lihat Komuniti.",
+    "nothingToJoin": "Tiada aktiviti baharu untuk disertai sekarang. Lihat Komuniti.",
     "alreadyGoing": "Anda sudah pergi ke {{title}}, {{when}}.",
     "joinConfirm": "Sertai {{title}}, {{when}}?",
     "checkinConfirm": {
@@ -596,7 +618,8 @@
       "demoNote": "Demo: setiap pilihan log masuk ke akaun contoh. Tiada akaun Singpass atau Google sebenar digunakan.",
       "readout": "Log masuk dengan Singpass, Google, atau nombor telefon anda. Kami tidak akan berkongsi maklumat anda tanpa bertanya dahulu.",
       "googleFailed": "Log masuk Google tidak berjaya. Sila cuba lagi, atau guna Singpass.",
-      "demoNoteSingpass": "Demo: Singpass log masuk ke akaun contoh. Tiada akaun Singpass sebenar digunakan."
+      "demoNoteSingpass": "Demo: Singpass log masuk ke akaun contoh. Tiada akaun Singpass sebenar digunakan.",
+      "subtitle": "Supaya kami tahu ini anda dan dapat menjaga maklumat anda."
     },
     "about": {
       "readout": "Langkah {{step}} daripada {{total}}. {{question}} {{hint}}",
@@ -690,7 +713,10 @@
     "demoAreYouOk": "Demo: terlepas daftar masuk",
     "demoHelperAlert": "Demo: seseorang perlukan bantuan",
     "demoScheduled": "Demo: amaran akan tiba dalam {{seconds}} saat. Anda boleh kunci telefon anda.",
-    "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu."
+    "demoNoNotifications": "Sila benarkan pemberitahuan untuk Bricks dalam Tetapan telefon anda dahulu.",
+    "you": "Anda",
+    "viewProfile": "Lihat profil saya",
+    "remindShort": "Peringatan"
   },
   "family": {
     "title": "Keluarga saya",
@@ -745,7 +771,8 @@
       "send": "Hantar jemputan",
       "readoutStep": "Langkah {{step}} daripada {{total}}. {{question}}",
       "readoutSend": "Tekan Hantar jemputan apabila semuanya betul."
-    }
+    },
+    "emptyDetail": "Tambah ibu bapa atau datuk nenek untuk melihat keadaan mereka dan menetapkan peringatan."
   },
   "profile": {
     "title": "Profil saya",
@@ -770,6 +797,25 @@
     "paidLater": "Sesi berbayar akan datang.",
     "alsoEvent": "Ia juga akan muncul di Komuniti, supaya orang boleh sertai.",
     "published": "Dikongsi. Orang kini boleh melihatnya.",
-    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang."
+    "publishedWithEvent": "Dikongsi. Ia juga ada di Komuniti sekarang.",
+    "priceRow": "Harga"
+  },
+  "badge": {
+    "going": "Hadir",
+    "hosting": "Penganjur",
+    "full": "Penuh",
+    "new": "Baharu"
+  },
+  "textSize": {
+    "title": "Saiz tulisan",
+    "subtitle": "Pilih saiz yang paling mudah dibaca. Anda boleh menukarnya kemudian dalam Tetapan.",
+    "settingsSubtitle": "Pilih saiz yang paling mudah dibaca. Seluruh aplikasi berubah serta-merta.",
+    "small": "Kecil",
+    "smallHint": "Paling banyak muat dalam satu skrin.",
+    "normal": "Biasa",
+    "normalHint": "Mudah dibaca. Ramai orang suka ini.",
+    "large": "Besar",
+    "largeHint": "Tulisan paling besar.",
+    "readout": "Saiz tulisan. Pilih kecil, biasa atau besar. Sekarang: {{size}}. Kemudian tekan Seterusnya."
   }
 }

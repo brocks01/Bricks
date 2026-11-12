@@ -10,12 +10,25 @@ import { config } from '@/lib/config';
 import { useIsOffline } from '@/lib/online';
 import { useBuddy } from '@/state/buddy';
 import { useSettings } from '@/state/settings';
-import { borderWidth, color, screenPadding, space } from '@/theme';
+import {
+  borderWidth,
+  color,
+  screenPadding,
+  sectionColor,
+  space,
+  type SectionColorKey,
+} from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { Text } from '../primitives/Text';
 
-import { BUDDY_BUTTON_CLEARANCE, BuddyButton } from '../BuddyButton';
+import {
+  BUDDY_BUTTON_CLEARANCE,
+  BUDDY_BUTTON_CLEARANCE_COMPACT,
+  BuddyButton,
+} from '../BuddyButton';
 import { StatusBanner } from '../StatusBanner';
+import { TintBackdrop } from '../TintBackdrop';
 import { UndoHost } from '../UndoHost';
 
 import { BackButton } from './BackButton';
@@ -47,6 +60,12 @@ export interface ScreenProps {
    * OK?, helper alert). Off while the screen itself is recording audio.
    */
   tellMe?: boolean;
+  /** A colour at the top fading to the page grey (the event page's cover tint, Luma). */
+  tint?: string;
+  /** The part of the app this page belongs to: its soft colour washes the top. */
+  section?: SectionColorKey;
+  /** A deep colour behind the top of the page, fading into `tint` (event page). */
+  tintStrong?: string;
   children: ReactNode;
   testID?: string;
 }
@@ -71,10 +90,15 @@ export function Screen({
   scroll = true,
   standalone = false,
   tellMe,
+  tint,
+  tintStrong,
+  section,
   children,
   testID,
 }: ScreenProps) {
+  const pageTint = tint ?? (section ? sectionColor[section].bg : undefined);
   const offline = useIsOffline();
+  const compact = useCompact();
   const openBuddy = useBuddy((s) => s.open);
   const buddyListening = useBuddy((s) => s.listening);
   const showBuddy = tellMe ?? showHelp;
@@ -102,41 +126,60 @@ export function Screen({
     }, [autoRead, readOnOpen, owner, speak, stop]),
   );
 
+  const strongBand = tint && tintStrong ? tintStrong : undefined;
   const body = (
     <>
+      {strongBand && tint ? <TintBackdrop tint={tint} strong={strongBand} /> : null}
       {/* Mock data works offline, so the banner only shows on the real API. */}
       {offline && !config.demoVoice ? (
         <StatusBanner tone="notice" text={t('common.offline')} testID="offline-banner" />
       ) : null}
-      {showBack ? <BackButton onPress={onBack} /> : null}
-      {title ? (
-        <Text variant="title" style={styles.title}>
-          {title}
-        </Text>
-      ) : null}
+      {compact && showBack && title ? (
+        // Small and Normal text: Back and the title share one line.
+        <View style={styles.backRow}>
+          <BackButton onPress={onBack} />
+          <Text variant="title" style={styles.backTitle}>
+            {title}
+          </Text>
+        </View>
+      ) : (
+        <>
+          {showBack ? <BackButton onPress={onBack} /> : null}
+          {title ? (
+            <Text variant="title" style={compact ? null : styles.title}>
+              {title}
+            </Text>
+          ) : null}
+        </>
+      )}
       {children}
     </>
   );
 
   return (
     <SafeAreaView
-      style={styles.root}
+      style={[styles.root, strongBand ? { backgroundColor: strongBand } : null]}
       edges={standalone ? ['top', 'left', 'right', 'bottom'] : ['top', 'left', 'right']}
       testID={testID}
     >
+      {pageTint && !strongBand ? <TintBackdrop tint={pageTint} /> : null}
       {/* Read it out never disappears: without a script it reads the title. */}
       <TopBar readOut={script} showHelp={showHelp} owner={owner} />
       <View style={styles.flex}>
         {scroll ? (
           <ScrollView
-            style={styles.flex}
-            contentContainerStyle={[styles.content, showBuddy && styles.buddyRoom]}
+            style={[styles.flex, strongBand ? styles.canvas : null]}
+            contentContainerStyle={[
+              styles.content,
+              compact && styles.compact,
+              showBuddy && (compact ? styles.buddyRoomCompact : styles.buddyRoom),
+            ]}
             keyboardShouldPersistTaps="handled"
           >
             {body}
           </ScrollView>
         ) : (
-          <View style={[styles.flex, styles.content]}>{body}</View>
+          <View style={[styles.flex, styles.content, compact && styles.compact]}>{body}</View>
         )}
         {/* Floats above the footer / tab bar, on the focused screen only. */}
         <UndoHost />
@@ -147,7 +190,9 @@ export function Screen({
         ) : null}
       </View>
       <ReadOutBar />
-      {footer ? <View style={styles.footer}>{footer}</View> : null}
+      {footer ? (
+        <View style={[styles.footer, compact && styles.footerCompact]}>{footer}</View>
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -155,10 +200,13 @@ export function Screen({
 const styles = StyleSheet.create({
   root: {
     flex: 1,
-    backgroundColor: color.bg,
+    backgroundColor: color.canvas,
   },
   flex: {
     flex: 1,
+  },
+  canvas: {
+    backgroundColor: color.canvas,
   },
   content: {
     paddingHorizontal: screenPadding,
@@ -168,9 +216,26 @@ const styles = StyleSheet.create({
   title: {
     marginTop: space.xs,
   },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: space.sm,
+  },
+  backTitle: {
+    flexShrink: 1,
+  },
+  // Small and Normal text: tighter rhythm so more fits on one screen.
+  compact: {
+    paddingBottom: space.sm,
+    gap: space.xs + space.xxs,
+  },
   // The last item can always scroll clear of the round Buddy button.
   buddyRoom: {
     paddingBottom: BUDDY_BUTTON_CLEARANCE,
+  },
+  buddyRoomCompact: {
+    paddingBottom: BUDDY_BUTTON_CLEARANCE_COMPACT,
   },
   buddy: {
     position: 'absolute',
@@ -183,6 +248,10 @@ const styles = StyleSheet.create({
     gap: space.sm,
     borderTopWidth: borderWidth.hairline,
     borderTopColor: color.border,
-    backgroundColor: color.bg,
+    backgroundColor: color.canvas,
+  },
+  footerCompact: {
+    paddingVertical: space.xs + space.xxs,
+    gap: space.xs + space.xxs,
   },
 });

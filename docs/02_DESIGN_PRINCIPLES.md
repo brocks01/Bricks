@@ -49,7 +49,7 @@ Our anchor is **Luma**: lots of white space, one photo, one title, one clear but
 
 **Do instead**
 - **One icon set, used consistently.** Phosphor (Regular or Bold weight) or Material Symbols Rounded (weight 500+). Avoid very thin line icons — seniors can't read them.
-- **One typeface family.** Noto Sans covers all four languages (Mandarin uses the phone's built-in Noto Sans CJK / PingFang, to avoid a ~96 MB font download). Hierarchy comes from **size and weight, not colour**.
+- **One clean typeface per script.** Inter for English and Malay (close to the iPhone's own font, as in the Luma references), Noto Sans Tamil for Tamil, and the phone's built-in Noto Sans CJK / PingFang for Mandarin (to avoid a ~96 MB font download). Hierarchy comes from **size and weight, not colour**.
 - **Neutral base plus one accent.** White or off-white backgrounds, near-black text, deep blue for actions. Green only for "done" or "going". Red only for SOS.
 - **Real photos of local places and seniors** — the park, the community centre, the void deck — not illustrations. This makes it look built for Singapore.
 - **Same corner radius and spacing everywhere.** Consistency is most of what makes an app look "designed".
@@ -92,7 +92,7 @@ Kavya owns the board; Person A builds from it.
 
 ## 5. Visual tokens
 
-### 5.1 Type scale (Noto Sans / Noto Sans SC / Noto Sans Tamil)
+### 5.1 Type scale (Inter / system CJK / Noto Sans Tamil)
 
 | Token | Size | Weight | Use |
 |---|---|---|---|
@@ -106,34 +106,56 @@ Kavya owns the board; Person A builds from it.
 
 - Line height ≥ 1.4×. No weights below 400. No italics for meaning. No ALL CAPS sentences.
 - Must not break at 200% system font size.
+- **Text size (member's choice).** Asked in onboarding right after the language, changeable in
+  Settings → Text size. The table above is **Large** (×1.0). **Normal** is the default (×0.9:
+  body 18pt) and **Small** fits the most (×0.8: body 16pt). It multiplies on top of the phone's
+  own font setting.
+- **Compact layout** comes with Small and Normal (`useCompact()`, `useTouchSizes()`): taps are
+  56dp (`touch.compact`, still above the iOS 44 / Android 48 minimums) so small words don't sit
+  in giant controls; tighter gaps and card padding; Back and the title share one line; choice
+  chips line up in two columns; tiles become short rows; shorter welcome picture, walk map and
+  week chart; a slimmer tab bar. The SOS call keeps 80dp. Large keeps 64/72dp and the roomy
+  layout.
+- **One screen, no scrolling** (Small and Normal): every tab page (Home, Community, Activity,
+  Health), Settings and its pages, onboarding, and the safety screens fit on one phone screen.
+  Tab pages show a short summary and open the full list on its own page; only those detail pages
+  scroll (all happenings, an event, a Circle, My story, the Thank-You Wall, the profile).
+  Home doesn't repeat Community, Activity and Health: that's the tab bar's job.
+- **Section colours** (`sectionColor`): warm yellow Home, teal Community, lilac Activity, green
+  Health, blue Settings, as a soft wash at the top of each page and the selected tab's pill.
+  Home's check-in card is soft green, reminders soft rose, and rows have coloured icon squares,
+  so the app never reads as a white form.
 
 ### 5.2 Colour
 
 | Token | Hex | Use |
 |---|---|---|
-| `bg` | `#FFFFFF` | Screen background |
-| `bg-subtle` | `#F7F8FA` | Card / section background |
-| `border` | `#E6E8EC` | 1px card borders |
+| `canvas` | `#F3F3F6` | Screen background (pale grey) |
+| `bg` | `#FFFFFF` | Raised surfaces: cards, grouped lists, inputs, secondary buttons, chips |
+| `bg-subtle` | `#F2F2F5` | Wells inside white cards (icon squares, map placeholders) |
+| `border` | `#E3E3E8` | Dividers inside grouped lists |
 | `text` | `#111111` | Body and titles |
 | `text-secondary` | `#3C4043` | Secondary text (never lighter than this) |
-| `primary` | `#1557B0` | Buttons, links, active tab, route lines, charts |
-| `primary-pressed` | `#0F428A` | Pressed state |
+| `primary` | `#111111` | Ink black: main buttons, links, selected chips, route lines, charts |
+| `primary-pressed` | `#3A3A3C` | Pressed state |
 | `success` | `#1E7B34` | "Going", "Done", completed days |
 | `sos` | `#C62828` | **Only** Help button and emergency screens |
 | `notice` | `#8A5A00` on `#FFF4DC` | Gentle notices (amber) |
-| `primary-subtle` | `#E8F0FB` | Selected tab, pressed outline buttons, icon wells |
+| `primary-subtle` | `#E9E9EE` | Selected tab's icon pill, pressed white buttons and rows |
 | `border-strong` | `#5F6368` | Edges of controls (3:1 against white) |
 | `neutral` | `#D5D8DD` | Missed days and inactive states (never red) |
 
 Pressed shades: `success-pressed` `#165C27`, `sos-pressed` `#9E1F1F`. Every pair is contrast-tested in `app/src/theme/tokens.test.ts`.
 
+**Category colours.** Each event category has a soft tint with a deep shade (`categoryColor`, used to tint pages and behind small icons) and a bold poster gradient (`posterColor`, the cover art for events without a photo: a white icon on the gradient, never text).
+
 - Text contrast ≥ **7:1** (WCAG AAA); never below 4.5:1.
 - Red only for SOS. Never colour alone to carry meaning.
 
 ### 5.3 Shape, spacing, elevation
-- Radius: **16dp cards, 14dp buttons, 999 for avatars only.** Nothing else.
+- Radius: **24dp cards, 14dp tiles and photos in rows, 28dp sheets, 999 for buttons, chips and avatars.** Nothing else.
 - Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. Screen padding 20.
-- Elevation: **flat with 1px border** (no shadows). One rule everywhere.
+- Elevation (Luma): **white surfaces on a pale grey page, lifted by soft shadows.** `shadow.card` for cards and lists, `shadow.control` for white buttons and chips, `shadow.floating` for the tab bar, sheets, toasts and covers. No borders on cards.
 - Touch targets ≥ 64×64dp, ≥ 16dp apart. Primary button at the bottom, full width.
 - Haptic tick on every successful tap.
 

@@ -41,24 +41,7 @@
       "afternoon": "Good afternoon",
       "evening": "Good evening"
     },
-    "section": {
-      "passItOn": {
-        "title": "Activity",
-        "description": "Share what you know and help others."
-      },
-      "kampung": {
-        "title": "Community",
-        "description": "Join walks, classes and meet-ups near you."
-      },
-      "thrive": {
-        "title": "Health",
-        "description": "Stay active, set reminders and stay safe."
-      }
-    },
-    "readout": "{{greeting}}. {{today}}Community: join walks and meet-ups near you. Activity: share what you know. Health: stay active and safe. Tap one to open it.",
-    "today": "Today",
-    "comingUp": "Coming up",
-    "explore": "What would you like to do?",
+    "readout": "{{greeting}}. {{today}}To open Community, Activity or Health, use the buttons at the bottom of the screen.",
     "readoutCheckin": "You have a question to answer: did you move yesterday? ",
     "readoutEvent": "Coming up: {{title}}, {{when}}. ",
     "readoutReminder": "Reminder at {{time}}: {{text}}. ",
@@ -72,7 +55,14 @@
       "line": "{{time}} · {{text}}",
       "done": "Done",
       "doneThanks": "Done. Well done."
-    }
+    },
+    "yourEvents": "Your events",
+    "pickedForYou": "Picked for you",
+    "nothingPlanned": "Nothing planned yet",
+    "nothingPlannedDetail": "Find a walk, a class or a chat near you.",
+    "findSomething": "Find something to join",
+    "seeAllEvents_one": "See your {{count}} event",
+    "seeAllEvents_other": "See all {{count}} of your events"
   },
   "passItOn": {
     "title": "Activity",
@@ -124,14 +114,15 @@
       "skip": "Skip",
       "sent": "We've told {{name}}. Thank you.",
       "none": "You've already said thank you. Thank you!",
-      "readout": "Tap Thank {{name}}, or Say thank you to record a short message, or Skip."
-    }
+      "readout": "Tap Thank {{name}}, or Say thank you to record a short message, or Skip.",
+      "openShort": "Say thank you"
+    },
+    "storyHint": "Your voice hello and what you like to talk about."
   },
   "kampung": {
     "title": "Community",
     "comingSoon": "Here you will find walks, classes and meet-ups near you.",
-    "readout": "Community. {{summary}} Tap I'm going to join, or Start something to create your own.",
-    "happenings": "Happenings",
+    "readout": "Community. {{summary}} Tap a happening to see it and join, See all for the full list, or Start something to create your own.",
     "myCircles": {
       "title": "My Circles",
       "count_one": "You're in {{count}} Circle",
@@ -140,10 +131,7 @@
     },
     "filter": {
       "today": "Today",
-      "week": "This week",
-      "walk": "Walking",
-      "class": "Classes",
-      "kids": "Kids"
+      "week": "This week"
     },
     "startSomething": "Start something",
     "empty": "No happenings near you yet. Start one?",
@@ -151,7 +139,30 @@
     "showEverything": "Show everything",
     "readoutSummary_one": "There is {{count}} happening. First: {{first}}.",
     "readoutSummary_other": "There are {{count}} happenings. First: {{first}}.",
-    "readoutNone": "There are no happenings yet."
+    "readoutNone": "There are no happenings yet.",
+    "list": "List",
+    "map": "Map",
+    "nearYou": "Near you",
+    "moreKinds": "More kinds",
+    "fewerKinds": "Fewer kinds",
+    "mapLabel_one": "Map of {{count}} happening near you. It is also listed below.",
+    "mapLabel_other": "Map of {{count}} happenings near you. They are also listed below.",
+    "kind": {
+      "walk": "Walks",
+      "exercise": "Tai chi",
+      "games": "Games",
+      "music": "Music",
+      "cooking": "Cooking",
+      "gardening": "Gardening",
+      "class": "Classes",
+      "meetup": "Coffee",
+      "kids": "With children",
+      "other": "Something else"
+    },
+    "comingUp": "Coming up near you",
+    "seeAll_one": "See {{count}}",
+    "seeAll_other": "See all {{count}}",
+    "happenings": "Happenings near you"
   },
   "thrive": {
     "title": "Health",
@@ -174,7 +185,8 @@
     "readout": "Health. {{week}} {{last}} {{reminder}} Tap Start walk to go for a walk.",
     "readoutWeek": "This week you walked {{distance}}: {{walks}}. {{streak}}.",
     "readoutLast": "Your last walk: {{place}}, {{distance}}, {{time}}.",
-    "readoutReminder": "Next reminder at {{time}}: {{text}}."
+    "readoutReminder": "Next reminder at {{time}}: {{text}}.",
+    "nextReminder": "Next: {{time}} · {{text}}"
   },
   "safety": {
     "areYouOk": {
@@ -240,7 +252,8 @@
     "imGoing": "I'm going",
     "youreGoing": "You're going",
     "joinWhatsApp": "Join WhatsApp group",
-    "openHint": "Opens the details"
+    "openHint": "Opens the details",
+    "youreHosting": "You're hosting"
   },
   "circle": {
     "members_one": "{{count}} member",
@@ -290,7 +303,14 @@
     "notFound": "We couldn't find this event. It may have been cancelled.",
     "readout": "{{title}}. {{when}}, {{place}}. {{host}}. {{going}}. {{action}}",
     "readoutJoin": "Tap I'm going to join.",
-    "readoutGoing": "You're going."
+    "readoutGoing": "You're going.",
+    "whatsapp": "WhatsApp group",
+    "more": "More",
+    "addToCalendar": "Add to calendar",
+    "share": "Share",
+    "shareMessage": "{{title}}: {{when}}, {{place}}. Come along!",
+    "location": "Location",
+    "mapOf": "Map of {{place}}"
   },
   "going": {
     "title": "You're going.",
@@ -336,7 +356,12 @@
       "park": "Park",
       "voidDeck": "Void deck near my block",
       "hawker": "Hawker centre"
-    }
+    },
+    "whenRow": "When",
+    "whereRow": "Where",
+    "linkRow": "WhatsApp group",
+    "linkAdded": "Added",
+    "linkNone": "None"
   },
   "category": {
     "walk": {
@@ -612,7 +637,8 @@
       "demoNote": "Demo: every option signs in to a sample account. No real Singpass or Google account is used.",
       "readout": "Sign in with Singpass, Google, or your phone number. We never share your details without asking you.",
       "googleFailed": "Google sign-in didn't work. Please try again, or use Singpass.",
-      "demoNoteSingpass": "Demo: Singpass signs in to a sample account. No real Singpass account is used."
+      "demoNoteSingpass": "Demo: Singpass signs in to a sample account. No real Singpass account is used.",
+      "subtitle": "So we know it's you and can keep your details safe."
     },
     "about": {
       "readout": "Step {{step}} of {{total}}. {{question}} {{hint}}",
@@ -708,7 +734,10 @@
     "demoAreYouOk": "Demo: missed check-in",
     "demoHelperAlert": "Demo: someone needs help",
     "demoScheduled": "Demo: the alert comes in {{seconds}} seconds. You can lock your phone.",
-    "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first."
+    "demoNoNotifications": "Please allow notifications for Bricks in your phone's Settings first.",
+    "you": "You",
+    "viewProfile": "See my profile",
+    "remindShort": "Reminders"
   },
   "family": {
     "title": "My family",
@@ -763,7 +792,8 @@
       "send": "Send invite",
       "readoutStep": "Step {{step}} of {{total}}. {{question}}",
       "readoutSend": "Tap Send invite when it's right."
-    }
+    },
+    "emptyDetail": "Add a parent or grandparent to see how they're doing and set reminders for them."
   },
   "profile": {
     "title": "My profile",
@@ -789,6 +819,25 @@
     "paidLater": "Paid sessions are coming soon.",
     "alsoEvent": "It will also appear in Community, so people can join.",
     "published": "Shared. People can now see it.",
-    "publishedWithEvent": "Shared. It's also in Community now."
+    "publishedWithEvent": "Shared. It's also in Community now.",
+    "priceRow": "Price"
+  },
+  "badge": {
+    "going": "Going",
+    "hosting": "Hosting",
+    "full": "Full",
+    "new": "New"
+  },
+  "textSize": {
+    "title": "Text size",
+    "subtitle": "Pick the size that is easiest to read. You can change it later in Settings.",
+    "settingsSubtitle": "Pick the size that is easiest to read. The whole app changes straight away.",
+    "small": "Small",
+    "smallHint": "Fits the most on one screen.",
+    "normal": "Normal",
+    "normalHint": "Easy to read. Most people like this.",
+    "large": "Large",
+    "largeHint": "The biggest words.",
+    "readout": "Text size. Pick small, normal or large. Now: {{size}}. Then press Next."
   }
 }

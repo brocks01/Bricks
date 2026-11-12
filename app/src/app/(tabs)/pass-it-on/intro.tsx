@@ -28,6 +28,7 @@ export default function RecordIntroScreen() {
 
   return (
     <Screen
+      section="activity"
       title={t('onboarding.voiceIntro.title')}
       readOut={() => t('onboarding.voiceIntro.readout', { seconds: INTRO_SECONDS })}
       testID="screen-record-intro"

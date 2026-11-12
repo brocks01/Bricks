@@ -11,7 +11,7 @@ export function TabStack() {
     <Stack
       screenOptions={{
         headerShown: false,
-        contentStyle: { backgroundColor: color.bg },
+        contentStyle: { backgroundColor: color.canvas },
         animation: 'fade',
         animationDuration: motion.base,
       }}

@@ -1,6 +1,6 @@
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, useWindowDimensions } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
@@ -20,35 +20,48 @@ import {
   radius,
   shadow,
   space,
+  sectionColor,
   touch,
   typeScale,
+  type SectionColorKey,
 } from '@/theme';
+import { useTypography } from '@/theme/TypographyProvider';
+
+const ICON_PILL_WIDTH = 64;
 
 export const unstable_settings = {
   anchor: 'home',
 };
 
 /**
- * Room for the icon plus two lines of label at the phone's font size (labels like
- * "Pass It On" and most Tamil labels wrap on narrow phones). Grows with the system
- * font up to the chrome cap, so labels are never clipped.
+ * Room for the icon plus the labels at the phone's font size: two lines when a label
+ * has more than one word (those wrap on narrow phones, e.g. "Aktiviti Saya" and most
+ * Tamil labels), one line otherwise (one-word labels shrink to fit instead). Grows
+ * with the system font up to the chrome cap, so labels are never clipped.
  */
-function tabBarHeight(fontScale: number): number {
-  const scale = Math.min(Math.max(fontScale, 1), maxChromeFontScale);
+function tabBarHeight(fontScale: number, textSize: number, labels: readonly string[]): number {
+  const scale = Math.min(Math.max(fontScale, 1), maxChromeFontScale) * textSize;
   const labelLine = typeScale.caption.size * lineHeightRatio * scale;
-  const content = space.xs * 2 + iconSize.inline + space.xxs + labelLine * 2;
-  return Math.max(touch.large, Math.ceil(content));
+  const lines = labels.some((l) => /\s/.test(l.trim())) ? 2 : 1;
+  // Small and Normal text: tighter padding around the icon and label.
+  const padding = textSize < 1 ? space.xxs * 2 : space.xs * 2 + space.xxs;
+  const content = padding + iconSize.inline + space.xxs * 2 + labelLine * lines;
+  return Math.max(textSize < 1 ? touch.compact : touch.large, Math.ceil(content));
 }
 
-function tabIcon(IconComponent: Icon) {
+function tabIcon(IconComponent: Icon, section: SectionColorKey) {
+  const tint = sectionColor[section];
   return function TabIcon({ focused }: { focused: boolean }) {
-    // Filled when selected, so the active tab isn't shown by colour alone.
+    // Selected: a filled icon on a pill in the section's colour, and a bold label,
+    // so the active tab isn't shown by colour alone.
     return (
-      <IconComponent
-        size={iconSize.inline}
-        color={focused ? color.primary : color.textSecondary}
-        weight={focused ? 'fill' : 'bold'}
-      />
+      <View style={[styles.iconPill, focused && { backgroundColor: tint.bg }]}>
+        <IconComponent
+          size={iconSize.inline}
+          color={focused ? tint.fg : color.textSecondary}
+          weight={focused ? 'fill' : 'bold'}
+        />
+      </View>
     );
   };
 }
@@ -63,7 +76,7 @@ function tabLabel(label: string) {
       <Text
         variant="caption"
         weight={focused ? 'bold' : 'regular'}
-        color={focused ? 'primary' : 'textSecondary'}
+        color={focused ? 'text' : 'textSecondary'}
         align="center"
         numberOfLines={oneWord ? 1 : 2}
         adjustsFontSizeToFit={oneWord}
@@ -77,13 +90,16 @@ function tabLabel(label: string) {
 }
 
 /**
- * Home · Community · Activity · Health (routes kampung, pass-it-on, thrive). Home is
- * first and the default; the three pillars follow in the same order as the cards on Home.
+ * Home · Community · Activity · Health, on a floating white pill with the selected
+ * tab's icon in a grey pill (Luma). Home is first and the default; the three pillars follow
+ * in the same order as the cards on Home. The bar stays in the layout (it doesn't
+ * overlap the screen), so footers and the last list item are never hidden under it.
  */
 export default function TabsLayout() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const { fontScale } = useWindowDimensions();
+  const { fontScale: textSize } = useTypography();
 
   return (
     <Tabs
@@ -92,31 +108,35 @@ export default function TabsLayout() {
       screenListeners={{ tabPress: () => tapFeedback() }}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: color.primary,
+        tabBarActiveTintColor: color.text,
         tabBarInactiveTintColor: color.textSecondary,
-        tabBarActiveBackgroundColor: color.primarySubtle,
-        // Luma: a white pill floating above the content, clear of the home indicator.
         tabBarStyle: {
-          height: tabBarHeight(fontScale) + space.xs * 2,
+          ...shadow.floating,
+          height:
+            tabBarHeight(fontScale, textSize, [
+              t('tabs.home'),
+              t('tabs.kampung'),
+              t('tabs.passItOn'),
+              t('tabs.thrive'),
+            ]) + (textSize < 1 ? space.xxs * 2 : space.xs * 2),
           marginHorizontal: space.sm,
           marginBottom: insets.bottom + space.xs,
-          paddingTop: space.xs,
-          paddingBottom: space.xs,
-          paddingHorizontal: space.xs,
-          borderRadius: radius.button,
+          paddingHorizontal: space.xxs,
+          paddingTop: textSize < 1 ? space.xxs : space.xs,
+          paddingBottom: textSize < 1 ? space.xxs : space.xs,
           borderTopWidth: 0,
+          borderRadius: radius.button,
           backgroundColor: color.bg,
-          ...shadow.floating,
         },
         tabBarItemStyle: styles.item,
-        sceneStyle: { backgroundColor: color.bg },
+        sceneStyle: { backgroundColor: color.canvas },
       }}
     >
       <Tabs.Screen
         name="home"
         options={{
           title: t('tabs.home'),
-          tabBarIcon: tabIcon(HouseIcon),
+          tabBarIcon: tabIcon(HouseIcon, 'home'),
           tabBarLabel: tabLabel(t('tabs.home')),
           tabBarButtonTestID: 'tab-home',
         }}
@@ -125,7 +145,7 @@ export default function TabsLayout() {
         name="kampung"
         options={{
           title: t('tabs.kampung'),
-          tabBarIcon: tabIcon(UsersThreeIcon),
+          tabBarIcon: tabIcon(UsersThreeIcon, 'community'),
           tabBarLabel: tabLabel(t('tabs.kampung')),
           tabBarButtonTestID: 'tab-kampung',
         }}
@@ -134,7 +154,7 @@ export default function TabsLayout() {
         name="pass-it-on"
         options={{
           title: t('tabs.passItOn'),
-          tabBarIcon: tabIcon(HandHeartIcon),
+          tabBarIcon: tabIcon(HandHeartIcon, 'activity'),
           tabBarLabel: tabLabel(t('tabs.passItOn')),
           tabBarButtonTestID: 'tab-pass-it-on',
         }}
@@ -143,7 +163,7 @@ export default function TabsLayout() {
         name="thrive"
         options={{
           title: t('tabs.thrive'),
-          tabBarIcon: tabIcon(HeartbeatIcon),
+          tabBarIcon: tabIcon(HeartbeatIcon, 'health'),
           tabBarLabel: tabLabel(t('tabs.thrive')),
           tabBarButtonTestID: 'tab-thrive',
         }}
@@ -153,13 +173,17 @@ export default function TabsLayout() {
 }
 
 const styles = StyleSheet.create({
-  // The selected tab sits in its own grey pill.
   item: {
-    minHeight: touch.large,
+    minHeight: touch.min,
     paddingVertical: space.xxs,
     gap: space.xxs,
-    marginHorizontal: space.xxs,
-    borderRadius: radius.button,
+    borderRadius: radius.card,
     overflow: 'hidden',
+  },
+  iconPill: {
+    width: ICON_PILL_WIDTH,
+    paddingVertical: space.xxs,
+    alignItems: 'center',
+    borderRadius: radius.button,
   },
 });

@@ -177,7 +177,7 @@ describe('Read It Out (S37)', () => {
     speech.autoFinish = false;
     await renderApp('/pass-it-on');
     await screen.findByTestId('thanks-prompt-card');
-    await screen.findByTestId('my-story');
+    await screen.findByTestId('my-story-row');
     await press('topbar-readout');
     const speak = Speech.speak as jest.Mock;
     // Finish the sentence being read: the next part (the thank-you prompt) lights up.
@@ -212,22 +212,31 @@ describe('Pass It On (S31)', () => {
   it('shows My Story, what I can share, what I have given, badges and thank-yous', async () => {
     await renderApp('/pass-it-on');
     expect(await screen.findByText("How was Tan Mei Ling's Nyonya kueh class?")).toBeTruthy();
+    expect(screen.getByTestId('given-stats')).toBeTruthy();
+    expect(screen.getByText('Sessions taught')).toBeTruthy();
+
+    // My story (and the badges) on its own page.
+    await press('my-story-row');
     const story = await screen.findByTestId('my-story');
     expect(within(story).getByText(/maths teacher for thirty years/)).toBeTruthy();
     expect(within(story).getByText('Chess')).toBeTruthy();
-    expect(screen.getByText('Chess for beginners')).toBeTruthy();
-    expect(screen.getByText('Thanked by 10 people')).toBeTruthy();
-    expect(screen.getByTestId('given-stats')).toBeTruthy();
-    expect(screen.getByText('Sessions taught')).toBeTruthy();
     expect(screen.getByText('Thanked 10 times')).toBeTruthy();
-    expect(screen.getByTestId('thanks-t_david')).toBeTruthy();
-    await press('see-all-thanks');
+    await press('screen-back');
+
+    // What I can share, on its own page.
+    await fireEvent.press(await screen.findByTestId('can-share-row'));
+    expect(await screen.findByText('Chess for beginners')).toBeTruthy();
+    expect(screen.getByText('Thanked by 10 people')).toBeTruthy();
+    await press('screen-back');
+
+    await fireEvent.press(await screen.findByTestId('see-all-thanks'));
     expect(await screen.findByTestId('screen-thanks-wall')).toBeTruthy();
     expect(screen.getAllByTestId(/^wall-t_[a-z_]+$/)).toHaveLength(13);
   });
 
   it('T8: Share a skill with a date → on Pass It On and as a Kampung event, with Undo', async () => {
     await renderApp('/pass-it-on');
+    await fireEvent.press(await screen.findByTestId('can-share-row'));
     await fireEvent.press(await screen.findByTestId('share-skill'));
     await press('share-tag-cooking');
     expect(screen.getByTestId('share-title').props.value).toBe('Cooking with me');
@@ -286,7 +295,7 @@ describe('Thank-you prompt (S34)', () => {
     await press('thank-thumb');
     expect(await screen.findByText("We've told Tan Mei Ling. Thank you.")).toBeTruthy();
     await press('thank-done');
-    await screen.findByTestId('my-story');
+    await screen.findByTestId('my-story-row');
     await waitFor(() => expect(screen.queryByTestId('thanks-prompt-card')).toBeNull());
   });
 
@@ -352,7 +361,7 @@ describe('T1: Tamil at 200% text on every new screen', () => {
   afterEach(() => setFontScale(1));
 
   it.each([
-    ['/pass-it-on', 'செயல்பாடுகள்'],
+    ['/pass-it-on', 'என் செயல்பாடு'],
     ['/pass-it-on/share', 'ஒரு திறமையைப் பகிர்'],
     ['/profile', 'என் சுயவிவரம்'],
     ['/thank/e_past_kueh', 'நன்றி சொல்லுங்கள்'],

@@ -37,6 +37,7 @@ export default function ProfileScreen() {
 
   return (
     <Screen
+      section="activity"
       title={t('profile.title')}
       readOut={() => {
         const p = profile.data;
@@ -61,11 +62,12 @@ function ProfileBody({ profile: p }: { profile: Profile }) {
 
   return (
     <>
+      {/* Luma profile: a big face, the name large, then who they are. */}
       <View style={styles.header}>
-        <Avatar name={p.name} photoUrl={p.photo_url} size={64} />
+        <Avatar name={p.name} photoUrl={p.photo_url} size={96} />
         <View style={styles.flex}>
           <View style={styles.nameRow}>
-            <Text variant="heading">{p.name}</Text>
+            <Text variant="title">{p.name}</Text>
             {p.singpass_verified ? (
               <SealCheckIcon size={iconSize.inline} color={color.primary} weight="fill" />
             ) : null}
@@ -159,8 +161,9 @@ function ProfileBody({ profile: p }: { profile: Profile }) {
 const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: space.sm,
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: space.md,
   },
   nameRow: {
     flexDirection: 'row',

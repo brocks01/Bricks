@@ -50,7 +50,12 @@ export default function CirclesScreen() {
   };
 
   return (
-    <Screen title={t('circles.title')} readOut={readOut} testID="screen-circles">
+    <Screen
+      section="community"
+      title={t('circles.title')}
+      readOut={readOut}
+      testID="screen-circles"
+    >
       <QueryState query={query}>
         {({ mine, near }) => (
           <>

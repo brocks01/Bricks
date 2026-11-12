@@ -35,6 +35,7 @@ export default function SafeCircleSettingsScreen() {
 
   return (
     <Screen
+      section="settings"
       title={t('settings.safeCircle')}
       readOut={() => `${t('onboarding.safeCircle.title')} ${members.map((m) => m.name).join(', ')}`}
       testID="screen-settings-safe-circle"

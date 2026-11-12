@@ -77,6 +77,16 @@ describe('going to any screen by name', () => {
     ['change the language', 'en', 'language'],
     ['my family', 'en', 'family'],
     ['Thrive', 'en', 'thrive'],
+    // The tabs' new names (Luma redesign) as well as the old ones.
+    ['open community', 'en', 'kampung'],
+    ['show my activity', 'en', 'passItOn'],
+    ['show me activities near me', 'en', 'kampung'],
+    ['Health', 'en', 'thrive'],
+    ['buka aktiviti saya', 'ms', 'passItOn'],
+    ['pergi ke komuniti', 'ms', 'kampung'],
+    ['打开我的活动', 'zh', 'passItOn'],
+    ['打开社区', 'zh', 'kampung'],
+    ['சமூகம் திற', 'ta', 'kampung'],
     ['buka tetapan', 'ms', 'settings'],
     ['pergi ke kampung', 'ms', 'kampung'],
     ['打开提醒列表', 'zh', 'reminders'],
@@ -84,17 +94,8 @@ describe('going to any screen by name', () => {
     ['அமைப்புகளைத் திற', 'ta', 'settings'],
     ['என் குடும்பத்தைக் காட்டு', 'ta', 'family'],
     ['நினைவூட்டல்களைத் திற', 'ta', 'reminders'],
-    // The tabs' current names (Community, Activity, Health) in every language.
-    ['open community', 'en', 'kampung'],
     ['go to activity', 'en', 'passItOn'],
-    ['show me health', 'en', 'thrive'],
-    ['buka komuniti', 'ms', 'kampung'],
-    ['buka aktiviti', 'ms', 'passItOn'],
     ['buka kesihatan', 'ms', 'thrive'],
-    ['打开社区', 'zh', 'kampung'],
-    ['打开动态', 'zh', 'passItOn'],
-    ['சமூகம் திற', 'ta', 'kampung'],
-    ['செயல்பாடுகள் திற', 'ta', 'passItOn'],
   ] as const)('"%s" (%s) → %s', (phrase, language, to) => {
     expect(matchIntent(phrase, language)).toEqual({ kind: 'navigate', to });
   });

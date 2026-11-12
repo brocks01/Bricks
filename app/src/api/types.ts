@@ -66,6 +66,9 @@ export interface EventSummary {
   language: Language;
   whatsapp_link: string | null;
   host: PersonSummary;
+  /** Where it is, for the Community map view (older servers may leave these out). */
+  lat?: number;
+  lng?: number;
 }
 
 /** GET /circles items. Proposed shape; confirm in 1.1. */
@@ -85,6 +88,11 @@ export interface EventDetail extends EventSummary {
   description: string;
   lat: number;
   lng: number;
+  /**
+   * The cover photo's main colour (#RRGGBB), set by the server when a photo is saved.
+   * Tints the event page; without it the category colour is used.
+   */
+  cover_color?: string | null;
   /** First few people going, for the avatar row (going_count has the total). */
   attendees: PersonSummary[];
   circle: { id: string; name: string } | null;

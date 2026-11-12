@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { borderWidth, color, space } from '@/theme';
+import { borderWidth, color, radius, shadow, space } from '@/theme';
 import { useEffectiveFontScale } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
@@ -28,7 +28,8 @@ export function BigStatsRow({ stats, testID }: { stats: BigStat[]; testID?: stri
           accessible
           accessibilityLabel={`${s.label}: ${s.value}`}
         >
-          <Text variant="stat" style={styles.value}>
+          {/* Three side by side use the title size, so "3,000" fits its panel without breaking. */}
+          <Text variant={stacked || stats.length < 3 ? 'stat' : 'title'} style={styles.value}>
             {s.value}
           </Text>
           <Text color="textSecondary">{s.label}</Text>
@@ -72,9 +73,15 @@ const styles = StyleSheet.create({
   stacked: {
     flexDirection: 'column',
   },
+  // Each number sits on its own grey panel (Luma / Apple Health).
   cell: {
     flex: 1,
     gap: space.xxs,
+    paddingHorizontal: space.xs,
+    paddingVertical: space.sm,
+    borderRadius: radius.tile,
+    backgroundColor: color.bg,
+    ...shadow.card,
   },
   cellStacked: {
     flexDirection: 'row',

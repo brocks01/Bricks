@@ -3,7 +3,8 @@ import { useTranslation } from 'react-i18next';
 import { Animated, Easing, Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, maxChromeFontScale, space, touch } from '@/theme';
+import { borderWidth, color, maxChromeFontScale, space, touch } from '@/theme';
+import { useTouchSizes } from '@/theme/TypographyProvider';
 
 import { MicrophoneIcon, StopIcon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -18,6 +19,11 @@ export interface BuddyButtonProps {
 export const BUDDY_BUTTON_SIZE = touch.min;
 /** Room the button (and its name) takes at the bottom of a screen. */
 export const BUDDY_BUTTON_CLEARANCE = BUDDY_BUTTON_SIZE + space.xl + space.sm;
+/**
+ * The same with Small and Normal text, where the button is touch.compact: content
+ * ends just above the round button (its name sits below it, beside the bottom edge).
+ */
+export const BUDDY_BUTTON_CLEARANCE_COMPACT = touch.compact + space.lg;
 
 /**
  * Buddy, the voice agent: a round button floating in the bottom-right corner of
@@ -29,6 +35,8 @@ export function BuddyButton({ onPress, listening = false, testID }: BuddyButtonP
   const { t } = useTranslation();
   const [pulse] = useState(() => new Animated.Value(0));
   const IconComponent = listening ? StopIcon : MicrophoneIcon;
+  const tap = useTouchSizes();
+  const round = { width: tap.min, height: tap.min, borderRadius: tap.min / 2 };
 
   useEffect(() => {
     if (!listening) {
@@ -54,6 +62,7 @@ export function BuddyButton({ onPress, listening = false, testID }: BuddyButtonP
           pointerEvents="none"
           style={[
             styles.pulse,
+            round,
             {
               opacity: pulse.interpolate({ inputRange: [0, 1], outputRange: [0.45, 0] }),
               transform: [
@@ -76,10 +85,11 @@ export function BuddyButton({ onPress, listening = false, testID }: BuddyButtonP
         }}
         style={({ pressed }) => [
           styles.button,
+          round,
           { backgroundColor: pressed || listening ? color.primaryPressed : color.primary },
         ]}
       >
-        <IconComponent size={iconSize.button} color={color.textOnColor} weight="fill" />
+        <IconComponent size={tap.icon} color={color.textOnColor} weight="fill" />
       </Pressable>
       <View style={styles.name}>
         <Text

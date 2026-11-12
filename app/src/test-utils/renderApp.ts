@@ -8,6 +8,7 @@ import { resetMockDb } from '@/api/mock';
 import { useActiveWalk } from '@/features/walk/activeWalk';
 import { useOnboarding } from '@/state/onboarding';
 import { useSettings } from '@/state/settings';
+import { DEFAULT_TEXT_SIZE } from '@/theme';
 import { useUndo } from '@/state/undo';
 
 /** The real app directory, so tests exercise actual layouts, tabs and providers. */
@@ -22,7 +23,7 @@ export async function resetAppState({ onboarded = true } = {}): Promise<void> {
   useOnboarding.getState().reset();
   if (onboarded) useOnboarding.getState().complete();
   useUndo.getState().clear();
-  useSettings.setState({ language: 'en' });
+  useSettings.setState({ language: 'en', textSize: DEFAULT_TEXT_SIZE });
   await useActiveWalk.getState().discard();
   // Screen tests replay the simulated walk; GPS has its own tests (gpsTrack.test.ts).
   useActiveWalk.getState().setSource('simulated');

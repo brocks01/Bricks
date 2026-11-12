@@ -13,7 +13,7 @@ export interface BottomSheetProps {
 }
 
 /**
- * A panel that rises from the bottom over a dimmed screen, for one focused task
+ * A rounded panel that floats just above the bottom edge (Luma) over a dimmed screen, for one focused task
  * (listening, confirming). It only closes through its own clearly labelled
  * buttons or the Android back button, never by an accidental tap outside.
  */
@@ -48,15 +48,13 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     backgroundColor: color.scrim,
   },
-  // Luma: the sheet floats as a rounded panel, inset from the screen edges.
   sheet: {
-    backgroundColor: color.bg,
-    borderRadius: radius.sheet,
-    marginHorizontal: space.xs,
-    paddingHorizontal: screenPadding,
-    paddingTop: space.lg,
-    paddingBottom: space.lg,
-    gap: space.md,
     ...shadow.floating,
+    marginHorizontal: space.xs,
+    backgroundColor: color.canvas,
+    borderRadius: radius.sheet,
+    paddingHorizontal: screenPadding,
+    paddingVertical: space.lg,
+    gap: space.md,
   },
 });

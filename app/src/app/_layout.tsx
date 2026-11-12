@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 
-import { BigButton, Text } from '@/components';
+import { BigButton, Text, ToastHost } from '@/components';
 import { BuddyHost } from '@/features/buddy/BuddyHost';
 import { ReadOutProvider } from '@/features/readout/ReadOutProvider';
 import { ReminderAlarms } from '@/features/reminders/ReminderAlarms';
@@ -23,8 +23,8 @@ import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import '@/lib/online';
 import { createQueryClient, useAppStateFocus } from '@/lib/queryClient';
 import { useOnboardingHydrated } from '@/state/onboarding';
-import { useSettingsHydrated } from '@/state/settings';
-import { color, fontAssets, screenPadding, space } from '@/theme';
+import { useSettings, useSettingsHydrated } from '@/state/settings';
+import { color, fontAssets, screenPadding, space, textSizeScale } from '@/theme';
 import { TypographyProvider } from '@/theme/TypographyProvider';
 
 void SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -88,7 +88,7 @@ export default function RootLayout() {
       <Stack
         screenOptions={{
           headerShown: false,
-          contentStyle: { backgroundColor: color.bg },
+          contentStyle: { backgroundColor: color.canvas },
         }}
       >
         <Stack.Screen name="(tabs)" />
@@ -122,6 +122,7 @@ export default function RootLayout() {
         <Stack.Screen name="+not-found" />
       </Stack>
       <BuddyHost />
+      <ToastHost />
     </AppProviders>
   );
 }
@@ -136,12 +137,17 @@ function AppProviders({
   children: ReactNode;
 }) {
   const [queryClient] = useState(createQueryClient);
+  const textSize = useSettings((s) => s.textSize);
   useAppStateFocus();
 
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
-        <TypographyProvider language={language} fontsLoaded={fontsLoaded}>
+        <TypographyProvider
+          language={language}
+          fontsLoaded={fontsLoaded}
+          fontScale={textSizeScale[textSize]}
+        >
           <ReadOutProvider language={language}>{children}</ReadOutProvider>
         </TypographyProvider>
       </QueryClientProvider>

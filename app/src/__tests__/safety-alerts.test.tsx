@@ -183,7 +183,8 @@ describe('SOS sends where they are', () => {
 describe('Demo alerts (mock data)', () => {
   it('Settings schedules the real alert on the urgent channel', async () => {
     await renderApp('/settings');
-    await press('settings-demo-helper-alert');
+    await press('settings-demo-open');
+    await fireEvent.press(await screen.findByTestId('settings-demo-helper-alert'));
     expect(await screen.findByTestId('settings-demo-note')).toBeTruthy();
     expect(Notifications.scheduleNotificationAsync).toHaveBeenCalledWith(
       expect.objectContaining({

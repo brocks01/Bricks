@@ -4,8 +4,8 @@ import { tapFeedback } from '@/lib/haptics';
 import {
   borderWidth,
   color,
-  iconSize,
   radius,
+  shadow,
   space,
   touch,
   type ColorToken,
@@ -13,6 +13,7 @@ import {
 } from '@/theme';
 
 import type { Language } from '@/i18n/languages';
+import { useCompact, useTouchSizes } from '@/theme/TypographyProvider';
 
 import { Text } from './primitives/Text';
 import type { Icon } from './primitives/icons';
@@ -47,13 +48,14 @@ const PALETTE: Record<
 > = {
   primary: { bg: 'primary', pressed: 'primaryPressed', text: 'textOnColor', border: 'primary' },
   success: { bg: 'success', pressed: 'successPressed', text: 'textOnColor', border: 'success' },
-  // Luma's secondary button: a grey pill, no outline.
-  outline: { bg: 'bgSubtle', pressed: 'primarySubtle', text: 'primary', border: 'bgSubtle' },
+  // Secondary actions: a white floating pill (Luma). Its dark label carries the meaning.
+  outline: { bg: 'bg', pressed: 'primarySubtle', text: 'text', border: 'bg' },
   sos: { bg: 'sos', pressed: 'sosPressed', text: 'textOnColor', border: 'sos' },
 };
 
 /**
- * The main button: big, icon + word, full width by default (Be My Eyes style).
+ * The main button: a big pill with icon + word, full width by default. Black for the
+ * main action, white for the rest, green for done, red only for emergencies.
  * Labels wrap rather than truncate, and the button grows with them.
  */
 export function BigButton({
@@ -71,6 +73,10 @@ export function BigButton({
   ...rest
 }: BigButtonProps) {
   const palette = PALETTE[variant];
+  const compact = useCompact();
+  const tap = useTouchSizes();
+  // Small and Normal text: md and lg are 56dp (the SOS call keeps its 80dp).
+  const minHeight = size === 'xl' ? MIN_HEIGHT.xl : size === 'lg' ? tap.large : tap.min;
   const textColor: ColorToken = disabled ? 'textSecondary' : palette.text;
 
   return (
@@ -86,23 +92,26 @@ export function BigButton({
       style={({ pressed }) => [
         styles.base,
         {
-          minHeight: MIN_HEIGHT[size],
+          minHeight,
           backgroundColor: color[disabled ? 'bgSubtle' : pressed ? palette.pressed : palette.bg],
-          borderColor: color[disabled ? 'bgSubtle' : pressed ? palette.pressed : palette.border],
+          borderColor: color[disabled ? 'border' : palette.border],
           alignSelf: fullWidth ? 'stretch' : 'flex-start',
         },
+        compact && styles.compact,
+        !disabled && styles.raised,
       ]}
       {...rest}
     >
       <View style={styles.content}>
         {IconComponent ? (
-          <IconComponent size={iconSize.button} color={color[textColor]} weight="bold" />
+          <IconComponent size={tap.icon} color={color[textColor]} weight="bold" />
         ) : null}
         <Text
           variant={labelVariant}
           color={textColor}
           maxFontSizeMultiplier={maxFontSizeMultiplier}
           lang={labelLanguage}
+          align="center"
           style={styles.label}
         >
           {label}
@@ -116,9 +125,15 @@ const styles = StyleSheet.create({
   base: {
     borderRadius: radius.button,
     borderWidth: borderWidth.control,
-    paddingHorizontal: space.lg,
+    paddingHorizontal: space.md,
     paddingVertical: space.xs,
     justifyContent: 'center',
+  },
+  compact: {
+    paddingHorizontal: space.sm,
+  },
+  raised: {
+    ...shadow.control,
   },
   content: {
     flexDirection: 'row',

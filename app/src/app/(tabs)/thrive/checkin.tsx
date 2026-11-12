@@ -20,6 +20,7 @@ export default function CheckinScreen() {
 
   return (
     <Screen
+      section="health"
       title={t('checkin.title')}
       readOut={() => t('checkin.readout', { question: t('home.checkin.question') })}
       readOnOpen={read === '1'}

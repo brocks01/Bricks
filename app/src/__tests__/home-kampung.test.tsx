@@ -28,9 +28,11 @@ describe('Home', () => {
   it('shows the check-in, a walk to join and the medicine reminder under Today', async () => {
     await renderApp('/home');
     expect(await screen.findByText('Did you move yesterday?')).toBeTruthy();
-    expect(screen.getByText('Coming up')).toBeTruthy();
+    expect(screen.getByLabelText('Picked for you')).toBeTruthy();
+    expect(screen.getByTestId('your-events')).toBeTruthy();
     expect(screen.getByText(/Take medicine|Blood pressure tablet/)).toBeTruthy();
-    expect(screen.getByText('What would you like to do?')).toBeTruthy();
+    // Community, Activity and Health are the tab bar's job: Home doesn't repeat them.
+    expect(screen.queryByText('What would you like to do?')).toBeNull();
   });
 
   it('T1: joins a walk from Home in 1 tap', async () => {
@@ -74,12 +76,14 @@ describe('Home', () => {
     await screen.findByText('Did you move yesterday?');
     await press('topbar-readout');
     // Read sentence by sentence: wait for the last part, then check the whole script.
-    await waitFor(() => expect(spokenText()).toContain('Community: join walks and meet-ups near you.'));
+    await waitFor(() =>
+      expect(spokenText()).toContain('use the buttons at the bottom of the screen'),
+    );
     const spoken = spokenText();
     expect(spoken).toMatch(/^Good (morning|afternoon|evening), Raj\./);
     expect(spoken).toContain('did you move yesterday?');
     expect(spoken).toMatch(/Reminder at (8 am: Take medicine|8 pm: Blood pressure tablet)\./);
-    expect(spoken).toContain('Community: join walks and meet-ups near you.');
+    expect(spoken).toContain('To open Community, Activity or Health');
   });
 });
 
@@ -119,15 +123,15 @@ describe('Kampung: Happenings', () => {
   });
 
   it('Done on "You\'re going" goes back to where they came from', async () => {
-    await renderApp('/kampung');
+    await renderApp('/kampung/happenings');
     await fireEvent.press(await screen.findByTestId('event-card-e_taichi-join'));
     await fireEvent.press(await screen.findByTestId('going-done'));
-    expect(screen).toHavePathname('/kampung');
+    expect(screen).toHavePathname('/kampung/happenings');
     expect(await screen.findByTestId('event-card-e_taichi-going')).toBeTruthy();
   });
 
   it('T6: the Walking filter shows only walks; tapping it again shows everything', async () => {
-    await renderApp('/kampung');
+    await renderApp('/kampung/happenings');
     await screen.findByText('Morning walk');
     await press('filter-walk');
     await waitFor(() => expect(screen.queryByText('Tai chi in the park')).toBeNull());
@@ -149,10 +153,51 @@ describe('Kampung: Happenings', () => {
     await renderApp('/event/e_taichi');
     await fireEvent.press(await screen.findByTestId('event-join'));
     await fireEvent.press(await screen.findByTestId('going-done'));
+    // Leaving is tucked under More (two deliberate steps, then a confirm).
+    await fireEvent.press(await screen.findByTestId('event-more'));
     await fireEvent.press(await screen.findByTestId('event-cant-go'));
     expect(screen.getByText('Give up your place at Tai chi in the park?')).toBeTruthy();
     await press('confirm-yes');
     expect(await screen.findByTestId('event-join')).toBeTruthy();
+  });
+
+  it('More: Add to calendar opens a calendar link with the event filled in', async () => {
+    await renderApp('/event/e_taichi');
+    await fireEvent.press(await screen.findByTestId('event-more'));
+    expect(screen.queryByTestId('event-cant-go')).toBeNull();
+    await press('event-calendar');
+    expect(openURL).toHaveBeenCalledWith(
+      expect.stringMatching(/calendar\.google\.com.*text=Tai\+chi\+in\+the\+park/),
+    );
+  });
+
+  it('kinds: the busiest four, More kinds shows the rest, and one kind filters the list', async () => {
+    await renderApp('/kampung/happenings');
+    await screen.findByTestId('filter-walk');
+    expect(screen.queryByTestId('filter-meetup')).toBeNull();
+    await press('filter-more-kinds');
+    expect(screen.getByTestId('filter-meetup')).toBeTruthy();
+    await press('filter-exercise');
+    await waitFor(() =>
+      expect(screen.queryAllByTestId(/^event-card-[^-]+$/).length).toBeGreaterThan(0),
+    );
+    const titles = screen
+      .queryAllByTestId(/^event-card-.*-open$/)
+      .map((n) => n.props.accessibilityLabel as string);
+    expect(titles.length).toBeGreaterThan(0);
+    for (const label of titles) expect(label).toMatch(/^Tai chi/);
+  });
+
+  it('Map shows the happenings on a map and keeps the list below it', async () => {
+    await renderApp('/kampung');
+    await fireEvent.press(await screen.findByTestId('kampung-view-map'));
+    expect(await screen.findByTestId('screen-happenings')).toBeTruthy();
+    expect(
+      await screen.findByLabelText(
+        /^Map of \d+ happenings near you\. They are also listed below\.$/,
+      ),
+    ).toBeTruthy();
+    expect(screen.getAllByTestId(/^event-card-.*-open$/).length).toBeGreaterThan(0);
   });
 
   it('shows a plain message for an event that no longer exists', async () => {
@@ -184,7 +229,13 @@ describe('Start Something', () => {
     await press('create-link-skip');
 
     expect(screen.getByText('Check and publish')).toBeTruthy();
-    expect(screen.getByText('Bishan Community Club')).toBeTruthy();
+    expect(
+      within(screen.getByTestId('event-card-preview')).getByText('Bishan Community Club'),
+    ).toBeTruthy();
+    // It's their own event: the preview matches what they'll see after publishing.
+    expect(
+      within(screen.getByTestId('event-card-preview')).getByText("You're hosting"),
+    ).toBeTruthy();
     expect(screen.getAllByText('Chess and board games').length).toBeGreaterThan(0);
     await press('create-next');
 
@@ -211,7 +262,9 @@ describe('Start Something', () => {
       'https://chat.whatsapp.com/AbC123',
     );
     await press('create-next');
-    expect(screen.getByText('MacRitchie Reservoir')).toBeTruthy();
+    expect(
+      within(screen.getByTestId('event-card-preview')).getByText('MacRitchie Reservoir'),
+    ).toBeTruthy();
   });
 
   it('every question takes their own answer: something else, another day, another time, somewhere else', async () => {
@@ -258,7 +311,9 @@ describe('Start Something', () => {
 
     // Their own words become the event's name and place.
     expect(screen.getByTestId('create-title').props.value).toBe('Mahjong afternoon');
-    expect(screen.getByText('Block 123 rooftop garden')).toBeTruthy();
+    expect(
+      within(screen.getByTestId('event-card-preview')).getByText('Block 123 rooftop garden'),
+    ).toBeTruthy();
     await press('create-next');
     expect(await screen.findByText('Published. People can now see it and join.')).toBeTruthy();
   });
@@ -349,9 +404,9 @@ describe('T8: Help on every new screen', () => {
 describe('Tamil', () => {
   it('Happenings and its filters are in Tamil', async () => {
     useSettings.setState({ language: 'ta' });
-    await renderApp('/kampung');
-    expect(await screen.findByText('நிகழ்வுகள்')).toBeTruthy();
-    expect(screen.getByText('நடைப்பயிற்சி')).toBeTruthy();
+    await renderApp('/kampung/happenings');
+    expect(await screen.findByText('அருகிலுள்ள நிகழ்வுகள்')).toBeTruthy();
+    expect(screen.getByText('நடைகள்')).toBeTruthy();
     expect(screen.getByText('ஒன்றைத் தொடங்கு')).toBeTruthy();
   });
 });

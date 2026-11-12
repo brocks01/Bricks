@@ -16,13 +16,12 @@ describe('app shell', () => {
     await resetAppState();
   });
 
-  it('opens on Home with community, activity and health sections in that order', async () => {
+  it('opens on Home; Community, Activity and Health are the tab bar, not repeated on Home', async () => {
     await renderApp();
     expect(screen).toHavePathname('/home');
-    const order = screen
-      .getAllByTestId(/^home-section-/)
-      .map((node) => node.props.testID as string);
-    expect(order).toEqual(['home-section-kampung', 'home-section-passItOn', 'home-section-thrive']);
+    const order = screen.getAllByTestId(/^tab-/).map((node) => node.props.testID as string);
+    expect(order).toEqual(['tab-home', 'tab-kampung', 'tab-pass-it-on', 'tab-thrive']);
+    expect(screen.queryByTestId(/^home-section-/)).toBeNull();
   });
 
   it('greets the member by their preferred name', async () => {
@@ -30,9 +29,9 @@ describe('app shell', () => {
     expect(await screen.findByText(/, Raj$/)).toBeTruthy();
   });
 
-  it('opens each pillar from its Home card', async () => {
+  it('opens each pillar from its tab', async () => {
     await renderApp();
-    await fireEvent.press(screen.getByTestId('home-section-kampung'));
+    await fireEvent.press(screen.getByTestId('tab-kampung'));
     expect(screen).toHavePathname('/kampung');
     expect(screen.getByTestId('screen-kampung')).toBeTruthy();
   });
@@ -103,9 +102,8 @@ describe('app shell', () => {
   it('switches the whole app to Tamil', async () => {
     useSettings.setState({ language: 'ta' });
     await renderApp('/home');
-    // Tab label and Home card both say "Kampung" in Tamil.
-    expect(screen.getAllByText('சமூகம்').length).toBeGreaterThanOrEqual(2);
-    expect(screen.getByText('நீங்கள் என்ன செய்ய விரும்புகிறீர்கள்?')).toBeTruthy();
+    // The tab label says "Community" in Tamil.
+    expect(screen.getAllByText('சமூகம்').length).toBeGreaterThanOrEqual(1);
     await fireEvent.press(screen.getByTestId('topbar-readout'));
     expect(Speech.speak).toHaveBeenCalledWith(
       expect.any(String),
@@ -113,8 +111,8 @@ describe('app shell', () => {
     );
   });
 
-  it('opens the component gallery from Home in developer builds, in Tamil at 200%', async () => {
-    await renderApp('/home');
+  it('opens the component gallery from Settings → Demo in developer builds, in Tamil at 200%', async () => {
+    await renderApp('/settings/demo');
     await fireEvent.press(screen.getByTestId('home-dev-gallery'));
     expect(screen).toHavePathname('/dev/components');
     expect(screen.getByText('Morning walk')).toBeTruthy();

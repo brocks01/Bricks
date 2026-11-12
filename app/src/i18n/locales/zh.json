@@ -26,7 +26,7 @@
   },
   "tabs": {
     "home": "首页",
-    "passItOn": "动态",
+    "passItOn": "我的活动",
     "kampung": "社区",
     "thrive": "健康"
   },
@@ -41,24 +41,7 @@
       "afternoon": "下午好",
       "evening": "晚上好"
     },
-    "section": {
-      "passItOn": {
-        "title": "动态",
-        "description": "分享您的所长，帮助他人。"
-      },
-      "kampung": {
-        "title": "社区",
-        "description": "参加附近的步行、课程和聚会。"
-      },
-      "thrive": {
-        "title": "健康",
-        "description": "保持活跃，设置提醒，注意安全。"
-      }
-    },
-    "readout": "{{greeting}}。{{today}}社区：参加附近的活动。动态：分享您的所长。健康：保持活跃和安全。点一下就能打开。",
-    "today": "今天",
-    "comingUp": "即将举行",
-    "explore": "您想做什么？",
+    "readout": "{{greeting}}。{{today}}要打开社区、活动或健康，请按屏幕下方的按钮。",
     "readoutCheckin": "有一个问题要您回答：您昨天有没有活动一下身体？",
     "readoutEvent": "即将举行：{{title}}，{{when}}。",
     "readoutReminder": "{{time}} 的提醒：{{text}}。",
@@ -72,10 +55,16 @@
       "line": "{{time}} · {{text}}",
       "done": "完成",
       "doneThanks": "完成了。做得好。"
-    }
+    },
+    "yourEvents": "您的活动",
+    "pickedForYou": "为您推荐",
+    "nothingPlanned": "还没有安排",
+    "nothingPlannedDetail": "找找附近的步行、课程或聊天聚会。",
+    "findSomething": "找活动参加",
+    "seeAllEvents_other": "查看您的全部 {{count}} 个活动"
   },
   "passItOn": {
-    "title": "动态",
+    "title": "我的活动",
     "myStory": "我的故事",
     "noIntro": "还没有语音介绍。",
     "recordIntro": "录一段简短的问候",
@@ -121,14 +110,15 @@
       "skip": "跳过",
       "sent": "我们已经告诉{{name}}了。谢谢您。",
       "none": "您已经说过谢谢了。谢谢您！",
-      "readout": "按谢谢{{name}}，或者按说声谢谢录一段短消息，或者跳过。"
-    }
+      "readout": "按谢谢{{name}}，或者按说声谢谢录一段短消息，或者跳过。",
+      "openShort": "说声谢谢"
+    },
+    "storyHint": "您的语音问候，以及您喜欢聊的话题。"
   },
   "kampung": {
     "title": "社区",
     "comingSoon": "在这里，您可以找到附近的步行、课程和聚会。",
-    "readout": "社区。{{summary}}点我要参加就能加入，或者点发起活动来创建您自己的活动。",
-    "happenings": "活动",
+    "readout": "社区。{{summary}}按一个活动查看并参加，按查看全部看完整列表，或按发起活动自己办一个。",
     "myCircles": {
       "title": "我的圈子",
       "count_other": "您加入了 {{count}} 个圈子",
@@ -136,17 +126,35 @@
     },
     "filter": {
       "today": "今天",
-      "week": "本周",
-      "walk": "步行",
-      "class": "课程",
-      "kids": "儿童"
+      "week": "本周"
     },
     "startSomething": "发起活动",
     "empty": "附近还没有活动。要发起一个吗？",
     "emptyFiltered": "这个选项下没有活动。",
     "showEverything": "显示全部",
     "readoutSummary_other": "共有 {{count}} 个活动。第一个：{{first}}。",
-    "readoutNone": "还没有活动。"
+    "readoutNone": "还没有活动。",
+    "list": "列表",
+    "map": "地图",
+    "nearYou": "您附近",
+    "moreKinds": "更多类别",
+    "fewerKinds": "收起类别",
+    "mapLabel_other": "附近 {{count}} 个活动的地图。下面也列出了这些活动。",
+    "kind": {
+      "walk": "步行",
+      "exercise": "太极",
+      "games": "游戏",
+      "music": "音乐",
+      "cooking": "烹饪",
+      "gardening": "园艺",
+      "class": "课程",
+      "meetup": "喝咖啡",
+      "kids": "亲子",
+      "other": "其他"
+    },
+    "comingUp": "附近即将举行",
+    "seeAll_other": "查看全部 {{count}} 个",
+    "happenings": "附近的活动"
   },
   "thrive": {
     "title": "健康",
@@ -167,7 +175,8 @@
     "readout": "健康。{{week}}{{last}}{{reminder}}点开始步行就可以去走走。",
     "readoutWeek": "本周您走了 {{distance}}，{{walks}}。{{streak}}。",
     "readoutLast": "上一次步行：{{place}}，{{distance}}，{{time}}。",
-    "readoutReminder": "下一个提醒在 {{time}}：{{text}}。"
+    "readoutReminder": "下一个提醒在 {{time}}：{{text}}。",
+    "nextReminder": "下一个：{{time}} · {{text}}"
   },
   "safety": {
     "areYouOk": {
@@ -231,7 +240,8 @@
     "imGoing": "我要参加",
     "youreGoing": "您已报名参加",
     "joinWhatsApp": "加入 WhatsApp 群组",
-    "openHint": "打开详情"
+    "openHint": "打开详情",
+    "youreHosting": "您是主办人"
   },
   "circle": {
     "members_other": "{{count}} 位成员",
@@ -280,7 +290,14 @@
     "notFound": "找不到这个活动。它可能已经取消了。",
     "readout": "{{title}}。{{when}}，{{place}}。{{host}}。{{going}}。{{action}}",
     "readoutJoin": "点我要参加就能加入。",
-    "readoutGoing": "您已报名参加。"
+    "readoutGoing": "您已报名参加。",
+    "whatsapp": "WhatsApp 群组",
+    "more": "更多",
+    "addToCalendar": "加入日历",
+    "share": "分享",
+    "shareMessage": "{{title}}：{{when}}，{{place}}。一起来吧！",
+    "location": "地点",
+    "mapOf": "{{place}}的地图"
   },
   "going": {
     "title": "您已报名参加。",
@@ -326,7 +343,12 @@
       "park": "公园",
       "voidDeck": "我家附近的组屋楼下",
       "hawker": "小贩中心"
-    }
+    },
+    "whenRow": "时间",
+    "whereRow": "地点",
+    "linkRow": "WhatsApp 群组",
+    "linkAdded": "已添加",
+    "linkNone": "无"
   },
   "category": {
     "walk": {
@@ -596,7 +618,8 @@
       "demoNote": "演示：每个选项都会登录到示例账户，不会使用真实的 Singpass 或 Google 账户。",
       "readout": "用 Singpass、Google 或手机号码登录。没有您的同意，我们绝不分享您的资料。",
       "googleFailed": "Google 登录没有成功。请再试一次，或者用 Singpass。",
-      "demoNoteSingpass": "演示：Singpass 会登录到示例账户，不会使用真实的 Singpass 账户。"
+      "demoNoteSingpass": "演示：Singpass 会登录到示例账户，不会使用真实的 Singpass 账户。",
+      "subtitle": "这样我们知道是您本人，也能保护好您的资料。"
     },
     "about": {
       "readout": "第 {{step}} 步，共 {{total}} 步。{{question}} {{hint}}",
@@ -690,7 +713,10 @@
     "demoAreYouOk": "演示：错过每日问候",
     "demoHelperAlert": "演示：有人需要帮助",
     "demoScheduled": "演示：提醒会在 {{seconds}} 秒后出现。您可以先锁上手机。",
-    "demoNoNotifications": "请先在手机设置中允许 Bricks 发送通知。"
+    "demoNoNotifications": "请先在手机设置中允许 Bricks 发送通知。",
+    "you": "我",
+    "viewProfile": "查看我的资料",
+    "remindShort": "提醒"
   },
   "family": {
     "title": "我的家人",
@@ -745,7 +771,8 @@
       "send": "发送邀请",
       "readoutStep": "第 {{step}} 步，共 {{total}} 步。{{question}}",
       "readoutSend": "确认无误后，按发送邀请。"
-    }
+    },
+    "emptyDetail": "添加父母或祖父母，就能了解他们的近况，并为他们设置提醒。"
   },
   "profile": {
     "title": "我的资料",
@@ -770,6 +797,25 @@
     "paidLater": "收费课程即将推出。",
     "alsoEvent": "它也会出现在社区里，大家可以报名参加。",
     "published": "已分享，大家现在可以看到了。",
-    "publishedWithEvent": "已分享，现在也在社区里了。"
+    "publishedWithEvent": "已分享，现在也在社区里了。",
+    "priceRow": "价格"
+  },
+  "badge": {
+    "going": "参加",
+    "hosting": "主办",
+    "full": "已满",
+    "new": "新"
+  },
+  "textSize": {
+    "title": "字体大小",
+    "subtitle": "选一个您看得最清楚的大小。以后可以在设置里更改。",
+    "settingsSubtitle": "选一个您看得最清楚的大小。整个应用会马上改变。",
+    "small": "小",
+    "smallHint": "一个屏幕能看到最多内容。",
+    "normal": "标准",
+    "normalHint": "容易阅读，大多数人喜欢。",
+    "large": "大",
+    "largeHint": "字最大。",
+    "readout": "字体大小。请选小、标准或大。现在是：{{size}}。然后按下一步。"
   }
 }

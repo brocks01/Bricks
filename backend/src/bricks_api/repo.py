@@ -39,6 +39,8 @@ def event_summary(row: dict[str, Any]) -> EventSummary:
         language=row["language"],
         whatsapp_link=row["whatsapp_link"],
         host=PersonSummary(id=row["host_id"], name=row["host_name"], photo_url=row["host_photo"]),
+        lat=row["lat"],
+        lng=row["lng"],
     )
 
 

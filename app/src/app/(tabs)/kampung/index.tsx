@@ -1,54 +1,52 @@
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
 import { useCircles, useEvents } from '@/api';
-import type { EventFilter } from '@/api/types';
 import {
   BigButton,
   CalendarBlankIcon,
-  Chip,
-  ChipGroup,
   EmptyState,
-  EventCard,
+  EventRow,
+  GroupedList,
+  GroupedRow,
+  ListBulletsIcon,
+  MapTrifoldIcon,
   PlusIcon,
   QueryState,
   Screen,
-  SectionCard,
   Text,
   UsersThreeIcon,
 } from '@/components';
 import { speakEvent } from '@/features/events/readout';
-import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
-const FILTERS: readonly EventFilter[] = ['today', 'week', 'walk', 'class', 'kids'];
+/** The tab fits on one screen: the next few happenings, then "See all". */
+export const COMMUNITY_PREVIEW = 2;
 
 /**
- * Kampung tab (S14 Happenings, Luma event list). Top: a way into My Circles.
- * Then the events, newest first, with up to five filters as big wrapping
- * buttons (never a sideways carousel). "Start something" is fixed at the bottom.
+ * Community tab (S14): fits on one screen, no scrolling. My Circles, the next
+ * happenings near them as short rows (each opens the event, where they join), and
+ * See all / Map, which open the full list. "Start something" stays at the bottom.
  */
 export default function KampungScreen() {
   const { t } = useTranslation();
   const { language } = useTypography();
   const router = useRouter();
-  const join = useJoinEvent();
-  const [filter, setFilter] = useState<EventFilter | null>(null);
-  const events = useEvents(filter);
+  const events = useEvents(null);
   const circles = useCircles();
 
   const myCount = circles.data?.mine.length ?? 0;
-  const list = events.data ?? [];
+  const all = events.data ?? [];
+  const shown = all.slice(0, COMMUNITY_PREVIEW);
 
   const readOut = () => {
     const summary =
-      list.length > 0
+      all.length > 0
         ? t('kampung.readoutSummary', {
-            count: list.length,
-            first: speakEvent(list[0]!, language, t),
+            count: all.length,
+            first: speakEvent(all[0]!, language, t),
           })
         : t('kampung.readoutNone');
     return t('kampung.readout', { summary });
@@ -56,6 +54,7 @@ export default function KampungScreen() {
 
   return (
     <Screen
+      section="community"
       title={t('kampung.title')}
       readOut={readOut}
       testID="screen-kampung"
@@ -68,64 +67,65 @@ export default function KampungScreen() {
         />
       }
     >
-      <SectionCard
-        icon={UsersThreeIcon}
-        title={t('kampung.myCircles.title')}
-        description={
-          myCount > 0
-            ? t('kampung.myCircles.count', { count: myCount })
-            : t('kampung.myCircles.none')
-        }
-        onPress={() => router.push('/kampung/circles')}
-        testID="kampung-my-circles"
-      />
+      <GroupedList>
+        <GroupedRow
+          icon={UsersThreeIcon}
+          tint="meetup"
+          title={t('kampung.myCircles.title')}
+          subtitle={
+            myCount > 0
+              ? t('kampung.myCircles.count', { count: myCount })
+              : t('kampung.myCircles.none')
+          }
+          onPress={() => router.push('/kampung/circles')}
+          testID="kampung-my-circles"
+        />
+      </GroupedList>
 
-      <Text variant="heading" style={styles.heading}>
-        {t('kampung.happenings')}
-      </Text>
-      <ChipGroup testID="kampung-filters">
-        {FILTERS.map((f) => (
-          <Chip
-            key={f}
-            label={t(`kampung.filter.${f}`)}
-            selected={filter === f}
-            // Tapping the chosen filter again shows everything.
-            onPress={() => setFilter(filter === f ? null : f)}
-            testID={`filter-${f}`}
-          />
-        ))}
-      </ChipGroup>
-
+      <Text variant="heading">{t('kampung.comingUp')}</Text>
       <QueryState query={events}>
-        {(items) =>
-          items.length === 0 ? (
-            filter ? (
-              <EmptyState
-                icon={CalendarBlankIcon}
-                text={t('kampung.emptyFiltered')}
-                actionLabel={t('kampung.showEverything')}
-                onAction={() => setFilter(null)}
-                testID="kampung-empty-filtered"
-              />
-            ) : (
-              <EmptyState
-                icon={CalendarBlankIcon}
-                text={t('kampung.empty')}
-                actionLabel={t('kampung.startSomething')}
-                onAction={() => router.push('/kampung/create')}
-                testID="kampung-empty"
-              />
-            )
+        {() =>
+          shown.length === 0 ? (
+            <EmptyState
+              icon={CalendarBlankIcon}
+              text={t('kampung.empty')}
+              actionLabel={t('kampung.startSomething')}
+              onAction={() => router.push('/kampung/create')}
+              testID="kampung-empty"
+            />
           ) : (
             <View style={styles.list}>
-              {items.map((event) => (
-                <EventCard
+              {shown.map((event) => (
+                <EventRow
                   key={event.id}
                   event={event}
                   onOpen={() => router.push({ pathname: '/event/[id]', params: { id: event.id } })}
-                  onGoing={() => join(event)}
                 />
               ))}
+              <View style={styles.buttons}>
+                <View style={styles.flex}>
+                  <BigButton
+                    variant="outline"
+                    icon={ListBulletsIcon}
+                    label={t('kampung.seeAll', { count: all.length })}
+                    labelVariant="bodyStrong"
+                    onPress={() => router.push('/kampung/happenings')}
+                    testID="kampung-see-all"
+                  />
+                </View>
+                <View style={styles.flex}>
+                  <BigButton
+                    variant="outline"
+                    icon={MapTrifoldIcon}
+                    label={t('kampung.map')}
+                    labelVariant="bodyStrong"
+                    onPress={() =>
+                      router.push({ pathname: '/kampung/happenings', params: { view: 'map' } })
+                    }
+                    testID="kampung-view-map"
+                  />
+                </View>
+              </View>
             </View>
           )
         }
@@ -135,11 +135,16 @@ export default function KampungScreen() {
 }
 
 const styles = StyleSheet.create({
-  heading: {
-    marginTop: space.md,
-  },
   list: {
-    gap: space.lg,
-    marginTop: space.xs,
+    gap: space.xs + space.xxs,
+  },
+  buttons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space.xs + space.xxs,
+  },
+  flex: {
+    flexGrow: 1,
+    flexBasis: '40%',
   },
 });

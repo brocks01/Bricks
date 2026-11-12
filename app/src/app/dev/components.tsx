@@ -7,7 +7,18 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import {
   Avatar,
+  AvatarStack,
+  BellIcon,
   BigButton,
+  DateHeader,
+  GearIcon,
+  GroupedList,
+  GroupedRow,
+  SheetHeader,
+  showToast,
+  SignOutIcon,
+  StatusBadge,
+  TranslateIcon,
   CalendarBlankIcon,
   Card,
   ClubCard,
@@ -138,6 +149,9 @@ function Controls({
     </Card>
   );
 }
+
+/** Gallery sample: this time tomorrow (fixed when the gallery loads). */
+const TOMORROW = new Date(Date.now() + 86_400_000);
 
 function Section({
   name,
@@ -285,21 +299,76 @@ function Samples({ lang, onUndoable }: { lang: GalleryLanguage; onUndoable: (m: 
         <StatusBanner tone="notice" text={s.statusNotice} />
       </Section>
 
-      <Section name="EmptyState" reference="Monzo">
-        <Card>
-          <EmptyState
-            icon={CalendarBlankIcon}
-            text={s.empty}
-            actionLabel={s.emptyAction}
-            onAction={noop}
-          />
+      <Section name="EmptyState" reference="Luma, Monzo">
+        <EmptyState
+          icon={CalendarBlankIcon}
+          text={s.empty}
+          detail={s.statusInfo}
+          actionLabel={s.emptyAction}
+          onAction={noop}
+        />
+      </Section>
+
+      <Section name="Toast" reference="Luma">
+        <BigButton
+          variant="outline"
+          label="Show a toast"
+          onPress={() => showToast(s.statusSuccess)}
+        />
+      </Section>
+
+      <Section name="SheetHeader" reference="Luma">
+        <Card tone="plain">
+          <SheetHeader icon={SignOutIcon} title="Sign out?" text={s.statusInfo} />
+          <BigButton label="Sign out" onPress={noop} />
+          <BigButton variant="outline" label="Cancel" onPress={noop} />
         </Card>
+      </Section>
+
+      <Section name="GroupedList" reference="Luma settings">
+        <GroupedList title="You">
+          <GroupedRow
+            icon={TranslateIcon}
+            tint="exercise"
+            title="Language"
+            value="English"
+            onPress={noop}
+          />
+          <GroupedRow
+            icon={BellIcon}
+            tint="music"
+            title="Notifications"
+            subtitle="8 am check-in"
+            onPress={noop}
+          />
+          <GroupedRow icon={GearIcon} title="Version" value="1.0" />
+        </GroupedList>
+      </Section>
+
+      <Section name="StatusBadge + AvatarStack + DateHeader" reference="Luma">
+        <View style={styles.row}>
+          <StatusBadge kind="going" />
+          <StatusBadge kind="hosting" />
+          <StatusBadge kind="full" />
+          <StatusBadge kind="new" />
+        </View>
+        <AvatarStack
+          people={[s.walk.host, s.chess.host, { id: 'g3', name: 'Tan Mei Ling', photo_url: null }]}
+          total={14}
+          max={3}
+        />
+        <DateHeader date={TOMORROW} />
       </Section>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  row: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space.xs,
+  },
   root: {
     flex: 1,
     backgroundColor: color.bg,

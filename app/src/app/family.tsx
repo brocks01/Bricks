@@ -15,6 +15,7 @@ import {
   StatusBanner,
   Text,
   UserPlusIcon,
+  UsersThreeIcon,
   InfoRow,
 } from '@/components';
 import { useRelationName } from '@/features/family/relationName';
@@ -46,11 +47,15 @@ export default function FamilyScreen() {
   };
 
   return (
-    <Screen title={t('family.title')} readOut={readOut} testID="screen-family">
+    <Screen section="settings" title={t('family.title')} readOut={readOut} testID="screen-family">
       <QueryState query={invites}>
         {(list) =>
           list.length === 0 ? (
-            <EmptyState text={t('family.empty')} />
+            <EmptyState
+              icon={UsersThreeIcon}
+              text={t('family.empty')}
+              detail={t('family.emptyDetail')}
+            />
           ) : (
             <View style={styles.list}>
               {list.map((invite) => {

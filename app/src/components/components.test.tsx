@@ -7,7 +7,15 @@ import { renderWithProviders } from '@/test-utils/render';
 
 import {
   Avatar,
+  AvatarStack,
   ClubCard,
+  DateHeader,
+  GroupedList,
+  GroupedRow,
+  showToast,
+  StatusBadge,
+  TOAST_DURATION_MS,
+  ToastHost,
   ConfirmSheet,
   EmptyState,
   EventCard,
@@ -115,6 +123,20 @@ describe('EventCard', () => {
     );
     expect(screen.getByText("You're going")).toBeTruthy();
     expect(screen.queryByText("I'm going")).toBeNull();
+  });
+
+  it('says "You\'re hosting" with a Hosting badge on their own event', async () => {
+    await renderWithProviders(
+      <EventCard
+        event={{ ...walk, my_rsvp: 'going' }}
+        hosting
+        onOpen={jest.fn()}
+        onGoing={jest.fn()}
+        now={NOW}
+      />,
+    );
+    expect(screen.getByText("You're hosting")).toBeTruthy();
+    expect(screen.getByText('Hosting')).toBeTruthy();
   });
 
   it('uses the right plural in Tamil', async () => {
@@ -312,5 +334,77 @@ describe('small pieces', () => {
     const t = screen.getByTestId('t');
     expect(StyleSheet.flatten(t.props.style).fontSize).toBe(40);
     expect(t.props.maxFontSizeMultiplier).toBe(1);
+  });
+});
+
+describe('Luma pieces (UI step 1)', () => {
+  it('StatusBadge says the status in words', async () => {
+    await renderWithProviders(<StatusBadge kind="hosting" />);
+    expect(screen.getByText('Hosting')).toBeTruthy();
+  });
+
+  it('GroupedRow is one button with its title, subtitle and value read together', async () => {
+    const onPress = jest.fn();
+    await renderWithProviders(
+      <GroupedList title="You">
+        <GroupedRow
+          title="Language"
+          subtitle="For the app"
+          value="English"
+          onPress={onPress}
+          testID="row"
+        />
+        <GroupedRow title="Version" value="1.0" testID="info" />
+      </GroupedList>,
+    );
+    const row = screen.getByTestId('row');
+    expect(row.props.accessibilityLabel).toBe('Language. For the app. English');
+    await fireEvent.press(row);
+    expect(onPress).toHaveBeenCalled();
+    expect(screen.getByText('You')).toBeTruthy();
+  });
+
+  it('AvatarStack shows "+N" for people not pictured', async () => {
+    const p = (id: string) => ({ id, name: id, photo_url: null });
+    await renderWithProviders(<AvatarStack people={[p('a'), p('b'), p('c')]} total={14} max={3} />);
+    expect(screen.getByText('+11', { includeHiddenElements: true })).toBeTruthy();
+  });
+
+  it('DateHeader: "Tomorrow / weekday"', async () => {
+    const tomorrow = new Date(NOW.getTime() + 86_400_000);
+    await renderWithProviders(<DateHeader date={tomorrow} now={NOW} />);
+    expect(screen.getByText('Tomorrow')).toBeTruthy();
+    const weekday = new Intl.DateTimeFormat('en-SG', { weekday: 'long' }).format(tomorrow);
+    expect(screen.getByText(` / ${weekday}`)).toBeTruthy();
+  });
+
+  it('Toast shows a confirmation, then goes by itself', async () => {
+    jest.useFakeTimers();
+    await renderWithProviders(<ToastHost />);
+    await act(async () => showToast("You're going"));
+    expect(screen.getByTestId('toast')).toBeTruthy();
+    expect(screen.getByText("You're going")).toBeTruthy();
+    await act(async () => {
+      jest.advanceTimersByTime(TOAST_DURATION_MS + 500);
+    });
+    expect(screen.queryByTestId('toast')).toBeNull();
+    jest.useRealTimers();
+  });
+
+  it('ConfirmSheet reads the question back with Yes / No', async () => {
+    const onYes = jest.fn();
+    await renderWithProviders(
+      <ConfirmSheet
+        visible
+        text="Leave this event?"
+        detail="We'll tell the host."
+        onYes={onYes}
+        onNo={jest.fn()}
+      />,
+    );
+    expect(screen.getByText('Leave this event?')).toBeTruthy();
+    expect(screen.getByText("We'll tell the host.")).toBeTruthy();
+    await fireEvent.press(screen.getByTestId('confirm-yes'));
+    expect(onYes).toHaveBeenCalled();
   });
 });

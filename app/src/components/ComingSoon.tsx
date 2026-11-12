@@ -22,6 +22,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.card,
     borderWidth: borderWidth.hairline,
     borderColor: color.border,
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
   },
 });

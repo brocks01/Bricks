@@ -1,7 +1,8 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 import { CaretRightIcon, CheckCircleIcon, type Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -20,7 +21,7 @@ export interface SectionCardProps {
 }
 
 /**
- * One big tappable card per pillar on Home (Grab-style large tiles, but one per row
+ * A grey panel with a white icon tile (Luma). One big tappable card per pillar on Home (Grab-style large tiles, but one per row
  * so long Tamil text never gets squeezed). The whole card is the button.
  */
 export function SectionCard({
@@ -34,6 +35,7 @@ export function SectionCard({
   testID,
 }: SectionCardProps) {
   const fg = disabled ? color.textSecondary : color.primary;
+  const compact = useCompact();
   return (
     <Pressable
       accessibilityRole="button"
@@ -47,8 +49,8 @@ export function SectionCard({
       }}
       style={({ pressed }) => [
         styles.card,
+        compact && styles.compact,
         selected && styles.selected,
-        disabled && styles.disabled,
         pressed && styles.pressed,
       ]}
     >
@@ -86,20 +88,22 @@ const styles = StyleSheet.create({
     padding: space.md,
     borderRadius: radius.card,
     borderWidth: borderWidth.control,
-    borderColor: color.bgSubtle,
-    backgroundColor: color.bgSubtle,
+    borderColor: color.bg,
+    backgroundColor: color.bg,
+    ...shadow.card,
+  },
+  // Small and Normal text: the card hugs its content (the icon keeps it >= 64dp).
+  compact: {
+    minHeight: touch.min,
+    padding: space.sm,
   },
   pressed: {
     backgroundColor: color.primarySubtle,
     borderColor: color.primarySubtle,
   },
   selected: {
-    borderWidth: borderWidth.control,
     borderColor: color.primary,
-    backgroundColor: color.primarySubtle,
-  },
-  disabled: {
-    backgroundColor: color.bgSubtle,
+    backgroundColor: color.bg,
   },
   iconWellDisabled: {
     backgroundColor: color.border,
@@ -108,7 +112,7 @@ const styles = StyleSheet.create({
     width: ICON_WELL,
     height: ICON_WELL,
     borderRadius: radius.tile,
-    backgroundColor: color.bg,
+    backgroundColor: color.bgSubtle,
     alignItems: 'center',
     justifyContent: 'center',
   },

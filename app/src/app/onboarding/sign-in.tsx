@@ -21,7 +21,8 @@ import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { config } from '@/lib/config';
 import { isSingaporeMobile, normalisePhone } from '@/lib/phone';
 import { useOnboarding } from '@/state/onboarding';
-import { color, iconSize, space } from '@/theme';
+import { color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { useCompact } from '@/theme/TypographyProvider';
 
 /** "Raj Kumar" → "Raj": what we call them unless they choose otherwise. */
 const firstName = (name: string) => name.trim().split(/\s+/)[0] ?? '';
@@ -46,6 +47,7 @@ export default function SignInScreen() {
   const [googleFailed, setGoogleFailed] = useState(false);
   const [googleBusy, setGoogleBusy] = useState(false);
   useResumeHere('/onboarding/sign-in');
+  const compact = useCompact();
   const realGoogle = config.supabase !== null;
   const showPhone = !realGoogle || config.phoneSignIn;
   const busy = signIn.isPending || googleBusy;
@@ -86,11 +88,19 @@ export default function SignInScreen() {
   };
 
   return (
-    <Screen
-      title={t('onboarding.signIn.title')}
-      readOut={() => t('onboarding.signIn.readout')}
-      testID="screen-onboarding-sign-in"
-    >
+    <Screen readOut={() => t('onboarding.signIn.readout')} testID="screen-onboarding-sign-in">
+      {/* Luma's sign-in: an icon in a soft circle, a centred title and one line, then the choices. */}
+      <View style={[styles.header, compact && styles.headerCompact]}>
+        <View style={[styles.iconWell, compact && styles.iconWellCompact]}>
+          <IdentificationCardIcon size={iconSize.hero} color={color.text} weight="bold" />
+        </View>
+        <Text variant="title" align="center">
+          {t('onboarding.signIn.title')}
+        </Text>
+        <Text color="textSecondary" align="center">
+          {t('onboarding.signIn.subtitle')}
+        </Text>
+      </View>
       <View style={styles.buttons}>
         <BigButton
           size="lg"
@@ -173,7 +183,33 @@ export default function SignInScreen() {
   );
 }
 
+const ICON_WELL = 80;
+
 const styles = StyleSheet.create({
+  header: {
+    alignItems: 'center',
+    gap: space.xs,
+    marginVertical: space.md,
+  },
+  iconWell: {
+    width: ICON_WELL,
+    height: ICON_WELL,
+    borderRadius: radius.avatar,
+    backgroundColor: color.bg,
+    ...shadow.card,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: space.xs,
+  },
+  headerCompact: {
+    gap: space.xxs,
+    marginVertical: space.xs,
+  },
+  iconWellCompact: {
+    width: touch.min,
+    height: touch.min,
+    marginBottom: 0,
+  },
   buttons: {
     gap: space.sm,
   },

@@ -17,6 +17,7 @@ export default function ThankYouWallScreen() {
 
   return (
     <Screen
+      section="activity"
       title={t('passItOn.wall')}
       readOut={() => {
         const list = profile.data?.thank_yous ?? [];

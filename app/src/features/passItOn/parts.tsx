@@ -1,9 +1,10 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import type { BadgeKey, Profile, SkillOffer, ThankYou } from '@/api/types';
+import type { BadgeKey, EventCategory, Interest, Profile, SkillOffer, ThankYou } from '@/api/types';
 import { BigStatsRow } from '@/components/BigStats';
-import { Card } from '@/components/Card';
+import { CoverArt } from '@/components/CoverArt';
+import { GroupedList, GroupedRow } from '@/components/GroupedList';
 import { InfoRow } from '@/components/InfoRow';
 import {
   CalendarBlankIcon,
@@ -18,8 +19,9 @@ import {
 import { Text } from '@/components/primitives/Text';
 import { Avatar } from '@/components/Avatar';
 import { VoiceNoteBubble } from '@/components/VoiceNoteBubble';
+import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatCount, formatWhen } from '@/lib/format';
-import { color, iconSize, space } from '@/theme';
+import { color, iconSize, space, type CategoryColorKey } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const BADGE_ICON: Record<BadgeKey, Icon> = {
@@ -29,30 +31,59 @@ const BADGE_ICON: Record<BadgeKey, Icon> = {
   storyteller: ChatCircleTextIcon,
 };
 
-/** One thing they offer: what, when, where, and how many people thanked them for it. */
+const BADGE_TINT: Record<BadgeKey, CategoryColorKey> = {
+  first_session: 'class',
+  ten_thanks: 'kids',
+  kind_neighbour: 'music',
+  storyteller: 'exercise',
+};
+
+/** A skill's cover colour and icon come from its first tag, like an event's kind. */
+const SKILL_CATEGORY: Record<Interest, EventCategory> = {
+  walking: 'walk',
+  taichi: 'exercise',
+  cooking: 'cooking',
+  chess: 'games',
+  music: 'music',
+  gardening: 'gardening',
+  teaching: 'class',
+  technology: 'class',
+};
+
+export function skillCategory(skill: Pick<SkillOffer, 'tags'>): EventCategory {
+  return SKILL_CATEGORY[skill.tags[0] as Interest] ?? 'other';
+}
+
+/** One thing they offer, as an event-style row: what, when, where, how many said thanks. */
 export function SkillCard({ skill, testID }: { skill: SkillOffer; testID?: string }) {
   const { t } = useTranslation();
   const { language } = useTypography();
+  const category = skillCategory(skill);
   return (
-    <Card testID={testID}>
-      <Text variant="heading">{skill.title}</Text>
-      <InfoRow
-        icon={CalendarBlankIcon}
-        text={
-          skill.start_at
-            ? formatWhen(new Date(skill.start_at), language, t)
-            : t('passItOn.skill.anyTime')
-        }
-      />
-      {skill.place_name ? <InfoRow icon={MapPinIcon} text={skill.place_name} /> : null}
-      <InfoRow
-        icon={ThumbsUpIcon}
-        text={t('passItOn.skill.thanked', { count: skill.endorsement_count })}
-      />
-      <Text color="textSecondary">{t('passItOn.skill.free')}</Text>
-    </Card>
+    <View style={styles.row} testID={testID}>
+      <CoverArt photoUrl={null} icon={CATEGORY_ICON[category]} tint={category} size={COVER} />
+      <View style={styles.flex}>
+        <Text variant="heading">{skill.title}</Text>
+        <InfoRow
+          icon={CalendarBlankIcon}
+          text={
+            skill.start_at
+              ? formatWhen(new Date(skill.start_at), language, t)
+              : t('passItOn.skill.anyTime')
+          }
+        />
+        {skill.place_name ? <InfoRow icon={MapPinIcon} text={skill.place_name} /> : null}
+        <InfoRow
+          icon={ThumbsUpIcon}
+          text={t('passItOn.skill.thanked', { count: skill.endorsement_count })}
+        />
+        <Text color="textSecondary">{t('passItOn.skill.free')}</Text>
+      </View>
+    </View>
   );
 }
+
+const COVER = 88;
 
 /** A thank-you: a voice note (WhatsApp shape) or a one-tap thumbs up. Never stars. */
 export function ThankYouItem({ thanks, testID }: { thanks: ThankYou; testID?: string }) {
@@ -71,18 +102,16 @@ export function ThankYouItem({ thanks, testID }: { thanks: ThankYou; testID?: st
     );
   }
   return (
-    <Card tone="subtle" testID={testID}>
-      <View style={styles.thumb}>
-        <Avatar name={thanks.from.name} photoUrl={thanks.from.photo_url} />
-        <View style={styles.flex}>
-          <Text variant="bodyStrong">{t('passItOn.thanks.thumb', { name: thanks.from.name })}</Text>
-          {thanks.skill ? (
-            <Text color="textSecondary">{t('voice.forSkill', { skill: thanks.skill.title })}</Text>
-          ) : null}
-        </View>
-        <ThumbsUpIcon size={iconSize.button} color={color.primary} weight="fill" />
+    <View style={styles.thumb} testID={testID}>
+      <Avatar name={thanks.from.name} photoUrl={thanks.from.photo_url} />
+      <View style={styles.flex}>
+        <Text variant="bodyStrong">{t('passItOn.thanks.thumb', { name: thanks.from.name })}</Text>
+        {thanks.skill ? (
+          <Text color="textSecondary">{t('voice.forSkill', { skill: thanks.skill.title })}</Text>
+        ) : null}
       </View>
-    </Card>
+      <ThumbsUpIcon size={iconSize.button} color={color.text} weight="fill" />
+    </View>
   );
 }
 
@@ -105,29 +134,46 @@ export function GivenStats({ given }: { given: Profile['given'] }) {
   );
 }
 
-/** Badges as plain labelled icons, never a trophy wall. */
+/** Badges as a quiet grouped list with coloured icons, never a trophy wall. */
 export function BadgeList({ badges }: { badges: Profile['badges'] }) {
   const { t } = useTranslation();
   if (badges.length === 0) return null;
   return (
-    <View style={styles.badges} testID="badges">
-      {badges.map((b) => (
-        <InfoRow key={b.key} icon={BADGE_ICON[b.key]} text={t(`passItOn.badge.${b.key}`)} />
-      ))}
+    <View style={styles.badges}>
+      <GroupedList testID="badges">
+        {badges.map((b) => (
+          <GroupedRow
+            key={b.key}
+            icon={BADGE_ICON[b.key]}
+            tint={BADGE_TINT[b.key]}
+            title={t(`passItOn.badge.${b.key}`)}
+          />
+        ))}
+      </GroupedList>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  badges: {
+    marginTop: space.sm,
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    flexWrap: 'wrap',
+    gap: space.sm,
+    paddingVertical: space.xs,
+  },
   thumb: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
+    paddingVertical: space.xs,
   },
   flex: {
     flex: 1,
-  },
-  badges: {
-    gap: space.xs,
+    minWidth: 180,
+    gap: space.xxs,
   },
 });
