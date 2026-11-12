@@ -5,7 +5,7 @@ import { Logo } from '../../../../components/headers';
 import { OtpBoxes } from '../../../../components/OtpBoxes';
 import { useStore } from '../../../../core/store';
 import { useT } from '../../../../i18n';
-import { El, useAction, useField, usePageWords } from '../../../../kit';
+import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
 import { useGoBack } from '../../../../navigation';
 import { errorWords } from '../../../../session/errors';
 import { requestCode, sessionStore, verifyCode } from '../../../../session/store';
@@ -51,6 +51,16 @@ export default function Verify() {
   useField(page, 'code', code, (v) => setCode(String(v)));
   useAction(page, 'verify', verify);
   useAction(page, 'resend', resend);
+  // The agent may see WHERE the code is typed, never the code itself (the person's one-time key).
+  usePageData(page, {
+    values: [{ label: w('hint', { email: pendingEmail ?? '' }), value: '' }],
+    images: [],
+    lists: [],
+    actions: [
+      { id: 'verify', label: w('verify'), run: verify },
+      { id: 'resend', label: w('resend'), run: resend },
+    ],
+  });
 
   const [before, after] = w('hint', { email: MARK }).split(MARK);
   const ready = code.length === 6 && !busy;

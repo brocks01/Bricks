@@ -3,7 +3,7 @@ import { Text, View } from 'react-native';
 import { GoogleButton, googleAvailable } from '../../../../components/GoogleButton';
 import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
 import { useLanguage, useT } from '../../../../i18n';
-import { El, useAction, useField, usePageWords } from '../../../../kit';
+import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { errorWords } from '../../../../session/errors';
 import { googleSignIn, loadProviders, requestCode, type Providers } from '../../../../session/store';
@@ -43,6 +43,19 @@ export default function SignIn() {
 
   useField(page, 'email', email, (v) => setEmail(String(v)));
   useAction(page, 'sendCode', send);
+  // What the agent sees before sign-in: the address the person typed and the ways in. It can explain
+  // them; the code that arrives by message is never shown to it (verify publishes only the address).
+  usePageData(page, {
+    values: [{ label: w('email'), value: email }],
+    images: [],
+    lists: [],
+    actions: [
+      { id: 'sendCode', label: w('sendCode'), run: () => void send() },
+      { id: 'google', label: w('google'), run: () => undefined },
+      { id: 'singpass', label: w('singpass'), run: () => undefined },
+      { id: 'digilocker', label: w('digilocker'), run: () => undefined },
+    ],
+  });
 
   const onGoogle = async (idToken: string) => {
     setBusy(true);
