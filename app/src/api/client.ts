@@ -1,10 +1,11 @@
 /**
- * The API this website talks to when it is NOT running on this computer (for example on Vercel). Hard-coded on purpose for now, not read from
- * the environment: it is the tunnel to the backend that runs on the team's computer. When the backend is deployed, this one line changes.
+ * The API this app talks to when it is NOT running on this computer: the deployed backend on Render.
+ * Hard-coded on purpose for now, not read from the environment. In development the overrides below
+ * still win, so local testing keeps working.
  */
-export const PUBLIC_API_URL = 'https://shale-overgrown-buggy.ngrok-free.dev';
+export const PUBLIC_API_URL = 'https://bricks-o9gv.onrender.com';
 
-/** Where the API lives. Set EXPO_PUBLIC_API_URL to override. On the web it is this computer; in Expo Go it is the computer running Expo. */
+/** Where the API lives. Set EXPO_PUBLIC_API_URL to override. In Expo Go it is the computer running Expo; a release build uses the deployed API. */
 export function apiBase(): string {
   // Loaded here (not at the top) so the plain-Node self-test can import the session without the phone libraries.
   /* eslint-disable @typescript-eslint/no-require-imports */
@@ -15,9 +16,10 @@ export function apiBase(): string {
   if (Platform.OS === 'web' && typeof window !== 'undefined') {
     const h = window.location.hostname;
     const local = h === 'localhost' || /^(127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.)/.test(h);
-    // On this computer or its network the API is on port 8800; anywhere else (Vercel, the tunnel itself) it is the public API address.
+    // On this computer or its network the API is on port 8800; anywhere else (Vercel) it is the deployed API.
     return local ? `http://${h}:8800` : PUBLIC_API_URL;
   }
+  if (!__DEV__) return PUBLIC_API_URL; // a real installed app (no dev server): the deployed backend
   const host = Constants.expoConfig?.hostUri?.split(':')[0];
   return `http://${host ?? 'localhost'}:8800`;
 }
