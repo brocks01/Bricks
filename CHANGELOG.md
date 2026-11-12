@@ -59,11 +59,13 @@ Normal (18 pt, default) or Large (20 pt body).
 ## Unreleased
 
 ### Olive page background
-- Every main page now has one olive wash at the top (`color.pageWash` #D4D8BA) fading into a
-  light olive-stone page (`color.canvas` #E8EADD, was pale grey #F3F3F6), instead of a
+- Every main page now has one olive wash at the top (`color.pageWash` #C8CEA8) fading into a
+  light olive-stone page (`color.canvas` #DFE2D0, was pale grey #F3F3F6), instead of a
   different pale colour per section. White cards, buttons and the tab bar stand out clearly.
   Event pages keep their cover tint; the tab bar's icon pills keep their section colours.
-- Contrast: grey text 7.1:1 on the darkest part (AAA), checked in `theme/tokens.test.ts`.
+- Contrast: grey text 7.9:1 on the page and 6.4:1 on the darkest strip at the top (where only
+  titles and buttons sit; floor 4.5:1), checked in `theme/tokens.test.ts`. Darkened one step on
+  request after the first version.
 - Checks: app 636 tests, tsc, eslint, prettier.
 
 ### Iteration 3.4 (code): the stage demo runs as scripted, five times

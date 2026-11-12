@@ -130,8 +130,8 @@ Kavya owns the board; Person A builds from it.
 
 | Token | Hex | Use |
 |---|---|---|
-| `canvas` | `#E8EADD` | Screen background (light olive stone) |
-| `pageWash` | `#D4D8BA` | Olive wash at the top of every main page, fading into `canvas` |
+| `canvas` | `#DFE2D0` | Screen background (light olive stone) |
+| `pageWash` | `#C8CEA8` | Olive wash at the top of every main page, fading into `canvas` |
 | `bg` | `#FFFFFF` | Raised surfaces: cards, grouped lists, inputs, secondary buttons, chips |
 | `bg-subtle` | `#F2F2F5` | Wells inside white cards (icon squares, map placeholders) |
 | `border` | `#E3E3E8` | Dividers inside grouped lists |

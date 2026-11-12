@@ -9,12 +9,13 @@ export const color = {
   /** Raised surfaces: cards, grouped lists, sheets' rows, inputs, secondary buttons. */
   bg: '#FFFFFF',
   /** The page behind everything (a light olive stone): white cards stand out on it. */
-  canvas: '#E8EADD',
+  canvas: '#DFE2D0',
   /**
-   * The olive wash at the top of every main page, fading into `canvas`. The darkest
-   * shade that keeps grey text at 7:1 (theme/tokens.test.ts).
+   * The olive wash at the top of every main page, fading into `canvas`. Only titles and
+   * buttons sit on its darkest part; grey text there stays above the 4.5:1 floor
+   * (theme/tokens.test.ts), and is 7:1 on `canvas`.
    */
-  pageWash: '#D4D8BA',
+  pageWash: '#C8CEA8',
   /** Soft grey panels (cards, grouped lists, secondary buttons). */
   bgSubtle: '#F2F2F5',
   border: '#E3E3E8',

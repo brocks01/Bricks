@@ -15,7 +15,7 @@ describe('colour contrast', () => {
     ['textSecondary on the page', color.textSecondary, color.canvas, AAA],
     ['going green on the page', color.badgeGoingText, color.canvas, AA],
     ['text on the olive wash', color.text, color.pageWash, AAA],
-    ['textSecondary on the olive wash', color.textSecondary, color.pageWash, AAA],
+    ['textSecondary on the olive wash', color.textSecondary, color.pageWash, AA],
     ['going green on the olive wash', color.badgeGoingText, color.pageWash, AA],
     ['primary on the olive wash', color.primary, color.pageWash, AA],
     ['primary text on bg', color.primary, color.bg, AA],
