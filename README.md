@@ -12,3 +12,4 @@ Working name. A club system for neighbourhoods: communities run themselves the w
 | `backend/`, `frontend/`, `app/`, `shared/` | The team | Code folders. Created empty with a note; nothing is built yet. The inside structure is decided after the overall features are settled. |
 
 The older planning folder `project-name-tbd` is left untouched.
+
