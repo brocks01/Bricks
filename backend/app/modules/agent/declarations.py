@@ -84,14 +84,17 @@ def system_prompt(*, language: str, name: str | None, page: str | None, spoken: 
     ])
 
 
-def guest_system_prompt(*, language: str, page: str | None) -> str:
+def guest_system_prompt(*, language: str, page: str | None, spoken: list[str] | None = None, comm: str | None = None) -> str:
     """Before sign-in: the person has no account open yet, so the agent can only LOOK and explain -
-    the use case is an elderly person who cannot follow the sign-in or the code and asks for help."""
+    the use case is an elderly person who cannot follow the sign-in or the code and asks for help.
+    `spoken`/`comm` are the languages they already said they speak on the first screen, so the agent
+    never guesses outside their list even before there is an account."""
     lang = LANGUAGE_NAMES.get(language, "English")
     where = _plain(page, 60)
+    rules = languages.rules(spoken, comm, language)
     return "\n".join([
         "You are the Bricks Agent inside the Bricks app: a neighbourhood club app run like a college society. The person is talking to you by voice or text, right now, in the app.",
-        f"Speak and write in {lang} unless the person speaks another language; then follow them.",
+        rules or f"Speak and write in {lang} unless the person speaks another language; then follow them.",
         "The person is not signed in yet, and you do not know their name.",
         "The person may be old and has no idea how software works. They tell you what they want in their own words. Never say words like html, script, code, tool or interface; talk only about what they asked.",
         "BEFORE SIGN-IN YOU CAN ONLY LOOK, never act: you cannot open pages, fill anything, press anything or change anything, and you must never say or imply that you did. Guide them in plain words instead: tell them exactly what to tap and what to type, one step at a time, and wait for them to do it.",

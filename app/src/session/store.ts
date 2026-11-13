@@ -2,6 +2,7 @@ import { api, ApiError, configureClient } from '../api/client';
 import { createStore } from '../core/store';
 import { setLanguage, languageStore } from '../i18n/store';
 import { isLangCode, type LangCode } from '../i18n/languages';
+import { cleanSpoken, saveSpoken, spokenStore } from '../i18n/spoken';
 import { loadRefreshToken, saveRefreshToken } from './storage';
 
 export type AgeBand = 'under40' | '40to59' | '60plus';
@@ -47,6 +48,26 @@ async function accept(t: Tokens): Promise<void> {
   refreshToken = t.refresh_token;
   await saveRefreshToken(t.refresh_token);
   sessionStore.set((s) => ({ ...s, status: 'in', user: t.user, activeProfile: null, actingUser: null, pendingEmail: null, devCode: null }));
+  void syncSpoken(t.user); // never blocks sign-in; the profile form retries if this fails
+}
+
+/**
+ * The account and this phone keep each other's languages in step. The account's list wins when it has
+ * one; what the person said on the first screen (before there was an account) is carried into an
+ * account that has none, so nobody has to say it twice.
+ */
+async function syncSpoken(user: User): Promise<void> {
+  try {
+    const own = cleanSpoken(user.spoken_languages);
+    if (own.length) {
+      await saveSpoken(own, user.comm_language ?? null);
+      return;
+    }
+    const local = spokenStore.get();
+    if (local.spoken.length) await updateProfile({ spoken_languages: local.spoken, comm_language: local.comm });
+  } catch {
+    /* a language problem must never stop the door: the next sign-in or the profile form tries again */
+  }
 }
 
 async function clear(): Promise<void> {

@@ -10,7 +10,7 @@ from sqlalchemy import text
 from app.core.db import engine
 from app.main import app
 from app.modules.agent import router as agent_router
-from app.modules.agent.declarations import declarations, system_prompt
+from app.modules.agent.declarations import declarations, guest_system_prompt, system_prompt
 
 client = TestClient(app)
 EMAILS: list[str] = []
@@ -118,6 +118,29 @@ def test_guest_talk_is_allowed_and_can_only_look(monkeypatch):
     assert "auth.signIn" in seen["prompt"]
     assert set(seen["tools"]) <= agent_router.GUEST_TOOLS  # only the look-and-end tools get through
     assert "fill" not in seen["tools"] and "run" not in seen["tools"] and "open" not in seen["tools"]
+
+
+def test_the_guest_talk_carries_the_languages_they_said_before_sign_in(monkeypatch):
+    """On the first screen there is no account yet, but the languages the person chose on the phone
+    reach the agent, so it never guesses outside their list before sign-in either."""
+    seen = {}
+
+    class GuestLive(FakeLive):
+        async def open(self):
+            seen["prompt"] = self.system_prompt
+            await super().open()
+
+    monkeypatch.setattr(agent_router, "LiveSession", GuestLive)
+    with client.websocket_connect("/v1/agent/live") as ws:
+        ws.send_text(json.dumps({"type": "auth", "guest": True, "language": "en", "page": "auth.welcome",
+                                 "spoken": ["en", "hi", "bho", "xx"], "comm": "hi", "tools": TOOLS}))
+        assert json.loads(ws.receive_text())["type"] == "ready"
+        ws.send_text(json.dumps({"type": "end"}))
+    assert "English, Hindi, Bhojpuri" in seen["prompt"]  # the unknown "xx" was dropped
+    assert "main language for talking is Hindi" in seen["prompt"]
+    assert "do not guess" in seen["prompt"] and "say it again" in seen["prompt"]
+    # without a list the old single-language line stays
+    assert "LANGUAGES." not in guest_system_prompt(language="en", page=None)
 
 
 def test_auth_without_a_token_and_no_guest_flag_is_refused():

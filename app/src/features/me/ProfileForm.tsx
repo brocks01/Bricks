@@ -7,7 +7,7 @@ import { El, useAction, useField, usePageWords } from '../../kit';
 import type { PageDef } from '../../navigation/types';
 import { useNavigate } from '../../navigation';
 import { errorWords } from '../../session/errors';
-import { SPOKEN_LANGUAGES, cleanSpoken } from '../../i18n/spoken';
+import { SPOKEN_LANGUAGES, cleanSpoken, saveSpoken, spokenStore } from '../../i18n/spoken';
 import { colors, radius, space, type } from '../../theme/tokens';
 import { sessionStore, updateProfile, type AgeBand } from '../../session/store';
 
@@ -23,12 +23,13 @@ export function ProfileForm({ page, destination }: { page: Pick<PageDef, 'key' |
   const go = useNavigate();
   const { user: own, actingUser } = useStore(sessionStore);
   const user = actingUser ?? own; // while helping a family member, their profile is the one being edited
+  const editingSelf = !actingUser; // only my own profile may change what THIS phone says I speak
   const [name, setName] = useState(user?.display_name ?? '');
   const [band, setBand] = useState<string | null>(user?.age_band ?? null);
   const [phone, setPhone] = useState(user?.phone ?? '');
   const [area, setArea] = useState(user?.area_name ?? '');
-  const [spoken, setSpoken] = useState<string[]>(cleanSpoken(user?.spoken_languages));
-  const [comm, setComm] = useState<string | null>(user?.comm_language ?? null);
+  const [spoken, setSpoken] = useState<string[]>(cleanSpoken(user?.spoken_languages?.length ? user.spoken_languages : editingSelf ? spokenStore.get().spoken : undefined));
+  const [comm, setComm] = useState<string | null>(user?.comm_language ?? (editingSelf ? spokenStore.get().comm : null));
   const [error, setError] = useState<string | null>(null);
   const [nameError, setNameError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -39,7 +40,9 @@ export function ProfileForm({ page, destination }: { page: Pick<PageDef, 'key' |
     if (!name.trim()) return setNameError(t('common.error.required'));
     setBusy(true);
     try {
-      await updateProfile({ display_name: name.trim(), age_band: (band as AgeBand | null) ?? null, phone: phone.trim() || null, area_name: area.trim() || null, spoken_languages: spoken, comm_language: comm && spoken.includes(comm) ? comm : spoken[0] ?? null });
+      const main = comm && spoken.includes(comm) ? comm : spoken[0] ?? null;
+      if (editingSelf) void saveSpoken(spoken, main); // my phone and my account stay in step
+      await updateProfile({ display_name: name.trim(), age_band: (band as AgeBand | null) ?? null, phone: phone.trim() || null, area_name: area.trim() || null, spoken_languages: spoken, comm_language: main });
       go(destination, {}, { replace: true });
     } catch (e) {
       const m = errorWords(e);

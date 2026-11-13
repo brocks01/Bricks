@@ -16,7 +16,7 @@ import time
 from fastapi import APIRouter, WebSocket
 from sqlalchemy import text
 
-from ...core import auth_state
+from ...core import auth_state, languages
 from ...core.db import engine
 from ..voice.config import config
 from ..voice import tools as web
@@ -86,17 +86,24 @@ async def live(ws: WebSocket):
 
         if guest:
             language = str(first.get("language") or "en")
+            # The languages they said they speak on the first screen, before any account exists.
+            spoken = languages.clean(first.get("spoken") or [])
+            comm = str(first.get("comm") or "") or None
             live_session = LiveSession(
                 cfg,
                 voice=cfg.voice,
-                system_prompt=guest_system_prompt(language=language if language in LANGUAGE_NAMES else "en", page=str(first.get("page") or "")[:60] or None),
+                system_prompt=guest_system_prompt(language=language if language in LANGUAGE_NAMES else "en", page=str(first.get("page") or "")[:60] or None, spoken=spoken, comm=comm),
                 tools=declarations([t for t in (first.get("tools") or []) if isinstance(t, dict) and t.get("name") in GUEST_TOOLS]),
             )
         else:
+            # The account's list is the truth; the phone's own choice fills in an account that has none yet
+            # (the person said what they speak before signing in, and the profile form has not been saved).
+            spoken = list(row.spoken_languages or []) or languages.clean(first.get("spoken") or [])
+            comm = row.comm_language or (str(first.get("comm") or "") or None)
             live_session = LiveSession(
                 cfg,
                 voice=cfg.voice,
-                system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None, spoken=list(row.spoken_languages or []), comm=row.comm_language), *web.hints(SERVER_TOOLS)]),
+                system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None, spoken=spoken, comm=comm), *web.hints(SERVER_TOOLS)]),
                 tools=[*declarations(first.get("tools") or []), *web.declarations(SERVER_TOOLS)],
             )
         await live_session.open()

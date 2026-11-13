@@ -1,7 +1,9 @@
 import { Image, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../../components/ui';
+import { useStore } from '../../../../core/store';
 import { LANGUAGES, useLanguage } from '../../../../i18n';
+import { SPOKEN_LANGUAGES, spokenStore } from '../../../../i18n/spoken';
 import { El, useAction, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, radius, space, type } from '../../../../theme/tokens';
@@ -17,9 +19,14 @@ export default function Welcome() {
   const code = useLanguage();
   const insets = useSafeAreaInsets();
   const native = LANGUAGES.find((l) => l.code === code)?.native ?? '';
+  const spoken = useStore(spokenStore).spoken;
+  // What the person already said they speak, so the entry reads like theirs ("English, Hindi").
+  const spokenNames = spoken.map((c) => SPOKEN_LANGUAGES.find((l) => l.code === c)?.native ?? c);
+  const spokenLabel = spokenNames.length ? `${w('spokenLink')}: ${spokenNames.slice(0, 2).join(', ')}${spokenNames.length > 2 ? '…' : ''}` : w('spokenLink');
   useAction(page, 'start', () => go('auth.signIn'));
   useAction(page, 'languageLink', () => go('language.pick'));
-  // What the agent sees before sign-in: the three entries, nothing else. It can explain them, not press them.
+  useAction(page, 'spokenLink', () => go('language.spoken'));
+  // What the agent sees before sign-in: the four entries, nothing else. It can explain them, not press them.
   usePageData(page, {
     values: [{ label: w('subtitle'), value: native }],
     images: [],
@@ -28,6 +35,7 @@ export default function Welcome() {
       { id: 'start', label: w('start'), run: () => { go('auth.signIn'); } },
       { id: 'familyCode', label: w('familyCode'), run: () => { go('family.claim'); } },
       { id: 'languageLink', label: w('languageLink'), run: () => { go('language.pick'); } },
+      { id: 'spokenLink', label: spokenLabel, run: () => { go('language.spoken'); } },
     ],
   });
 
@@ -57,6 +65,8 @@ export default function Welcome() {
       <El page={page} id="familyCode"><Button kind="plain" icon="key-outline" label={w('familyCode')} onPress={() => go('family.claim')} /></El>
       <View style={{ height: space.xs }} />
       <El page={page} id="languageLink"><Button kind="plain" icon="language" label={`${w('languageLink')}: ${native}`} onPress={() => go('language.pick')} /></El>
+      <View style={{ height: space.xs }} />
+      <El page={page} id="spokenLink"><Button kind="plain" icon="chatbubbles-outline" label={spokenLabel} onPress={() => go('language.spoken')} /></El>
       <View style={{ height: space.lg }} />
     </View>
   );

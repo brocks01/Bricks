@@ -6,6 +6,7 @@ import { createStore } from '../core/store';
 import { apiBase } from '../api/client';
 import { freshToken, sessionStore } from '../session/store';
 import { languageStore } from '../i18n/store';
+import { spokenStore } from '../i18n/spoken';
 import { audioAvailable, isSpeaking, playPcm24k, speechSeenAt, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
 import { hideSurface } from './surface';
@@ -214,12 +215,17 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
   ws = sock;
   talkAs = token ? sessionStore.get().user?.id ?? 'user' : 'guest';
   if (token) {
-    sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs });
+    // Signed in: the server reads the account's languages; the phone's own choice is the fallback
+    // for an account that has none yet (chosen on the first screen, before sign-in).
+    const spoken = spokenStore.get();
+    sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs, spoken: spoken.spoken, comm: spoken.comm });
   } else {
     // Not signed in: a guest talk on the sign-in pages. The agent may only SEE the open page and explain
     // what to do (an elderly person who cannot follow the sign-in or the code asks for help at any moment).
+    // The languages they say they speak are sent too, so the agent never guesses outside their list.
     const seeOnly = toolSpecs.filter((s) => GUEST_TOOLS.includes(s.name));
-    sock.onopen = () => send({ type: 'auth', guest: true, language: languageStore.get().code, page: runner?.page(), tools: seeOnly });
+    const spoken = spokenStore.get();
+    sock.onopen = () => send({ type: 'auth', guest: true, language: languageStore.get().code, spoken: spoken.spoken, comm: spoken.comm, page: runner?.page(), tools: seeOnly });
   }
   sock.onmessage = (e) => onMessage(String(e.data));
   sock.onerror = () => set({ notice: 'failed' });

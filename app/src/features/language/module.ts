@@ -3,13 +3,14 @@ import { chooseLanguage } from './choose';
 import { isLangCode } from '../../i18n/languages';
 import { defineModule } from '../../navigation/registry';
 import { languagePick } from './pages/pick/page';
+import { languageSpoken } from './pages/spoken/page';
 
 defineModule({
   id: 'language',
   title: 'Language',
-  summary: 'Choose the language of the whole app. Everyone can change it any time.',
-  keywords: ['language', 'translate', 'hindi', 'tamil', 'bengali', 'chinese', 'malay', 'english', 'change language'],
-  pages: [languagePick],
+  summary: 'Choose the language of the whole app, and say which languages you speak to the agent. Everyone can change them any time.',
+  keywords: ['language', 'translate', 'hindi', 'tamil', 'bengali', 'chinese', 'malay', 'english', 'change language', 'spoken', 'talk'],
+  pages: [languagePick, languageSpoken],
   skills: [
     {
       name: 'list',
