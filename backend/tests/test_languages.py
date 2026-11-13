@@ -53,3 +53,8 @@ def test_the_agent_prompt_guesses_only_among_their_languages_and_asks_to_repeat(
     assert "do not guess" in text_ and "say it again" in text_ and "NOT on their list" in text_
     # no list saved: the old behaviour stays
     assert "LANGUAGES." not in system_prompt(language="en", name=None, page=None)
+
+
+def test_the_agent_asks_free_answers_aloud_instead_of_opening_a_text_box_form():
+    p = system_prompt(language="en", name=None, page=None)
+    assert "do NOT open a panel with a text box" in p and "always ask aloud" in p and "never ask them to copy or paste a link" in p
