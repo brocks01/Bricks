@@ -32,6 +32,10 @@ def _host_of(u: str) -> str:
         return ""
 
 
+# The tools a phone call may use that the IN-APP agent may not: they only make sense mid-call,
+# with the reminder context the loop placed on the call record.
+CALL_ONLY = {"calendar_outcome"}
+
 TOOLS = {
     "web_search": {
         "label": "Web search",
@@ -55,6 +59,19 @@ TOOLS = {
             "name": "read_page",
             "description": "Open one of the pages from your most recent web_search and read its text. Use the id from the search results.",
             "parameters": {"type": "OBJECT", "properties": {"id": {"type": "INTEGER", "description": "The id of the search result to open (1 to 3)"}}, "required": ["id"]},
+        },
+    },
+    "calendar_outcome": {
+        "label": "Record what the person said",
+        "timeout": 5,
+        "hint": ("calendar_outcome: as soon as the person answers the question you asked (have you done it?), record what they said and then follow the note it returns. "
+                 "Call it exactly once. took_it if they said they have done it, will_do_later if they will do it after some time, needs_help if they need someone. "
+                 "Never change it afterwards, and never guess: if you are not sure, ask once more, plainly."),
+        "declaration": {
+            "name": "calendar_outcome",
+            "description": "Record the person's answer about the planned thing you called about. Use took_it (they have done it), will_do_later (they will do it after some time) or needs_help (they need someone).",
+            "parameters": {"type": "OBJECT", "properties": {"answer": {"type": "STRING", "description": "took_it, will_do_later or needs_help",
+                              "enum": ["took_it", "will_do_later", "needs_help"]}}, "required": ["answer"]},
         },
     },
 }

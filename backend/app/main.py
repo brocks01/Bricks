@@ -52,7 +52,15 @@ async def lifespan(_: FastAPI):
             await asyncio.sleep(5)
     else:
         raise RuntimeError(f"the database migrations did not apply: {last}")
-    yield
+    # The ONE background thing in the app: the reminder loop (calls, retries, reconciliation).
+    # It checks REMINDER_LOOP=off on every tick, so tests can hold it still.
+    from .modules.calendar import calls as calendar_calls
+
+    reminder_task = asyncio.create_task(calendar_calls.loop())
+    try:
+        yield
+    finally:
+        reminder_task.cancel()
 
 
 app = FastAPI(title="Bricks API", version="0.1.0", lifespan=lifespan)
