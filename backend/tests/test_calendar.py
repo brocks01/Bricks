@@ -185,6 +185,17 @@ def test_a_starts_at_without_an_offset_is_refused():
     assert r.status_code == 422 and r.json()["detail"]["code"] == "time_needs_offset"
 
 
+def test_the_item_screen_reads_one_item_with_who_added_it():
+    s = sign_in(fresh_email())
+    assert client.patch("/v1/me", json={"display_name": "Kavya Nair"}, headers=auth(s)).status_code == 200
+    iid = client.post("/v1/calendar/items", json=item(title="Walk at the park", kind="exercise", repeat="none"), headers=auth(s)).json()["id"]
+    r = client.get(f"/v1/calendar/items/{iid}", headers=auth(s))
+    assert r.status_code == 200 and r.json()["title"] == "Walk at the park" and r.json()["added_by_name"] == "Kavya Nair"
+    assert r.json()["repeat"] == "none" and r.json()["status"] == "active"
+    # a stranger still cannot open it
+    assert client.get(f"/v1/calendar/items/{iid}", headers=auth(sign_in(fresh_email()))).status_code == 403
+
+
 # ---------------------------------------------------------------- family access (the most important)
 
 

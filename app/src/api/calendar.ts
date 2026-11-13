@@ -1,0 +1,106 @@
+import { api } from './client';
+
+/**
+ * The calendar part of the API: the people whose calendars I may open, the dated things that happen
+ * (expanded on the server from the saved items), the items themselves, and the done/skipped marks.
+ * Every refusal comes back as a machine `code` (for example no_access) the screens turn into words.
+ */
+
+export type CalendarKind = 'medicine' | 'appointment' | 'exercise' | 'event' | 'call' | 'other';
+export type CalendarRepeat = 'none' | 'daily' | 'weekdays' | 'weekly';
+export type MarkStatus = 'pending' | 'done' | 'skipped';
+
+/** A person whose calendar I may open: me first, then family members I hold access for. */
+export interface CalendarPerson {
+  id: string;
+  name: string;
+  is_me: boolean;
+  level: string; // self, setup, ongoing, full
+}
+
+/** One dated thing in the range: an expanded item, or (for me) a community activity I said I am going to. */
+export interface Occurrence {
+  item_id: string | null;
+  occurs_at: string; // UTC ISO
+  kind: CalendarKind;
+  title: string;
+  note: string | null;
+  duration_min: number | null;
+  status: MarkStatus;
+  added_by_name: string;
+  channel: 'app' | 'call' | 'both';
+  can_edit: boolean;
+  remind_before_min: number;
+  activity_id?: string | null;
+  community_id?: string | null;
+}
+
+/** The one item, as saved (the Item screen edits from this, not from guesses). */
+export interface CalendarItem {
+  id: string;
+  person_id: string;
+  kind: CalendarKind;
+  title: string;
+  note: string | null;
+  first_date: string; // YYYY-MM-DD, in the person's own local time
+  local_time: string; // HH:MM
+  tz_offset_min: number;
+  duration_min: number | null;
+  repeat: CalendarRepeat;
+  repeat_days: number[] | null; // 0=Mon .. 6=Sun
+  until_date: string | null;
+  remind_before_min: number;
+  channel: 'app' | 'call' | 'both';
+  status: 'active' | 'cancelled';
+  added_by_name: string;
+}
+
+export interface NewItem {
+  person_id?: string;
+  kind: CalendarKind;
+  title: string;
+  note?: string | null;
+  /** An aware ISO datetime: the moment it first happens, in the person's own local time. */
+  starts_at: string;
+  repeat: CalendarRepeat;
+  repeat_days?: number[] | null;
+  until_date?: string | null;
+  remind_before_min?: number;
+}
+
+const q = (params: Record<string, string | undefined>) => {
+  const usp = new URLSearchParams();
+  for (const [k, v] of Object.entries(params)) if (v) usp.set(k, v);
+  const s = usp.toString();
+  return s ? `?${s}` : '';
+};
+
+export const calendarApi = {
+  people: () => api<{ people: CalendarPerson[] }>('GET', '/v1/calendar/people'),
+
+  /** The dated things for one calendar. Defaults: from = 3 hours ago, to = 7 days ahead (server side). */
+  occurrences: (personId?: string, from?: string, to?: string) =>
+    api<{ occurrences: Occurrence[] }>('GET', `/v1/calendar/occurrences${q({ person_id: personId, from, to })}`),
+
+  item: (id: string) => api<CalendarItem>('GET', `/v1/calendar/items/${id}`),
+
+  create: (body: NewItem) => api<{ id: string }>('POST', '/v1/calendar/items', body),
+
+  /** Only the fields sent change; the rest stays as it is. */
+  update: (id: string, body: Partial<NewItem> & { notify_family?: boolean }) =>
+    api<{ id: string }>('PATCH', `/v1/calendar/items/${id}`, body),
+
+  cancel: (id: string) => api<{ id: string; status: string }>('DELETE', `/v1/calendar/items/${id}`),
+
+  mark: (itemId: string, occursAt: string, status: 'done' | 'skipped') =>
+    api<{ item_id: string; occurs_at: string; status: string }>('POST', `/v1/calendar/items/${itemId}/mark`, {
+      occurs_at: occursAt,
+      status,
+    }),
+
+  unmark: (itemId: string, occursAt: string) =>
+    api<{ item_id: string; occurs_at: string; status: string }>(
+      'DELETE',
+      `/v1/calendar/items/${itemId}/mark${q({ occurs_at: occursAt })}`,
+    ),
+};
