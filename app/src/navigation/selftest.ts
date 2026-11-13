@@ -38,7 +38,7 @@ check('the plan page takes an id and needs sign-in', (() => { const p = allPages
 check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
 check('module lists pages and skills', (() => { const k = childrenOf('auth') ?? []; return k.some((n) => n.path === 'auth.signIn' && n.kind === 'page') && k.some((n) => n.path === 'auth/signOut' && n.kind === 'skill'); })());
-check('page lists elements', (childrenOf('me.edit') ?? []).map((n) => n.path).join(',') === 'me.edit.heading,me.edit.displayName,me.edit.ageBand,me.edit.phone,me.edit.area,me.edit.save', (childrenOf('me.edit') ?? []).map((n) => n.path).join(','));
+check('page lists elements', (childrenOf('me.edit') ?? []).map((n) => n.path).join(',') === 'me.edit.heading,me.edit.displayName,me.edit.ageBand,me.edit.phone,me.edit.area,me.edit.spoken,me.edit.commLanguage,me.edit.save', (childrenOf('me.edit') ?? []).map((n) => n.path).join(','));
 check('element parses', parsePath('me.edit.displayName')?.level === 'element');
 check('unknown path is null', childrenOf('me.nope') === null && childrenOf('nope') === null);
 check('describe element', (describe('me.edit.displayName') ?? '').includes('required') && (describe('me.edit') ?? '').includes('me.edit.save'));

@@ -37,7 +37,7 @@ _recent: dict[str, list[float]] = {}
 
 def _person(user_id: str):
     with engine().connect() as conn:
-        return conn.execute(text("select display_name, language from users where id = :u and status = 'active'"), {"u": user_id}).first()
+        return conn.execute(text("select display_name, language, spoken_languages, comm_language from users where id = :u and status = 'active'"), {"u": user_id}).first()
 
 
 async def _send(ws: WebSocket, obj: dict) -> bool:
@@ -96,7 +96,7 @@ async def live(ws: WebSocket):
             live_session = LiveSession(
                 cfg,
                 voice=cfg.voice,
-                system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None), *web.hints(SERVER_TOOLS)]),
+                system_prompt="\n\n".join([system_prompt(language=row.language, name=row.display_name, page=str(first.get("page") or "")[:60] or None, spoken=list(row.spoken_languages or []), comm=row.comm_language), *web.hints(SERVER_TOOLS)]),
                 tools=[*declarations(first.get("tools") or []), *web.declarations(SERVER_TOOLS)],
             )
         await live_session.open()

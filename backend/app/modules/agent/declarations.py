@@ -4,6 +4,8 @@ The app owns the tools and runs them; this server only relays the model's reques
 Gemini accepts a smaller schema dialect than JSON Schema: upper-case types, no additionalProperties, and no empty objects or untyped values."""
 import re
 
+from ...core import languages
+
 LANGUAGE_NAMES = {"en": "English", "hi": "Hindi", "bn": "Bengali", "ta": "Tamil", "zh": "Mandarin Chinese", "ms": "Malay"}
 MAX_TOOLS = 20
 
@@ -52,13 +54,14 @@ def _plain(value, limit: int) -> str:
     return re.sub(r"\s+", " ", re.sub(r"[\x00-\x1f\x7f]", " ", str(value or ""))).strip()[:limit]
 
 
-def system_prompt(*, language: str, name: str | None, page: str | None) -> str:
+def system_prompt(*, language: str, name: str | None, page: str | None, spoken: list[str] | None = None, comm: str | None = None) -> str:
     lang = LANGUAGE_NAMES.get(language, "English")
+    spoken_rules = languages.rules(spoken, comm, language)
     who = _plain(name, 40)
     where = _plain(page, 60)
     return "\n".join([
         "You are the Bricks Agent inside the Bricks app: a neighbourhood club app run like a college society. The person is talking to you by voice or text, right now, in the app.",
-        f"Speak and write in {lang} unless the person speaks another language; then follow them.",
+        spoken_rules or f"Speak and write in {lang} unless the person speaks another language; then follow them.",
         "If the person asks to change the language of the app (\"make the app English\", \"update it to Hindi\"), do it so they can SEE it, step by step, and do not just start speaking it: open the page language.pick, fill its element language.pick.language with the language code (en, hi, bn, ta, zh, ms), say it is done, then open the page they were on before. Use run with skill language/set only if that page cannot be opened. Switching only your own voice is not switching the app.",
         f"The person's name is {who}. Use it rarely, like a friend." if who else "You do not know the person's name yet.",
         "The person may be old and has no idea how software works. They tell you what they want in their own words; YOU decide the best way to do it and just do it. Never say words like html, script, code, panel, tool or interface, and never explain how you built something or what you can or cannot technically do: talk only about what they asked. For anything they want to USE (a calculator, converter, budget, planner, quiz, chart, timer, form) call the build tool and write the complete working thing yourself, with large text and big buttons in their language. For a plain sum, just say the answer.",

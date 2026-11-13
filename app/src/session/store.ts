@@ -14,6 +14,8 @@ export interface User {
   age_band: AgeBand | null;
   phone: string | null;
   area_name: string | null;
+  spoken_languages?: string[]; // languages the person speaks (the agent only guesses among these)
+  comm_language?: string | null; // the one they prefer to talk in
   login_kind: 'own' | 'assisted'; // 'assisted' = a family member is helping set this account up
   profile_complete: boolean;
 }
@@ -166,7 +168,7 @@ export async function googleSignIn(idToken: string): Promise<{ isNew: boolean; c
   return { isNew: t.is_new, complete: sessionStore.get().user?.profile_complete ?? false };
 }
 
-export type ProfilePatch = Partial<{ display_name: string; language: LangCode; age_band: AgeBand | null; phone: string | null; area_name: string | null }>;
+export type ProfilePatch = Partial<{ display_name: string; language: LangCode; age_band: AgeBand | null; phone: string | null; area_name: string | null; spoken_languages: string[]; comm_language: string | null }>;
 
 export async function updateProfile(patch: ProfilePatch): Promise<User> {
   const user = await api<User>('PATCH', '/v1/me', patch);

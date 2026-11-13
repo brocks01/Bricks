@@ -14,6 +14,8 @@ export const meEdit = definePage({
     ageBand: { kind: 'choice', type: 'string', options: ['under40', '40to59', '60plus'], summary: 'Age group: under40, 40to59 or 60plus.' },
     phone: { kind: 'field', type: 'string', summary: 'Phone number. Optional.' },
     area: { kind: 'field', type: 'string', summary: 'Neighbourhood or area name. Optional.' },
+    spoken: { kind: 'field', type: 'string', summary: 'Languages the person speaks, as a comma list of codes such as en,hi,bho,bn (23 are allowed: en hi bn ta te mr gu kn ml pa ur or as bho mai ne kok zh yue nan teo ms id).' },
+    commLanguage: { kind: 'field', type: 'string', summary: 'The one language code the person prefers to talk in. It must be one of the languages they speak.' },
     save: { kind: 'action', summary: 'Saves the changes.' },
   },
   strings,
