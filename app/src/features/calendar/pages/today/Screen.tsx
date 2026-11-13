@@ -32,7 +32,8 @@ export default function CalendarTab() {
   const [rows, setRows] = useState<Occurrence[] | null>(null);
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState<string | null>(null); // "item|occurs_at" while its mark is being saved
-  const [now] = useState(() => Date.now()); // one snapshot for the day labels, not a new time every render
+  const [now, setNow] = useState(() => Date.now()); // refreshed with every poll, for due and missed
+  const [dismissed, setDismissed] = useState<string[]>([]); // the due-now banners put off this session
 
   const loadPeople = useCallback(() => {
     calendarApi.people().then((r) => {
@@ -42,6 +43,7 @@ export default function CalendarTab() {
   }, []);
   const loadRows = useCallback(() => {
     if (!who) return;
+    setNow(Date.now());
     calendarApi.occurrences(who).then((r) => {
       setRows(r.occurrences);
       setFailed(false);
@@ -50,8 +52,18 @@ export default function CalendarTab() {
   useEffect(() => {
     if (status === 'in') loadPeople();
   }, [status, loadPeople]);
+  // While the tab is open: every minute, say "the app is open" (with the phone's own time zone) and
+  // refresh the week. This is what the reminder loop later reads as "the app reached this person".
   useEffect(() => {
-    if (status === 'in') loadRows();
+    if (status !== 'in') return;
+    const tz = -new Date().getTimezoneOffset();
+    const tick = () => {
+      calendarApi.heartbeat(tz).catch(() => undefined);
+      loadRows();
+    };
+    tick();
+    const h = setInterval(tick, 60_000);
+    return () => clearInterval(h);
   }, [status, loadRows]);
 
   const setMark = async (o: Occurrence, next: 'done' | 'skipped') => {
@@ -90,9 +102,35 @@ export default function CalendarTab() {
   }
 
   const statusTag = (o: Occurrence) => (o.status === 'done' ? w('doneTag') : o.status === 'skipped' ? w('skippedTag') : null);
+  const isMissed = (o: Occurrence) => o.status === 'pending' && new Date(o.occurs_at).getTime() + 60 * 60 * 1000 < now;
+  // Due now: pending, inside its own remind-before window (or already at the time), not past the hour.
+  const due = (rows ?? []).find((o) => {
+    if (o.status !== 'pending' || !o.item_id || isMissed(o)) return false;
+    const t = new Date(o.occurs_at).getTime();
+    return t - o.remind_before_min * 60_000 <= now && t + 60 * 60 * 1000 > now && !dismissed.includes(`${o.item_id}|${o.occurs_at}`);
+  });
 
   return (
     <Screen title={w('heading')} subtitle={w('intro')}>
+      {due ? (
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accent, padding: space.md, marginBottom: space.md }}>
+          <Ionicons name="notifications" size={24} color={colors.accent} />
+          <View style={{ flex: 1 }}>
+            <Text style={[type.small, { color: colors.accent, fontWeight: '700' }]}>{w('dueHeading')}</Text>
+            <Text style={{ color: colors.ink, fontWeight: '700' }}>
+              {w('dueTitle', { title: due.title, time: time(due.occurs_at) })}
+            </Text>
+          </View>
+          <Pressable accessibilityRole="button" onPress={() => void setMark(due, 'done')}
+            style={{ backgroundColor: colors.accent, borderRadius: 999, paddingHorizontal: space.md, paddingVertical: space.xs }}>
+            <Text style={{ color: '#fff', fontWeight: '700' }}>{w('done')}</Text>
+          </Pressable>
+          <Pressable accessibilityRole="button" onPress={() => setDismissed((cur) => [...cur, `${due.item_id}|${due.occurs_at}`])}>
+            <Text style={{ color: colors.muted, fontWeight: '600' }}>{w('dueLater')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
+
       {(people ?? []).length > 1 ? (
         <El page={page} id="forWho">
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginBottom: space.md }}>
@@ -144,10 +182,14 @@ export default function CalendarTab() {
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }} numberOfLines={1}>
-                      {o.title} {statusTag(o) ? <Text style={{ color: colors.muted, fontWeight: '600' }}>Â· {statusTag(o)}</Text> : null}
+                      {o.title} {statusTag(o) ? <Text style={{ color: colors.muted, fontWeight: '600' }}>· {statusTag(o)}</Text> : null}
                     </Text>
-                    <Text style={[type.small, { color: colors.muted }]} numberOfLines={1}>
-                      {[time(o.occurs_at), o.added_by_name ? w('addedBy', { name: o.added_by_name }) : null].filter(Boolean).join(' Â· ')}
+                    <Text style={[type.small, { color: isMissed(o) ? '#b3261e' : colors.muted, fontWeight: isMissed(o) ? '700' : '400' }]} numberOfLines={1}>
+                      {[
+                        isMissed(o) ? w('missedTag') : null,
+                        time(o.occurs_at),
+                        o.added_by_name ? w('addedBy', { name: o.added_by_name }) : null,
+                      ].filter(Boolean).join(' · ')}
                     </Text>
                   </View>
                   {o.can_edit && o.item_id ? (

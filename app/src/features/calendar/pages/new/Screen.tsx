@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { calendarApi, type CalendarKind, type CalendarPerson, type CalendarRepeat } from '../../../../api/calendar';
+import { calendarApi, type CalendarKind, type CalendarPerson, type CalendarRepeat, type Clash } from '../../../../api/calendar';
 import { ApiError } from '../../../../api/client';
 import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -46,6 +46,7 @@ export default function CalendarNew() {
   const [remind, setRemind] = useState(p.remind ?? '0');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [saved, setSaved] = useState<{ id: string; warnings: Clash[] } | null>(null); // kept, with its heads-ups
 
   const editing = !!p.edit;
 
@@ -92,10 +93,18 @@ export default function CalendarNew() {
     };
     try {
       if (editing) {
-        await calendarApi.update(p.edit!, body);
+        const r = await calendarApi.update(p.edit!, body);
+        if (r.warnings.length) {
+          setSaved({ id: r.id, warnings: r.warnings }); // shown below; the plan is already saved
+          return;
+        }
         go('calendar.item', { id: p.edit! });
       } else {
-        await calendarApi.create({ ...body, person_id: who ?? undefined });
+        const r = await calendarApi.create({ ...body, person_id: who ?? undefined });
+        if (r.warnings.length) {
+          setSaved({ id: r.id, warnings: r.warnings }); // shown below; the plan is already saved
+          return;
+        }
         go('calendar.today');
       }
     } catch (e) {
@@ -111,6 +120,14 @@ export default function CalendarNew() {
   useField(page, 'time', time, (v) => setTime(String(v)));
   useField(page, 'until', until, (v) => setUntil(String(v)));
   useAction(page, 'save', () => void save());
+
+  // The plan is already on the calendar; the person just says the clash is fine.
+  const keep = useCallback(() => {
+    if (!saved) return;
+    go(editing ? 'calendar.item' : 'calendar.today', editing ? { id: saved.id } : undefined);
+  }, [saved, editing, go]);
+  useAction(page, 'clashSave', keep);
+  const wtime = (iso: string) => new Date(iso).toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' });
 
   return (
     <Screen title={editing ? w('editHeading') : w('newHeading')} back>
@@ -185,11 +202,27 @@ export default function CalendarNew() {
         </El>
       ) : null}
       <ErrorText>{error}</ErrorText>
-      <View style={{ marginTop: space.md }}>
-        <El page={page} id="save">
-          <Button label={w('save')} onPress={() => void save()} disabled={busy} />
-        </El>
-      </View>
+      {saved ? (
+        <View style={{ gap: space.sm, marginTop: space.md }}>
+          <Text style={{ fontWeight: '800', color: colors.ink }}>{w('clashHeading')}</Text>
+          {saved.warnings.map((cl) => (
+            <Text key={`${cl.with_title}|${cl.with_at}`} style={[type.body, { color: colors.muted }]}>
+              {cl.why === 'duplicate'
+                ? w('clashDup', { title: cl.with_title })
+                : w('clashEvent', { n: cl.gap_min, title: cl.with_title, time: wtime(cl.with_at) })}
+            </Text>
+          ))}
+          <El page={page} id="clashSave">
+            <Button label={w('clashSave')} onPress={keep} icon="checkmark" />
+          </El>
+        </View>
+      ) : (
+        <View style={{ marginTop: space.md }}>
+          <El page={page} id="save">
+            <Button label={w('save')} onPress={() => void save()} disabled={busy} />
+          </El>
+        </View>
+      )}
     </Screen>
   );
 }

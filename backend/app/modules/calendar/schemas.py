@@ -44,6 +44,14 @@ class ItemPatch(BaseModel):
 
 class ItemIdOut(BaseModel):
     id: str
+    warnings: list["WarningOut"] = []
+
+
+class WarningOut(BaseModel):
+    why: str
+    with_title: str
+    with_at: str
+    gap_min: int
 
 
 class ItemOut(BaseModel):
@@ -99,3 +107,23 @@ class MarkOut(BaseModel):
     item_id: str
     occurs_at: str
     status: str
+
+
+class HeartbeatIn(BaseModel):
+    tz_offset_min: int | None = None
+
+
+class HeartbeatOut(BaseModel):
+    ok: bool
+
+
+class MissedRow(BaseModel):
+    item_id: str
+    occurs_at: str
+    kind: str
+    title: str
+    notify_family: bool
+
+
+class MissedOut(BaseModel):
+    missed: list[MissedRow]

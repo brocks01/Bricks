@@ -274,3 +274,80 @@ def test_the_community_activities_i_go_to_show_up_only_for_me_and_are_read_only(
     other = sign_in(fresh_email())
     assert not [o for o in occurrences(other, **{"from": iso(S), "to": iso(E)})["occurrences"] if o.get("activity_id") == aid]
 
+
+# ---------------------------------------------------------------- phase 2: heartbeat, missed, warnings
+
+
+def ago_iso(minutes: int, tz_min: int = 330) -> str:
+    """An aware ISO moment `minutes` ago, shown in a fixed offset (the way the phone would send it)."""
+    t = datetime.now(timezone.utc) - timedelta(minutes=minutes)
+    return t.astimezone(timezone(timedelta(minutes=tz_min))).isoformat()
+
+
+def test_the_heartbeat_remembers_the_moment_and_the_persons_time():
+    s = sign_in(fresh_email())
+    r = client.post("/v1/calendar/heartbeat", json={"tz_offset_min": 330}, headers=auth(s))
+    assert r.status_code == 200 and r.json()["ok"] is True
+    with engine().begin() as conn:
+        row = conn.execute(text("select tz_offset_min, app_seen_at from users where id = :u"), {"u": s["user"]["id"]}).first()
+    assert row.tz_offset_min == 330 and row.app_seen_at is not None
+    # a bare heartbeat keeps the time but refreshes the moment
+    assert client.post("/v1/calendar/heartbeat", headers=auth(s)).status_code == 200
+    # a nonsense offset is refused
+    assert client.post("/v1/calendar/heartbeat", json={"tz_offset_min": 9999}, headers=auth(s)).status_code == 422
+    # the profile can carry the time too
+    r = client.patch("/v1/me", json={"tz_offset_min": 480}, headers=auth(s))
+    assert r.status_code == 200 and r.json()["tz_offset_min"] == 480
+
+
+def test_missed_lists_what_came_and_went_without_a_mark():
+    s = sign_in(fresh_email())
+    # a daily medicine that first happened 25 hours ago: the 1-hour-ago dose sits in the missed window
+    iid = client.post("/v1/calendar/items", json=item(title="Evening tablet", starts_at=ago_iso(25 * 60), repeat="daily"), headers=auth(s)).json()["id"]
+    got = client.get("/v1/calendar/missed", headers=auth(s)).json()["missed"]
+    rows = [m for m in got if m["item_id"] == iid]
+    assert len(rows) == 1 and rows[0]["title"] == "Evening tablet" and rows[0]["notify_family"] is True
+    # marking that time clears it
+    assert client.post(f"/v1/calendar/items/{iid}/mark", json={"occurs_at": rows[0]["occurs_at"], "status": "done"}, headers=auth(s)).status_code == 200
+    assert not [m for m in client.get("/v1/calendar/missed", headers=auth(s)).json()["missed"] if m["item_id"] == iid]
+    # a helper sees the person's missed things; a stranger is refused
+    family = client.post("/v1/families", json={"name": "The Ghosh household"}, headers=auth(s)).json()
+    profile = assisted_profile(s, family, "Bimal Ghosh")
+    client.post("/v1/calendar/items", json=item(person_id=profile, title="Night drop", starts_at=ago_iso(3 * 60), repeat="none"), headers=auth(s))
+    held = client.get("/v1/calendar/missed", params={"person_id": profile}, headers=auth(s)).json()["missed"]
+    assert [m["title"] for m in held] == ["Night drop"]
+    stranger = sign_in(fresh_email())
+    assert client.get("/v1/calendar/missed", params={"person_id": profile}, headers=auth(stranger)).status_code == 403
+
+
+def test_the_warnings_warn_but_never_stop_the_save():
+    s = sign_in(fresh_email())
+    # two reminders at exactly the same minute: saved, but the person is told
+    t = "2026-12-01T08:00:00+08:00"
+    first = client.post("/v1/calendar/items", json=item(title="Blood pressure tablet", starts_at=t), headers=auth(s)).json()
+    assert first["warnings"] == []
+    second = client.post("/v1/calendar/items", json=item(title="Call mum", kind="other", starts_at=t), headers=auth(s)).json()
+    assert second["id"]  # the save went through
+    assert [w["why"] for w in second["warnings"]] == ["duplicate"] and second["warnings"][0]["with_title"] == "Blood pressure tablet"
+
+    # two events ten minutes apart: a real clash, still saved
+    e1 = client.post("/v1/calendar/items", json=item(title="Bhajan morning", kind="event", starts_at="2026-12-02T10:00:00+08:00", repeat="none"), headers=auth(s)).json()
+    e2 = client.post("/v1/calendar/items", json=item(title="Doctor visit", kind="event", starts_at="2026-12-02T10:10:00+08:00", repeat="none"), headers=auth(s)).json()
+    assert [w["why"] for w in e2["warnings"]] == ["clash"] and e2["warnings"][0]["gap_min"] == 10
+    # two hours apart: nothing said
+    e3 = client.post("/v1/calendar/items", json=item(title="Lunch with family", kind="event", starts_at="2026-12-02T12:00:00+08:00", repeat="none"), headers=auth(s)).json()
+    assert e3["warnings"] == []
+    # changing one of them warns about the other event, never about itself
+    r = client.patch(f"/v1/calendar/items/{e1['id']}", json={"starts_at": "2026-12-02T10:00:00+08:00"}, headers=auth(s))
+    assert r.status_code == 200 and [w["with_title"] for w in r.json()["warnings"]] == ["Doctor visit"]
+
+    # a community activity the person is going to counts as a place to be
+    cid = client.post("/v1/communities", json={"name": "Riverside Club"}, headers=auth(s)).json()["id"]
+    with engine().begin() as conn:
+        aid = str(conn.execute(
+            text("insert into activities (community_id, title, starts_at) values (:c, 'Evening Yoga', :t) returning id"),
+            {"c": cid, "t": datetime(2026, 12, 3, 2, 0, tzinfo=timezone.utc)},  # 10:00 at +08:00
+        ).one().id)
+    assert client.post(f"/v1/communities/activities/{aid}/going", json={"going": True}, headers=auth(s)).status_code == 200
+    e4 = client.post("/v1/calendar/items", json=item(title="Park gathering", kind="event", starts_at="2026-12-03T09:55:00+08:00", repeat="none"), headers=auth(s)).json()
+    assert [w["with_title"] for w in e4["warnings"]] == ["Evening Yoga"]

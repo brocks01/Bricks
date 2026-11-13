@@ -22,6 +22,7 @@ export const calendarNew = definePage({
     someDays: { kind: 'choice', type: 'string', options: ['0', '1', '2', '3', '4', '5', '6'], summary: 'When repeat is chosen days: the days of the week, 0=Monday to 6=Sunday.' },
     until: { kind: 'field', type: 'string', summary: 'The last day, YYYY-MM-DD, or empty for forever.' },
     remind: { kind: 'choice', type: 'string', options: ['0', '15', '30', '60'], summary: 'How long before to remind: on time, 15, 30 or 60 minutes.' },
+    clashSave: { kind: 'action', summary: 'Keep the plan as saved, after the clash warning was shown.' },
     save: { kind: 'action', summary: 'Save the plan.' },
     notMedical: { kind: 'text', summary: 'The not-medical-advice note, always shown for medicines.' },
   },

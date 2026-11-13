@@ -2,8 +2,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { familyApi, type Family, type FamilyMember } from '../../../../api/family';
+import { calendarApi } from '../../../../api/calendar';
 import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
+import { useLanguage } from '../../../../i18n';
 import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, radius, space, type } from '../../../../theme/tokens';
@@ -72,6 +74,23 @@ export default function FamilyDetail() {
 
   const isOwner = data?.my_role === 'owner';
   const canHelp = isOwner || data?.my_role === 'helper';
+  const lang = useLanguage();
+
+  // For the helper: what was missed in the last day on the calendars of the people of this family
+  // that the helper holds access for, and that asked the family to be told (notify_family).
+  const [attention, setAttention] = useState<{ name: string; rows: { item_id: string; occurs_at: string; title: string }[] }[] | null>(null);
+  useEffect(() => {
+    if (status !== 'in' || !data || !canHelp) return;
+    familyApi.held().then(async (held) => {
+      const members = new Map(data.members.map((m) => [m.user_id, m.display_name ?? '']));
+      const mine = held.delegations.filter((d) => members.has(d.user_id));
+      const rows = await Promise.all(mine.map(async (d) => {
+        const r = await calendarApi.missed(d.user_id);
+        return { name: members.get(d.user_id) ?? '', rows: r.missed.filter((x) => x.notify_family) };
+      }));
+      setAttention(rows);
+    }).catch(() => setAttention([]));
+  }, [status, data, canHelp]);
 
   // What the agent may read and press: this family as it is really showing.
   const shown: PageDataInput | null = data
@@ -190,6 +209,26 @@ export default function FamilyDetail() {
           ) : null}
         </View>
       ))}
+
+      {canHelp && attention !== null ? (
+        <View style={{ marginTop: space.md }}>
+          <Text style={{ fontSize: 15, fontWeight: '800', color: colors.muted, marginBottom: space.xs }}>{w('attention')}</Text>
+          {attention.length === 0 || attention.every((a) => a.rows.length === 0) ? (
+            <Text style={[type.small, { color: colors.muted }]}>{w('attentionEmpty')}</Text>
+          ) : (
+            attention.filter((a) => a.rows.length > 0).map((a) => (
+              <View key={a.name} style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.sm }}>
+                <Text style={{ fontSize: 15, fontWeight: '700', color: colors.ink }}>{a.name}</Text>
+                {a.rows.map((r) => (
+                  <Text key={`${r.item_id}|${r.occurs_at}`} style={[type.small, { color: '#b3261e', fontWeight: '700', marginTop: 2 }]}>
+                    {w('attentionWhen', { title: r.title, time: new Date(r.occurs_at).toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' }) })}
+                  </Text>
+                ))}
+              </View>
+            ))
+          )}
+        </View>
+      ) : null}
 
       {renaming && isOwner ? (
         <View style={{ marginTop: space.md }}>

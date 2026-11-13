@@ -9,7 +9,7 @@ from sqlalchemy import Connection
 from ...core.db import get_conn
 from ..identity.router import current_user_id
 from . import service
-from .schemas import (CancelOut, ItemIdOut, ItemIn, ItemOut, ItemPatch, MarkIn, MarkOut, OccurrencesOut, PeopleOut)
+from .schemas import (CancelOut, HeartbeatIn, HeartbeatOut, ItemIdOut, ItemIn, ItemOut, ItemPatch, MarkIn, MarkOut, MissedOut, OccurrencesOut, PeopleOut)
 
 router = APIRouter(prefix="/v1/calendar")
 
@@ -50,6 +50,23 @@ def occurrences(person_id: str | None = None, from_: str | None = Query(default=
 def create_item(body: ItemIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     try:
         return service.create_item(conn, user_id, **body.model_dump())
+    except service.CalendarError as e:
+        return _refuse(e)
+
+
+@router.post("/heartbeat", response_model=HeartbeatOut)
+def heartbeat(body: HeartbeatIn | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The app is open. A hint for the reminder loop, and the person's own time zone."""
+    try:
+        return service.heartbeat(conn, user_id, body.tz_offset_min if body else None)
+    except service.CalendarError as e:
+        return _refuse(e)
+
+
+@router.get("/missed", response_model=MissedOut)
+def missed(person_id: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    try:
+        return {"missed": service.missed(conn, user_id, person_id)}
     except service.CalendarError as e:
         return _refuse(e)
 
