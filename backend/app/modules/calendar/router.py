@@ -9,7 +9,7 @@ from sqlalchemy import Connection
 from ...core.db import get_conn
 from ..identity.router import current_user_id
 from . import service
-from .schemas import (CancelOut, ItemIdOut, ItemIn, ItemPatch, MarkIn, MarkOut, OccurrencesOut, PeopleOut)
+from .schemas import (CancelOut, ItemIdOut, ItemIn, ItemOut, ItemPatch, MarkIn, MarkOut, OccurrencesOut, PeopleOut)
 
 router = APIRouter(prefix="/v1/calendar")
 
@@ -50,6 +50,14 @@ def occurrences(person_id: str | None = None, from_: str | None = Query(default=
 def create_item(body: ItemIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     try:
         return service.create_item(conn, user_id, **body.model_dump())
+    except service.CalendarError as e:
+        return _refuse(e)
+
+
+@router.get("/items/{item_id}", response_model=ItemOut)
+def item_detail(item_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    try:
+        return service.item_detail(conn, user_id, item_id)
     except service.CalendarError as e:
         return _refuse(e)
 

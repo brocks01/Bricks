@@ -24,14 +24,17 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('nine modules', allModules().length === 9, String(allModules().length));
+check('ten modules', allModules().length === 10, String(allModules().length));
 check('grow has six pages, each needs sign-in', allPages().filter((p) => p.module === 'grow').length === 6 && allPages().filter((p) => p.module === 'grow').every((p) => !!p.requiresAuth));
 check('grow pages have a heading in all six languages', allPages().filter((p) => p.module === 'grow' && p.key !== 'grow.index').every((p) => Object.values(p.strings).length === 6 && Object.values(p.strings).every((w) => !!(w as Record<string, string>).heading)));
 check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);
 check('explore item page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'explore.item'); return !!p && p.route === '/explore/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
 check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
 check('every explore category and format has words in all six languages', (() => { const ids = ['digital_skills', 'health_awareness', 'everyday_life', 'hobbies', 'culture', 'knowledge', 'guide', 'video', 'interactive', 'story', 'audio', 'activity', 'easy', 'medium']; const lines = ids.filter((i) => i.indexOf('_') > 0 && i !== 'digital_skills' || i === 'digital_skills').map((i) => i + '_line'); const st = allPages().find((x) => x.key === 'explore.home')!.strings; return Object.values(st).length === 6 && Object.values(st).every((words) => [...ids, ...lines.filter((l) => l in (st.en ?? {}))].every((k) => !!(words as Record<string, string>)[k])); })());
-check('three tabs: Connect, Grow and Family', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index,family.home', tabPages().map((p) => p.key).join(','));
+check('four tabs: Connect, Grow, Family and Calendar', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index,family.home,calendar.today', tabPages().map((p) => p.key).join(','));
+check('calendar has three pages, each needs sign-in', allPages().filter((p) => p.module === 'calendar').length === 3 && allPages().filter((p) => p.module === 'calendar').every((p) => !!p.requiresAuth));
+check('the medicine form always carries the not-medical-advice note', !!allPages().find((x) => x.key === 'calendar.new')?.elements.notMedical);
+check('the plan page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'calendar.item'); return !!p && p.route === '/calendar/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
 check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
 check('module lists pages and skills', (() => { const k = childrenOf('auth') ?? []; return k.some((n) => n.path === 'auth.signIn' && n.kind === 'page') && k.some((n) => n.path === 'auth/signOut' && n.kind === 'skill'); })());

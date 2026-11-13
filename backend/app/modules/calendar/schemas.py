@@ -46,6 +46,25 @@ class ItemIdOut(BaseModel):
     id: str
 
 
+class ItemOut(BaseModel):
+    id: str
+    person_id: str
+    kind: str
+    title: str
+    note: str | None
+    first_date: str
+    local_time: str
+    tz_offset_min: int
+    duration_min: int | None
+    repeat: str
+    repeat_days: list[int] | None
+    until_date: str | None
+    remind_before_min: int
+    channel: str
+    status: str
+    added_by_name: str
+
+
 class CancelOut(BaseModel):
     id: str
     status: str

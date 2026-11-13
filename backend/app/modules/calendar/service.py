@@ -235,6 +235,23 @@ def update_item(conn: Connection, me: str, item_id: str, **b) -> dict:
     return {"id": item_id}
 
 
+def item_detail(conn: Connection, me: str, item_id: str) -> dict:
+    """The one item, with who added it. The Item screen edits from this, not from guesses."""
+    item = _item(conn, item_id)
+    acting(conn, me, str(item.person_id))
+    row = conn.execute(text("select display_name from users where id = :u"), {"u": str(item.created_by)}).first() if item.created_by else None
+    return {
+        "id": str(item.id), "person_id": str(item.person_id), "kind": item.kind, "title": item.title,
+        "note": item.note, "first_date": item.first_date.isoformat(), "local_time": item.local_time.isoformat(
+            "minutes") if item.local_time else "",
+        "tz_offset_min": item.tz_offset_min, "duration_min": item.duration_min, "repeat": item.repeat,
+        "repeat_days": list(item.repeat_days) if item.repeat_days is not None else None,
+        "until_date": item.until_date.isoformat() if item.until_date else None,
+        "remind_before_min": item.remind_before_min, "channel": item.channel, "status": item.status,
+        "added_by_name": (row.display_name or "") if row else "",
+    }
+
+
 def cancel_item(conn: Connection, me: str, item_id: str) -> dict:
     item = _item(conn, item_id)
     acting(conn, me, str(item.person_id))
