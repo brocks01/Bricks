@@ -1,6 +1,8 @@
 from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
+
+from ...core import languages
 
 Language = Literal["en", "hi", "bn", "ta", "zh", "ms"]
 AgeBand = Literal["under40", "40to59", "60plus"]
@@ -41,10 +43,26 @@ class ProfilePatch(BaseModel):
     phone: str | None = Field(default=None, max_length=20, pattern=r"^\+?[0-9 ]{6,20}$")
     area_name: str | None = Field(default=None, max_length=120)
     tz_offset_min: int | None = Field(default=None, ge=-840, le=840)  # minutes east of UTC, from the phone
+    spoken_languages: list[str] | None = Field(default=None, max_length=23)  # languages the person speaks (see core/languages.py)
+    comm_language: str | None = Field(default=None, max_length=8)  # the one they prefer to talk in
+
+    @field_validator("spoken_languages")
+    @classmethod
+    def _spoken(cls, v):
+        return None if v is None else languages.clean(v)
+
+    @field_validator("comm_language")
+    @classmethod
+    def _comm(cls, v):
+        if v is not None and v not in languages.SPOKEN:
+            raise ValueError("unknown language")
+        return v
 
 
 class UserOut(BaseModel):
     tz_offset_min: int | None = None
+    spoken_languages: list[str] = []
+    comm_language: str | None = None
     id: str
     email: str | None
     display_name: str | None

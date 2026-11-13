@@ -35,13 +35,15 @@ export function AppTabBar() {
   // including while the hand is still dragging it, and come back when it is put away.
   const { open, live } = useStore(surfaceStore);
   const canvasOpen = open || (live !== null && live > 0.1);
+  // The sheet has its OWN call controls: while it is up or being dragged the dock must not show a second copy of them under it.
+  const sheetUp = open || live !== null;
   // Signed out, the agent bar stays: an elderly person who cannot follow the sign-in or the code
   // can still ask for help at any moment (before login the agent can only SEE and explain).
   if (status !== 'in') {
     return (
       <View style={{ backgroundColor: colors.card }}>
         {canvasOpen ? null : <View style={{ paddingBottom: insets.bottom }} />}
-        {open ? null : <AgentDock />}
+        {sheetUp ? null : <AgentDock />}
       </View>
     );
   }
@@ -64,7 +66,7 @@ export function AppTabBar() {
         </View>
       )}
       {/* Once the sheet is open it has its own control row (keyboard, mic, waveform), so the peek bar steps aside. It stays while a hand is still dragging it. */}
-      {open ? null : <AgentDock />}
+      {sheetUp ? null : <AgentDock />}
     </View>
   );
 }

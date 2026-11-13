@@ -4,8 +4,9 @@
 import { t } from '../i18n/tables';
 import { createStore } from '../core/store';
 import { apiBase } from '../api/client';
-import { freshToken } from '../session/store';
+import { freshToken, sessionStore } from '../session/store';
 import { languageStore } from '../i18n/store';
+import { spokenStore } from '../i18n/spoken';
 import { audioAvailable, isSpeaking, playPcm24k, speechSeenAt, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
 import { hideSurface } from './surface';
@@ -21,6 +22,8 @@ export const agentUi = createStore<{ phase: Phase; open: boolean; mic: boolean; 
 
 type Runner = { call: (name: string, args?: Record<string, unknown>) => Promise<unknown>; page: () => string | undefined };
 let runner: Runner | null = null;
+/** Who the open talk was opened for: 'guest' (before sign-in, look-only) or the signed-in person's id. */
+let talkAs: string | null = null;
 /** The agent's own tool names allowed before sign-in: it may only look (see the open page) and end the talk. */
 const GUEST_TOOLS = ['read', 'tree', 'search', 'docs', 'end'];
 /** The agent provider hands over its tools (they know how to navigate, glow and ask for approval). */
@@ -210,13 +213,19 @@ export async function startTalk(opts: { mic: boolean }): Promise<void> {
   if (starting !== mine) return; // ended while we waited
   const sock = new WebSocket(wsUrl());
   ws = sock;
+  talkAs = token ? sessionStore.get().user?.id ?? 'user' : 'guest';
   if (token) {
-    sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs });
+    // Signed in: the server reads the account's languages; the phone's own choice is the fallback
+    // for an account that has none yet (chosen on the first screen, before sign-in).
+    const spoken = spokenStore.get();
+    sock.onopen = () => send({ type: 'auth', token, page: runner?.page(), tools: toolSpecs, spoken: spoken.spoken, comm: spoken.comm });
   } else {
     // Not signed in: a guest talk on the sign-in pages. The agent may only SEE the open page and explain
     // what to do (an elderly person who cannot follow the sign-in or the code asks for help at any moment).
+    // The languages they say they speak are sent too, so the agent never guesses outside their list.
     const seeOnly = toolSpecs.filter((s) => GUEST_TOOLS.includes(s.name));
-    sock.onopen = () => send({ type: 'auth', guest: true, language: languageStore.get().code, page: runner?.page(), tools: seeOnly });
+    const spoken = spokenStore.get();
+    sock.onopen = () => send({ type: 'auth', guest: true, language: languageStore.get().code, spoken: spoken.spoken, comm: spoken.comm, page: runner?.page(), tools: seeOnly });
   }
   sock.onmessage = (e) => onMessage(String(e.data));
   sock.onerror = () => set({ notice: 'failed' });
@@ -260,6 +269,7 @@ export function end(): void {
   const s = ws;
   ws = null;
   starting = null;
+  talkAs = null;
   ready = false;
   queued = [];
   held = [];
@@ -274,6 +284,15 @@ export function end(): void {
   }
   set({ phase: 'idle', mic: false, since: null });
 }
+
+// A talk opened BEFORE sign-in is a guest talk: the server lets it only look and explain, so the agent can only SUGGEST ("tap this").
+// When the person then signs in (or out, or another person signs in) that talk must not carry on: it is closed, and the next message opens
+// a fresh one with the new sign-in, where the agent can really open, fill and press. The chat lines stay on screen.
+sessionStore.subscribe(() => {
+  const s = sessionStore.get();
+  const now = s.status === 'in' ? s.user?.id ?? null : s.status === 'out' ? 'guest' : null; // 'loading' decides nothing
+  if (ws && talkAs && now && now !== talkAs) end();
+});
 
 export const togglePanel = () => set({ open: !agentUi.get().open });
 export const clearNotice = () => set({ notice: null });

@@ -31,6 +31,8 @@ export function AgentSurface() {
     if (!surface) return <View pointerEvents="none" {...measure} style={fill} />;
     return (
       <View {...measure} style={[fill, { backgroundColor: 'rgba(15,20,18,0.34)', justifyContent: 'center', padding: space.lg }]}>
+        {/* Tapping the dim outside the card closes it (a question still open is answered as "closed"). A sibling, so a tap on the card never reaches it. */}
+        <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} style={fill} />
         <View style={{ maxHeight: '88%', backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, overflow: 'hidden' }}>
           <View style={{ alignItems: 'flex-end', paddingHorizontal: space.md, paddingTop: space.md }}>
             <Pressable onPress={hideSurface} accessibilityRole="button" accessibilityLabel={t('common.agent.close')} hitSlop={12}>

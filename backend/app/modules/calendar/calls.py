@@ -247,6 +247,19 @@ def _book_attempt(conn: Connection, it, occurs: datetime, consent, now: datetime
             "voice_language": VOICE_LANGUAGES.get(consent.language, "en-IN")}
 
 
+def _language_rules(person_id: str) -> str:
+    """The person's own list of spoken languages, so the caller only guesses among them and asks to repeat when unsure."""
+    from ...core import languages
+    from ...core.db import engine
+
+    try:
+        with engine().connect() as conn:
+            r = conn.execute(text("select spoken_languages, comm_language, language from users where id = cast(:p as uuid)"), {"p": person_id}).first()
+    except Exception:  # noqa: BLE001 - the reminder must still go out
+        return ""
+    return ("\n\n" + languages.rules(list(r.spoken_languages or []), r.comm_language, r.language)) if r else ""
+
+
 async def _place(work: dict, now: datetime) -> None:
     """Dial one already-claimed attempt. The attempt is marked dialing BEFORE the dial, so no second
     tick can ever ring the same attempt again; a transient refusal puts it back in the queue."""
@@ -270,7 +283,7 @@ async def _place(work: dict, now: datetime) -> None:
             "to": work["phone"],
             "consent": True,  # the consent table IS the standing yes; the voice layer re-checks the allowlist
             "language": work["voice_language"],
-            "brief": brief_for(work["language"], work["first_name"], work["title"]),
+            "brief": brief_for(work["language"], work["first_name"], work["title"]) + _language_rules(work["person_id"]),
             "name": work["first_name"],
             "tools": ["calendar_outcome"],
             "reminder": {"item_id": work["item_id"], "occurs_at": work["occurs_at"].isoformat(),

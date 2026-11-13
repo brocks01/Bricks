@@ -167,16 +167,20 @@ export default function CalendarTab() {
           <View key={d.key} style={{ marginBottom: space.md }}>
             <Text style={{ fontSize: 15, fontWeight: '800', color: colors.muted, marginBottom: space.xs }}>{d.label}</Text>
             {d.rows.map((o) => (
-              <Pressable
+              <View
                 key={`${o.item_id}|${o.occurs_at}`}
-                accessibilityRole={o.can_edit ? 'button' : undefined}
-                onPress={o.can_edit && o.item_id ? () => go('calendar.item', { id: o.item_id! }) : undefined}
                 style={{
                   backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line,
                   padding: space.md, marginBottom: space.xs,
                 }}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+                  {/* The text area and the Done / Skip buttons are SIBLINGS: a button inside a button is invalid on the web and crashes the page. */}
+                  <Pressable
+                    accessibilityRole={o.can_edit ? 'button' : undefined}
+                    onPress={o.can_edit && o.item_id ? () => go('calendar.item', { id: o.item_id! }) : undefined}
+                    style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md }}
+                  >
                   <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
                     <Ionicons name={(KIND_ICON[o.kind] ?? 'ellipse-outline') as never} size={20} color={colors.accent} />
                   </View>
@@ -192,6 +196,7 @@ export default function CalendarTab() {
                       ].filter(Boolean).join(' · ')}
                     </Text>
                   </View>
+                  </Pressable>
                   {o.can_edit && o.item_id ? (
                     <View style={{ flexDirection: 'row', gap: space.xs }}>
                       <Pressable
@@ -211,7 +216,7 @@ export default function CalendarTab() {
                     </View>
                   ) : null}
                 </View>
-              </Pressable>
+              </View>
             ))}
           </View>
         ))

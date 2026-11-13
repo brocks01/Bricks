@@ -1,10 +1,11 @@
 import { createContext, ReactNode, useContext, useEffect } from 'react';
 import { useStore } from '../core/store';
 import { LANGUAGES, type LangCode } from './languages';
+import { loadSpoken, spokenStore } from './spoken';
 import { languageStore, loadLanguage, setLanguage } from './store';
 import { t } from './tables';
 
-export { LANGUAGES, setLanguage, languageStore, t };
+export { LANGUAGES, setLanguage, languageStore, spokenStore, t };
 export type { LangCode };
 
 type TFn = (key: string, vars?: Record<string, string | number>) => string;
@@ -15,6 +16,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const { code } = useStore(languageStore);
   useEffect(() => {
     void loadLanguage();
+    void loadSpoken(); // the languages this phone's owner speaks, ready before any talk starts
   }, []);
   const value = { code, t: ((key, vars) => t(key, vars, code)) as TFn };
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
