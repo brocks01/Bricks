@@ -200,6 +200,14 @@ class CallSession:
                 response = self.extend_call()
                 store.add_line(rec["call_id"], "tool", f"extend_call → +{response['minutesAdded']} min" if response["extended"] else "extend_call → not possible, maximum time reached")
             store.close_role(rec["call_id"], "agent")
+        elif name == "calendar_outcome" and "calendar_outcome" in (rec["tools"] or []):
+            from ..modules.calendar import calls as reminder_calls  # late import: calendar imports voice.service above it
+
+            answer = str(args.get("answer") or "")
+            log.info("[voice] %s calendar_outcome: %s", self.tag(), answer[:40])
+            response = await reminder_calls.call_outcome(rec, answer)
+            store.add_line(rec["call_id"], "tool", f"calendar_outcome: {answer[:60]}")
+            store.close_role(rec["call_id"], "agent")
         elif name not in (rec["tools"] or []):
             response = {"error": "That tool is not available on this call."}
         else:

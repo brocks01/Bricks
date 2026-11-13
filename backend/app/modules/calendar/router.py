@@ -8,8 +8,8 @@ from sqlalchemy import Connection
 
 from ...core.db import get_conn
 from ..identity.router import current_user_id
-from . import service
-from .schemas import (CancelOut, HeartbeatIn, HeartbeatOut, ItemIdOut, ItemIn, ItemOut, ItemPatch, MarkIn, MarkOut, MissedOut, OccurrencesOut, PeopleOut)
+from . import calls, service
+from .schemas import (CancelOut, ConsentIn, ConsentOut, HeartbeatIn, HeartbeatOut, ItemIdOut, ItemIn, ItemOut, ItemPatch, MarkIn, MarkOut, MissedOut, OccurrencesOut, PeopleOut, RevokeOut)
 
 router = APIRouter(prefix="/v1/calendar")
 
@@ -109,3 +109,39 @@ def unmark(item_id: str, occurs_at: str, user_id: str = Depends(current_user_id)
         return service.unmark(conn, user_id, item_id, occurs_at)
     except service.CalendarError as e:
         return _refuse(e)
+
+
+# ---------------------------------------------------------------- reminder calls: consent
+
+
+@router.get("/consent", response_model=ConsentOut)
+def get_consent(person_id: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The person's standing word about reminder calls: agreed or not, and the hours that were agreed."""
+    try:
+        return calls.get_consent(conn, user_id, person_id)
+    except service.CalendarError as e:
+        return _refuse(e)
+
+
+@router.put("/consent", response_model=ConsentOut)
+def put_consent(body: ConsentIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The person agrees for themselves; a helper may record it only with the person present (the tick)."""
+    try:
+        return calls.put_consent(conn, user_id, body.model_dump())
+    except service.CalendarError as e:
+        return _refuse(e)
+    except calls.CallError as e:
+        extra = {"field": e.field} if e.field else {}
+        return JSONResponse(status_code=e.status_code, content={"detail": {"code": e.code, **extra}})
+
+
+@router.delete("/consent", response_model=RevokeOut)
+def revoke_consent(person_id: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Only the person themselves stops the calls ('stop calling me' said to the agent counts)."""
+    try:
+        return calls.revoke_consent(conn, user_id, person_id)
+    except service.CalendarError as e:
+        return _refuse(e)
+    except calls.CallError as e:
+        extra = {"field": e.field} if e.field else {}
+        return JSONResponse(status_code=e.status_code, content={"detail": {"code": e.code, **extra}})

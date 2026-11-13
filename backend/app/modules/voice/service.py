@@ -49,7 +49,8 @@ async def start_call(data: dict, admin_id: str = "admin") -> dict:
         raise Refused(429, "RATE_LIMITED", f"At most {cfg.max_calls_per_hour} calls an hour")
 
     rec = store.create(to=to, language=language, brief=brief, voice=str(data.get("voice") or "")[:40], name=L.clean_name(data.get("name")),
-                       tools=tools.pick(data.get("tools")), consent=True, by_admin=admin_id, provider=provider.name, **{"from": cfg.twilio_from})
+                       tools=tools.pick(data.get("tools")), consent=True, by_admin=admin_id, provider=provider.name, **{"from": cfg.twilio_from},
+                       reminder=data.get("reminder") if isinstance(data.get("reminder"), dict) else None)
     try:
         placed = await provider.create_call(to, rec["call_id"])
         store.update(rec["call_id"], provider_sid=placed["sid"], status="ringing" if provider.name == "twilio" else "queued")

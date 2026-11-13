@@ -109,6 +109,32 @@ class MarkOut(BaseModel):
     status: str
 
 
+class ConsentIn(BaseModel):
+    """The person's own yes to reminder calls. A helper may record it only with the person present."""
+    person_id: str | None = None
+    phone: str
+    language: str = "en"
+    window_from: str | None = None   # HH:MM, the person's local time; default 08:00
+    window_to: str | None = None     # default 20:00
+    person_present: bool = False     # the explicit tick a helper must set: the person is here and said yes
+
+
+class ConsentOut(BaseModel):
+    person_id: str
+    agreed: bool
+    phone_masked: str | None = None
+    language: str | None = None
+    window_from: str | None = None
+    window_to: str | None = None
+    agreed_at: str | None = None
+    revoked: bool = False
+
+
+class RevokeOut(BaseModel):
+    person_id: str
+    agreed: bool
+
+
 class HeartbeatIn(BaseModel):
     tz_offset_min: int | None = None
 
