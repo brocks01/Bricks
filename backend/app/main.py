@@ -1,4 +1,4 @@
-"""Bricks API. One service, one database, split into modules. Start it with:  python backend/run.py"""
+﻿"""Bricks API. One service, one database, split into modules. Start it with:  python backend/run.py"""
 import asyncio
 import os
 from contextlib import asynccontextmanager
@@ -21,6 +21,7 @@ from .modules.media.router import router as media_router
 from .modules.voice.router import router as voice_router
 from .modules.translation.router import router as translation_router
 from .modules.family.router import router as family_router
+from .modules.calendar.router import router as calendar_router
 
 # Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
 # One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
@@ -77,6 +78,7 @@ app.include_router(grow_router)
 app.include_router(media_router)
 app.include_router(translation_router)
 app.include_router(family_router)
+app.include_router(calendar_router)
 
 
 @app.get("/v1/health")
@@ -98,3 +100,4 @@ if _DIST.is_dir():
         if path and f.is_file() and _DIST in f.parents:
             return FileResponse(f)
         return FileResponse(_DIST / "index.html")  # the app's own router decides what the address means
+
