@@ -9,7 +9,7 @@ from ...core.config import get_settings
 MAX_ATTEMPTS = 5
 MAX_CODES_PER_HOUR = 5
 MIN_SECONDS_BETWEEN_CODES = 30
-PROFILE_COLUMNS = ("display_name", "language", "age_band", "phone", "area_name")
+PROFILE_COLUMNS = ("display_name", "language", "age_band", "phone", "area_name", "tz_offset_min")
 
 
 class AuthError(Exception):
@@ -37,6 +37,7 @@ def user_dict(row) -> dict:
         "age_band": row.age_band,
         "phone": row.phone,
         "area_name": row.area_name,
+        "tz_offset_min": row.tz_offset_min,
         "login_kind": row.login_kind,
         "profile_complete": bool(row.display_name and row.display_name.strip()),
     }

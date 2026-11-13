@@ -123,7 +123,7 @@ def _clean_title(title: str) -> str:
 def _parse_starts_at(starts_at: str) -> tuple[datetime, date, time, int]:
     """An aware ISO datetime -> (utc, local_date, local_time, offset_minutes). A bare datetime is refused."""
     try:
-        dt = datetime.fromisoformat((starts_at or "").replace("Z", "+00:00"))
+        dt = datetime.fromisoformat((starts_at or "").replace("Z", "+00:00")).replace(microsecond=0)
     except ValueError as e:
         raise CalendarError("validation", 422, field="starts_at") from e
     if dt.tzinfo is None:
@@ -179,7 +179,9 @@ def create_item(conn: Connection, me: str, **b) -> dict:
          "du": duration, "r": repeat, "rd": repeat_days, "un": until, "rb": remind, "ch": channel,
          "nf": True if b.get("notify_family") is None else bool(b["notify_family"])},
     ).first()
-    return {"id": str(row.id)}
+    from . import warnings as warns  # late import: the warnings module imports expand from here
+
+    return {"id": str(row.id), "warnings": warns.check(conn, person_id, utc, kind, exclude_item_id=str(row.id))}
 
 
 def update_item(conn: Connection, me: str, item_id: str, **b) -> dict:
@@ -232,7 +234,15 @@ def update_item(conn: Connection, me: str, item_id: str, **b) -> dict:
     cols = ", ".join(f"{k} = :{k}" for k in sets)
     sets["i"] = item_id
     conn.execute(text(f"update calendar_items set {cols}, updated_at = now() where id = :i"), sets)
-    return {"id": item_id}
+    if "starts_at" in b and b["starts_at"]:
+        first = sets.get("first_date", item.first_date)
+        local = sets.get("local_time", item.local_time)
+        tz = int(sets.get("tz_offset_min", item.tz_offset_min))
+        new_utc = datetime.combine(first, local, tzinfo=timezone.utc) - timedelta(minutes=tz)
+        from . import warnings as warns  # late import: the warnings module imports expand from here
+
+        return {"id": item_id, "warnings": warns.check(conn, str(item.person_id), new_utc, sets.get("kind", item.kind), exclude_item_id=item_id)}
+    return {"id": item_id, "warnings": []}
 
 
 def item_detail(conn: Connection, me: str, item_id: str) -> dict:
@@ -258,6 +268,49 @@ def cancel_item(conn: Connection, me: str, item_id: str) -> dict:
     conn.execute(text("update calendar_items set status = 'cancelled', updated_by = :m, updated_at = now() where id = :i"),
                  {"m": me, "i": item_id})
     return {"id": item_id, "status": "cancelled"}
+
+
+# ---------------------------------------------------------------- heartbeat, missed, warnings
+
+
+def heartbeat(conn: Connection, me: str, tz_offset_min: int | None = None) -> dict:
+    """The app is open. Remember the moment as a hint (never a promise), and the person's own time."""
+    if tz_offset_min is not None and not -840 <= int(tz_offset_min) <= 840:
+        raise CalendarError("validation", 422, field="tz_offset_min")
+    if tz_offset_min is None:
+        conn.execute(text("update users set app_seen_at = now() where id = :u"), {"u": me})
+    else:
+        conn.execute(text("update users set app_seen_at = now(), tz_offset_min = :t where id = :u"),
+                     {"u": me, "t": int(tz_offset_min)})
+    return {"ok": True}
+
+
+def missed(conn: Connection, me: str, person_id: str | None) -> list[dict]:
+    """The things of the last 24 hours that came and went without a mark (a 60-minute grace to tick them).
+
+    Everything missed comes back, with notify_family on each row; the helper's list filters by it."""
+    now = _now()
+    pid = _checked_person(conn, me, person_id)
+    start, end = now - timedelta(hours=24), now - timedelta(minutes=60)
+    items = conn.execute(
+        text("select * from calendar_items where person_id = :p and status = 'active'"),
+        {"p": pid},
+    ).all()
+    marks = conn.execute(
+        text("select item_id, occurs_at from calendar_marks where item_id = any(cast(:ids as uuid[])) and occurs_at >= :s and occurs_at < :e"),
+        {"ids": [str(i.id) for i in items] or ["00000000-0000-0000-0000-000000000000"], "s": start, "e": end},
+    ).all()
+    marked = {(str(m.item_id), m.occurs_at) for m in marks}
+    out: list[dict] = []
+    for it in items:
+        for occurs in expand(it, start, end):
+            if (str(it.id), occurs) not in marked:
+                out.append({
+                    "item_id": str(it.id), "occurs_at": occurs.isoformat(), "kind": it.kind,
+                    "title": it.title, "notify_family": bool(it.notify_family),
+                })
+    out.sort(key=lambda m: m["occurs_at"])
+    return out
 
 
 # ---------------------------------------------------------------- occurrences and marks

@@ -68,6 +68,22 @@ export interface NewItem {
   remind_before_min?: number;
 }
 
+/** A heads-up the server gives when saving (never a blockade: the plan is saved all the same). */
+export interface Clash {
+  why: 'clash' | 'duplicate';
+  with_title: string;
+  with_at: string;
+  gap_min: number;
+}
+
+export interface MissedRow {
+  item_id: string;
+  occurs_at: string;
+  kind: CalendarKind;
+  title: string;
+  notify_family: boolean;
+}
+
 const q = (params: Record<string, string | undefined>) => {
   const usp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v) usp.set(k, v);
@@ -78,17 +94,26 @@ const q = (params: Record<string, string | undefined>) => {
 export const calendarApi = {
   people: () => api<{ people: CalendarPerson[] }>('GET', '/v1/calendar/people'),
 
+  /**
+   * The app is open. Sent every minute while the Calendar tab is on: a hint for the reminder loop,
+   * and the person's own time zone (minutes east of UTC) so reminders can speak in local time.
+   */
+  heartbeat: (tzOffsetMin: number) => api<{ ok: boolean }>('POST', '/v1/calendar/heartbeat', { tz_offset_min: tzOffsetMin }),
+
+  /** The things of the last day that came and went without a mark (a 60-minute grace to tick them). */
+  missed: (personId?: string) => api<{ missed: MissedRow[] }>('GET', `/v1/calendar/missed${q({ person_id: personId })}`),
+
   /** The dated things for one calendar. Defaults: from = 3 hours ago, to = 7 days ahead (server side). */
   occurrences: (personId?: string, from?: string, to?: string) =>
     api<{ occurrences: Occurrence[] }>('GET', `/v1/calendar/occurrences${q({ person_id: personId, from, to })}`),
 
   item: (id: string) => api<CalendarItem>('GET', `/v1/calendar/items/${id}`),
 
-  create: (body: NewItem) => api<{ id: string }>('POST', '/v1/calendar/items', body),
+  create: (body: NewItem) => api<{ id: string; warnings: Clash[] }>('POST', '/v1/calendar/items', body),
 
-  /** Only the fields sent change; the rest stays as it is. */
+  /** Only the fields sent change; the rest stays as it is. The warnings are heads-ups, not blocks. */
   update: (id: string, body: Partial<NewItem> & { notify_family?: boolean }) =>
-    api<{ id: string }>('PATCH', `/v1/calendar/items/${id}`, body),
+    api<{ id: string; warnings: Clash[] }>('PATCH', `/v1/calendar/items/${id}`, body),
 
   cancel: (id: string) => api<{ id: string; status: string }>('DELETE', `/v1/calendar/items/${id}`),
 

@@ -40,9 +40,11 @@ class ProfilePatch(BaseModel):
     age_band: AgeBand | None = None
     phone: str | None = Field(default=None, max_length=20, pattern=r"^\+?[0-9 ]{6,20}$")
     area_name: str | None = Field(default=None, max_length=120)
+    tz_offset_min: int | None = Field(default=None, ge=-840, le=840)  # minutes east of UTC, from the phone
 
 
 class UserOut(BaseModel):
+    tz_offset_min: int | None = None
     id: str
     email: str | None
     display_name: str | None
