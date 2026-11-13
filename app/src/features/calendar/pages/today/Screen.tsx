@@ -223,9 +223,12 @@ export default function CalendarTab() {
       )}
 
       {failed ? <ErrorText>{w('tryAgain')}</ErrorText> : null}
-      <View style={{ marginTop: space.md }}>
+      <View style={{ marginTop: space.md, gap: space.sm }}>
         <El page={page} id="add">
           <Button label={w('add')} icon="add" onPress={() => go('calendar.new', { person: who ?? '' })} kind="primary" />
+        </El>
+        <El page={page} id="callsOpen">
+          <Button label={w('callsOpen')} icon="call-outline" onPress={() => go('calendar.calls', { person: who ?? '' })} kind="plain" />
         </El>
       </View>
     </Screen>

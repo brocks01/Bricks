@@ -18,6 +18,7 @@ export const calendarToday = definePage({
     forWho: { kind: 'action', summary: 'Choose whose calendar is shown: me, or a family member I hold access for.' },
     list: { kind: 'list', summary: 'The planned things day by day, each with Done and Skip.' },
     add: { kind: 'action', summary: 'Add a new plan for the chosen person.' },
+    callsOpen: { kind: 'action', summary: 'Open reminder calls for the chosen person: agree, set the phone number and allowed hours, or stop the calls.' },
   },
   strings,
 });
