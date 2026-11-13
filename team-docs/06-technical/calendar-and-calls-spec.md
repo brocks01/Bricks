@@ -9,7 +9,9 @@ For the coding agent that builds this. Written so you can work from this file al
 - **Calendar is a fourth bottom tab** (after Connect, Grow, Family).
 - **Medicine reminders are in from the start**, always with the words "not medical advice" on the screen that creates them. Bricks reminds; it never advises on doses.
 - It must run **live in the app AND by phone call**. The app part is phase 1 and 2. The call part is phase 3 and needs consent, a scheduler and a place to host the voice agent (section 6).
-- Not decided yet (ask the owner, do not guess): where the voice agent runs 24 hours a day. Today it runs on the owner's machine through his tunnel.
+- **Decided 13 Nov 2026 (owner):** there is NO external cron and NO separate voice service. The backend runs **one in-process reminder loop** that ticks forever (the owner's Render plan never sleeps), and when a reminder is due it calls the reminder module, which decides the channel: **the app reminder is the main thing** (calls cost money); a call is placed only when the app path will not do (channel `call`, or `both` and the app reminder stayed unmarked). The voice agent is **not a separate thing**: the agent that already lives in the backend places the call, given the reminder's context.
+- **Testing calls: one call per test, never in a loop** (owner).
+- Not decided yet (ask the owner, do not guess): nothing in phase 1; Twilio spend stays "a few test calls" until the owner says otherwise.
 
 ## 0.1 Rules you must follow (from AGENTS.md and what went wrong before)
 
@@ -176,13 +178,15 @@ Phase 1 only needs the fields and actions registered (done by `useField`/`useAct
 ## 4. Definition of done for phase 1
 Backend tests green (existing plus new). App checks clean. In a browser: I add a daily medicine for myself; a helper adds an appointment for the assisted profile and the profile (after claiming) sees it with "Added by <helper>"; a stranger cannot read it; the helper loses access after "End access". PROGRESS and HANDOFF updated. A pull request opened (squash merge). Not deployed anywhere until the owner says.
 
-## 5. Phase 2: reminders in the app, missed items, family view, agent tools
+## 5. Phase 2: reminders in the app, missed items, family view, agent tools, conflict warnings
 
 1. **Due now**: while the app is open, the Today screen highlights the item that is due within `remind_before_min` and, when due, the agent bar shows a one-line prompt ("Time for your 8 o'clock medicine. Done?") with Done / Later. Polling every 60 s (`GET /occurrences` for the next hour) is enough; no push yet.
-2. **Missed**: an occurrence is missed when `occurs_at + 60 min < now` and it has no mark. Add `GET /v1/calendar/missed?person_id=` and show "Missed" in red on Today. For helpers: a "Needs attention" list on the Family detail page (items missed in the last 24 h where `notify_family` is true) with a **Call** shortcut later.
-3. **Agent tools** (see `app/src/agent/tools.ts` and `backend/app/modules/agent/declarations.py`; tool descriptions are cut at 1000 characters, the self-test checks it): `calendar_today` (read), `calendar_add` (confirm tier: the person approves in the banner), `calendar_done` (free). The agent must say in the person's language, never use words like "occurrence" or "item". Acting for a family member goes through the same `person_id` and `acting()` check on the server, never trusted from the model.
-4. **Push notifications** need `expo-notifications` and a development build (not Expo Go); do it after the owner approves the APK path. Record it as "not done" until then.
-5. Add `tz_offset_min` to the user profile so the agent and calls use the person's own time (otherwise use the item's offset).
+2. **Heartbeat (owner, 13 Nov 2026)**: while the app is open it pings the backend (a light `/v1/calendar/heartbeat`, every ~60 s, together with the poll). The backend marks the person "app-reachable for now". The reminder loop uses this when a channel is `both`: app reminder first; if still unmarked after about 10 minutes AND the person was not reachable, a call. It is a hint, never a hard rule — a call always obeys consent and quiet hours.
+3. **Missed**: an occurrence is missed when `occurs_at + 60 min < now` and it has no mark. Add `GET /v1/calendar/missed?person_id=` and show "Missed" in red on Today. For helpers: a "Needs attention" list on the Family detail page (items missed in the last 24 h where `notify_family` is true) with a **Call** shortcut later.
+4. **Conflict warnings (owner, 13 Nov 2026) — a warning, never a blockade.** The person can always save. Keep it in its **own small module** (`calendar/warnings.py`) so it can grow: the point is that two things may share a time when neither needs the body (8 o'clock medicine reminder + 8 o'clock call to mum is fine), while two **group events** at once are a real clash. First cut: warn on overlap or a gap under 15 minutes when the new thing is a group event, or when both are events; plain reminders just warn on exact same-time-for-the-same-person duplicates. The margin, the distance, travel time and "what kind of thing does this clash with" evolve gradually in this module alone — nothing else in the app changes shape because of it.
+5. **Agent tools** (see `app/src/agent/tools.ts` and `backend/app/modules/agent/declarations.py`; tool descriptions are cut at 1000 characters, the self-test checks it): `calendar_today` (read), `calendar_add` (confirm tier: the person approves in the banner), `calendar_done` (free). The agent must say in the person's language, never use words like "occurrence" or "item". Acting for a family member goes through the same `person_id` and `acting()` check on the server, never trusted from the model.
+6. **Push notifications** need `expo-notifications` and a development build (not Expo Go); do it after the owner approves the APK path. Record it as "not done" until then.
+7. Add `tz_offset_min` to the user profile so the agent and calls use the person's own time (otherwise use the item's offset).
 
 ## 6. Phase 3: reminder calls (only after phases 1 and 2, and only with the owner's go-ahead)
 
@@ -218,9 +222,9 @@ create table call_attempts (
 The consent is **the person's**. A helper may record it only inside the app together with the person ("they are next to me and said yes", with an explicit tick and a record in `agreed_by`). The person can revoke any time (a Settings row and "stop calling me" said to the agent). A revoked or missing consent means `status='blocked'`, never a call.
 
 ### 6.2 The scheduler
-- Add `POST /v1/internal/calendar-tick` protected by a secret header `X-Tick-Key` (env `CALENDAR_TICK_KEY`, set on Render by the owner). Each call: find items with `channel in ('call','both')` whose occurrence is due now (within the last 5 minutes), not marked, with a valid consent and inside the allowed hours; create `call_attempts` rows (the unique key makes it safe to run twice), place the call, update the status.
-- **Render's free plan sleeps**, so an in-process timer is not reliable. Call the tick URL every minute from an external free cron (for example cron-job.org) or run an always-on worker. Ask the owner which.
-- **The voice agent must be reachable 24 hours**: today it runs through the owner's machine and tunnel. Decide with the owner: host it (a small always-on service) or keep calls demo-only on his machine.
+- **Decided (owner, 13 Nov 2026): no external cron and no separate service.** The backend never sleeps (the owner's Render plan is Pro), so the backend itself runs **one always-on reminder loop**: a single async task started in the app lifespan, ticking every ~30 s. It finds items with `channel in ('call','both')` whose occurrence is due now (within the last 5 minutes), not marked, with a valid consent and inside the allowed hours; it creates `call_attempts` rows (the unique key makes it safe to run twice), places the call, updates the status. The same loop serves the heartbeat bookkeeping and the missed-item marks, so there is exactly ONE background thing to reason about.
+- **Testing: one call per test, never a loop** (owner). The retry rule below still applies to real operation: no answer → try again ONCE after 10 minutes, then stop and mark `no_answer`.
+- The voice agent is the agent the backend already has (`modules/agent`), invoked with the reminder's context — nothing new to host.
 - Cost: Twilio bills per minute. Make the call short (about 30 seconds), and cap attempts per item per day.
 
 ### 6.3 What the agent says
