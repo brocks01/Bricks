@@ -84,6 +84,27 @@ export interface MissedRow {
   notify_family: boolean;
 }
 
+/** The person's standing word about reminder calls (agreed or not, and the allowed hours). */
+export interface CallConsent {
+  person_id: string;
+  agreed: boolean;
+  phone_masked?: string | null;
+  language?: string | null;
+  window_from?: string | null; // HH:MM, the person's own local time
+  window_to?: string | null;
+  agreed_at?: string | null;
+  revoked?: boolean;
+}
+
+export interface CallConsentIn {
+  person_id?: string;
+  phone: string; // international form, e.g. +6591234567
+  language?: string; // en, hi, bn, ta, zh, ms
+  window_from?: string; // HH:MM, default 08:00
+  window_to?: string; // HH:MM, default 20:00
+  person_present?: boolean; // a helper must tick this: the person is here and said yes
+}
+
 const q = (params: Record<string, string | undefined>) => {
   const usp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) if (v) usp.set(k, v);
@@ -128,4 +149,13 @@ export const calendarApi = {
       'DELETE',
       `/v1/calendar/items/${itemId}/mark${q({ occurs_at: occursAt })}`,
     ),
+
+  /** The person's standing word about reminder calls (only for the chosen person). */
+  getConsent: (personId?: string) => api<CallConsent>('GET', `/v1/calendar/consent${q({ person_id: personId })}`),
+
+  /** Record the person's yes to reminder calls (a helper must set person_present when acting for someone else). */
+  putConsent: (body: CallConsentIn) => api<CallConsent>('PUT', '/v1/calendar/consent', body),
+
+  /** The person stops reminder calls for themselves. Only the person themselves may do this. */
+  revokeConsent: (personId?: string) => api<{ person_id: string; agreed: boolean }>('DELETE', `/v1/calendar/consent${q({ person_id: personId })}`),
 };
