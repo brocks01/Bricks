@@ -17,6 +17,7 @@ keys or personal URLs here.
 | App | 0.1, 0.2, 1.1, 1.2, 1.3, 2.1, 2.2, 2.3 (code), 3.1 (code: judge links, connection check, crash sweep), 3.2 features 1–4 and 6 (walk history, group walks + Cheers, Simple Mode, admin QR, Health Card, Life Stories, family overview), 3.3 code part (top 3 usability fixes, visual pass), 3.4 code part (stage steps fixed, 5-run rehearsal test); Luma-style redesign steps 0 to 12 | On phones: EAS preview build + `eas update --branch demo`, golden path 3× then tag `v0.9-demo`; at the venue: network test, judge QR codes (3.1 §8); 3.2 feature 5 when the posture module lands; 3.3: test with seniors, backup videos, freeze tag + APK; 3.4: 5 live runs on Raj's phone, Q&A slides; native-speaker check of the new Tamil/Malay tab names |
 | Voice / call agent | 0.1 (code in the API; real call pending), 0.2 contracts (approved, re-run for "show, don't tell"), 1.1 + 1.2 translations waves 1–2 and call prompts, 1.3 English call loop + keywords + wave 3, 2.1 `/assistant/turn` + pre-router + calls on the orchestrator (done) | 2.1 done except memory merge; next 2.2 (the app's Buddy on `/assistant/turn`). Paid Gemini key needed for open questions; a real phone call when Twilio is upgraded |
 | WhatsApp | Code for 0.2 to 2.3 merged into `sarath` (webhook, router, flows, templates, scheduler); its tests pass against fake providers; nothing sent on real WhatsApp yet | 0.1 access: Twilio sandbox joined + Meta test number keys in `backend/.env`, ngrok URL, then set the two webhooks and test a real "Hi" |
+| Migration | Plan written (`iterations/migration/`); `sarath` pushed to the shared repo as `sayan` | M0.1: answer the open questions with the shared side, then M1.1 |
 
 **App look:** Luma-style redesign (UI steps 0 to 12 below; brief in
 `docs/design/LUMA_REDESIGN_PROMPT.md`). Accessibility floors still enforced by tests: touch
@@ -57,6 +58,17 @@ Normal (18 pt, default) or Large (20 pt body).
 ---
 
 ## Unreleased
+
+### Migration plan into the shared repo (Sun 15 Nov 2026)
+- `sarath` (`644f333`) pushed to the shared repo `brocks01/Bricks` as branch `sayan`. Its `main` was not touched.
+- New iteration track [iterations/migration/](iterations/migration/README.md): M0.1 decisions and module map, M1.1
+  repo frame + app, M1.2 backend into the shared modules, M2.1/M2.2 one identity (backend, app), M3.1/M3.2 live voice
+  (phone calls, app), M4.1 CI + docs + handoff, M4.2 verify and merge. About 40 hours; M2 is the largest part.
+- Decided: the shared repo's layout; our app in `app/`; our backend moved into modules with its async code kept; the
+  shared `identity` replaces Supabase sign-in; the shared live `voice` replaces our call agent and `/assistant/turn`
+  (WhatsApp, `/assistant/transcribe` and `/tts` stay; our distress check is added to the live voice).
+- Open (M0.1): seniors without email, family model, circles vs communities, events vs activities, reminders vs
+  calendar, which shared modules stay, demo data, database host, Expo project and app id, CI checks, Python tooling.
 
 ### New pages get the same look automatically (Sun 15 Nov 2026)
 - **Lint rules** (`app/eslint/design-system.js`, wired into `npm run lint`, so CI runs them):

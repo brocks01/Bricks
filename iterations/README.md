@@ -9,6 +9,7 @@ The iterations are split by **implementation track**. Each track follows its pla
 | **Mobile app** | [app/](app/README.md) | `docs/04_APP_PLAN.md` |
 | **Voice helper + phone calling agent** | [voice-call-agent/](voice-call-agent/README.md) | `docs/05_VOICE_CALL_AGENT_PLAN.md` |
 | **WhatsApp channel** | [whatsapp/](whatsapp/README.md) | `docs/06_WHATSAPP_PLAN.md` |
+| **Migration into the shared repo** | [migration/](migration/README.md) | The two-codebase comparison (15 Nov 2026); its own M0.1–M4.2 numbering, not the shared calendar below |
 
 > If an iteration file and a source doc disagree, the **source doc wins**. Fix the iteration file and post a note in the group.
 
