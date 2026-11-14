@@ -24,6 +24,8 @@ from .modules.translation.router import router as translation_router
 from .modules.family.router import router as family_router
 from .modules.calendar.router import router as calendar_router
 from .modules.market.router import router as market_router
+from .modules.health.router import router as health_router
+from .modules.home.router import router as home_router
 
 # Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
 # One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
@@ -91,6 +93,8 @@ app.include_router(translation_router)
 app.include_router(family_router)
 app.include_router(calendar_router)
 app.include_router(market_router)
+app.include_router(health_router)
+app.include_router(home_router)
 
 
 @app.get("/v1/health")
