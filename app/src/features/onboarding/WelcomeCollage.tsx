@@ -1,29 +1,12 @@
-import { StyleSheet, View, type DimensionValue } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
-import type { EventCategory } from '@/api/types';
 import { CoverArt } from '@/components';
 import { CATEGORY_ICON } from '@/features/events/categories';
-import { borderWidth, color, radius, shadow } from '@/theme';
+import { borderWidth, color, radius, shadow, welcomeCollage } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
-interface Tile {
-  category: EventCategory;
-  size: number;
-  left: DimensionValue;
-  top: number;
-  turn: string;
-}
-
-/** Our own category art, scattered like Luma's welcome collage. */
-const TILES: readonly Tile[] = [
-  { category: 'walk', size: 104, left: '2%', top: 18, turn: '-8deg' },
-  { category: 'cooking', size: 88, left: '30%', top: 0, turn: '6deg' },
-  { category: 'music', size: 96, left: '58%', top: 24, turn: '-4deg' },
-  { category: 'games', size: 80, left: '80%', top: 2, turn: '10deg' },
-  { category: 'gardening', size: 92, left: '16%', top: 120, turn: '5deg' },
-  { category: 'exercise', size: 100, left: '44%', top: 112, turn: '-7deg' },
-  { category: 'kids', size: 84, left: '74%', top: 126, turn: '7deg' },
-];
+/** Our own category art, scattered like Luma's welcome collage (positions in @/theme). */
+const TILES = welcomeCollage.tiles;
 
 /**
  * The welcome screen's picture (Luma): happenings people can join, as tilted
@@ -60,7 +43,7 @@ export function WelcomeCollage() {
   );
 }
 
-const FRAME_HEIGHT = 240;
+const FRAME_HEIGHT = welcomeCollage.height;
 const COMPACT_SCALE = 0.7;
 
 const styles = StyleSheet.create({

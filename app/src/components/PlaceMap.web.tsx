@@ -1,12 +1,12 @@
 import { StyleSheet, View } from 'react-native';
 
-import { color, iconSize, radius } from '@/theme';
+import { color, iconSize, mapHeight, radius } from '@/theme';
 
 import type { PlaceMapProps } from './PlaceMap';
 import { MapPinIcon } from './primitives/icons';
 
 /** Web build: react-native-maps has no web version, so a pin on a grey panel. */
-export function PlaceMap({ label, height = 180 }: PlaceMapProps) {
+export function PlaceMap({ label, height = mapHeight.xs }: PlaceMapProps) {
   return (
     <View
       style={[styles.frame, { height }]}

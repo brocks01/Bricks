@@ -30,6 +30,7 @@ import {
   weekdayLabels,
 } from '@/lib/format';
 import { useTypography } from '@/theme/TypographyProvider';
+import { thumbSize } from '@/theme';
 
 /**
  * S24 Walk history (Apple Health trends + a Strava log): this week or the last four
@@ -171,7 +172,7 @@ function History({ stats }: { stats: WalkStats }) {
           stats.items.map((w) => (
             <GroupedRow
               key={w.id}
-              leading={<RouteThumb polyline={w.route_public_polyline} size={48} />}
+              leading={<RouteThumb polyline={w.route_public_polyline} size={thumbSize.sm} />}
               title={formatDay(new Date(w.started_at), language, t)}
               subtitle={t('thrive.lastWalkLine', {
                 place: w.start_place_name,

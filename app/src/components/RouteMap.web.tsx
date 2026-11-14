@@ -3,19 +3,25 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Circle, Polyline } from 'react-native-svg';
 
 import type { LatLng } from '@/lib/geo';
-import { borderWidth, color, radius } from '@/theme';
+import { borderWidth, color, mapHeight, radius, svgMap } from '@/theme';
 
 import type { RouteMapProps } from './RouteMap';
 import { useCompact } from '@/theme/TypographyProvider';
 
-const VIEW = 1000;
-const PAD = 60;
+const VIEW = svgMap.view;
+const PAD = svgMap.pad;
 
 /**
  * Web build: react-native-maps has no web version, so the route is drawn on
  * its own (same line, start and end dots, no map tiles). Phones use RouteMap.tsx.
  */
-export function RouteMap({ points, label, height = 240, live = false, testID }: RouteMapProps) {
+export function RouteMap({
+  points,
+  label,
+  height = mapHeight.lg,
+  live = false,
+  testID,
+}: RouteMapProps) {
   // Small and Normal text: a shorter map so the numbers and buttons fit below it.
   const shownHeight = Math.round(height * (useCompact() ? COMPACT_MAP_SCALE : 1));
   const path = useMemo(() => project(points), [points]);
@@ -36,7 +42,7 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
             points={path.map((p) => `${p.x},${p.y}`).join(' ')}
             fill="none"
             stroke={color.primary}
-            strokeWidth={14}
+            strokeWidth={svgMap.route}
             strokeLinecap="round"
             strokeLinejoin="round"
           />

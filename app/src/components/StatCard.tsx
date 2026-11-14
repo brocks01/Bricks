@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { StyleSheet, View } from 'react-native';
 
-import { color, space } from '@/theme';
+import { chart, color, space } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { Card } from './Card';
@@ -30,9 +30,9 @@ export interface StatCardProps {
   testID?: string;
 }
 
-const CHART_HEIGHT = 72;
-const CHART_HEIGHT_COMPACT = 44;
-const STUB_HEIGHT = 8;
+const CHART_HEIGHT = chart.height;
+const CHART_HEIGHT_COMPACT = chart.heightCompact;
+const STUB_HEIGHT = chart.stub;
 
 function barHeight(bar: StatBar, max: number, full: number): number {
   if (!bar.done) return STUB_HEIGHT;
@@ -140,6 +140,6 @@ const styles = StyleSheet.create({
   },
   bar: {
     width: '70%',
-    maxWidth: 32,
+    maxWidth: chart.maxBar,
   },
 });

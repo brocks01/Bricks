@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { color, iconSize, radius, space, surface } from '@/theme';
+import { color, iconSize, iconWell, radius, space, surface } from '@/theme';
 
 import { BigButton } from './BigButton';
 import type { Icon } from './primitives/icons';
@@ -53,7 +53,7 @@ export function EmptyState({
   );
 }
 
-const ICON_WELL = 80;
+const ICON_WELL = iconWell.hero;
 
 const styles = StyleSheet.create({
   box: {

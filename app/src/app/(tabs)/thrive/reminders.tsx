@@ -26,7 +26,15 @@ import { notificationsAllowed } from '@/lib/notifications';
 import { platform } from '@/lib/platform';
 import { useBuddy } from '@/state/buddy';
 import { useUndo } from '@/state/undo';
-import { categoryColor, color, iconSize, radius, space, type CategoryColorKey } from '@/theme';
+import {
+  categoryColor,
+  type CategoryColorKey,
+  color,
+  iconSize,
+  iconWell,
+  radius,
+  space,
+} from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 /**
@@ -198,7 +206,7 @@ const KIND_TINT: Record<Reminder['kind'], CategoryColorKey> = {
   other: 'other',
 };
 
-const KIND_TILE = 44;
+const KIND_TILE = iconWell.md;
 
 const styles = StyleSheet.create({
   row: {

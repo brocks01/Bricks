@@ -21,7 +21,7 @@ import { useResumeHere } from '@/features/onboarding/useResumeHere';
 import { config } from '@/lib/config';
 import { isSingaporeMobile, normalisePhone } from '@/lib/phone';
 import { useOnboarding } from '@/state/onboarding';
-import { color, iconSize, radius, space, surface, touch } from '@/theme';
+import { color, iconSize, iconWell, touch, radius, space, surface } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 /** "Raj Kumar" → "Raj": what we call them unless they choose otherwise. */
@@ -183,7 +183,7 @@ export default function SignInScreen() {
   );
 }
 
-const ICON_WELL = 80;
+const ICON_WELL = iconWell.hero;
 
 const styles = StyleSheet.create({
   header: {

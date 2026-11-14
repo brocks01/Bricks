@@ -5,7 +5,7 @@ import type { EventSummary } from '@/api/types';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { color, iconSize, radius, space, touch } from '@/theme';
+import { avatarSize, color, coverSize, iconSize, touch, radius, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { Avatar } from './Avatar';
@@ -29,8 +29,8 @@ export interface EventCardProps {
   hosting?: boolean;
 }
 
-const COVER = 104;
-const COVER_COMPACT = 64;
+const COVER = coverSize.xl;
+const COVER_COMPACT = coverSize.sm;
 /** From this system font size up, the cover sits above the words so they keep the full width. */
 const STACK_AT_FONT_SCALE = 1.5;
 
@@ -81,7 +81,7 @@ export function EventCard({
         <View style={styles.facts}>
           {compact ? null : (
             <View style={styles.host}>
-              <Avatar name={event.host.name} photoUrl={event.host.photo_url} size={32} />
+              <Avatar name={event.host.name} photoUrl={event.host.photo_url} size={avatarSize.sm} />
               <Text variant="caption" color="textSecondary" style={styles.flex}>
                 {event.host.name}
               </Text>

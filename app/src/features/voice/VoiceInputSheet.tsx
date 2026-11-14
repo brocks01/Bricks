@@ -8,7 +8,7 @@ import { ListeningSheet, type ListeningMode } from '@/components/ListeningSheet'
 import { Text } from '@/components/primitives/Text';
 import { useActiveLanguage } from '@/i18n/useActiveLanguage';
 import { config } from '@/lib/config';
-import { borderWidth, color, radius, space } from '@/theme';
+import { borderWidth, color, layout, radius, space } from '@/theme';
 
 import { useRecorder } from './useRecorder';
 import { canRecognizeSpeech, useSpeechRecognizer } from './useSpeechRecognizer';
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     borderColor: color.borderStrong,
   },
   demoList: {
-    maxHeight: 260,
+    maxHeight: layout.sheetListMax,
   },
   demoContent: {
     gap: space.xs,

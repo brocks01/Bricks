@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, shadow, space, touch } from '@/theme';
+import { borderWidth, color, iconSize, iconWell, touch, radius, shadow, space } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { CaretRightIcon, CheckCircleIcon, type Icon } from './primitives/icons';
@@ -77,7 +77,7 @@ export function SectionCard({
   );
 }
 
-const ICON_WELL = 64;
+const ICON_WELL = iconWell.xl;
 
 const styles = StyleSheet.create({
   card: {

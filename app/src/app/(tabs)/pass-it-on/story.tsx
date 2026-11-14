@@ -21,7 +21,7 @@ import {
 } from '@/components';
 import { BadgeList } from '@/features/passItOn/parts';
 import { INTEREST_ICON } from '@/features/profile/interests';
-import { color, iconSize, space } from '@/theme';
+import { avatarSize, color, iconSize, space } from '@/theme';
 
 /**
  * My story (S31, from Activity): their voice intro with the words written out,
@@ -53,7 +53,7 @@ function StoryBody({ profile: p }: { profile: Profile }) {
     <>
       <Card testID="my-story">
         <View style={styles.who}>
-          <Avatar name={p.name} photoUrl={p.photo_url} size={64} />
+          <Avatar name={p.name} photoUrl={p.photo_url} size={avatarSize.lg} />
           <View style={styles.flex}>
             <View style={styles.nameRow}>
               <Text variant="heading">{p.preferred_name ?? p.name}</Text>

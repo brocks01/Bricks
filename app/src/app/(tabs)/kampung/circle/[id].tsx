@@ -23,7 +23,16 @@ import { useJoinEvent } from '@/features/events/useJoinEvent';
 import { GroupWalkCard } from '@/features/walks/GroupWalkCard';
 import { openExternal } from '@/lib/openExternal';
 import { useUndo } from '@/state/undo';
-import { borderWidth, categoryColor, color, iconSize, radius, shadow, space } from '@/theme';
+import {
+  borderWidth,
+  categoryColor,
+  color,
+  coverSize,
+  iconSize,
+  radius,
+  shadow,
+  space,
+} from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 /**
@@ -169,7 +178,7 @@ export default function CircleScreen() {
   );
 }
 
-const COVER = 128;
+const COVER = coverSize.xxl;
 
 const styles = StyleSheet.create({
   flex: {

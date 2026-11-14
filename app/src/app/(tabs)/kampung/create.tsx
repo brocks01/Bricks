@@ -28,7 +28,7 @@ import {
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
 import { isWhatsAppGroupLink } from '@/lib/openExternal';
-import { borderWidth, color, radius, shadow, space } from '@/theme';
+import { borderWidth, color, coverSize, radius, shadow, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const STEPS = ['what', 'day', 'time', 'where', 'link', 'preview'] as const;
@@ -460,7 +460,7 @@ export default function CreateEventScreen() {
   );
 }
 
-const PREVIEW_COVER = 160;
+const PREVIEW_COVER = coverSize.hero;
 
 const styles = StyleSheet.create({
   cover: {

@@ -2,18 +2,18 @@ import { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 
-import { color, radius } from '@/theme';
+import { color, mapHeight, radius, svgMap } from '@/theme';
 
 import type { EventsMapProps } from './EventsMap';
 
-const VIEW = 1000;
-const PAD = 80;
+const VIEW = svgMap.view;
+const PAD = svgMap.padPins;
 
 /**
  * Web build: react-native-maps has no web version, so the pins are drawn where
  * they are relative to each other (no map tiles). Phones use EventsMap.tsx.
  */
-export function EventsMap({ pins, label, height = 360 }: EventsMapProps) {
+export function EventsMap({ pins, label, height = mapHeight.xl }: EventsMapProps) {
   const dots = useMemo(() => {
     if (pins.length === 0) return [];
     const lats = pins.map((p) => p.lat);

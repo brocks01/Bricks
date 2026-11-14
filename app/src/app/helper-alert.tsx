@@ -9,7 +9,7 @@ import { config } from '@/lib/config';
 import { formatTime } from '@/lib/format';
 import { warningFeedback } from '@/lib/haptics';
 import { platform } from '@/lib/platform';
-import { space } from '@/theme';
+import { mapHeight, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 type Params = {
@@ -89,7 +89,7 @@ export default function HelperAlertScreen() {
         <RouteMap
           points={[{ lat, lng }]}
           label={t('safety.helper.mapLabel', { name: firstName })}
-          height={200}
+          height={mapHeight.sm}
           testID="helper-map"
         />
       ) : (

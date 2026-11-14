@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import Svg, { Polyline } from 'react-native-svg';
 
 import { decodePath } from '@/lib/geo';
-import { categoryColor, radius } from '@/theme';
+import { categoryColor, thumbSize, layout, radius, stroke } from '@/theme';
 
 export interface RouteThumbProps {
   /** Encoded route: the public one (home left out), so it's safe to show anywhere. */
@@ -11,14 +11,14 @@ export interface RouteThumbProps {
   size?: number;
 }
 
-const PADDING = 6;
-const STROKE = 3;
+const PADDING = layout.thumbInset;
+const STROKE = stroke.thumb;
 
 /**
  * A walk's shape as a small line drawing on the walk colour (Strava's activity
  * thumbnails), no map tiles. Decoration only: the row beside it says what it is.
  */
-export function RouteThumb({ polyline, size = 56 }: RouteThumbProps) {
+export function RouteThumb({ polyline, size = thumbSize.md }: RouteThumbProps) {
   const points = useMemo(() => {
     const path = decodePath(polyline);
     if (path.length < 2) return '';

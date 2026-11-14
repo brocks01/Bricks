@@ -30,7 +30,7 @@ import { INTEREST_ICON, INTERESTS, interestsIn } from '@/features/profile/intere
 import { VoiceInputSheet } from '@/features/voice/VoiceInputSheet';
 import { formatDay, formatTime, formatWhen } from '@/lib/format';
 import { useUndo } from '@/state/undo';
-import { space } from '@/theme';
+import { columnWidth, coverSize, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const STEPS = ['what', 'when', 'where', 'price', 'preview'] as const;
@@ -354,7 +354,7 @@ export default function ShareSkillScreen() {
   );
 }
 
-const PREVIEW_COVER = 96;
+const PREVIEW_COVER = coverSize.lg;
 
 const styles = StyleSheet.create({
   previewHead: {
@@ -365,6 +365,6 @@ const styles = StyleSheet.create({
   },
   flex: {
     flex: 1,
-    minWidth: 160,
+    minWidth: columnWidth.half,
   },
 });

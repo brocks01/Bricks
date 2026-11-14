@@ -2,7 +2,7 @@ import { Children, type ReactNode } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { tapFeedback } from '@/lib/haptics';
-import { borderWidth, color, iconSize, radius, space, surface, touch } from '@/theme';
+import { borderWidth, color, iconSize, iconWell, touch, radius, space, surface } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 import { CheckCircleIcon, type Icon } from './primitives/icons';
@@ -82,8 +82,8 @@ export function TileGrid({ children }: { children: ReactNode }) {
   );
 }
 
-const ICON_WELL = 64;
-const ICON_WELL_COMPACT = 40;
+const ICON_WELL = iconWell.xl;
+const ICON_WELL_COMPACT = iconWell.sm;
 
 const styles = StyleSheet.create({
   grid: {

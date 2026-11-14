@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { color, iconSize, radius, space, surface } from '@/theme';
+import { color, iconSize, iconWell, radius, space, surface } from '@/theme';
 
 import type { Icon } from './primitives/icons';
 import { Text } from './primitives/Text';
@@ -32,7 +32,7 @@ export function SheetHeader({ icon: IconComponent, title, text }: SheetHeaderPro
   );
 }
 
-const ICON_WELL = 56;
+const ICON_WELL = iconWell.lg;
 
 const styles = StyleSheet.create({
   header: {

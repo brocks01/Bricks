@@ -21,7 +21,7 @@ import { Avatar } from '@/components/Avatar';
 import { VoiceNoteBubble } from '@/components/VoiceNoteBubble';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatCount, formatWhen } from '@/lib/format';
-import { color, iconSize, space, type CategoryColorKey } from '@/theme';
+import { type CategoryColorKey, color, columnWidth, coverSize, iconSize, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 const BADGE_ICON: Record<BadgeKey, Icon> = {
@@ -83,7 +83,7 @@ export function SkillCard({ skill, testID }: { skill: SkillOffer; testID?: strin
   );
 }
 
-const COVER = 88;
+const COVER = coverSize.md;
 
 /** A thank-you: a voice note (WhatsApp shape) or a one-tap thumbs up. Never stars. */
 export function ThankYouItem({ thanks, testID }: { thanks: ThankYou; testID?: string }) {
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   flex: {
     flex: 1,
-    minWidth: 180,
+    minWidth: columnWidth.card,
     gap: space.xxs,
   },
 });

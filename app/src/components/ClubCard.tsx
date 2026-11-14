@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import type { CircleSummary } from '@/api/types';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { color, radius, space, type CategoryColorKey } from '@/theme';
+import { type CategoryColorKey, color, columnWidth, coverSize, radius, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { BigButton } from './BigButton';
@@ -103,7 +103,7 @@ export function ClubCard({ circle, onOpen, onJoin, onWhatsApp, now }: ClubCardPr
   );
 }
 
-const COVER = 96;
+const COVER = coverSize.lg;
 
 const styles = StyleSheet.create({
   card: {
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   info: {
     flex: 1,
-    minWidth: 180,
+    minWidth: columnWidth.card,
     gap: space.xxs,
   },
   actions: {

@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import type { GroupWalk } from '@/api/types';
 import { AvatarStack, Card, RouteThumb, Text } from '@/components';
 import { formatDay, formatDistance } from '@/lib/format';
-import { color, space } from '@/theme';
+import { color, thumbSize, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { CheerButtons } from './cheers';
@@ -63,7 +63,7 @@ export function GroupWalkCard({ walk }: { walk: GroupWalk }) {
   );
 }
 
-const THUMB = 72;
+const THUMB = thumbSize.lg;
 
 const styles = StyleSheet.create({
   row: {

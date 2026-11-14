@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { color, space } from '@/theme';
+import { chart, color, columnWidth, space } from '@/theme';
 
 import { Text } from './primitives/Text';
 
@@ -15,7 +15,7 @@ export interface Split {
   spoken: string;
 }
 
-const BAR_HEIGHT = 20;
+const BAR_HEIGHT = chart.splitBar;
 
 /**
  * "Each kilometre": one row per km with a simple bar and the time. All bars the
@@ -50,7 +50,7 @@ const styles = StyleSheet.create({
     gap: space.sm,
   },
   label: {
-    minWidth: 72,
+    minWidth: columnWidth.label,
   },
   track: {
     flex: 1,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.primary,
   },
   time: {
-    minWidth: 64,
+    minWidth: columnWidth.timeWide,
     textAlign: 'right',
     fontVariant: ['tabular-nums'],
   },

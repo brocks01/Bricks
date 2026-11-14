@@ -1,7 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
-import { color, radius } from '@/theme';
+import { color, mapHeight, radius } from '@/theme';
 
 /** Shows a few streets around the place: close enough to recognise it. */
 const SPAN = 0.006;
@@ -18,7 +18,7 @@ export interface PlaceMapProps {
  * A small map preview with one pin (Luma's location card). A picture, not a
  * control: no panning or zooming; "Open in Maps" next to it does the rest.
  */
-export function PlaceMap({ lat, lng, label, height = 180 }: PlaceMapProps) {
+export function PlaceMap({ lat, lng, label, height = mapHeight.xs }: PlaceMapProps) {
   return (
     <View
       style={[styles.frame, { height }]}

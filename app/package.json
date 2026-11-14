@@ -75,6 +75,7 @@
     "ios": "expo run:ios",
     "typecheck": "tsc --noEmit",
     "lint": "expo lint",
+    "new:page": "node scripts/new-page.js",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "test": "jest",

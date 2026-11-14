@@ -26,7 +26,7 @@ import {
 } from '@/components';
 import { openExternal } from '@/lib/openExternal';
 import { normalisePhone } from '@/lib/phone';
-import { color, iconSize, screenPadding, space } from '@/theme';
+import { color, iconSize, layout, screenPadding, space } from '@/theme';
 
 /** The link inside the QR: opens this app on the join screen (any build, or Expo Go). */
 export const joinLink = (code: string) => Linking.createURL(`/join/${code}`);
@@ -232,7 +232,7 @@ function AddPeopleSheet({
   );
 }
 
-const QR_SIZE = 260;
+const QR_SIZE = layout.qrCode;
 
 const styles = StyleSheet.create({
   verified: {

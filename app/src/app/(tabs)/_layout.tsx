@@ -15,19 +15,22 @@ import {
 } from '@/components';
 import { tapFeedback } from '@/lib/haptics';
 import {
+  borderWidth,
   color,
   iconSize,
+  layout,
   lineHeightRatio,
   maxChromeFontScale,
+  touch,
+  tracking,
   radius,
+  typeScale,
   shadow,
   space,
-  touch,
-  typeScale,
 } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
-const ICON_PILL_WIDTH = 64;
+const ICON_PILL_WIDTH = layout.tabPill;
 
 export const unstable_settings = {
   anchor: 'home',
@@ -128,7 +131,7 @@ export default function TabsLayout() {
               marginHorizontal: space.sm,
               marginBottom: insets.bottom + space.xs,
               paddingHorizontal: 0,
-              borderWidth: 1,
+              borderWidth: borderWidth.hairline,
               borderColor: color.hairline,
               paddingTop: textSize < 1 ? space.xxs : space.xs,
               paddingBottom: textSize < 1 ? space.xxs : space.xs,
@@ -197,7 +200,7 @@ const styles = StyleSheet.create({
   },
   // A touch tighter so "Community" fits its quarter of the bar.
   label: {
-    letterSpacing: -0.3,
+    letterSpacing: tracking.tab,
   },
   iconPillSelected: {
     backgroundColor: color.selected,

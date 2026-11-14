@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
 
 import { regionFor } from '@/lib/geo';
-import { color, radius } from '@/theme';
+import { color, mapHeight, radius } from '@/theme';
 
 export interface EventsMapPin {
   id: string;
@@ -27,7 +27,7 @@ export interface EventsMapProps {
  * name and time, and tapping that opens the event. The list below the map has the
  * same events as big buttons, so the map is never the only way in.
  */
-export function EventsMap({ pins, onOpen, label, height = 360 }: EventsMapProps) {
+export function EventsMap({ pins, onOpen, label, height = mapHeight.xl }: EventsMapProps) {
   const region = useMemo(() => regionFor(pins, 1.6), [pins]);
   return (
     <View

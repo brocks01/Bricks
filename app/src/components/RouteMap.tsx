@@ -4,7 +4,7 @@ import MapView, { Circle, Polyline } from 'react-native-maps';
 
 import { regionFor, type LatLng } from '@/lib/geo';
 import { platform } from '@/lib/platform';
-import { borderWidth, color, radius } from '@/theme';
+import { borderWidth, color, mapHeight, radius, stroke } from '@/theme';
 import { useCompact } from '@/theme/TypographyProvider';
 
 /**
@@ -36,7 +36,13 @@ const DOT_RADIUS_M = 12;
  * when it's finished). The map is a picture, not a control: no panning,
  * pinching or rotating (no hidden gestures).
  */
-export function RouteMap({ points, label, height = 240, live = false, testID }: RouteMapProps) {
+export function RouteMap({
+  points,
+  label,
+  height = mapHeight.lg,
+  live = false,
+  testID,
+}: RouteMapProps) {
   // Small and Normal text: a shorter map so the numbers and buttons fit below it.
   const shownHeight = Math.round(height * (useCompact() ? COMPACT_MAP_SCALE : 1));
   const region = useMemo(() => regionFor(points), [points]);
@@ -74,7 +80,7 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
           <Polyline
             coordinates={coordinates}
             strokeColor={color.primary}
-            strokeWidth={6}
+            strokeWidth={stroke.route}
             lineCap="round"
             lineJoin="round"
           />
@@ -85,7 +91,7 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
             radius={DOT_RADIUS_M}
             fillColor={color.primary}
             strokeColor={color.bg}
-            strokeWidth={2}
+            strokeWidth={stroke.ring}
           />
         ) : null}
         {end && !live && coordinates.length > 1 ? (
@@ -94,7 +100,7 @@ export function RouteMap({ points, label, height = 240, live = false, testID }: 
             radius={DOT_RADIUS_M}
             fillColor={color.success}
             strokeColor={color.bg}
-            strokeWidth={2}
+            strokeWidth={stroke.ring}
           />
         ) : null}
       </MapView>

@@ -58,6 +58,23 @@ Normal (18 pt, default) or Large (20 pt body).
 
 ## Unreleased
 
+### New pages get the same look automatically (Sun 15 Nov 2026)
+- **Lint rules** (`app/eslint/design-system.js`, wired into `npm run lint`, so CI runs them):
+  every page in `src/app/` renders `<Screen>`; no typed-in sizes (style numbers, `size=` props,
+  size constants like `const COVER = 96`), no `rgb()`/`rgba()`/named colours (hex was already
+  caught), no words typed into JSX or into `title`/`label`/`placeholder`/... props. Each error
+  says which token or `t(...)` to use. A test runs the real config on good and bad pages.
+- **Size scales in `src/theme/tokens.ts`:** `iconWell`, `coverSize`, `avatarSize`, `thumbSize`,
+  `mapHeight`, `columnWidth`, `stroke`, `chart`, `layout`, `svgMap`, `welcomeCollage` and
+  `tracking.tab`. The sizes that were typed into 40 files now come from these, with the
+  same values, so nothing on screen moved.
+- **`npm run new:page -- <route> --title "..." [--section ...]`** writes a page on `<Screen>`,
+  its words in all four language files (English to start: translate ms/zh/ta) and a test that
+  opens it.
+- Docs: `docs/02_DESIGN_PRINCIPLES.md` §5.3 (size scales), §6.1 (adding a page), §11 (DoD line).
+- Exempt on purpose: `src/theme/`, tests, non-UI helpers, and the developer-only pages
+  (`dev/`, Settings → Demo) for wording only.
+
 ### WhatsApp branch merged (Fri 13 Nov 2026)
 - Merged `whatsapp` into `sarath`: `backend/src/bricks_api/whatsapp/` (Meta Cloud API + Twilio
   sandbox behind one interface, flows for joining, family invites, check-in, events, reminders,

@@ -21,7 +21,7 @@ import {
 import { BadgeList, GivenStats, SkillCard, ThankYouItem } from '@/features/passItOn/parts';
 import { INTEREST_ICON } from '@/features/profile/interests';
 import { LANGUAGE_INFO } from '@/i18n/languages';
-import { color, iconSize, space } from '@/theme';
+import { avatarSize, color, iconSize, space } from '@/theme';
 
 type Section = 'given' | 'share';
 
@@ -64,7 +64,7 @@ function ProfileBody({ profile: p }: { profile: Profile }) {
     <>
       {/* Luma profile: a big face, the name large, then who they are. */}
       <View style={styles.header}>
-        <Avatar name={p.name} photoUrl={p.photo_url} size={96} />
+        <Avatar name={p.name} photoUrl={p.photo_url} size={avatarSize.xl} />
         <View style={styles.flex}>
           <View style={styles.nameRow}>
             <Text variant="title">{p.name}</Text>

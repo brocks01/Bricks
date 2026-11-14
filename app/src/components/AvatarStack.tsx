@@ -1,6 +1,6 @@
 import { StyleSheet, View } from 'react-native';
 
-import { borderWidth, color, maxChromeFontScale, radius, space } from '@/theme';
+import { avatarSize, borderWidth, color, maxChromeFontScale, radius, space } from '@/theme';
 
 import { Avatar } from './Avatar';
 import { Text } from './primitives/Text';
@@ -23,7 +23,7 @@ export function AvatarStack({ people, total = people.length, max = 4 }: AvatarSt
     <View style={styles.row} accessible={false} importantForAccessibility="no-hide-descendants">
       {shown.map((p, i) => (
         <View key={p.id} style={[styles.ring, i > 0 && styles.overlap]}>
-          <Avatar name={p.name} photoUrl={p.photo_url} size={48} />
+          <Avatar name={p.name} photoUrl={p.photo_url} size={SIZE} />
         </View>
       ))}
       {more > 0 ? (
@@ -37,7 +37,7 @@ export function AvatarStack({ people, total = people.length, max = 4 }: AvatarSt
   );
 }
 
-const SIZE = 48;
+const SIZE = avatarSize.md;
 
 const styles = StyleSheet.create({
   row: {

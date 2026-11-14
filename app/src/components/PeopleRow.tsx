@@ -1,13 +1,13 @@
 import { StyleSheet, View } from 'react-native';
 
 import type { PersonSummary } from '@/api/types';
-import { borderWidth, color, radius, space } from '@/theme';
+import { borderWidth, color, layout, radius, space } from '@/theme';
 
 import { Avatar } from './Avatar';
 import { Text } from './primitives/Text';
 
 const SHOWN = 5;
-const OVERLAP = 12;
+const OVERLAP = layout.avatarOverlap;
 
 /**
  * "[faces] 12 people going": a few overlapping avatars and one plain sentence.

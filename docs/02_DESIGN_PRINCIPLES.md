@@ -159,6 +159,7 @@ Pressed shades: `success-pressed` `#165C27`, `sos-pressed` `#9E1F1F`. Every pair
 ### 5.3 Shape, spacing, elevation
 - Radius: **20dp cards, 14dp tiles and photos in rows, 28dp sheets, 999 for buttons, chips and avatars.** Nothing else.
 - Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. Screen padding 20.
+- Size scales (`app/src/theme/tokens.ts`): `iconWell` (36 · 40 · 44 · 56 · 64 · 80), `coverSize` (64 · 88 · 96 · 104 · 128 · 160), `avatarSize` (32 · 48 · 64 · 96), `thumbSize` (48 · 56 · 72), `mapHeight` (180 · 200 · 220 · 240 · 360), plus `columnWidth`, `stroke`, `chart` and `layout` for the rest. A new page picks the nearest step; it never types a number. Add a step only when none fits.
 - Elevation: **white surfaces on the olive page, with a thin olive edge and a soft olive-tinted shadow** (`surface` = `hairline` edge + `shadow.card`; the edge comes out of the card's padding so text never re-wraps). `shadow.control` (barely there) for white buttons and chips, `shadow.floating` for the tab bar, Buddy, sheets, toasts and covers. Solid buttons (black, green, red) are flat.
 - Hierarchy of buttons: **black** for the one main action, **white with an edge** for the rest, **frosted** (`chrome`) for the fixed controls and a title's button, **green** for done, **red** only for Help.
 - Big Latin headings and numbers use slightly tighter letter spacing (`tracking`); Tamil and Chinese never do.
@@ -194,6 +195,22 @@ Pressed shades: `success-pressed` `#165C27`, `sos-pressed` `#9E1F1F`. Every pair
 | **StepProgress** | "Step 2 of 3" in words | Airbnb |
 | **StatusBanner** | Plain-language status ("Priya is on her way") | Monzo / Be My Eyes |
 | **EmptyState** | One sentence + one action | Monzo |
+
+### 6.1 Adding a page or feature (kept consistent by the tools)
+
+- **Start from the template:** `cd app && npm run new:page -- settings/privacy --title "Privacy" --section settings`. It writes the page on `<Screen>` with a `Card`, its words under `pages.<name>` in all four language files (translate ms, zh and ta), and a test that opens it.
+- **`<Screen>` gives every page the shared frame:** page wash (`section`), Read it out, Back, Help, Buddy, offline banner, pull to refresh, small-phone spacing, the footer for the one main action.
+- **Build from `@/components`** (the table above); style anything custom with `@/theme` tokens only.
+- **`npm run lint` enforces it** (`app/eslint/design-system.js`, run in CI by `npm run check`):
+
+| Rule | Fails on | Use instead |
+|---|---|---|
+| `page-uses-screen` | a file in `src/app/` that doesn't render `<Screen>` (or only `<Redirect>`) | wrap it in `<Screen>` |
+| `no-raw-sizes` | numbers in padding, margin, gap, width, height, position, radius, border, font size; `size=`/`height=` props; size constants like `const COVER = 96` | `space`, `radius`, `iconSize`, `iconWell`, `coverSize`, `avatarSize`, … |
+| `no-raw-colors` | hex, `rgb()`/`rgba()`/`hsl()` and named colours | `color.*`, `categoryColor`, `sectionColor` |
+| `no-hardcoded-copy` | text typed into JSX, and words in `title`, `label`, `placeholder`, `accessibilityLabel`, … | `t('…')` with the words in `src/i18n/locales/*.json` |
+
+Allowed: `0`, durations, counts and scale factors (`_MS`, `_S`, `SCALE`, `SHOWN`). Exempt: `src/theme/` (where raw values live), tests, helpers outside the UI (`src/lib`, `src/api`, `src/mocks`, `src/state`), and the developer-only pages (`src/app/dev/`, Settings → Demo) for wording.
 
 ## 7. Read It Out (every screen)
 
@@ -238,6 +255,7 @@ Voice helper: started only by tapping Tell me; ≤ 2 short sentences; shows what
 - [ ] Every action by tap **and** voice
 - [ ] Read It Out script written and working
 - [ ] All strings in i18n; checked in Tamil and Mandarin
+- [ ] Built on `<Screen>` from `@/components`; no typed-in sizes, colours or words (`npm run lint` passes)
 - [ ] Back + Home; no dead ends; Undo or confirm on data changes
 - [ ] No emojis, no gradients, one accent colour, red only for SOS, no icon-only buttons
 - [ ] Matches its reference in `02b` (restraint) without copying its small type

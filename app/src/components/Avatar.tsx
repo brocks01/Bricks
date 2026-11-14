@@ -2,7 +2,7 @@ import { Image } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import { color, radius } from '@/theme';
+import { avatarSize, color, radius } from '@/theme';
 
 import { Text } from './primitives/Text';
 
@@ -28,7 +28,7 @@ export function initials(name: string): string {
  * A person's photo, or their initials when there is none. Decorative: the name is
  * always written next to it, so screen readers skip the avatar itself.
  */
-export function Avatar({ name, photoUrl, size = 48 }: AvatarProps) {
+export function Avatar({ name, photoUrl, size = avatarSize.md }: AvatarProps) {
   const [failed, setFailed] = useState(false);
   const box = { width: size, height: size, borderRadius: radius.avatar };
 

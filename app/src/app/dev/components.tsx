@@ -49,7 +49,7 @@ import { sampleContent, type GalleryLanguage } from '@/features/dev/gallerySampl
 import i18n from '@/i18n';
 import { config } from '@/lib/config';
 import { weekdayLabels } from '@/lib/format';
-import { borderWidth, color, screenPadding, space } from '@/theme';
+import { avatarSize, borderWidth, color, screenPadding, space } from '@/theme';
 import { TypographyProvider, useTypography } from '@/theme/TypographyProvider';
 
 // Dev-only clip so the voice players have something real to play.
@@ -254,7 +254,7 @@ function Samples({ lang, onUndoable }: { lang: GalleryLanguage; onUndoable: (m: 
       <Section name="Avatar" reference="WhatsApp">
         <View style={styles.pair}>
           <Avatar name="Raj Kumar" />
-          <Avatar name={s.thanksName} size={64} />
+          <Avatar name={s.thanksName} size={avatarSize.lg} />
         </View>
       </Section>
 

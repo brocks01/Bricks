@@ -21,7 +21,7 @@ import { clearUnfinishedWalk, useActiveWalk } from '@/features/walk/activeWalk';
 import { prepareWalkLocation } from '@/features/walk/gpsTrack';
 import { formatClock, formatCount, formatDistance, sayDistance, sayMinutes } from '@/lib/format';
 import { platform } from '@/lib/platform';
-import { space } from '@/theme';
+import { mapHeight, space } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 /**
@@ -212,7 +212,12 @@ export default function WalkRecordScreen() {
         </ButtonRow>
       }
     >
-      <RouteMap points={progress?.points ?? []} live label={t('walk.recording')} height={220} />
+      <RouteMap
+        points={progress?.points ?? []}
+        live
+        label={t('walk.recording')}
+        height={mapHeight.md}
+      />
 
       {paused ? <StatusBanner tone="info" text={t('walk.paused')} testID="walk-paused" /> : null}
       {!paused && progress?.autoPaused ? (

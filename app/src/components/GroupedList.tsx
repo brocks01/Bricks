@@ -6,13 +6,14 @@ import { useCompact } from '@/theme/TypographyProvider';
 import {
   borderWidth,
   categoryColor,
+  type CategoryColorKey,
   color,
   iconSize,
+  iconWell,
+  touch,
   radius,
   space,
   surface,
-  touch,
-  type CategoryColorKey,
 } from '@/theme';
 
 import { CaretRightIcon, type Icon } from './primitives/icons';
@@ -140,8 +141,8 @@ export function GroupedRow({
   );
 }
 
-const ICON_TILE = 44;
-const ICON_TILE_COMPACT = 36;
+const ICON_TILE = iconWell.md;
+const ICON_TILE_COMPACT = iconWell.xs;
 
 const styles = StyleSheet.create({
   section: {

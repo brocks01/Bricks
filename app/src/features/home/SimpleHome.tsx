@@ -14,13 +14,13 @@ import {
 } from '@/components';
 import { tapFeedback } from '@/lib/haptics';
 import { useBuddy } from '@/state/buddy';
-import { color, iconSize, radius, space, surface, type ColorToken } from '@/theme';
+import { color, type ColorToken, iconSize, layout, radius, space, surface } from '@/theme';
 
 import { useGreeting } from './useHomeReadout';
 
 /** Each of the three buttons takes about a quarter of the screen (docs/02b S13). */
 const BUTTON_SHARE = 0.2;
-const MIN_BUTTON = 112;
+const MIN_BUTTON = layout.simpleButtonMin;
 
 /**
  * S13 Simple Mode (Be My Eyes + Grab): Home is three full-width buttons. Today reads

@@ -211,6 +211,8 @@ export const tracking = {
   display: -0.8,
   title: -0.6,
   heading: -0.3,
+  /** The tab bar's labels, a touch tighter so "Community" fits its quarter. */
+  tab: -0.3,
 } as const;
 
 /** Spacing scale: 4 · 8 · 16 · 20 · 24 · 32 · 48. */
@@ -254,6 +256,131 @@ export const iconSize = {
   /** The single big tick on success screens. */
   celebrate: 96,
 } as const;
+
+/*
+ * Size scales for everything else on screen. A new page picks the nearest step from
+ * these; it never types its own number (lint: design-system/no-raw-sizes). Add a step
+ * here only when none fits, so every page keeps drawing from the same few sizes.
+ */
+
+/** The rounded square behind an icon (a "well"): list rows up to empty states. */
+export const iconWell = {
+  xs: 36,
+  sm: 40,
+  md: 44,
+  lg: 56,
+  xl: 64,
+  hero: 80,
+} as const;
+
+/** Covers, photos and category art: a list row up to a page's preview. */
+export const coverSize = {
+  sm: 64,
+  md: 88,
+  lg: 96,
+  xl: 104,
+  xxl: 128,
+  hero: 160,
+} as const;
+
+/** Faces. The Avatar component takes exactly these. */
+export const avatarSize = {
+  sm: 32,
+  md: 48,
+  lg: 64,
+  xl: 96,
+} as const;
+
+/** Route thumbnails in lists and cards. */
+export const thumbSize = {
+  sm: 48,
+  md: 56,
+  lg: 72,
+} as const;
+
+/** Map heights (the compact text sizes shrink them further). */
+export const mapHeight = {
+  xs: 180,
+  sm: 200,
+  md: 220,
+  lg: 240,
+  xl: 360,
+} as const;
+
+/** The narrowest a column gets before its row wraps or stacks. */
+export const columnWidth = {
+  time: 60,
+  timeWide: 64,
+  label: 72,
+  title: 140,
+  half: 160,
+  card: 180,
+} as const;
+
+/** Line weights: routes, the ring round map dots, route thumbnails. */
+export const stroke = {
+  ring: 2,
+  thumb: 3,
+  route: 6,
+} as const;
+
+/** Bars and waves in charts and voice notes. */
+export const chart = {
+  height: 72,
+  heightCompact: 44,
+  stub: 8,
+  maxBar: 32,
+  splitBar: 20,
+  wave: 32,
+  waveBar: 3,
+} as const;
+
+/** One-off pieces that still need a single home. */
+export const layout = {
+  /** The selected tab's pill. */
+  tabPill: 64,
+  /** The join QR code on an organisation's page. */
+  qrCode: 260,
+  /** Simple Mode's big buttons never get shorter than this. */
+  simpleButtonMin: 112,
+  /** A scrolling list inside a bottom sheet. */
+  sheetListMax: 260,
+  /** How far faces overlap in a row of people. */
+  avatarOverlap: 12,
+  /** The space round a route inside its thumbnail. */
+  thumbInset: 6,
+} as const;
+
+/** The web's stand-in maps draw in an SVG box of these units (not screen points). */
+export const svgMap = {
+  view: 1000,
+  pad: 60,
+  padPins: 80,
+  route: 14,
+} as const;
+
+/** The welcome screen's tilted category tiles (positions are artwork, kept here too). */
+export const welcomeCollage = {
+  height: 240,
+  tiles: [
+    { category: 'walk', size: 104, left: '2%', top: 18, turn: '-8deg' },
+    { category: 'cooking', size: 88, left: '30%', top: 0, turn: '6deg' },
+    { category: 'music', size: 96, left: '58%', top: 24, turn: '-4deg' },
+    { category: 'games', size: 80, left: '80%', top: 2, turn: '10deg' },
+    { category: 'gardening', size: 92, left: '16%', top: 120, turn: '5deg' },
+    { category: 'exercise', size: 100, left: '44%', top: 112, turn: '-7deg' },
+    { category: 'kids', size: 84, left: '74%', top: 126, turn: '7deg' },
+  ],
+} as const satisfies {
+  height: number;
+  tiles: readonly {
+    category: CategoryColorKey;
+    size: number;
+    left: `${number}%`;
+    top: number;
+    turn: string;
+  }[];
+};
 
 /** 150–200 ms fades and slides only. No bounce, no confetti. */
 export const motion = {

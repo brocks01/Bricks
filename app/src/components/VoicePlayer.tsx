@@ -4,7 +4,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useVoicePlayer } from '@/features/voice/useVoicePlayer';
 import { formatDuration } from '@/lib/format';
-import { color, space } from '@/theme';
+import { chart, color, columnWidth, space } from '@/theme';
 
 import { BigButton } from './BigButton';
 import { PauseIcon, PlayIcon } from './primitives/icons';
@@ -20,7 +20,7 @@ export interface VoicePlayerProps {
 }
 
 const BAR_COUNT = 20;
-const WAVE_HEIGHT = 32;
+const WAVE_HEIGHT = chart.wave;
 
 /** Stable, natural-looking bar heights from the URL, so each note keeps its shape. */
 function waveShape(seed: string): number[] {
@@ -100,10 +100,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    minWidth: 60,
+    minWidth: columnWidth.time,
   },
   bar: {
-    width: 3,
+    width: chart.waveBar,
   },
   time: {
     fontVariant: ['tabular-nums'],

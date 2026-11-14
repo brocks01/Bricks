@@ -2,11 +2,15 @@
 const { defineConfig } = require('eslint/config');
 const expoConfig = require('eslint-config-expo/flat');
 
+const designSystem = require('./eslint/design-system');
+
 /**
  * Design-system guard rails (docs/02_DESIGN_PRINCIPLES.md):
  * - colours and sizes live only in src/theme
  * - screens read platform flags from src/lib/platform.ts, never Platform.OS
  * - all text goes through our Text primitive, so the type scale and language fonts apply
+ * - no hardcoded sizes, colours or words, and every page renders <Screen>
+ *   (eslint/design-system.js), so a new page looks like the rest without extra work
  */
 const designSystemRules = {
   'no-restricted-syntax': [
@@ -32,6 +36,11 @@ const designSystemRules = {
       ],
     },
   ],
+  // eslint/design-system.js: no hardcoded sizes, colours or words; every page uses <Screen>.
+  'design-system/no-raw-sizes': 'error',
+  'design-system/no-raw-colors': 'error',
+  'design-system/no-hardcoded-copy': 'error',
+  'design-system/page-uses-screen': 'error',
 };
 
 module.exports = defineConfig([
@@ -41,7 +50,23 @@ module.exports = defineConfig([
   },
   {
     files: ['src/**/*.{ts,tsx}'],
+    plugins: { 'design-system': designSystem },
     rules: designSystemRules,
+  },
+  {
+    // Not screens: helpers, data and test set-up may use plain numbers and words.
+    files: ['src/lib/**', 'src/api/**', 'src/mocks/**', 'src/state/**', 'src/test-utils/**'],
+    rules: {
+      'design-system/no-raw-sizes': 'off',
+      'design-system/no-hardcoded-copy': 'off',
+    },
+  },
+  {
+    // Developer-only pages (demo and dev builds, never shown to members): English only.
+    files: ['src/app/dev/**', 'src/app/settings/demo.tsx'],
+    rules: {
+      'design-system/no-hardcoded-copy': 'off',
+    },
   },
   {
     // The only places allowed to touch raw values.
@@ -49,15 +74,33 @@ module.exports = defineConfig([
     rules: {
       'no-restricted-syntax': 'off',
       'no-restricted-imports': 'off',
+      'design-system/no-raw-sizes': 'off',
+      'design-system/no-raw-colors': 'off',
     },
   },
   {
-    files: ['**/*.test.{ts,tsx}', 'jest.setup.ts'],
+    // Node tooling: the page generator and these lint rules.
+    files: ['scripts/**/*.js', 'eslint/**/*.js'],
+    languageOptions: {
+      globals: {
+        __dirname: 'readonly',
+        require: 'readonly',
+        module: 'writable',
+        process: 'readonly',
+        console: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['**/*.test.{js,ts,tsx}', 'jest.setup.ts'],
     languageOptions: {
       globals: { jest: 'readonly', describe: 'readonly', it: 'readonly', expect: 'readonly' },
     },
     rules: {
       'no-restricted-syntax': 'off',
+      'design-system/no-raw-sizes': 'off',
+      'design-system/no-raw-colors': 'off',
+      'design-system/no-hardcoded-copy': 'off',
     },
   },
 ]);

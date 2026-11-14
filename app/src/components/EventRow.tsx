@@ -6,7 +6,7 @@ import type { EventSummary } from '@/api/types';
 import { CATEGORY_ICON } from '@/features/events/categories';
 import { formatWhen } from '@/lib/format';
 import { tapFeedback } from '@/lib/haptics';
-import { color, iconSize, radius, space, surface } from '@/theme';
+import { color, columnWidth, coverSize, iconSize, radius, space, surface } from '@/theme';
 import { useTypography } from '@/theme/TypographyProvider';
 
 import { BigButton } from './BigButton';
@@ -25,9 +25,9 @@ export interface EventRowProps {
   now?: Date;
 }
 
-const COVER = 64;
+const COVER = coverSize.sm;
 /** Narrower than this and the title breaks mid-word ("Eveni / ng"), so "I'm going" moves below. */
-const MIN_TITLE_WIDTH = 140;
+const MIN_TITLE_WIDTH = columnWidth.title;
 
 /**
  * One event as a short white row: a small cover, the title, when, and "You're

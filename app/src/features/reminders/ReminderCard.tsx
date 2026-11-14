@@ -5,7 +5,7 @@ import { useCompleteReminder } from '@/api';
 import type { Reminder } from '@/api/types';
 import { BigButton, Card, StatusBanner, Text } from '@/components';
 import { formatTime } from '@/lib/format';
-import { categoryColor, color, iconSize, radius, space } from '@/theme';
+import { categoryColor, iconSize, iconWell, radius, space } from '@/theme';
 import { useCompact, useTypography } from '@/theme/TypographyProvider';
 
 import { REMINDER_ICON, timeToday } from './kinds';
@@ -75,7 +75,7 @@ export function NextReminderCard({
   );
 }
 
-const ICON_WELL = 44;
+const ICON_WELL = iconWell.md;
 
 const styles = StyleSheet.create({
   wrapRow: {
