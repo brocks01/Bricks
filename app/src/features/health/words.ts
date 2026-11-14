@@ -23,6 +23,7 @@ export const W: WordTable = {
   answered_no: ['That is fine. Tomorrow is a new day.', 'कोई बात नहीं। कल नया दिन है।', 'ঠিক আছে। কাল নতুন দিন।', 'பரவாயில்லை. நாளை புதிய நாள்.', '没关系，明天又是新的一天。', 'Tidak mengapa. Esok hari baharu.'],
   change: ['Change my answer', 'उत्तर बदलें', 'উত্তর বদলান', 'பதிலை மாற்று', '修改回答', 'Tukar jawapan'],
   streak_n: ['{n} days in a row', 'लगातार {n} दिन', 'টানা {n} দিন', 'தொடர்ந்து {n} நாட்கள்', '连续 {n} 天', '{n} hari berturut-turut'],
+  streak_one: ['1 day in a row', 'लगातार 1 दिन', 'টানা ১ দিন', 'தொடர்ந்து 1 நாள்', '连续 1 天', '1 hari berturut-turut'],
   streak_0: ['A fresh start today', 'आज नई शुरुआत', 'আজ নতুন শুরু', 'இன்று புதிய தொடக்கம்', '今天重新开始', 'Permulaan baharu hari ini'],
   this_week: ['This week', 'इस सप्ताह', 'এই সপ্তাহ', 'இந்த வாரம்', '本周', 'Minggu ini'],
   minutes: ['Minutes', 'मिनट', 'মিনিট', 'நிமிடங்கள்', '分钟', 'Minit'],

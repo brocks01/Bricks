@@ -24,6 +24,8 @@ export const R: WordTable = {
   err_limit: ['You are already in three communities. Leave one first.', 'आप पहले से तीन समुदायों में हैं। पहले एक छोड़ें।', 'আপনি ইতিমধ্যে তিনটি কমিউনিটিতে আছেন। আগে একটি ছাড়ুন।', 'நீங்கள் ஏற்கனவே மூன்று சமூகங்களில் உள்ளீர்கள். முதலில் ஒன்றை விடுங்கள்.', '你已在三个社区中。请先退出一个。', 'Anda sudah dalam tiga komuniti. Tinggalkan satu dahulu.'],
   err_invite: ['This community is invite only. Ask a leader for the code.', 'यह समुदाय सिर्फ़ आमंत्रण से है। नेता से कोड माँगें।', 'এই কমিউনিটি শুধু আমন্ত্রণে। নেতার কাছে কোড চান।', 'இந்தச் சமூகம் அழைப்பு மட்டும். தலைவரிடம் குறியீடு கேளுங்கள்.', '此社区仅限邀请。请向负责人索取邀请码。', 'Komuniti ini untuk jemputan sahaja. Minta kod daripada ketua.'],
   err_last_lead: ['You are the only leader. Hand over the lead before you leave.', 'आप अकेले नेता हैं। छोड़ने से पहले नेतृत्व सौंपें।', 'আপনিই একমাত্র নেতা। ছাড়ার আগে নেতৃত্ব হস্তান্তর করুন।', 'நீங்கள் ஒரே தலைவர். விலகும் முன் தலைமையை ஒப்படையுங்கள்.', '你是唯一的负责人。离开前请先移交。', 'Anda satu-satunya ketua. Serahkan kepimpinan sebelum keluar.'],
+  leave_first: ['Leave one community first', 'पहले एक समुदाय छोड़ें', 'আগে একটি কমিউনিটি ছাড়ুন', 'முதலில் ஒரு சமூகத்தை விடுங்கள்', '请先退出一个社区', 'Tinggalkan satu komuniti dahulu'],
+  none_body: ['Explore the open communities, or join one with a code from a leader.', 'खुले समुदाय देखें, या नेता से मिले कोड से जुड़ें।', 'খোলা কমিউনিটি দেখুন, অথবা নেতার কোড দিয়ে যোগ দিন।', 'திறந்த சமூகங்களைப் பாருங்கள், அல்லது தலைவரின் குறியீட்டுடன் சேருங்கள்.', '浏览开放的社区，或用负责人给的邀请码加入。', 'Teroka komuniti terbuka, atau sertai dengan kod daripada ketua.'],
   err_failed: ['Something went wrong. Please try again.', 'कुछ गड़बड़ हुई। फिर कोशिश करें।', 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।', 'ஏதோ தவறு நடந்தது. மீண்டும் முயலுங்கள்.', '出了点问题，请重试。', 'Sesuatu tidak kena. Sila cuba lagi.'],
   leave_c: ['Leave this community', 'यह समुदाय छोड़ें', 'এই কমিউনিটি ছাড়ুন', 'இந்தச் சமூகத்தை விட்டு விலகு', '退出此社区', 'Tinggalkan komuniti ini'],
   // family here + sharing
@@ -74,7 +76,7 @@ registerStrings('rules', pageWords(R));
 
 export const EXPLORE_ALIASES = { heading: 'h_explore', search: 'search_c' } as const;
 export const REVIEW_ALIASES = { heading: 'h_review' } as const;
-export const INDEX_EXTRA_ALIASES = { explore: 'explore', limitInfo: 'slots_used', askStart: 'ask_start', joinOrCreate: 'have_code' } as const;
+export const INDEX_EXTRA_ALIASES = { explore: 'explore', limitInfo: 'slots_used', askStart: 'ask_start', joinOrCreate: 'have_code', noCommunityBody: 'none_body' } as const;
 export const REQUEST_ALIASES = {
   createTitle: 'h_request',
   createIntro: 'req_intro',

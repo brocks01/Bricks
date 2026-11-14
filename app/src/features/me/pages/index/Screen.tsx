@@ -7,6 +7,7 @@ import { El, useAction, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore, signOut } from '../../../../session/store';
 import { colors, space } from '../../../../theme/tokens';
+import '../../moreWords'; // registers the words of the More list
 import { meIndex as page } from './page';
 
 // Me = the person's own details, language, and sign out. Everything shown comes from their account.
@@ -36,6 +37,14 @@ export default function Me() {
       <El page={page} id="area"><Row icon="location-outline" label={w('area')} value={user?.area_name ?? notSet} /></El>
       <El page={page} id="editProfile"><Row icon="create-outline" label="" value={w('editProfile')} onPress={() => go('me.edit')} /></El>
       <El page={page} id="chooseLanguage"><Row icon="language" label={w('language')} value={current?.native ?? ''} onPress={() => go('language.pick')} /></El>
+      <Text style={{ fontSize: 20, fontWeight: '700', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('menu.more')}</Text>
+      <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
+      <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
+      <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />
+      <Row icon="trending-up-outline" label="" value={t('menu.progress')} onPress={() => go('grow.progress')} />
+      <Row icon="hand-left-outline" label="" value={t('menu.contributions')} onPress={() => go('grow.contributions')} />
+      <Row icon="fitness-outline" label="" value={t('menu.activity')} onPress={() => go('grow.activity')} />
+      <Row icon="compass-outline" label="" value={t('menu.library')} onPress={() => go('explore.home')} />
       {__DEV__ ? <Row icon="code-slash" label="" value="Agent test console (developer)" onPress={() => go('dev.console')} /> : null}
       <View style={{ height: space.md }} />
       <El page={page} id="signOut"><Button kind="danger" icon="log-out-outline" label={w('signOut')} onPress={() => void signOut()} /></El>

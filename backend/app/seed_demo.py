@@ -163,7 +163,7 @@ def seed_community(conn, c: dict) -> None:
                                 {"e": _handle(name, c["slug"]), "n": name, "a": area, "b": band}).one().id)
     cid = conn.execute(
         text("insert into communities (name, slug, kind, icon, description, area_name, cover_url, privacy, invite_code, is_demo, created_by) values "
-             "(:n, :s, :k, :i, :d, :a, :cv, 'invite', :c, true, :u) returning id"),
+             "(:n, :s, :k, :i, :d, :a, :cv, 'open', :c, true, :u) returning id"),
         {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "cv": _img(PHOTOS[c["slug"]][0]), "c": c["code"], "u": ids[0]}).one().id
     for u in ids:
         conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": u})
@@ -250,7 +250,7 @@ def seed(extra_emails: list[str]) -> None:
         real = [e.strip().lower() for e in extra_emails]
         for n, c in enumerate(COMMUNITIES):
             cid = conn.execute(text("select id from communities where slug = :s"), {"s": c["slug"]}).one().id
-            for i, e in enumerate(real):  # real accounts belong to all demo communities; the first one becomes Secretary so the manager view can be tried
+            for i, e in enumerate(real if n < 3 else []):  # a person is in three communities at most: the fourth demo community is there to explore  # real accounts belong to all demo communities; the first one becomes Secretary so the manager view can be tried
                 u = conn.execute(text("select id from users where email = :e"), {"e": e}).first()
                 if not u:
                     if n == 0:
@@ -264,7 +264,39 @@ def seed(extra_emails: list[str]) -> None:
                                      {"c": cid, "d": d, "u": u.id})
             fill(conn, cid, c["target"], n)
         seed_initiatives(conn)
+        seed_market(conn)
         print("demo communities ready: " + ", ".join(f"{c['name']} {c['target']}" for c in COMMUNITIES) + " members (real accounts included)")
+
+
+# Services the demo seniors offer in the Marketplace, with their experience and proof of work (demo data: the owners are demo people, removed by --reset).
+LISTINGS = [
+    ("Kueh and nyonya cooking lessons", "cooking", "skilled", 30, "Ran a kueh stall at Tekka Centre for 30 years.", 28, "Come to my kitchen or I come to yours. We make kueh lapis and ondeh-ondeh together."),
+    ("Fixing small appliances and bicycles", "repair", "skilled", 25, "Electrician with a town council for 25 years.", 20, "Rice cookers, fans, bicycles and loose wires. I explain what I do so you can do it next time."),
+    ("Business advice for small shops", "advice", "expert", 35, "Retail manager at a supermarket chain; trained more than 200 staff.", 45, "How to price, how to display, how to talk to customers. Good before a market day."),
+    ("Hokkien and old Singapore stories for children", "storytelling", "basic", 40, "Retired primary school teacher; has told stories at the library for 10 years.", None, "Free for schools and community centres. Short sessions, with pictures."),
+    ("Chinese calligraphy for beginners", "crafts", "skilled", 20, "Taught at a community club calligraphy class for 20 years.", 25, "Brush, ink and patience. Small groups of up to six."),
+    ("Gentle tai chi for seniors", "wellness", "skilled", 15, "Certified instructor at a community club.", 22, "Slow movements, done sitting or standing. Good for balance."),
+    ("Hand-sewn bags and cloth crafts", "crafts", "basic", 18, "Worked as a tailor for 18 years.", 15, "Learn to make a tote bag in one afternoon, or order one."),
+]
+
+
+def seed_market(conn) -> None:
+    """A few services and one market-day event, so the Marketplace and the stalls can be tried. Safe to run again."""
+    if conn.execute(text("select 1 from service_listings l join users u on u.id = l.owner_id where u.email like :d"), {"d": f"%@{DOMAIN}"}).first() is None:
+        owners = conn.execute(
+            text("select id, display_name, area_name from users where email like :d and age_band = '60plus' order by email limit :n"), {"d": f"%@{DOMAIN}", "n": len(LISTINGS)}).all()
+        for o, (title, cat, tier, years, proof, rate, desc) in zip(owners, LISTINGS):
+            conn.execute(
+                text("insert into service_listings (owner_id, title, category, description, tier, experience_years, proof_text, rate_per_hour, area_name) values (:o, :t, :c, :d, :tier, :y, :p, :r, :a)"),
+                {"o": o.id, "t": title, "c": cat, "d": desc, "tier": tier, "y": years, "p": proof, "r": rate, "a": o.area_name})
+        print(f"marketplace: {min(len(owners), len(LISTINGS))} demo services")
+    first = conn.execute(text("select id, created_by from communities where is_demo order by created_at limit 1")).first()
+    if first and conn.execute(text("select 1 from activities where community_id = :c and lower(category) = 'market'"), {"c": first.id}).first() is None:
+        conn.execute(
+            text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity) values "
+                 "(:c, :o, 'Sunday Market Day', 'Neighbours sell what they have made: kueh, cards, bags, crafts. Seniors run the stalls and bring a helper.', 'Market', now() + interval '5 days', now() + interval '5 days 4 hours', 'Void deck', 60)"),
+            {"c": first.id, "o": first.created_by})
+        print("market-day event created")
 
 
 def main(argv: list[str]) -> None:

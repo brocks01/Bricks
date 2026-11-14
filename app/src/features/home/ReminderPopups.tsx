@@ -10,6 +10,23 @@ import { sessionStore } from '../../session/store';
 import { colors, radius, size, space, type } from '../../theme/tokens';
 import { minutesUntil, popupsDue, type Popup } from './day';
 
+// Which pop-ups were already shown, kept for this browser tab so a reload does not show them again (web only; elsewhere it simply starts empty).
+const KEEP = 'bricks.popups.shown';
+const loadShown = (): Set<string> => {
+  try {
+    return new Set<string>(JSON.parse(globalThis.sessionStorage?.getItem(KEEP) ?? '[]'));
+  } catch {
+    return new Set<string>();
+  }
+};
+const saveShown = (s: Set<string>) => {
+  try {
+    globalThis.sessionStorage?.setItem(KEEP, JSON.stringify([...s].slice(-200)));
+  } catch {
+    /* private mode or no storage: the pop-ups may show again after a reload, nothing worse */
+  }
+};
+
 /**
  * The reminders the person never has to set: as a calendar item comes closer, a card slides in at the top two hours before, one hour before,
  * fifteen minutes before and when it starts ("Tai chi starts in 1 h 0 min"). Each is shown once. It lives in the root layout, so it shows on any screen.
@@ -23,7 +40,8 @@ export function ReminderPopups() {
   const { status, user } = useStore(sessionStore);
   const [occs, setOccs] = useState<Occurrence[]>([]);
   const [queue, setQueue] = useState<Popup[]>([]);
-  const shown = useRef(new Set<string>());
+  const shown = useRef<Set<string> | null>(null);
+  if (shown.current === null) shown.current = loadShown();
   const live = status === 'in' && !!user?.profile_complete;
 
   const fetchDay = useCallback(() => {
@@ -42,9 +60,11 @@ export function ReminderPopups() {
   useEffect(() => {
     if (!live) return;
     const check = () => {
-      const due = popupsDue(occs, new Date(), shown.current);
+      const seen = shown.current ?? new Set<string>();
+      const due = popupsDue(occs, new Date(), seen);
       if (!due.length) return;
-      due.forEach((d) => shown.current.add(d.key)); // shown once, whether or not the person reads it
+      due.forEach((d) => seen.add(d.key)); // shown once, whether or not the person reads it
+      saveShown(seen);
       setQueue((q) => [...q, ...due]);
     };
     check();

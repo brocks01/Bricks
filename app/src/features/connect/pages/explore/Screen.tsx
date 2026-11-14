@@ -111,6 +111,7 @@ export default function Explore() {
           title={c.name}
           sub={`${t('common.members', { n: c.member_count })}${c.area_name ? ' · ' + c.area_name : ''}${c.family_here.length ? ' · ' + w('family_here_n', { n: c.family_here.length }) : ''}`}
           onPress={c.joined ? () => navigate('community.home', { id: c.id }) : undefined}
+          rightIsButton
           right={
             c.joined ? (
               <View style={{ alignItems: 'flex-end', gap: space.xs }}>
@@ -121,6 +122,8 @@ export default function Explore() {
               <View style={{ minWidth: 88 }}><Button label={w('join_c')} onPress={() => void join(c)} /></View>
             ) : c.privacy === 'invite' ? (
               <View style={{ maxWidth: 140 }}><Text style={[type.small, { color: colors.muted }]}>{w('invite_only')}</Text></View>
+            ) : full ? (
+              <View style={{ maxWidth: 110 }}><Text style={[type.small, { color: colors.warn, fontWeight: '700' }]}>{w('leave_first')}</Text></View>
             ) : null
           }
         />

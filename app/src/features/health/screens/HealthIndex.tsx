@@ -68,7 +68,7 @@ export default function HealthIndex() {
       : {
           values: [
             { label: w('moved_q'), value: st.answered ? (st.moved ? w('yes') : w('no')) : '—' },
-            { label: w('streak_0'), value: st.streak ? w('streak_n', { n: st.streak }) : w('streak_0') },
+            { label: w('streak_0'), value: st.streak ? (st.streak === 1 ? w('streak_one') : w('streak_n', { n: st.streak })) : w('streak_0') },
             { label: w('this_week'), value: `${weekMinutes} ${w('minutes')}` },
           ],
           images: [],
@@ -86,7 +86,7 @@ export default function HealthIndex() {
         {st?.answered ? (
           <View style={{ marginTop: space.sm, gap: space.sm }}>
             <Text style={[type.body, { color: colors.ink }]}>{st.moved ? w('answered_yes') : w('answered_no')}</Text>
-            <Pill text={st.streak ? w('streak_n', { n: st.streak }) : w('streak_0')} />
+            <Pill text={st.streak ? (st.streak === 1 ? w('streak_one') : w('streak_n', { n: st.streak })) : w('streak_0')} />
             <Text style={[type.small, { color: colors.muted }]}>{w('change')}</Text>
           </View>
         ) : null}

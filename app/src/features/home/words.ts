@@ -34,6 +34,7 @@ export const W: WordTable = {
   no: ['No', 'नहीं', 'না', 'இல்லை', '否', 'Tidak'],
   checked: ['Checked in today', 'आज की जाँच हो गई', 'আজ চেক-ইন হয়েছে', 'இன்று பதிவு செய்தாகிவிட்டது', '今天已打卡', 'Sudah daftar hari ini'],
   streak_n: ['{n} days in a row', 'लगातार {n} दिन', 'টানা {n} দিন', 'தொடர்ந்து {n} நாட்கள்', '连续 {n} 天', '{n} hari berturut-turut'],
+  streak_one: ['1 day in a row', 'लगातार 1 दिन', 'টানা ১ দিন', 'தொடர்ந்து 1 நாள்', '连续 1 天', '1 hari berturut-turut'],
   streak_0: ['A fresh start today', 'आज नई शुरुआत', 'আজ নতুন শুরু', 'இன்று புதிய தொடக்கம்', '今天重新开始', 'Permulaan baharu hari ini'],
   tracking: ['Your week', 'आपका सप्ताह', 'আপনার সপ্তাহ', 'உங்கள் வாரம்', '你的一周', 'Minggu anda'],
   active_min: ['Active minutes', 'सक्रिय मिनट', 'সক্রিয় মিনিট', 'சுறுசுறுப்பான நிமிடங்கள்', '活动分钟', 'Minit aktif'],

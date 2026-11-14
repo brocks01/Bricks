@@ -3,8 +3,8 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { CATEGORIES, getListings, type Listing } from '../../../api/market';
-import { Empty, ListRow, Pill } from '../../../components/blocks';
-import { Button, ChoiceChips, Screen } from '../../../components/ui';
+import { ChipRow, Empty, ListRow, Pill } from '../../../components/blocks';
+import { Button, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
@@ -67,7 +67,7 @@ export default function MarketIndex() {
         </El>
       </View>
       <El page={page} id="category">
-        <ChoiceChips label="" options={['all', ...CATEGORIES].map((c) => ({ value: c, label: c === 'all' ? w('all') : w(categoryWord(c as never)) }))} value={category} onChange={setCategory} />
+        <ChipRow options={['all', ...CATEGORIES].map((c) => ({ value: c, label: c === 'all' ? w('all') : w(categoryWord(c as never)) }))} value={category} onChange={setCategory} />
       </El>
 
       <View style={{ flexDirection: 'row', gap: space.sm, marginBottom: space.md }}>

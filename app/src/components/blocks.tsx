@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { ReactNode } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { colors, radius, size, space, tints, type } from '../theme/tokens';
 
 // Small building blocks the four main tabs share, so they look like one app. Colours and sizes come from the tokens only; no words of their own.
@@ -51,7 +51,24 @@ export function Tile({ icon, i = 0, dim = size.thumb }: { icon: IconName; i?: nu
 }
 
 /** A row: tile, title and a line under it, an optional right side. Tap it when `onPress` is given. */
-export function ListRow({ icon, i, title, sub, right, onPress }: { icon: IconName; i?: number; title: string; sub?: string; right?: ReactNode; onPress?: () => void }) {
+export function ListRow({ icon, i, title, sub, right, onPress, rightIsButton }: { icon: IconName; i?: number; title: string; sub?: string; right?: ReactNode; onPress?: () => void; rightIsButton?: boolean }) {
+  // A button inside a button is invalid on the web: when the right side has its own buttons, only the left part (picture and words) is the tap target.
+  if (onPress && rightIsButton) {
+    return (
+      <Panel>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+          <Pressable onPress={onPress} accessibilityRole="button" accessibilityLabel={title} style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+            <Tile icon={icon} i={i} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink }} numberOfLines={2}>{title}</Text>
+              {sub ? <Text style={[type.small, { color: colors.muted, marginTop: 2 }]} numberOfLines={2}>{sub}</Text> : null}
+            </View>
+          </Pressable>
+          {right}
+        </View>
+      </Panel>
+    );
+  }
   return (
     <Panel onPress={onPress} label={title}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
@@ -63,6 +80,22 @@ export function ListRow({ icon, i, title, sub, right, onPress }: { icon: IconNam
         {right}
       </View>
     </Panel>
+  );
+}
+
+/** One row of choices that scrolls sideways (for long lists such as the kinds of service); the chosen one is green. */
+export function ChipRow<T extends string>({ options, value, onChange }: { options: { value: T; label: string }[]; value: T; onChange: (v: T) => void }) {
+  return (
+    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: space.sm, paddingRight: space.lg }} style={{ marginBottom: space.md, flexGrow: 0 }}>
+      {options.map((o) => {
+        const on = o.value === value;
+        return (
+          <Pressable key={o.value} onPress={() => onChange(o.value)} accessibilityRole="button" accessibilityState={{ selected: on }} style={{ minHeight: size.touch, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: on ? colors.accent : colors.card, borderWidth: 1, borderColor: on ? colors.accent : colors.line, alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ fontSize: 16, fontWeight: '700', color: on ? colors.card : colors.ink }}>{o.label}</Text>
+          </Pressable>
+        );
+      })}
+    </ScrollView>
   );
 }
 

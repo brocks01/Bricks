@@ -185,7 +185,7 @@ export default function HomeIndex() {
         {sum?.health.answered ? (
           <Panel tone="soft">
             <Text style={[type.h2, { color: colors.ink }]}>{w('checked')}</Text>
-            <Text style={[type.small, { color: colors.muted }]}>{sum.health.streak ? w('streak_n', { n: sum.health.streak }) : w('streak_0')}</Text>
+            <Text style={[type.small, { color: colors.muted }]}>{sum.health.streak ? (sum.health.streak === 1 ? w('streak_one') : w('streak_n', { n: sum.health.streak })) : w('streak_0')}</Text>
           </Panel>
         ) : (
           <Panel>

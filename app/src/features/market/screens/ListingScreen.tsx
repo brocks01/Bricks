@@ -145,11 +145,9 @@ export default function ListingScreen() {
         </Section>
       ) : null}
 
-      <ErrorText>{error}</ErrorText>
-      {msg ? <Notice text={msg} /> : null}
-
       {l.mine ? (
         <View style={{ marginTop: space.lg, gap: space.sm }}>
+          <ErrorText>{error}</ErrorText>
           <El page={page} id="pause"><Button label={l.status === 'paused' ? w('unpause_listing') : w('pause_listing')} kind="plain" onPress={pause} /></El>
           <El page={page} id="removeListing"><Button label={w('remove_listing')} kind="danger" onPress={remove} /></El>
         </View>
@@ -166,6 +164,10 @@ export default function ListingScreen() {
             <El page={page} id="hours"><Field label={w('f_hours')} value={hours} onChangeText={setHours} keyboardType="numeric" maxLength={4} /></El>
             <El page={page} id="note"><Field label={w('f_note')} value={note} onChangeText={setNote} maxLength={500} /></El>
             <El page={page} id="sendRequest"><Button label={w('send_request')} icon="paper-plane-outline" onPress={send} /></El>
+            <View style={{ marginTop: space.sm }}>
+              <ErrorText>{error}</ErrorText>
+              {msg ? <Notice text={msg} /> : null}
+            </View>
             <Text style={[type.small, { color: colors.muted, marginTop: space.sm }]}>{w('payment_note')}</Text>
           </Section>
 
@@ -173,6 +175,10 @@ export default function ListingScreen() {
             <Section title={w('endorse_title')}>
               <El page={page} id="endorseNote"><Field label={w('endorse_note')} value={thanks} onChangeText={setThanks} maxLength={200} /></El>
               <El page={page} id="endorse"><Button label={w('endorse_btn')} icon="heart-outline" onPress={thank} /></El>
+              <View style={{ marginTop: space.sm }}>
+                <ErrorText>{error}</ErrorText>
+                {msg ? <Notice text={msg} /> : null}
+              </View>
             </Section>
           ) : null}
         </>
