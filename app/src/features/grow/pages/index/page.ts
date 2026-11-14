@@ -6,8 +6,6 @@ export const growIndex = definePage({
   key: 'grow.index',
   module: 'grow',
   route: '/grow',
-  tab: 2,
-  icon: 'heart',
   requiresAuth: true,
   summary: 'Your wellbeing, aspirations and personal journey: six cards (Health, Activity, Aspirations, Explore, My Progress, My Contributions). Only Explore is built so far.',
   keywords: ['grow', 'goals', 'health', 'wellbeing', 'learning', 'personal', 'explore', 'aspirations', 'progress'],

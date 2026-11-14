@@ -21,6 +21,7 @@ export default function MineScreen() {
   const [listings, setListings] = useState<Listing[] | null>(null);
   const [bookings, setBookings] = useState<Booking[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [nowMs] = useState(() => Date.now()); // when the page opened: enough to know whether a booking has already happened
 
   const load = useCallback(() => {
     getListings('', undefined, true).then(setListings).catch(() => setListings([]));
@@ -45,7 +46,7 @@ export default function MineScreen() {
   const incoming = (bookings ?? []).filter((b) => b.role === 'provider');
   const outgoing = (bookings ?? []).filter((b) => b.role === 'requester');
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
-  const past = (iso: string) => new Date(iso).getTime() < Date.now();
+  const past = (iso: string) => new Date(iso).getTime() < nowMs;
   const statusPill = (s: Booking['status']) => <Pill text={w(`status_${s === 'cancelled' ? 'declined' : s}`)} tone={s === 'requested' ? 'warn' : s === 'accepted' || s === 'done' ? 'soft' : 'quiet'} />;
 
   usePageData(

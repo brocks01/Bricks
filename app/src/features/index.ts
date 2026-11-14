@@ -10,4 +10,5 @@ import './dev/module';
 import './family/module';
 import './calendar/module';
 import './health/module';
+import './home/module';
 import './market/module';

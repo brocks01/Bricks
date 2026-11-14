@@ -6,8 +6,8 @@ import { strings } from './strings';
 export const connectIndex = definePage({
   key: 'connect.index',
   module: 'connect',
-  route: '/',
-  tab: 1,
+  route: '/communities',
+  tab: 2,
   icon: 'people',
   requiresAuth: true,
   summary: 'Connect: find and open your communities, join or create one, and see the next few events across them.',

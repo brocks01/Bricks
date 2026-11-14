@@ -7,8 +7,6 @@ export const calendarToday = definePage({
   key: 'calendar.today',
   module: 'calendar',
   route: '/calendar',
-  tab: 4,
-  icon: 'calendar',
   requiresAuth: true,
   summary: 'The week ahead for one person: medicines, appointments, exercise and events, with done and skipped marks. Add a plan, or open the calendar of a family member I hold access for.',
   keywords: ['calendar', 'today', 'week', 'medicine', 'appointment', 'reminders'],

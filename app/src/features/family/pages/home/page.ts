@@ -7,8 +7,6 @@ export const familyHome = definePage({
   key: 'family.home',
   module: 'family',
   route: '/family',
-  tab: 3,
-  icon: 'people',
   requiresAuth: true,
   summary: 'My families: the space where family members help each other set up and look after accounts. Create a family or join one with a code.',
   keywords: ['family', 'families', 'home', 'members', 'help'],

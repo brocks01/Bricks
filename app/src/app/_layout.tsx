@@ -7,6 +7,7 @@ import { AgentSurface } from '../components/AgentSurface';
 import { AppTabBar } from '../components/AppTabBar';
 import { AuthGate } from '../components/AuthGate';
 import { PhoneFrame } from '../components/PhoneFrame';
+import { ReminderPopups } from '../features/home/ReminderPopups';
 import { LanguageProvider } from '../i18n';
 import { NavigationProvider } from '../navigation';
 import type { Guard } from '../navigation/types';
@@ -28,6 +29,7 @@ export default function RootLayout() {
               <View style={{ flex: 1 }}>
                 <Stack screenOptions={{ headerShown: false }} />
                 <AgentSurface />
+                <ReminderPopups />
               </View>
             </AuthGate>
             <AppTabBar />

@@ -24,14 +24,14 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('ten modules', allModules().length === 10, String(allModules().length));
+check('thirteen modules', allModules().length === 13, String(allModules().length));
 check('grow has six pages, each needs sign-in', allPages().filter((p) => p.module === 'grow').length === 6 && allPages().filter((p) => p.module === 'grow').every((p) => !!p.requiresAuth));
 check('grow pages have a heading in all six languages', allPages().filter((p) => p.module === 'grow' && p.key !== 'grow.index').every((p) => Object.values(p.strings).length === 6 && Object.values(p.strings).every((w) => !!(w as Record<string, string>).heading)));
 check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);
 check('explore item page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'explore.item'); return !!p && p.route === '/explore/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
 check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
 check('every explore category and format has words in all six languages', (() => { const ids = ['digital_skills', 'health_awareness', 'everyday_life', 'hobbies', 'culture', 'knowledge', 'guide', 'video', 'interactive', 'story', 'audio', 'activity', 'easy', 'medium']; const lines = ids.filter((i) => i.indexOf('_') > 0 && i !== 'digital_skills' || i === 'digital_skills').map((i) => i + '_line'); const st = allPages().find((x) => x.key === 'explore.home')!.strings; return Object.values(st).length === 6 && Object.values(st).every((words) => [...ids, ...lines.filter((l) => l in (st.en ?? {}))].every((k) => !!(words as Record<string, string>)[k])); })());
-check('four tabs: Connect, Grow, Family and Calendar', tabPages().map((p) => p.key).join(',') === 'connect.index,grow.index,family.home,calendar.today', tabPages().map((p) => p.key).join(','));
+check('four tabs: Home, Community, Marketplace and Health', tabPages().map((p) => p.key).join(',') === 'home.index,connect.index,market.index,health.index', tabPages().map((p) => p.key).join(','));
 check('calendar has four pages, each needs sign-in', allPages().filter((p) => p.module === 'calendar').length === 4 && allPages().filter((p) => p.module === 'calendar').every((p) => !!p.requiresAuth));
 check('the medicine form always carries the not-medical-advice note', !!allPages().find((x) => x.key === 'calendar.new')?.elements.notMedical);
 check('the plan page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'calendar.item'); return !!p && p.route === '/calendar/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
@@ -43,7 +43,7 @@ check('element parses', parsePath('me.edit.displayName')?.level === 'element');
 check('unknown path is null', childrenOf('me.nope') === null && childrenOf('nope') === null);
 check('describe element', (describe('me.edit.displayName') ?? '').includes('required') && (describe('me.edit') ?? '').includes('me.edit.save'));
 check('describe has no code or routes', !(describe('me.edit') ?? '').includes('/profile/edit'));
-check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForPath('/')?.key === 'connect.index' && pageForPath('/grow')?.key === 'grow.index' && pageForPath('/profile/edit')?.key === 'me.edit' && pageForPath('/sign-in')?.key === 'auth.signIn');
+check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForPath('/')?.key === 'home.index' && pageForPath('/communities')?.key === 'connect.index' && pageForPath('/market')?.key === 'market.index' && pageForPath('/health')?.key === 'health.index' && pageForPath('/health-records')?.key === 'grow.health' && pageForPath('/grow')?.key === 'grow.index' && pageForPath('/profile/edit')?.key === 'me.edit' && pageForPath('/sign-in')?.key === 'auth.signIn');
 check('private pages need sign-in', (() => { const d = resolvePage('me.edit', {}, signedOut); return !d.ok && d.reason === 'denied'; })());
 check('sign-in pages open without sign-in', resolvePage('auth.signIn', {}, signedOut).ok && resolvePage('language.pick', {}, signedOut).ok);
 check('sign-in pages have no bottom bar', allPages().filter((p) => p.module === 'auth').every((p) => p.bare));
@@ -187,13 +187,13 @@ const agent = createAgentTools({
   check('run: sign out waits for approval', w.status === 'awaiting_approval');
 
   // language (nobody is signed in, so it only changes this device)
-  check('english default', t('connect.index.tab') === 'Connect' && t('grow.index.tab') === 'Grow');
+  check('english default', t('connect.index.tab') === 'Community' && t('home.index.tab') === 'Home' && t('market.index.tab') === 'Marketplace' && t('health.index.tab') === 'Health');
   await agent.call('run', { skill: 'language/set', input: { code: 'hi' } });
-  check('language/set hi', t('connect.index.tab') === 'जुड़ें' && t('common.comingSoon') === 'जल्द आ रहा है');
+  check('language/set hi', t('connect.index.tab') === 'समुदाय' && t('common.comingSoon') === 'जल्द आ रहा है');
   const bad = (await agent.call('fill', { path: 'language.pick.language', value: 'xx' })) as { ok?: boolean };
   check('choice refuses a value that is not an option', bad.ok === false);
   await agent.call('fill', { path: 'language.pick.language', value: 'ta' });
-  check('choice fill by key changes the language', t('connect.index.tab') === 'இணை');
+  check('choice fill by key changes the language', t('connect.index.tab') === 'சமூகம்');
 
   // the agent canvas: what the model sends is validated before anything can be shown
   const showSpec = toolSpecs.find((s) => s.name === 'show');

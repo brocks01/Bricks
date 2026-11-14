@@ -20,6 +20,13 @@ import { colors } from '../theme/tokens';
  * the Canvas takes the space they occupied, and the agent bar stays. Closing the Canvas brings the tabs back,
  * on the page the person was already on.
  */
+// Which tab a page belongs to: the pages behind a tab keep that tab lit (a listing is Marketplace, the calendar and family are Home, walks are Health).
+const TAB_OF_MODULE: Record<string, string> = {
+  home: 'home.index', calendar: 'home.index', family: 'home.index', me: 'home.index', language: 'home.index',
+  connect: 'connect.index', community: 'connect.index', explore: 'connect.index',
+  market: 'market.index', health: 'health.index', grow: 'health.index',
+};
+
 export function AppTabBar() {
   const t = useT();
   const go = useNavigate();
@@ -54,7 +61,7 @@ export function AppTabBar() {
         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
           {tabPages()
             .map((p) => {
-            const active = current?.key === p.key;
+            const active = (TAB_OF_MODULE[current?.module ?? ''] ?? current?.key) === p.key; // a page inside a section keeps its tab lit
             const icon = (active ? p.icon : `${p.icon}-outline`) as keyof typeof Ionicons.glyphMap;
             return (
               <Pressable key={p.key} onPress={() => go(p.key)} accessibilityRole="tab" accessibilityState={{ selected: active }} style={{ flex: 1, alignItems: 'center', gap: 1 }}>
