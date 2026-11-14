@@ -37,6 +37,7 @@ class _NoSmtp:
 def never_send_real_mail(monkeypatch):
     monkeypatch.delenv("BREVO_API_KEY", raising=False)
     monkeypatch.delenv("RESEND_API_KEY", raising=False)
+    monkeypatch.setenv("COMMUNITY_CREATION", "open")  # the older tests make communities freely; the request flow has its own tests that switch this off
     monkeypatch.setattr(mail.smtplib, "SMTP", _NoSmtp)
     _NoSmtp.sent.clear()
     yield

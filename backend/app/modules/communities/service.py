@@ -95,6 +95,8 @@ def detail(conn: Connection, user_id: str, community_id: str) -> dict:
         text("select id, kind, title, description, contact, created_at from opportunities where community_id = :c and status = 'open' order by created_at desc limit 5"),
         {"c": community_id}).all()
     member_count = conn.execute(text("select count(*) from memberships where community_id = :c and status = 'active'"), {"c": community_id}).scalar_one()
+    from . import rules
+    fam = rules.family_here(conn, user_id, [community_id])[community_id]
     iso = lambda d: d.isoformat() if d else None  # noqa: E731
     return {
         "community": {"id": str(c.id), "name": c.name, "kind": c.kind, "description": c.description, "area_name": c.area_name, "privacy": c.privacy,
@@ -102,6 +104,8 @@ def detail(conn: Connection, user_id: str, community_id: str) -> dict:
                       "invite_code": c.invite_code if can_manage else None},
         "my_role": role,
         "can_manage": can_manage,
+        "family_here": fam,
+        "my_share": rules.my_share(conn, user_id, community_id),
         "announcements": [{"id": str(a.id), "title": a.title, "body": a.body, "pinned": a.pinned, "author": a.author, "created_at": iso(a.created_at)} for a in announcements],
         "activities": [{"id": str(a.id), "title": a.title, "description": a.description, "category": a.category, "starts_at": iso(a.starts_at), "ends_at": iso(a.ends_at),
                         "location": a.location, "capacity": a.capacity, "image_url": a.image_url, "going_count": a.going_count, "i_going": a.i_going} for a in activities],
@@ -135,6 +139,8 @@ def join(conn: Connection, user_id: str, code: str) -> dict:
     c = conn.execute(text("select id from communities where invite_code = :c and status = 'active'"), {"c": code.strip().upper()}).first()
     if c is None:
         raise CommunityError("code_invalid", 404)
+    from . import rules  # imported here: rules.py imports this module
+    rules.check_slot(conn, user_id, str(c.id))  # three communities at most
     conn.execute(
         text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active', left_at = null, joined_at = now()"),
         {"c": c.id, "u": user_id})

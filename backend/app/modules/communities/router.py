@@ -45,6 +45,10 @@ def upcoming(limit: int = 3, user_id: str = Depends(current_user_id), conn: Conn
 
 @router.post("")
 def create(body: CreateIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    # Communities are few and curated: only the platform's own admins create one directly; everyone else sends a request (rules_router).
+    from . import rules
+    if not (rules.creation_open() or rules.is_admin(conn, user_id)):
+        return JSONResponse(status_code=403, content={"detail": {"code": "creation_by_request"}})
     return service.create(conn, user_id, body.model_dump())
 
 
