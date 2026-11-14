@@ -1,5 +1,6 @@
 {
   "typescript.tsdk": "app/node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "files.eol": "\n"
+  "files.eol": "\n",
+  "python.terminal.useEnvFile": true
 }
