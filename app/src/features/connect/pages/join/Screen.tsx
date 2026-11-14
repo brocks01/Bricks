@@ -25,7 +25,7 @@ export default function JoinCommunity() {
       const r = await joinCommunity(c);
       go('community.home', { id: r.id }, { replace: true });
     } catch (e) {
-      setError(e instanceof ApiError && e.status === 404 ? w('codeBad') : w('failed'));
+      setError(e instanceof ApiError && e.status === 404 ? w('codeBad') : e instanceof ApiError && e.code === 'community_limit' ? w('err_limit') : w('failed'));
     } finally {
       setBusy(false);
     }

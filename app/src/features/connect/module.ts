@@ -1,12 +1,12 @@
 import { defineModule } from '../../navigation/registry';
 import { connectIndex } from './pages/index/page';
-import { connectCreate, connectJoin } from './pages';
+import { connectCreate, connectExplore, connectJoin, connectReview } from './pages';
 
 defineModule({
   id: 'connect',
-  title: 'Connect',
-  summary: 'Your community and everything happening in it: a greeting, the join-or-create entry (join with an invite code, or create a community), and the next events.',
+  title: 'Community',
+  summary: 'Your communities (three at most), exploring the others, joining with a code or an open invitation, and asking the Bricks team to start a new one. Everything inside a community (events, people, updates) is in the community module.',
   keywords: ['community', 'activities', 'events', 'people', 'home'],
-  pages: [connectIndex, connectJoin, connectCreate],
+  pages: [connectIndex, connectExplore, connectJoin, connectCreate, connectReview],
   skills: [],
 });

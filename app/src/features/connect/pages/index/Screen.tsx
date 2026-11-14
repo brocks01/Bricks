@@ -53,6 +53,8 @@ export default function ConnectIndex() {
     }
   }, []);
 
+  const used = mine?.length ?? 0;
+  const full = used >= 3;
   const list = (mine ?? []).filter((c) => c.name.toLowerCase().includes(q.trim().toLowerCase()));
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const card = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.sm, marginBottom: space.sm } as const;
@@ -90,7 +92,11 @@ export default function ConnectIndex() {
               })),
             },
           ],
-          actions: [{ id: 'joinOrCreate', label: w('joinOrCreate'), run: () => { navigate('connect.join'); } }],
+          actions: [
+            { id: 'explore', label: w('explore'), run: () => { navigate('connect.explore'); } },
+            { id: 'joinOrCreate', label: w('joinOrCreate'), run: () => { navigate('connect.join'); } },
+            { id: 'askStart', label: w('askStart'), run: () => { navigate('connect.create'); } },
+          ],
         }
   );
 
@@ -154,7 +160,12 @@ export default function ConnectIndex() {
         </View>
       ) : null}
 
-      <El page={page} id="joinOrCreate"><Button label={w('joinOrCreate')} onPress={() => { navigate('connect.join'); }} icon="add-circle" /></El>
+      <El page={page} id="limitInfo"><Text style={[type.small, { color: full ? colors.warn : colors.muted, fontWeight: full ? '700' : '400', marginBottom: space.sm }]}>{full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })}</Text></El>
+      <El page={page} id="explore"><Button label={w('explore')} onPress={() => { navigate('connect.explore'); }} icon="search" /></El>
+      <View style={{ height: space.sm }} />
+      <El page={page} id="joinOrCreate"><Button label={w('joinOrCreate')} kind="plain" onPress={() => { navigate('connect.join'); }} icon="key-outline" /></El>
+      <View style={{ height: space.sm }} />
+      <El page={page} id="askStart"><Button label={w('askStart')} kind="plain" onPress={() => { navigate('connect.create'); }} icon="add-circle-outline" /></El>
       <View style={{ height: space.lg }} />
 
       {soon.length ? (

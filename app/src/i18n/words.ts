@@ -24,3 +24,10 @@ export function pageWords(table: WordTable, aliases: Record<string, string> = {}
   });
   return out;
 }
+
+/** Two sets of strings as one; where both say the same id, the second wins (so a page can keep its old words and change a few). */
+export function mergeStrings(a: PageStrings, b: PageStrings): PageStrings {
+  const out: PageStrings = {};
+  for (const lang of ORDER) out[lang] = { ...(a[lang] ?? {}), ...(b[lang] ?? {}) };
+  return out;
+}

@@ -3,6 +3,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getCommunity, setGoing, type CommunityDetail } from '../../../../api/communities';
+import { ApiError } from '../../../../api/client';
+import { leaveCommunity, shareWithFamily } from '../../../../api/communityRules';
 import { SkeletonPage } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -29,6 +31,7 @@ export default function CommunityHome() {
   const { status } = useStore(sessionStore);
   const [data, setData] = useState<CommunityDetail | null>(null);
   const [failed, setFailed] = useState(false);
+  const [ruleError, setRuleError] = useState<string | null>(null);
   const go = useNavigate();
   const open = (area: 'events' | 'activities' | 'people' | 'initiatives') => { go(`community.${area}`, { id: String(id) }); };
   const [now] = useState(() => Date.now());
@@ -52,6 +55,25 @@ export default function CommunityHome() {
       await setGoing(activityId, !now);
     } catch {
       patch(now);
+    }
+  };
+
+  const toggleShare = async (on: boolean) => {
+    setRuleError(null);
+    try {
+      await shareWithFamily(String(id), on);
+      setData((d) => (d ? { ...d, my_share: on } : d));
+    } catch {
+      setRuleError(t('rules.err_failed'));
+    }
+  };
+  const leave = async () => {
+    setRuleError(null);
+    try {
+      await leaveCommunity(String(id));
+      go('connect.index');
+    } catch (e) {
+      setRuleError(e instanceof ApiError && e.code === 'last_lead' ? t('rules.err_last_lead') : t('rules.err_failed'));
     }
   };
 
@@ -188,6 +210,29 @@ export default function CommunityHome() {
           {u.author ? <Text style={[type.small, { color: colors.muted, marginTop: space.xs }]}>{u.author}</Text> : null}
         </Pressable>
       )) : <Text style={[type.body, { color: colors.muted }]}>{w('noUpdates')}</Text>}
+
+      {data.activities.some((a) => (a.category ?? '').trim().toLowerCase() === 'market') ? (
+        <View style={{ marginTop: space.md }}>
+          {data.activities.filter((a) => (a.category ?? '').trim().toLowerCase() === 'market').map((a) => (
+            <Button key={a.id} label={`${t('rules.stalls_link')} · ${a.title}`} kind="plain" icon="storefront-outline" onPress={() => go('market.stall', { id: a.id })} />
+          ))}
+        </View>
+      ) : null}
+
+      {data.family_here && data.family_here.length ? (
+        <View style={[card, { marginTop: space.lg, backgroundColor: colors.accentSoft, borderColor: colors.accentLine }]}>
+          <Text style={[type.h2, { color: colors.ink }]}>{t('rules.family_here_title')}</Text>
+          <Text style={[type.body, { color: colors.ink, marginTop: space.xs }]}>{data.family_here.map((f) => f.name || '').filter(Boolean).join(', ') || t('rules.family_here_n', { n: data.family_here.length })}</Text>
+        </View>
+      ) : null}
+
+      <View style={[card, { marginTop: space.md }]}>
+        <Text style={[type.h2, { color: colors.ink }]}>{t('rules.share_label')}</Text>
+        <Text style={[type.small, { color: colors.muted, marginVertical: space.xs }]}>{data.my_share ? t('rules.share_on') : t('rules.share_off')}</Text>
+        <Button label={data.my_share ? t('rules.share_off') : t('rules.share_label')} kind={data.my_share ? 'plain' : 'primary'} onPress={() => void toggleShare(!data.my_share)} />
+      </View>
+      {ruleError ? <Text style={[type.small, { color: colors.danger, fontWeight: '600', marginBottom: space.sm }]}>{ruleError}</Text> : null}
+      <Button label={t('rules.leave_c')} kind="danger" icon="exit-outline" onPress={() => void leave()} />
     </Screen>
   );
 }

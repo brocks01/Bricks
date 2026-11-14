@@ -38,6 +38,10 @@ export interface CommunityDetail {
   community: { id: string; name: string; kind: string; description: string | null; area_name: string | null; privacy: string; logo_url: string | null; cover_url: string | null; member_count: number; is_demo: boolean; invite_code: string | null };
   my_role: string;
   can_manage: boolean;
+  /** Family members who are in this community and chose to let their family see it. */
+  family_here?: { id: string; name: string }[];
+  /** Whether I let my family see that I am here. */
+  my_share?: boolean;
   announcements: { id: string; title: string; body: string; pinned: boolean; author: string | null; created_at: string }[];
   activities: { id: string; title: string; description: string | null; category: string | null; starts_at: string; ends_at: string | null; location: string | null; capacity: number | null; image_url: string | null; going_count: number; i_going: boolean }[];
   members: { id: string; name: string; area: string | null; role: string }[];
