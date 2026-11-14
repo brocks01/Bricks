@@ -24,3 +24,16 @@ export const type = {
 };
 
 export const radius = { card: 18, pill: 999, button: 14 };
+
+// Soft tile backgrounds for pictures-without-pictures (a symbol on a tinted square). One place, so no screen types a colour.
+export const tints = { green: '#E3F1E7', lilac: '#E8E6F8', lime: '#E6F4E1', sand: '#FBEFD9', sky: '#E4EEF8' };
+
+// Sizes that more than one screen needs, named once: icons, the smallest thing a finger can hit, pictures, bars.
+export const size = {
+  icon: { sm: 18, md: 22, lg: 28, xl: 40 },
+  touch: 48, // never smaller than this for something to tap
+  thumb: 56,
+  avatar: 44,
+  bar: 10, // thickness of a progress bar
+  chart: 72, // height of a small bar chart
+};

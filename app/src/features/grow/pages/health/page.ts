@@ -4,7 +4,7 @@ import { pageStrings } from '../../words';
 export const growHealth = definePage({
   key: 'grow.health',
   module: 'grow',
-  route: '/health',
+  route: '/health-records',
   requiresAuth: true,
   summary: 'The person\'s own health records: latest heart rate, sleep, weight and blood pressure, with a form to add a reading. Not medical advice.',
   keywords: ['grow', 'health'],
