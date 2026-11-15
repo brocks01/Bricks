@@ -1,32 +1,22 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Image, Pressable, Text, TextInput, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
+import { getStalls, type Stall } from '../../../../api/market';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
-import { El, useField, usePageData, usePageWords } from '../../../../kit';
+import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
+import '../../cardWords'; // registers the words of the cards
+import { CommunityCard, ListEntry, MarketDayCard } from '../../CommunityCards';
 import { connectIndex as page } from './page';
 
-// The Connect dashboard, as in the owner's Connect sample (see team-docs/06-technical/ui-build-spec.md): heading, find (with a filter button), My communities (a picture or symbol,
-// name, members), ONE green Join-or-create entry, and a compact Coming up with a Join button. Nothing else belongs here.
-// Everything shown comes from the database. A community without a cover picture shows its symbol on a soft tile.
-const TINTS = ['#E3F1E7', '#E8E6F8', '#E6F4E1', '#FBEFD9'];
-const symbol = (name: string) => (name in (Ionicons.glyphMap as Record<string, unknown>) ? (name as keyof typeof Ionicons.glyphMap) : 'people');
-
-function Thumb({ icon, size, i, uri }: { icon: string; size: number; i: number; uri?: string | null }) {
-  if (uri) return <Image source={{ uri }} accessibilityIgnoresInvertColors style={{ width: size, height: size, borderRadius: 14, backgroundColor: TINTS[i % TINTS.length] }} />;
-  return (
-    <View style={{ width: size, height: size, borderRadius: 14, backgroundColor: TINTS[i % TINTS.length], alignItems: 'center', justifyContent: 'center' }}>
-      <Ionicons name={symbol(icon)} size={size * 0.5} color={colors.accent} />
-    </View>
-  );
-}
-
+// The Communities tab, laid out like the owner's design: how many places are used, the next Market Day, one card per community (its next gathering and how many
+// are going), "Happening near you", and a short list at the bottom (explore, join with a code, the marketplace, ask to start one). Everything comes from the database.
 export default function ConnectIndex() {
   const w = usePageWords(page);
   const navigate = useNavigate();
@@ -35,19 +25,25 @@ export default function ConnectIndex() {
   const { status } = useStore(sessionStore);
   const [mine, setMine] = useState<MyCommunity[] | null>(null);
   const [soon, setSoon] = useState<Upcoming[]>([]);
-  const [q, setQ] = useState('');
-  useField(page, 'find', q, (v) => setQ(String(v)));
+  const [stalls, setStalls] = useState<Stall[]>([]);
   useEffect(() => {
     if (status !== 'in') return; // wait until the saved sign-in has been checked, so the requests carry a token
     getMyCommunities().then(setMine).catch(() => setMine([]));
-    getUpcoming(3).then(setSoon).catch(() => setSoon([]));
+    getUpcoming(10)
+      .then((l) => {
+        setSoon(l);
+        const market = l.find((a) => a.category === 'Market');
+        if (market) getStalls(market.id).then((s) => setStalls(s.stalls)).catch(() => setStalls([]));
+      })
+      .catch(() => setSoon([]));
   }, [status]);
 
   const toggle = useCallback(async (e: Upcoming) => {
     const next = !e.i_going;
     setSoon((l) => l.map((x) => (x.id === e.id ? { ...x, i_going: next } : x))); // show it at once, undo if the server refuses
     try {
-      await setGoing(e.id, next);
+      const r = await setGoing(e.id, next);
+      setSoon((l) => l.map((x) => (x.id === e.id ? { ...x, going_count: r.going_count } : x)));
     } catch {
       setSoon((l) => l.map((x) => (x.id === e.id ? { ...x, i_going: !next } : x)));
     }
@@ -55,27 +51,24 @@ export default function ConnectIndex() {
 
   const used = mine?.length ?? 0;
   const full = used >= 3;
-  const list = (mine ?? []).filter((c) => c.name.toLowerCase().includes(q.trim().toLowerCase()));
+  const market = soon.find((a) => a.category === 'Market');
+  const nextOf = (cid: string) => soon.find((a) => a.community_id === cid);
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
-  const card = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.sm, marginBottom: space.sm } as const;
+  const empty = { backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.lg, alignItems: 'center', gap: space.sm } as const;
 
-  // What the agent may read and press: the communities and the events really on this screen. page.ts cannot
-  // know how many there are, and until this loads `read` has no data at all - which is why the agent used to
-  // claim there were no communities while four were on screen. The actions run this screen's own handlers.
+  // What the agent may read and press: the communities and the events really on this screen. Until this loads `read` has no data at all, which is why the agent once
+  // claimed there were no communities while four were on screen. The actions run this screen's own handlers.
   usePageData(
     page,
     mine === null
       ? null
       : {
-          values: [
-            { label: w('find'), value: q },
-            { label: w('mine'), value: mine.length === 1 ? w('countOne') : w('countMany', { n: mine.length }) },
-          ],
+          values: [{ label: w('mine'), value: mine.length === 1 ? w('countOne') : w('countMany', { n: mine.length }) }],
           images: [],
           lists: [
             {
               label: w('mine'),
-              items: list.map((c, i) => ({
+              items: mine.map((c, i) => ({
                 label: c.name,
                 detail: t('common.members', { n: c.member_count }),
                 image: c.cover_url ? { uri: c.cover_url, alt: c.name } : undefined,
@@ -101,116 +94,58 @@ export default function ConnectIndex() {
   );
 
   return (
-    <Screen title={w('heading')} subtitle={w('intro')}>
-      {mine && mine.length ? (
-        <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, marginBottom: space.md }}>
-          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: radius.button, paddingHorizontal: space.md }}>
-            <Ionicons name="search-outline" size={20} color={colors.muted} style={{ marginRight: 10 }} />
-            <El page={page} id="find">
-              <View style={{ flex: 1 }}>
-                <FindInput value={q} onChange={setQ} placeholder={w('find')} />
-              </View>
-            </El>
-          </View>
-          <El page={page} id="filter">
-            <View accessibilityRole="button" accessibilityState={{ disabled: true }} style={{ width: 48, height: 48, borderRadius: radius.button, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, alignItems: 'center', justifyContent: 'center' }}>
-              <Ionicons name="options-outline" size={22} color={colors.ink} />
-            </View>
-          </El>
-        </View>
-      ) : null}
-
+    <Screen title={w('heading')} subtitle={mine ? (full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })) : undefined}>
       {mine === null ? <SkeletonList count={3} /> : null}
 
       {mine && mine.length ? (
-        <>
-          <View style={{ flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: space.sm }}>
-            <El page={page} id="mine"><Text style={[type.h2, { color: colors.ink }]}>{w('mine')}</Text></El>
-            <Text style={[type.small, { color: colors.muted }]}>{mine.length === 1 ? w('countOne') : w('countMany', { n: mine.length })}</Text>
-          </View>
-          {list.length ? (
-            list.map((c, i) => (
-              <El key={c.id} page={page} id={`community${i + 1}`}>
-                <Pressable onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={card}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                    <Thumb icon={c.icon} size={64} i={i} uri={c.cover_url} />
-                    <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{c.name}</Text>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 }}>
-                        <Ionicons name="people-outline" size={16} color={colors.muted} />
-                        <Text style={[type.small, { color: colors.muted }]}>{t('common.members', { n: c.member_count })}</Text>
-                      </View>
-                    </View>
-                    <Ionicons name="chevron-forward" size={22} color={colors.ink} />
-                  </View>
-                </Pressable>
-              </El>
-            ))
-          ) : (
-            <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('noMatch')}</Text>
-          )}
-        </>
+        <View style={{ gap: space.lg }}>
+          {market ? <MarketDayCard act={market} stalls={stalls} lang={lang} t={t} onReserve={() => navigate('market.stall', { id: market.id })} /> : null}
+          {mine.map((c, i) => (
+            <El key={c.id} page={page} id={`community${i + 1}`}>
+              <CommunityCard c={c} next={nextOf(c.id)} i={i} lang={lang} t={t} onOpen={() => navigate('community.home', { id: c.id })} />
+            </El>
+          ))}
+          <Text style={[type.small, { color: '#5A6472', marginTop: -space.sm, marginHorizontal: 4 }]}>{t('cday.only_members')}</Text>
+        </View>
       ) : null}
 
       {mine && !mine.length ? (
-        <View style={[card, { backgroundColor: colors.accentSoft, borderColor: colors.accentLine, padding: space.lg, alignItems: 'center', gap: space.sm }]}>
+        <View style={empty}>
           <Ionicons name="people" size={40} color={colors.accent} />
           <El page={page} id="noCommunity"><Text style={[type.h2, { color: colors.ink, textAlign: 'center' }]}>{w('noCommunity')}</Text></El>
           <Text style={[type.body, { color: colors.muted, textAlign: 'center' }]}>{w('noCommunityBody')}</Text>
         </View>
       ) : null}
 
-      <El page={page} id="limitInfo"><Text style={[type.small, { color: full ? colors.warn : colors.muted, fontWeight: full ? '700' : '400', marginBottom: space.sm }]}>{full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })}</Text></El>
-      <El page={page} id="explore"><Button label={w('explore')} onPress={() => { navigate('connect.explore'); }} icon="search" /></El>
-      <View style={{ height: space.lg }} />
-
       {soon.length ? (
-        <>
-          <El page={page} id="comingUp"><Text style={[type.h2, { color: colors.ink, marginBottom: space.sm }]}>{w('comingUp')}</Text></El>
-          {soon.map((e, i) => (
-            <View key={e.id} style={card}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                <Thumb icon={e.community_icon} size={72} i={i} uri={e.image_url} />
-                <View style={{ flex: 1, gap: 2 }}>
-                  <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink }}>{e.title}</Text>
-                  <Text style={[type.small, { color: colors.muted }]}>{e.community_name}</Text>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
-                    <Ionicons name="calendar-outline" size={15} color={colors.muted} />
-                    <Text style={[type.small, { color: colors.ink }]}>{when(e.starts_at)}</Text>
-                  </View>
+        <View style={{ marginTop: space.xl, gap: 10 }}>
+          <El page={page} id="comingUp"><Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('cday.near')}</Text></El>
+          <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
+            {soon.slice(0, 6).map((e, i, all) => (
+              <View key={e.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: '#EDE6DA' }}>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink }}>{e.title}</Text>
+                  <Text style={{ fontSize: 15, color: '#4A5361' }}>{when(e.starts_at)}</Text>
+                  <Text style={{ fontSize: 14, fontWeight: '600', color: colors.navy }}>{e.community_name}</Text>
                 </View>
                 <El page={page} id={`rsvpEvent${i + 1}`}>
-                  <Pressable onPress={() => void toggle(e)} accessibilityRole="button" style={{ minWidth: 76, minHeight: 44, borderRadius: radius.button, backgroundColor: e.i_going ? colors.accent : colors.accentSoft, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12 }}>
-                    <Text style={{ fontSize: 16, fontWeight: '700', color: e.i_going ? '#FFFFFF' : colors.accent }}>{e.i_going ? w('rsvpGoing') : w('rsvpJoin')}</Text>
+                  <Pressable onPress={() => void toggle(e)} accessibilityRole="button" accessibilityState={{ selected: e.i_going }} style={{ minHeight: 44, minWidth: 80, borderRadius: 10, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 12, backgroundColor: e.i_going ? colors.navy : '#FFFFFF', borderWidth: e.i_going ? 0 : 1, borderColor: colors.navy }}>
+                    <Text style={{ fontSize: 15, fontWeight: '600', color: e.i_going ? '#FFFFFF' : colors.navy }}>{e.i_going ? w('rsvpGoing') : w('rsvpJoin')}</Text>
                   </Pressable>
                 </El>
               </View>
-            </View>
-          ))}
-        </>
+            ))}
+          </View>
+        </View>
       ) : null}
 
-      {/* The design's bottom list: one white card, rows with a title, a line under it and a chevron. */}
-      <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg, marginTop: space.lg }}>
+      {/* The design's bottom list: one white card, rows with a title and a chevron. */}
+      <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg, marginTop: space.xl }}>
+        <El page={page} id="explore"><ListEntry title={w('explore')} onPress={() => navigate('connect.explore')} line /></El>
         <El page={page} id="joinOrCreate"><ListEntry title={w('joinOrCreate')} onPress={() => navigate('connect.join')} line /></El>
         <ListEntry title={t('market.index.heading')} onPress={() => navigate('market.index')} line />
         <El page={page} id="askStart"><ListEntry title={w('askStart')} onPress={() => navigate('connect.create')} /></El>
       </View>
     </Screen>
-  );
-}
-
-// A bare text input (the border and icon are drawn by the row around it).
-function FindInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
-  return <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.muted} accessibilityLabel={placeholder} autoCapitalize="none" autoCorrect={false} style={{ fontSize: 17, paddingVertical: 12, color: colors.ink }} />;
-}
-
-// One row of the bottom list: a title, a chevron and (except the last) a hairline under it.
-function ListEntry({ title, onPress, line }: { title: string; onPress: () => void; line?: boolean }) {
-  return (
-    <Pressable onPress={onPress} accessibilityRole="button" style={{ minHeight: 64, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: line ? 1 : 0, borderColor: '#EDE6DA' }}>
-      <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink, flex: 1 }}>{title}</Text>
-      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-    </Pressable>
   );
 }
