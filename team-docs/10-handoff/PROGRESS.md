@@ -341,3 +341,10 @@ Did: Home, Community, Marketplace and Health tabs on branch `four-tabs` (spec: `
 Tested: 178 backend tests; app type-check, lint, selftest, day-logic checks; browser walk-through at phone size on localhost.
 Not done / not tested: real phones, real GPS, other browsers, production database migration, native-speaker review of the words, merging the teammates' app, guest RSVP, friends view, lint rule for tokens.
 Next: review on the owner's phone, merge `four-tabs`, run `python backend/run.py migrate` on the live database, decide the experience thresholds and pay guide.
+
+## 2026-11-15 (later): the agent is one small orb; the agent no longer generates HTML screens
+Who: Claude Code (Sonnet 5.5), branch `four-tabs`.
+Done: the always-visible bottom agent bar (keyboard + big green call button) is gone. The agent is now one small orb (`app/src/components/AgentOrb.tsx`) floating bottom-right just above the tab bar; it takes no room in the page. Tap: the agent starts listening and the orb grows into a pill (listening bars, time, keyboard, end). Tap the pill body: the conversation sheet opens (it carries the same trigger inline). End: the pill shrinks back. Removed `agent/dock.tsx`, `components/AgentControls.tsx`. Removed the `build` tool, the `html` field of `show`, `HtmlFrame` (web and native), the `Surface.html` field and the matching lines in the agent instruction (`backend/app/modules/agent/declarations.py`).
+Tested: `tsc --noEmit`, `expo lint`, `npx tsx src/navigation/selftest.ts` (the build-tool checks were replaced by one check that the tool and the html field are gone), 13 backend agent tests; in the browser at phone size on a second dev server (port 3001): orb on the welcome page, tap, pill, pill opens sheet, end returns to the orb.
+Not done / not tested: the orb on signed-in pages and on a real phone; the call with a real microphone (the browser pane blocks it); the orb can cover the right edge of the last item on a page (no extra bottom room added); the orb cannot be dragged; the live API on port 8000 must be restarted to pick up the new agent instruction.
+Next: owner to try it; decide whether the orb should be draggable.

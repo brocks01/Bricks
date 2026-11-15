@@ -1,7 +1,7 @@
 // The agent's SURFACE (the "Agent Canvas"): a panel in the app's content area where the agent shows a question, a step-by-step
-// explanation, or a small page it wrote for this person, in their language. The tab bar and the agent bar stay visible below it
+// explanation, in their language. The tab bar and the agent bar stay visible below it
 // and the person can always close it. Mounted once in the root layout (components/AgentSurface.tsx).
-// The agent uses it through the `show` and `hide` tools (agent/tools.ts). Nothing here can reach the app's data or run code (see HtmlFrame).
+// The agent uses it through the `show` and `hide` tools (agent/tools.ts).
 //
 // Everything the model sends is validated HERE with a Zod schema before it can reach the renderer: only the fields in `showSchema`
 // are read (the rest are stripped), every string is trimmed and capped, every list is capped, and a tile's id and icon must look
@@ -21,7 +21,6 @@ export interface Surface {
   question: string; // the bold line above the tiles
   hint: string; // a short helpful note in a card
   steps: string[]; // numbered explanation steps
-  html: string;
   options: string[]; // plain buttons; a tap answers at once
   allowText: boolean;
   tiles: Tile[]; // selectable tiles; answered with Next
@@ -48,7 +47,7 @@ export const FULL_AT = 0.95;
 export const LIMITS = {
   title: 120, message: 1500, question: 200, hint: 400,
   steps: 8, stepChars: 220, // stepChars = the most characters in one numbered step
-  options: 6, option: 60, html: 60000,
+  options: 6, option: 60,
   tiles: 12, tileLabel: 40, stepCount: 10,
 };
 
@@ -114,7 +113,6 @@ const showSchema = z.object({
   question: str(LIMITS.question),
   hint: str(LIMITS.hint),
   steps: strs(LIMITS.steps, LIMITS.stepChars),
-  html: str(LIMITS.html),
   options: strs(LIMITS.options, LIMITS.option),
   allow_text: flag,
   allowText: flag, // older builds used this spelling; accept both
@@ -152,7 +150,6 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
     question: a.question,
     hint: a.hint,
     steps: a.steps,
-    html: a.html,
     options: a.options,
     allowText: a.allow_text || a.allowText,
     tiles: a.tiles,
@@ -160,8 +157,8 @@ export function showSurface(args: Record<string, unknown>): Promise<Record<strin
     stepTotal,
     next: a.next,
   };
-  const empty = !surface.title && !surface.message && !surface.question && !surface.steps.length && !surface.html && !surface.options.length && !surface.tiles.length && !surface.hint;
-  if (empty) return Promise.resolve({ error: 'nothing_to_show', hint: 'Give a title, a message, a question, steps, tiles, html or options.' });
+  const empty = !surface.title && !surface.message && !surface.question && !surface.steps.length && !surface.options.length && !surface.tiles.length && !surface.hint;
+  if (empty) return Promise.resolve({ error: 'nothing_to_show', hint: 'Give a title, a message, a question, steps, tiles or options.' });
   waiting?.({ dismissed: true });
   waiting = null;
   // seq counts the screens shown: the renderer keys itself on it, so a new screen always starts with nothing typed or picked.

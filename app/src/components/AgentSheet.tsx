@@ -6,16 +6,15 @@ import { answerSurface, fitToContent, surfaceStore, type Surface } from '../agen
 import { useStore } from '../core/store';
 import { useLanguage, useT } from '../i18n';
 import { colors, radius, space, type } from '../theme/tokens';
-import { AgentControls } from './AgentControls';
+import { AgentTrigger } from './AgentOrb';
 import { DragHandle } from './DragHandle';
-import { HtmlFrame } from './HtmlFrame';
 import { Button, type IconName } from './ui';
 
 const iconFor = (name: string): IconName => (name && name in (Ionicons.glyphMap as Record<string, unknown>) ? (name as IconName) : 'apps');
 const G = '#1B7F3B';
 
 /**
- * THE agent sheet: a handle, the body, one small warning, and the bottom area (components/AgentControls.tsx). Nothing else, at any height.
+ * THE agent sheet: a handle, the body, one small warning, and the bottom area (components/AgentOrb.tsx). Nothing else, at any height.
  * The body is the conversation (bubbles under "Today"); the screen the agent makes (a question, tiles, steps) is one of its messages inside it.
  * On a call with nothing else to show, the body is the call screen: a waveform, "Listening", a timer. With a conversation or a screen it stays the
  * chat, so the person can always see the choices while they speak. Closing is dragging the sheet all the way down.
@@ -44,7 +43,9 @@ export function AgentSheet({ surface, onMove, onRelease }: { surface: Surface | 
       ) : null}
       {ui.notice ? <Text style={{ fontSize: 13, color: colors.danger, fontWeight: '600', paddingHorizontal: space.lg, paddingBottom: 4, textAlign: 'center' }}>{t(`common.agent.${ui.notice}`)}</Text> : null}
       <View style={{ borderTopWidth: 1, borderColor: colors.line }}>
-        <AgentControls />
+        <View style={{ alignItems: 'flex-end', paddingHorizontal: space.lg, paddingVertical: space.sm }}>
+          <AgentTrigger />
+        </View>
         <Warning />
       </View>
     </View>
@@ -168,8 +169,6 @@ export function SurfaceMessage({ surface }: { surface: Surface }) {
           <Text style={[type.body, { color: colors.ink, flex: 1 }]}>{s}</Text>
         </View>
       ))}
-
-      {surface.html ? <HtmlFrame html={surface.html} /> : null}
 
       {surface.stepTotal > 0 || showNext ? (
         <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>

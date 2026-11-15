@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AgentDock } from '../agent/dock';
 import { surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
 import { loadFamilies } from '../features/family/state';
@@ -10,11 +9,12 @@ import { useT } from '../i18n';
 import { tabPages, useCurrentPage, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
 import { colors } from '../theme/tokens';
+import { AgentOrb } from './AgentOrb';
 
 /**
  * The bottom bar, built from the registry: one icon and label for every page that declares a tab.
  * It shows only when someone is signed in with a finished profile, and never on the sign-in pages.
- * The Bricks Agent bar sits under it, always, at the very bottom.
+ * The agent is one small orb floating just above this bar (components/AgentOrb.tsx); it takes no room in the page.
  *
  * While the Agent Canvas is open the Connect/Grow tabs are hidden (design rule 1: no duplicate navigation) -
  * the Canvas takes the space they occupied, and the agent bar stays. Closing the Canvas brings the tabs back,
@@ -42,21 +42,21 @@ export function AppTabBar() {
   // including while the hand is still dragging it, and come back when it is put away.
   const { open, live } = useStore(surfaceStore);
   const canvasOpen = open || (live !== null && live > 0.1);
-  // The sheet has its OWN call controls: while it is up or being dragged the dock must not show a second copy of them under it.
+  // The sheet has its OWN trigger: while it is up or being dragged the floating orb must not show a second copy.
   const sheetUp = open || live !== null;
   // Signed out, the agent bar stays: an elderly person who cannot follow the sign-in or the code
   // can still ask for help at any moment (before login the agent can only SEE and explain).
   if (status !== 'in') {
     return (
-      <View style={{ backgroundColor: colors.card }}>
+      <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
         {canvasOpen ? null : <View style={{ paddingBottom: insets.bottom }} />}
-        {sheetUp ? null : <AgentDock />}
+        {sheetUp ? null : <AgentOrb />}
       </View>
     );
   }
   if (!user?.profile_complete || current?.bare) return null;
   return (
-    <View style={{ backgroundColor: colors.card }}>
+    <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
       {canvasOpen ? null : (
         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
           {tabPages()
@@ -72,8 +72,8 @@ export function AppTabBar() {
           })}
         </View>
       )}
-      {/* Once the sheet is open it has its own control row (keyboard, mic, waveform), so the peek bar steps aside. It stays while a hand is still dragging it. */}
-      {sheetUp ? null : <AgentDock />}
+      {/* Once the sheet is open it has its own trigger row, so the orb steps aside. */}
+      {sheetUp ? null : <AgentOrb />}
     </View>
   );
 }
