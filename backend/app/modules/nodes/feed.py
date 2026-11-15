@@ -27,8 +27,14 @@ def _safe(conn: Connection, what: str, fn) -> None:
         log.warning("nodes feed %s failed", what, exc_info=True)
 
 
+def _habit(conn: Connection, me: str, key: str, title: str, kind: str) -> None:
+    h = service.ensure_habit(conn, me, key, title, kind, "move", AREAS["move"])
+    service.habit_log(conn, me, h["nid"])
+
+
 def walked(conn: Connection, me: str) -> None:
     _safe(conn, "walk", lambda: service.earn(conn, me, "move", AREAS["move"], "Walk", kind="walk"))
+    _safe(conn, "walk-habit", lambda: _habit(conn, me, "habit:walk", "Walk every week", "weekly"))
 
 
 def moved_on(conn: Connection, me: str, day: str) -> None:
@@ -39,6 +45,7 @@ def moved_on(conn: Connection, me: str, day: str) -> None:
             return
         service.earn(conn, me, "move", AREAS["move"], title, kind="checkin")
     _safe(conn, "checkin", go)
+    _safe(conn, "checkin-habit", lambda: _habit(conn, me, "habit:move", "Move every day", "daily"))
 
 
 def helped(conn: Connection, me: str, title: str) -> None:

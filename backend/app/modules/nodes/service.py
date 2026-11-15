@@ -11,7 +11,7 @@ The roll-up is kept incrementally: each card holds the sums of what is below it,
 increment per level, and nothing is rescanned. `reconcile` repairs drift. There is no cap on how many nodes hang below a goal; depth is capped (16).
 """
 import json
-from datetime import datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import Connection, text
 
@@ -430,7 +430,97 @@ def tree(conn: Connection, me: str, limit: int = 600) -> dict:
     nodes = [rules.view_of(c) for c in rows[:limit]]
     root = nodes[0]
     c = root["counts"]
-    return {"nodes": nodes, "truncated": truncated, "leaves": c.get("closed", 0), "growing": c.get("open", 0) + c.get("active", 0) + c.get("blocked", 0) + c.get("paused", 0)}
+    today = _today(conn, me)
+    habits = []
+    for n in nodes:
+        if n["type"] == "habit":
+            st = habit_stats(_habit_days(conn, me, n["nid"], today), n["kind"] or "daily", today)
+            habits.append({"nid": n["nid"], "title": n["title"], "kind": n["kind"] or "daily", **st})
+    leaves = c.get("closed", 0)
+    return {"nodes": nodes, "truncated": truncated, "leaves": leaves, "growing": c.get("open", 0) + c.get("active", 0) + c.get("blocked", 0) + c.get("paused", 0),
+            "level": leaves // 10 + 1, "habits": habits, "roots": roots_of(conn, me, today)}
+
+
+# ---------- goals and repeating habits ----------
+def add_goal(conn: Connection, me: str, title: str) -> dict:
+    """A goal of the person's own, under their built-in "My goals" area."""
+    area = ensure_builtin(conn, me, "goals", "area", "My goals")
+    return attach(conn, me, "goal", title, parent_id=area["nid"], actor="person")
+
+
+def add_habit(conn: Connection, me: str, title: str, kind: str = "daily") -> dict:
+    area = ensure_builtin(conn, me, "habits", "area", "My habits")
+    return attach(conn, me, "habit", title, parent_id=area["nid"], kind="weekly" if kind == "weekly" else "daily", badge={"supports": 1, "value": 0}, actor="person")
+
+
+def ensure_habit(conn: Connection, me: str, key: str, title: str, kind: str, area_key: str, area_title: str) -> dict:
+    """A habit the app itself keeps for the person (move every day, walk each week): made once, under its area."""
+    have = conn.execute(text("select nid from nodes where user_id = :u and key = :k"), {"u": me, "k": key}).scalar()
+    if have:
+        return rules.view_of(_get(conn, me, have))
+    area = ensure_builtin(conn, me, area_key, "area", area_title)
+    return attach(conn, me, "habit", title, parent_id=area["nid"], kind=kind, key=key, badge={"supports": 1, "value": 0}, actor="system")
+
+
+def _today(conn: Connection, me: str) -> date:
+    off = conn.execute(text("select coalesce(tz_offset_min, 480) from users where id = :u"), {"u": me}).scalar_one()
+    return (datetime.now(timezone.utc) + timedelta(minutes=off)).date()
+
+
+def _week(d: date) -> tuple[int, int]:
+    y, w, _ = d.isocalendar()
+    return y, w
+
+
+def habit_stats(days: set[date], kind: str, today: date) -> dict:
+    """How steady a habit is. daily: days done out of the last 28. weekly: weeks (of the last 4) with at least one. Streak: days (or weeks) in a row, counted back from
+    today (or from yesterday / last week when today / this week is still open). Never scolds: a gap just restarts the count."""
+    if kind == "weekly":
+        weeks = {_week(d) for d in days}
+        last4 = {_week(today - timedelta(days=7 * i)) for i in range(4)}
+        strength = len(weeks & last4) / 4
+        streak, i = 0, 0 if _week(today) in weeks else 1
+        while _week(today - timedelta(days=7 * i)) in weeks:
+            streak += 1
+            i += 1
+        return {"strength": min(1.0, strength), "streak": streak, "done_today": _week(today) in weeks}
+    window = {today - timedelta(days=i) for i in range(28)}
+    strength = len(days & window) / 28
+    streak, i = 0, 0 if today in days else 1
+    while today - timedelta(days=i) in days:
+        streak += 1
+        i += 1
+    return {"strength": min(1.0, strength), "streak": streak, "done_today": today in days}
+
+
+def _habit_days(conn: Connection, me: str, nid: str, today: date) -> set[date]:
+    return {r.day for r in conn.execute(text("select day from node_repeats where user_id = :u and nid = :n and day >= :d"), {"u": me, "n": nid, "d": today - timedelta(days=90)})}
+
+
+def habit_log(conn: Connection, me: str, nid: str, undo: bool = False) -> dict:
+    """The person did the habit today (or takes it back). The habit's figure moves, and so does everything above it."""
+    node = _need(conn, me, nid, lock=True)
+    if node["type"] != "habit":
+        raise NodeError("not_a_habit", 409)
+    if node["archived"]:
+        raise NodeError("archived", 409)
+    today = _today(conn, me)
+    if undo:
+        conn.execute(text("delete from node_repeats where user_id = :u and nid = :n and day = :d"), {"u": me, "n": nid, "d": today})
+    else:
+        conn.execute(text("insert into node_repeats (user_id, nid, day) values (:u, :n, :d) on conflict do nothing"), {"u": me, "n": nid, "d": today})
+    st = habit_stats(_habit_days(conn, me, nid, today), node["kind"] or "daily", today)
+    set_badge(conn, me, nid, {"value": st["strength"], "supports": 1, "label": str(st["streak"])}, actor="system" if node["key"] else "person")
+    return {"nid": nid, **st}
+
+
+def roots_of(conn: Connection, me: str, today: date) -> dict:
+    """The roots of the tree are the person's health: days they said they moved and walks they recorded in the last four weeks. A wellness picture, never a score of the body."""
+    since = today - timedelta(days=27)
+    days = conn.execute(text("select count(*) from health_checkins where user_id = :u and moved and day >= :d"), {"u": me, "d": since}).scalar_one()
+    walks = conn.execute(text("select count(*) from health_walks where user_id = :u and started_at >= :s"), {"u": me, "s": datetime.now(timezone.utc) - timedelta(days=28)}).scalar_one()
+    strength = min(1.0, 0.6 * (days / 28) + 0.4 * min(1.0, walks / 12))
+    return {"strength": round(strength, 3), "moved_days": days, "walks": walks}
 
 
 def erase(conn: Connection, me: str) -> int:

@@ -20,6 +20,19 @@ class AttachIn(BaseModel):
     badge: dict | None = None
 
 
+class GoalIn(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+
+
+class HabitIn(BaseModel):
+    title: str = Field(min_length=1, max_length=200)
+    kind: str = "daily"
+
+
+class LogIn(BaseModel):
+    undo: bool = False
+
+
 class RenameIn(BaseModel):
     title: str | None = Field(default=None, max_length=200)
     description: str | None = Field(default=None, max_length=1000)
@@ -54,6 +67,21 @@ def tree(user_id: str = Depends(current_user_id), conn: Connection = Depends(get
 @router.post("")
 def attach(body: AttachIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return _run(service.attach, conn, user_id, body.type, body.title, body.parent_id, body.kind, body.description, body.requires, body.badge)
+
+
+@router.post("/goal")
+def add_goal(body: GoalIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return _run(service.add_goal, conn, user_id, body.title)
+
+
+@router.post("/habit")
+def add_habit(body: HabitIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return _run(service.add_habit, conn, user_id, body.title, body.kind)
+
+
+@router.post("/{nid}/log")
+def log(nid: str, body: LogIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return _run(service.habit_log, conn, user_id, nid, body.undo)
 
 
 @router.get("/{nid}")

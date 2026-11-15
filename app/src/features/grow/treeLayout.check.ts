@@ -29,5 +29,20 @@ const dense = layoutTree(many);
 check('a busy branch shows at most its share', dense.leaves.length <= MAX_LEAVES && dense.leaves.length === 2 * MAX_PER_BRANCH && dense.total === 80);
 check('green leaves are kept first when a branch is cut (14 closed of 40 on the first branch)', dense.leaves.slice(0, 14).every((l) => l.grown) && dense.leaves.slice(14, MAX_PER_BRANCH).every((l) => !l.grown));
 check('every leaf is inside the picture', dense.leaves.every((l) => l.x > 0 && l.x < 300 && l.y > 0 && l.y < 236));
+
+// ---- v2: strong habits thicken the stem, the level grows the tree, health grows the roots ----
+const habit = (parent: TreeNode, value: number): TreeNode => ({ ...n('habit', parent, 'open'), badge: { value, label: '', status: 'open' } });
+const weakTree = layoutTree([root, move, give, habit(move, 0.05), habit(give, 0.05)]);
+const strongTree = layoutTree([root, move, give, habit(move, 0.95), habit(give, 0.1)]);
+check('a steady habit makes its branch thicker than a weak one', strongTree.branches[0].width > weakTree.branches[0].width + 3 && strongTree.branches[1].width < strongTree.branches[0].width);
+check('the trunk gets thicker with the level and with steady habits', layoutTree([root], { level: 4 }).trunkWidth > layoutTree([root], { level: 1 }).trunkWidth && strongTree.trunkWidth > weakTree.trunkWidth);
+const level1 = layoutTree(many, { level: 1 });
+const level3 = layoutTree(many, { level: 3 });
+check('a higher tree is fuller: busy branches put out a twig from level 2', level1.branches.length === 2 && level3.branches.length === 4 && level3.branches.some((b) => b.key.endsWith(':twig')));
+check('a higher tree is taller', Math.min(...level3.leaves.map((l) => l.y)) < Math.min(...level1.leaves.map((l) => l.y)));
+const weakRoots = layoutTree([root], { roots: 0 });
+const strongRoots = layoutTree([root], { roots: 1 });
+check('there are always a few short roots, and healthy roots are more, longer and thicker', weakRoots.roots.length === 3 && strongRoots.roots.length === 7 && strongRoots.roots[3].width > weakRoots.roots[1].width);
+check('roots stay under the ground and inside the picture', strongRoots.roots.every((r) => /M150 210 Q/.test(r.d)));
 console.log(failed ? `\n${failed} FAILED` : '\nall passed');
 process.exit(failed ? 1 : 0);

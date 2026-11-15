@@ -10,8 +10,11 @@ export type Answer = 'yes' | 'no' | null;
  * The big card for the next gathering, as in the design: a photo with a Directions chip, a small tag, the title, when / where / who is going, and the two answers
  * "I'm going" and "Not this time". After an answer the buttons give way to one line and a "Change my answer" link. Everything comes from the person's own communities.
  */
-export function ActivityCard({ act, answer, lang, w, onYes, onNo, onChange, onOpen }: {
-  act: Upcoming; answer: Answer; lang: string; w: W; onYes: () => void; onNo: () => void; onChange: () => void; onOpen: () => void;
+const VOICE: Record<string, string> = { en: 'en-SG', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-IN', zh: 'zh-CN', ms: 'ms-MY' };
+const canSpeak = () => typeof globalThis !== 'undefined' && 'speechSynthesis' in globalThis;
+
+export function ActivityCard({ act, answer, lang, w, readAloud, onYes, onNo, onChange, onOpen }: {
+  act: Upcoming; answer: Answer; lang: string; w: W; readAloud: boolean; onYes: () => void; onNo: () => void; onChange: () => void; onOpen: () => void;
 }) {
   const start = new Date(act.starts_at);
   const today = start.toDateString() === new Date().toDateString();
@@ -25,6 +28,17 @@ export function ActivityCard({ act, answer, lang, w, onYes, onNo, onChange, onOp
     : who.length ? w('going_only', { names })
     : others > 0 ? w('going_n', { n: others }) : '';
   const maps = act.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${act.location} Singapore`)}` : '';
+  const speak = () => {
+    try {
+      const u = new SpeechSynthesisUtterance([act.title, when, act.location ?? '', crowd].filter(Boolean).join('. '));
+      u.lang = VOICE[lang] ?? 'en-SG';
+      u.rate = 0.9;
+      speechSynthesis.cancel();
+      speechSynthesis.speak(u);
+    } catch {
+      /* a device that cannot speak just stays quiet */
+    }
+  };
   const row = (icon: keyof typeof Ionicons.glyphMap, text: string) => (
     <View key={icon} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
       <Ionicons name={icon} size={18} color="#5A6472" />
@@ -43,8 +57,15 @@ export function ActivityCard({ act, answer, lang, w, onYes, onNo, onChange, onOp
         ) : null}
       </Pressable>
       <View style={{ paddingHorizontal: 4, gap: 12 }}>
-        <View style={{ flexDirection: 'row', alignSelf: 'flex-start', backgroundColor: '#F6E7DF', borderRadius: 6, paddingVertical: 4, paddingHorizontal: 10 }}>
-          <Text style={{ fontSize: 14, fontWeight: '600', color: '#8A3D1F' }}>{day} · {act.community_name}</Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+          <View style={{ flexShrink: 1, backgroundColor: '#F6E7DF', borderRadius: 6, paddingVertical: 4, paddingHorizontal: 10 }}>
+            <Text style={{ fontSize: 14, fontWeight: '600', color: '#8A3D1F' }}>{day} · {act.community_name}</Text>
+          </View>
+          {readAloud && canSpeak() ? (
+            <Pressable onPress={speak} accessibilityRole="button" accessibilityLabel={w('read_aloud')} style={{ width: 40, height: 40, borderRadius: 10, borderWidth: 1, borderColor: colors.line, backgroundColor: '#FFFFFF', alignItems: 'center', justifyContent: 'center' }}>
+              <Ionicons name="volume-high-outline" size={19} color={colors.ink} />
+            </Pressable>
+          ) : null}
         </View>
         <Text style={{ fontSize: 23, lineHeight: 28, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }} accessibilityRole="header">{act.title}</Text>
         <View style={{ gap: 9 }}>

@@ -15,6 +15,7 @@ import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, size, space, type } from '../../../theme/tokens';
 import { dayRows, freeBefore, minutesUntil, nextUp } from '../day';
+import { prefs } from '../../../prefs/store';
 import { ActivityCard, type Answer } from './ActivityCard';
 import { MonthPlanner } from './MonthPlanner';
 import { homeIndex as page } from '../pages';
@@ -26,6 +27,7 @@ export default function HomeIndex() {
   const lang = useLanguage();
   const navigate = useNavigate();
   const { status, user } = useStore(sessionStore);
+  const { readAloud } = useStore(prefs);
   const [occs, setOccs] = useState<Occurrence[] | null>(null);
   const [sum, setSum] = useState<HomeSummary | null>(null);
   const [now, setNow] = useState(() => new Date());
@@ -166,6 +168,7 @@ export default function HomeIndex() {
             answer={answer}
             lang={lang}
             w={w}
+            readAloud={readAloud}
             onYes={() => void answerGoing(true)}
             onNo={() => void answerGoing(false)}
             onChange={() => setAnswer(null)}

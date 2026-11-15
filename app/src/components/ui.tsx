@@ -3,6 +3,8 @@ import { ReactNode, useState } from 'react';
 import { KeyboardTypeOptions, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors, radius, space, type } from '../theme/tokens';
+import { useStore } from '../core/store';
+import { prefs, ZOOM } from '../prefs/store';
 import { AppHeader, BackHeader } from './headers';
 
 export type IconName = keyof typeof Ionicons.glyphMap;
@@ -13,10 +15,11 @@ export type IconName = keyof typeof Ionicons.glyphMap;
  */
 export function Screen({ title, subtitle, children, back, plain, hero }: { title: string; subtitle?: string; children: ReactNode; back?: boolean; plain?: boolean; hero?: ReactNode }) {
   const insets = useSafeAreaInsets();
+  const { textSize } = useStore(prefs); // the person's text size: on the web the whole page grows
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
       {plain ? null : back ? <BackHeader title={title} /> : <AppHeader />}
-      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, paddingBottom: 120 }} keyboardShouldPersistTaps="handled">
+      <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, paddingBottom: 120, ...(ZOOM[textSize] === 1 ? null : ({ zoom: ZOOM[textSize] } as object)) }} keyboardShouldPersistTaps="handled">
         {hero ?? (
           <>
             {back ? null : <Text style={[type.h1, { color: colors.ink }]} accessibilityRole="header">{title}</Text>}

@@ -1,5 +1,6 @@
 import '../features'; // registers every module once
 import { Stack } from 'expo-router';
+import { useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { AgentProvider, ApprovalBanner } from '../agent';
@@ -8,6 +9,7 @@ import { AuthGate } from '../components/AuthGate';
 import { PhoneFrame } from '../components/PhoneFrame';
 import { ReminderPopups } from '../features/home/ReminderPopups';
 import { LanguageProvider } from '../i18n';
+import { loadPrefs } from '../prefs/store';
 import { NavigationProvider } from '../navigation';
 import type { Guard } from '../navigation/types';
 import { sessionStore } from '../session/store';
@@ -17,6 +19,9 @@ const guard = (): Guard => ({ isAuthenticated: sessionStore.get().status === 'in
 
 // Providers, outermost first: language, navigation, agent. Under them: the door (sign-in check), the page, then the bottom bar.
 export default function RootLayout() {
+  useEffect(() => {
+    void loadPrefs(); // the saved text size and read-aloud choice
+  }, []);
   return (
     <LanguageProvider>
       <NavigationProvider guard={guard}>

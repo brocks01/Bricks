@@ -1,27 +1,36 @@
 import { View } from 'react-native';
-import Svg, { G, Path } from 'react-native-svg';
+import Svg, { G, Path, Rect } from 'react-native-svg';
 import type { TreeNode } from '../../api/nodes';
 import { colors } from '../../theme/tokens';
-import { layoutTree } from './treeLayout';
+import { GROUND, layoutTree } from './treeLayout';
 
 /**
- * The person's tree, drawn from their real nodes: the trunk is the root, every area is a branch, and every piece of work on a branch is a leaf.
- * A closed piece of work is a green leaf; work still open is an outline that has not grown yet. More nodes make a denser tree.
- * The drawing rules (where a branch goes and where each leaf sits) are in treeLayout.ts, so they can be tested without a screen.
+ * The person's tree, drawn from their real nodes. The trunk is the root and gets thicker with the level; every area is a branch, thicker the steadier the habits on it
+ * are; every piece of work is a leaf (green when closed, an outline while it is still growing); the roots under the ground are their health.
+ * The drawing rules are in treeLayout.ts, so they can be tested without a screen.
  */
 const GREEN = colors.leaf;
 const LEAF = 'M0 0 C 5 -9, 14 -9, 19 0 C 14 9, 5 9, 0 0 Z';
 
-export function TreeView({ nodes, label }: { nodes: TreeNode[]; label: string }) {
-  const lay = layoutTree(nodes);
+export function TreeView({ nodes, label, level, roots }: { nodes: TreeNode[]; label: string; level: number; roots: number }) {
+  const lay = layoutTree(nodes, { level, roots });
   return (
-    <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ height: 236, borderRadius: 12, backgroundColor: '#F1EEE6', overflow: 'hidden', alignItems: 'center' }}>
-      <Svg width={300} height={236} viewBox="0 0 300 236">
-        <Path d="M40 230 H260" stroke="#CBD3E0" strokeWidth={2} strokeLinecap="round" />
+    <View accessible accessibilityRole="image" accessibilityLabel={label} style={{ height: 300, borderRadius: 12, backgroundColor: '#F1EEE6', overflow: 'hidden', alignItems: 'center' }}>
+      <Svg width={300} height={300} viewBox="0 0 300 300">
+        <Rect x={0} y={GROUND} width={300} height={300 - GROUND} fill="#E7DDCB" />
+        <Path d={`M0 ${GROUND} H300`} stroke="#CBBFA8" strokeWidth={2} />
+        <G fill="none" stroke="#8A6A4E" strokeLinecap="round">
+          {lay.roots.map((r) => (
+            <Path key={r.key} d={r.d} strokeWidth={r.width} />
+          ))}
+        </G>
         <G fill="none" stroke="#7A5C44" strokeLinecap="round">
-          <Path d={lay.trunk} strokeWidth={7} />
+          <Path d={lay.trunk} strokeWidth={lay.trunkWidth} />
           {lay.branches.map((b) => (
             <Path key={b.key} d={b.d} strokeWidth={b.width} />
+          ))}
+          {lay.leaves.map((l) => (
+            <Path key={`s${l.key}`} d={l.stem} strokeWidth={1} />
           ))}
         </G>
         {lay.leaves.map((l) => (

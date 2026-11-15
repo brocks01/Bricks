@@ -13,6 +13,7 @@ import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
 import { WeekBars } from '../../ui';
 import '../../treeWords'; // registers the words of the tree
+import { MyGoals, MyHabits } from '../../GoalsHabits';
 import { TreeView } from '../../TreeView';
 import { growProgress as page } from './page';
 
@@ -61,8 +62,8 @@ export default function Progress() {
   );
 
   return (
-    <Screen title={w('heading')} subtitle={tree ? t('tree.level', { n: Math.floor(tree.leaves / 10) + 1 }) : undefined}>
-      {tree ? <TreeCard tree={tree} /> : null}
+    <Screen title={w('heading')} subtitle={tree ? t('tree.level', { n: tree.level }) : undefined}>
+      {tree ? <TreeCard tree={tree} reload={load} /> : null}
       <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('tree.more')}</Text>
       {failed ? (
         <>
@@ -88,10 +89,10 @@ export default function Progress() {
   );
 }
 
-const AREA_WORD: Record<string, string> = { move: 'tree.area_move', community: 'tree.area_community', give: 'tree.area_give' };
+const AREA_WORD: Record<string, string> = { move: 'tree.area_move', community: 'tree.area_community', give: 'tree.area_give', goals: 'tree.goals', habits: 'tree.habits' };
 
 // The tree, the count of leaves with the way to the next level, a line for each branch, and how leaves are earned. Everything comes from the person's real nodes.
-function TreeCard({ tree }: { tree: Tree }) {
+function TreeCard({ tree, reload }: { tree: Tree; reload: () => void }) {
   const t = useT();
   const areas = tree.nodes.filter((n) => n.type === 'area' && n.parent_id === 'R1');
   const into = tree.leaves % 10;
@@ -99,7 +100,7 @@ function TreeCard({ tree }: { tree: Tree }) {
   return (
     <View style={{ gap: space.lg }}>
       <View style={card}>
-        <TreeView nodes={tree.nodes} label={t('tree.tree_label', { n: tree.leaves })} />
+        <TreeView nodes={tree.nodes} label={t('tree.tree_label', { n: tree.leaves })} level={tree.level} roots={tree.roots.strength} />
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
           <Text style={{ fontSize: 24, fontWeight: '600', color: colors.ink }}>{tree.leaves} <Text style={{ fontSize: 16, fontWeight: '500', color: colors.muted }}>{t(tree.leaves === 1 ? 'tree.leaf' : 'tree.leaves')}</Text></Text>
           <Text style={{ fontSize: 15, color: colors.muted }}>{t('tree.to_next', { n: 10 - into })}</Text>
@@ -108,7 +109,11 @@ function TreeCard({ tree }: { tree: Tree }) {
           <View style={{ height: 8, borderRadius: 999, backgroundColor: colors.leaf, width: `${into * 10}%` }} />
         </View>
         <Text style={{ fontSize: 15, color: colors.muted }}>{tree.leaves === 0 && tree.growing === 0 ? t('tree.empty') : tree.growing > 0 ? `${t('tree.every')} ${t('tree.growing', { n: tree.growing })}` : t('tree.every')}</Text>
+        <Text style={{ fontSize: 14, color: '#5A6472' }}>{t('tree.next_level')}</Text>
       </View>
+      <Text style={{ fontSize: 15, color: colors.muted, marginTop: -space.sm, marginHorizontal: 4 }}>{t('tree.roots_line', { days: tree.roots.moved_days, walks: tree.roots.walks })}</Text>
+      <MyHabits tree={tree} t={t} reload={reload} />
+      <MyGoals tree={tree} t={t} reload={reload} />
       {areas.length ? (
         <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
           {areas.map((a, i) => (
