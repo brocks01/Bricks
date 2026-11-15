@@ -4,7 +4,7 @@ they would go to. It hangs in its area as a node and grows a green leaf when it 
 Every call is wrapped in a savepoint and swallows its own failure: the tree must never be the reason a walk is not saved or an RSVP fails.
 """
 import logging
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import Connection, text
 
@@ -16,6 +16,8 @@ AREAS = {
     "move": "Moving",
     "community": "Community",
     "give": "Giving back",
+    "care": "Looking after me",
+    "aspire": "My aspirations",
 }
 
 
@@ -69,12 +71,56 @@ def going(conn: Connection, me: str, activity_id: str, is_going: bool) -> None:
 
 
 def sync_events(conn: Connection, me: str) -> None:
-    """Gatherings the person said they would go to, now in the past, become closed: the leaf turns green."""
+    """A leaf turns green only when the person (or their Community Lead) checked them in. A gathering they said yes to and never came to stays an outline for three days,
+    then is taken off the tree, so the tree never claims something that did not happen."""
     def go():
         rows = conn.execute(text(
             "select n.nid from nodes n join activities a on a.id::text = n.ref->>'id' "
             "where n.user_id = :u and n.kind = 'gathering' and not n.archived and n.badge->>'status' = 'open' "
-            "and coalesce(a.ends_at, a.starts_at + interval '2 hours') < :now"), {"u": me, "now": datetime.now(timezone.utc)}).all()
+            "and coalesce(a.ends_at, a.starts_at + interval '2 hours') < :old"), {"u": me, "old": datetime.now(timezone.utc) - timedelta(days=3)}).all()
         for r in rows:
-            service.set_badge(conn, me, r.nid, {"status": "closed", "own": 1}, actor="system")
+            service.archive(conn, me, r.nid, actor="system")
     _safe(conn, "sync", go)
+
+
+def attended(conn: Connection, me: str, activity_id: str) -> None:
+    """Checked in at a gathering (by the person or by their Community Lead): its leaf turns green. If it was never planted, it is planted already closed."""
+    def go():
+        have = conn.execute(text("select nid from nodes where user_id = :u and kind = 'gathering' and ref->>'id' = :a and not archived"), {"u": me, "a": activity_id}).scalar()
+        if have:
+            service.set_badge(conn, me, have, {"status": "closed", "own": 1}, actor="system")
+            return
+        a = conn.execute(text("select title from activities where id = :a"), {"a": activity_id}).first()
+        if not a:
+            return
+        area = service.ensure_builtin(conn, me, "community", "area", AREAS["community"])
+        service.attach(conn, me, "event", a.title, parent_id=area["nid"], kind="gathering", badge={"status": "closed", "own": 1},
+                       ref={"module": "communities", "model": "activity", "id": activity_id}, actor="system")
+    _safe(conn, "attended", go)
+
+
+def care(conn: Connection, me: str, item_id: str, occurs_iso: str, title: str, kind: str, done: bool) -> None:
+    """A reminder ticked done (medicine, an appointment, exercise, anything the person planned) grows a leaf under "Looking after me"; if the tick is taken back, the leaf goes."""
+    ref_id = f"{item_id}:{occurs_iso}"
+    def go():
+        have = conn.execute(text("select nid from nodes where user_id = :u and ref->>'id' = :r and ref->>'module' = 'calendar' and not archived"), {"u": me, "r": ref_id}).scalar()
+        if done and not have:
+            area = service.ensure_builtin(conn, me, "care", "area", AREAS["care"])
+            service.attach(conn, me, "task", title[:200] or "Done", parent_id=area["nid"], kind=f"calendar:{kind}", badge={"status": "closed", "own": 1},
+                           ref={"module": "calendar", "model": "mark", "id": ref_id}, actor="system")
+        elif not done and have:
+            service.archive(conn, me, have, actor="system")
+    _safe(conn, "care", go)
+
+
+def aspired(conn: Connection, me: str, aspiration_id: str, title: str, done: bool) -> None:
+    """An aspiration the person marked reached: a leaf under "My aspirations"; unmarked, it goes."""
+    def go():
+        have = conn.execute(text("select nid from nodes where user_id = :u and ref->>'id' = :r and ref->>'module' = 'grow' and not archived"), {"u": me, "r": str(aspiration_id)}).scalar()
+        if done and not have:
+            area = service.ensure_builtin(conn, me, "aspire", "area", AREAS["aspire"])
+            service.attach(conn, me, "goal", title[:200] or "Aspiration", parent_id=area["nid"], kind="aspiration", badge={"status": "closed", "own": 1},
+                           ref={"module": "grow", "model": "aspiration", "id": str(aspiration_id)}, actor="system")
+        elif not done and have:
+            service.archive(conn, me, have, actor="system")
+    _safe(conn, "aspired", go)

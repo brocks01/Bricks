@@ -13,12 +13,12 @@ export type Answer = 'yes' | 'no' | null;
 const VOICE: Record<string, string> = { en: 'en-SG', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-IN', zh: 'zh-CN', ms: 'ms-MY' };
 const canSpeak = () => typeof globalThis !== 'undefined' && 'speechSynthesis' in globalThis;
 
-export function ActivityCard({ act, answer, lang, w, readAloud, onYes, onNo, onChange, onOpen }: {
-  act: Upcoming; answer: Answer; lang: string; w: W; readAloud: boolean; onYes: () => void; onNo: () => void; onChange: () => void; onOpen: () => void;
+export function ActivityCard({ act, answer, lang, w, readAloud, nowMs, onYes, onNo, onChange, onOpen, onHere }: {
+  act: Upcoming; answer: Answer; lang: string; w: W; readAloud: boolean; nowMs: number; onYes: () => void; onNo: () => void; onChange: () => void; onOpen: () => void; onHere: () => void;
 }) {
   const start = new Date(act.starts_at);
   const today = start.toDateString() === new Date().toDateString();
-  const day = today ? w('h_home') : start.toLocaleDateString(lang, { weekday: 'long' });
+  const day = today ? w('today_word') : start.toLocaleDateString(lang, { weekday: 'long' });
   const when = start.toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const who = act.going_names ?? []; // an older server may not send the names
   const others = Math.max(0, (act.going_count ?? 0) - (act.i_going ? 1 : 0));
@@ -27,6 +27,9 @@ export function ActivityCard({ act, answer, lang, w, readAloud, onYes, onNo, onC
     ? w('going_names', { names, n: others - who.length })
     : who.length ? w('going_only', { names })
     : others > 0 ? w('going_n', { n: others }) : '';
+  // "I'm here" opens an hour before the start and stays open for the rest of the day (the server checks the same window).
+  const msToStart = start.getTime() - nowMs; // the clock comes from the screen (it moves every half minute)
+  const hereOpen = msToStart <= 3_600_000 && msToStart >= -12 * 3_600_000;
   const maps = act.location ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${act.location} Singapore`)}` : '';
   const speak = () => {
     try {
@@ -88,6 +91,16 @@ export function ActivityCard({ act, answer, lang, w, readAloud, onYes, onNo, onC
               {answer === 'yes' ? <Ionicons name="checkmark" size={20} color={colors.navy} /> : null}
               <Text style={{ flex: 1, fontSize: 16, fontWeight: answer === 'yes' ? '600' : '400', color: answer === 'yes' ? '#15202E' : '#2B3440' }}>{answer === 'yes' ? w('you_going') : w('no_problem')}</Text>
             </View>
+            {answer === 'yes' && act.i_attended ? (
+              <View style={{ backgroundColor: '#E3F1E7', borderRadius: 10, paddingVertical: 12, paddingHorizontal: 14 }}>
+                <Text style={{ fontSize: 16, fontWeight: '600', color: '#245A40' }}>{w('here_done')}</Text>
+              </View>
+            ) : answer === 'yes' && hereOpen ? (
+              <Pressable onPress={onHere} accessibilityRole="button" style={{ minHeight: 54, borderRadius: 12, backgroundColor: colors.accent, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                <Ionicons name="location" size={19} color="#FFFFFF" />
+                <Text style={{ fontSize: 18, fontWeight: '600', color: '#FFFFFF' }}>{w('here_btn')}</Text>
+              </Pressable>
+            ) : null}
             <Pressable onPress={onChange} accessibilityRole="button" style={{ alignSelf: 'center', minHeight: 40, justifyContent: 'center', paddingHorizontal: 8 }}>
               <Text style={{ fontSize: 16, fontWeight: '500', color: '#4A5361', textDecorationLine: 'underline' }}>{w('change_answer')}</Text>
             </Pressable>

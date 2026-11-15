@@ -56,6 +56,7 @@ class EndorseIn(BaseModel):
 
 class StallIn(BaseModel):
     selling: str = Field(min_length=2, max_length=200)
+    slot: str = Field(default='whole', pattern='^(first|second|whole)$')
     helper_name: str | None = Field(default=None, max_length=60)
 
 
@@ -141,7 +142,7 @@ def stalls(activity_id: str, user_id: str = Depends(current_user_id), conn: Conn
 
 @router.post("/stalls/{activity_id}")
 def reserve(activity_id: str, body: StallIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
-    return _run(service.reserve_stall, conn, user_id, activity_id, body.selling, body.helper_name)
+    return _run(service.reserve_stall, conn, user_id, activity_id, body.selling, body.helper_name, body.slot)
 
 
 @router.delete("/stalls/{activity_id}")

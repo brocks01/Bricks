@@ -2,7 +2,7 @@ import { defineModule } from '../../navigation/registry';
 import { communityHome } from './pages/home/page';
 import {
   communityActivities, communityCategory, communityEvent, communityEvents, communityInitiative, communityInitiatives, communityInvite,
-  communityNewEvent, communityNewInitiative, communityPeople, communityUpdate,
+  communityLead, communityNewEvent, communityNewInitiative, communityPeople, communityUpdate,
 } from './pages';
 
 defineModule({
@@ -12,7 +12,7 @@ defineModule({
   keywords: ['community', 'home', 'updates', 'events', 'activities', 'people', 'initiatives', 'invite'],
   pages: [
     communityHome, communityEvents, communityEvent, communityActivities, communityCategory, communityPeople, communityInvite,
-    communityInitiatives, communityInitiative, communityUpdate, communityNewEvent, communityNewInitiative,
+    communityInitiatives, communityInitiative, communityUpdate, communityNewEvent, communityNewInitiative, communityLead,
   ],
   skills: [],
 });

@@ -270,7 +270,11 @@ def test_saying_going_plants_a_gathering_and_once_it_has_passed_the_leaf_turns_g
         from app.modules.nodes import feed
         feed.going(conn, member["id"], past, True)  # said going before it happened
     tr = client.get("/v1/nodes/tree", headers=member["h"]).json()
-    assert tr["leaves"] == 1 and tr["growing"] == 0  # the passed gathering closed by itself
+    assert tr["leaves"] == 0 and tr["growing"] == 1  # it passed, but nobody checked them in: still an outline, never a green leaf by itself
+    with engine().begin() as conn:
+        conn.execute(text("update activities set starts_at = now() - interval '6 days' where id = :a"), {"a": past})
+    tr = client.get("/v1/nodes/tree", headers=member["h"]).json()
+    assert tr["leaves"] == 0 and tr["growing"] == 0  # long past and never attended: taken off the tree
 
 
 def test_upcoming_carries_the_going_count_names_and_category():

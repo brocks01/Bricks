@@ -261,13 +261,13 @@ def _market_activity(conn: Connection, me: str, activity_id: str):
 def list_stalls(conn: Connection, me: str, activity_id: str) -> dict:
     a = _market_activity(conn, me, activity_id)
     rows = conn.execute(
-        text("select s.id, s.selling, s.helper_name, s.seller_id, u.display_name from market_stalls s join users u on u.id = s.seller_id where s.activity_id = :a and s.status = 'reserved' order by s.created_at"),
+        text("select s.id, s.selling, s.helper_name, s.slot, s.seller_id, u.display_name from market_stalls s join users u on u.id = s.seller_id where s.activity_id = :a and s.status = 'reserved' order by s.created_at"),
         {"a": a.id}).all()
     return {"activity": {"id": str(a.id), "title": a.title, "starts_at": _iso(a.starts_at), "is_market": (a.category or "").strip().lower() == "market"},
-            "stalls": [{"id": str(r.id), "seller": r.display_name or "", "selling": r.selling, "helper_name": r.helper_name, "mine": str(r.seller_id) == me} for r in rows]}
+            "stalls": [{"id": str(r.id), "seller": r.display_name or "", "selling": r.selling, "helper_name": r.helper_name, "slot": r.slot, "mine": str(r.seller_id) == me} for r in rows]}
 
 
-def reserve_stall(conn: Connection, me: str, activity_id: str, selling: str, helper_name: str | None) -> dict:
+def reserve_stall(conn: Connection, me: str, activity_id: str, selling: str, helper_name: str | None, slot: str = "whole") -> dict:
     a = _market_activity(conn, me, activity_id)
     if (a.category or "").strip().lower() != "market":
         raise MarketError("not_a_market", 409)
@@ -276,9 +276,9 @@ def reserve_stall(conn: Connection, me: str, activity_id: str, selling: str, hel
     if len(selling.strip()) < 2:
         raise MarketError("selling_short", 422)
     r = conn.execute(
-        text("insert into market_stalls (activity_id, seller_id, selling, helper_name) values (:a, :u, :s, :h) "
-             "on conflict (activity_id, seller_id) do update set selling = excluded.selling, helper_name = excluded.helper_name, status = 'reserved' returning id"),
-        {"a": a.id, "u": me, "s": selling.strip(), "h": (helper_name or "").strip() or None}).one()
+        text("insert into market_stalls (activity_id, seller_id, selling, helper_name, slot) values (:a, :u, :s, :h, :sl) "
+             "on conflict (activity_id, seller_id) do update set selling = excluded.selling, helper_name = excluded.helper_name, slot = excluded.slot, status = 'reserved' returning id"),
+        {"a": a.id, "u": me, "s": selling.strip(), "h": (helper_name or "").strip() or None, "sl": slot if slot in ("first", "second", "whole") else "whole"}).one()
     return {"id": str(r.id)}
 
 

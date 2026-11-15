@@ -24,9 +24,10 @@ export const cancelBooking = (id: string) => api<{ status: string }>('POST', `/v
 export const completeBooking = (id: string) => api<{ status: string }>('POST', `/v1/market/bookings/${id}/complete`);
 export const endorseListing = (id: string, note?: string) => api<{ endorsed: boolean }>('POST', `/v1/market/listings/${id}/endorse`, { note });
 
-export interface Stall { id: string; seller: string; selling: string; helper_name: string | null; mine: boolean }
+export type StallSlot = 'first' | 'second' | 'whole';
+export interface Stall { id: string; seller: string; selling: string; helper_name: string | null; slot: StallSlot; mine: boolean }
 export interface Stalls { activity: { id: string; title: string; starts_at: string; is_market: boolean }; stalls: Stall[] }
 export const getStalls = (activityId: string) => api<Stalls>('GET', `/v1/market/stalls/${activityId}`);
-export const reserveStall = (activityId: string, selling: string, helper_name?: string) => api<{ id: string }>('POST', `/v1/market/stalls/${activityId}`, { selling, helper_name });
+export const reserveStall = (activityId: string, selling: string, helper_name?: string, slot: StallSlot = 'whole') => api<{ id: string }>('POST', `/v1/market/stalls/${activityId}`, { selling, helper_name, slot });
 export const cancelStall = (activityId: string) => api<{ cancelled: boolean }>('DELETE', `/v1/market/stalls/${activityId}`);
 export interface MarketSummary { waiting_for_me: number; my_listings: number }

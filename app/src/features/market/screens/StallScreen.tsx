@@ -1,11 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text } from 'react-native';
-import { cancelStall, getStalls, reserveStall, type Stalls } from '../../../api/market';
+import { cancelStall, getStalls, reserveStall, type StallSlot, type Stalls } from '../../../api/market';
 import { Empty, ListRow, Notice, Section } from '../../../components/blocks';
-import { Button, ErrorText, Field, Screen } from '../../../components/ui';
+import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
-import { useLanguage } from '../../../i18n';
+import { useLanguage, useT } from '../../../i18n';
+import '../../lead/leadWords'; // registers the words of the time slots
 import { El, useAction, useField, usePageData, usePageWords } from '../../../kit';
 import { sessionStore } from '../../../session/store';
 import { colors, space, type } from '../../../theme/tokens';
@@ -14,6 +15,7 @@ import { refusalWord } from '../ui';
 
 export default function StallScreen() {
   const w = usePageWords(page);
+  const t = useT();
   const lang = useLanguage();
   const { id } = useLocalSearchParams<{ id: string }>();
   const { status } = useStore(sessionStore);
@@ -21,6 +23,7 @@ export default function StallScreen() {
   const [lost, setLost] = useState(false);
   const [selling, setSelling] = useState('');
   const [helper, setHelper] = useState('');
+  const [slot, setSlot] = useState<StallSlot>('whole');
   const [msg, setMsg] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -36,7 +39,7 @@ export default function StallScreen() {
     setError(null);
     setMsg(null);
     try {
-      await reserveStall(id, selling.trim(), helper.trim() || undefined);
+      await reserveStall(id, selling.trim(), helper.trim() || undefined, slot);
       setMsg(w('stall_reserved'));
       load();
     } catch (e) {
@@ -68,7 +71,7 @@ export default function StallScreen() {
       <Section title={w('stalls_title')}>
         {data && data.stalls.length === 0 ? <Empty text={w('no_stalls')} /> : null}
         {(data?.stalls ?? []).map((s, i) => (
-          <ListRow key={s.id} icon="basket-outline" i={i} title={s.selling} sub={`${s.seller}${s.helper_name ? ' · ' + w('helper_is', { name: s.helper_name }) : ''}`} />
+          <ListRow key={s.id} icon="basket-outline" i={i} title={s.selling} sub={`${s.seller} · ${t(`lead.slot_${s.slot}`)}${s.helper_name ? ' · ' + w('helper_is', { name: s.helper_name }) : ''}`} />
         ))}
       </Section>
       {data && !data.activity.is_market ? <Notice tone="warn" text={w('err_not_market')} /> : null}
@@ -79,6 +82,7 @@ export default function StallScreen() {
           ) : (
             <>
               <El page={page} id="selling"><Field label={w('f_selling')} value={selling} onChangeText={setSelling} maxLength={200} /></El>
+              <ChoiceChips label={t('lead.slot')} options={(['first', 'second', 'whole'] as StallSlot[]).map((v) => ({ value: v, label: t(`lead.slot_${v}`) }))} value={slot} onChange={(v) => setSlot(v as StallSlot)} />
               <El page={page} id="helper"><Field label={w('f_helper')} value={helper} onChangeText={setHelper} maxLength={60} /></El>
               <El page={page} id="reserve"><Button label={w('reserve_btn')} icon="checkmark" onPress={reserve} /></El>
             </>

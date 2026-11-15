@@ -1,4 +1,6 @@
 import { definePage } from '../../kit/page';
+import { pageWords } from '../../i18n/words';
+import { L } from '../lead/leadWords';
 import { strings } from './strings';
 
 // The community screens, as in ui-samples/10-community-screens.webp (screens 2 to 10). All of them share one list of words (strings.ts).
@@ -145,5 +147,18 @@ export const communityNewInitiative = definePage({
     fSummary: { kind: 'field', type: 'string', summary: 'One line about it.' },
     fPlan: { kind: 'field', type: 'string', summary: 'The current plan.' },
     save: { kind: 'action', agent: 'confirm', summary: 'Start the initiative.' },
+  },
+});
+
+export const communityLead = definePage({
+  ...base,
+  key: 'community.lead',
+  route: '/community/[id]/lead',
+  params: ['id'],
+  strings: pageWords(L, { heading: 'lead_title' }),
+  summary: 'For the Community Lead only: the community\'s signature product and the vote that chooses it, today\'s check-ins (check someone in for them) and the weekly rota with its gaps.',
+  keywords: ['lead', 'leader', 'vote', 'signature product', 'check in', 'rota', 'shift'],
+  elements: {
+    heading: { kind: 'text' },
   },
 });

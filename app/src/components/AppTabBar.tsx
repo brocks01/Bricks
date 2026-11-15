@@ -4,33 +4,31 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '../core/store';
 import { loadFamilies } from '../features/family/state';
-import { LANGUAGES, useLanguage, useT } from '../i18n';
+import { useT } from '../i18n';
 import { useCurrentPage, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
 import { colors } from '../theme/tokens';
 import { AgentOrb } from './AgentOrb';
 
 /**
- * The bottom bar, drawn like the owner's design artifact: three places. Communities on the left, Progress on the right, and Today in the middle
- * as a raised round navy button with a gold calendar. Health, family, the calendar list and settings are reached from the profile (the round
- * button at the top right), the market from Communities. The agent is one small round button floating just above this bar (AgentOrb).
- * It shows only when someone is signed in with a finished profile, and never on the sign-in pages.
+ * The bottom bar, drawn like the owner's design artifact: three places. Communities on the left, the Marketplace on the right, and Home in the middle
+ * as a raised round navy button with a gold house. The tree and the full progress are part of Home (a card on it that opens the whole page). Health, family,
+ * the calendar list and settings are reached from the profile (the round button at the top right). The agent is one small round button floating just above
+ * this bar (AgentOrb). It shows only when someone is signed in with a finished profile, and never on the sign-in pages.
  */
 const LEFT = 'connect.index';
 const MIDDLE = 'home.index';
-const RIGHT = 'grow.progress';
+const RIGHT = 'market.index';
 // Which of the three a page belongs to, so the pages behind a tab keep it lit. Profile pages (me, health, family, language) light none.
 const TAB_OF_MODULE: Record<string, string> = {
-  connect: LEFT, community: LEFT, explore: LEFT, market: LEFT,
-  home: MIDDLE, calendar: MIDDLE,
-  grow: RIGHT,
+  connect: LEFT, community: LEFT, explore: LEFT,
+  home: MIDDLE, calendar: MIDDLE, grow: MIDDLE,
+  market: RIGHT,
 };
-const PROGRESS_WORD = ['Progress', 'प्रगति', 'অগ্রগতি', 'முன்னேற்றம்', '进展', 'Kemajuan'];
 
 export function AppTabBar() {
   const t = useT();
   const go = useNavigate();
-  const code = useLanguage();
   const current = useCurrentPage();
   const { status, user } = useStore(sessionStore);
   const insets = useSafeAreaInsets();
@@ -49,7 +47,6 @@ export function AppTabBar() {
   }
   if (!user?.profile_complete || current?.bare) return null;
   const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
-  const word = PROGRESS_WORD[Math.max(0, LANGUAGES.findIndex((l) => l.code === code))] ?? PROGRESS_WORD[0];
   const side = (key: string, icon: keyof typeof Ionicons.glyphMap, label: string) => {
     const on = lit === key;
     return (
@@ -59,7 +56,7 @@ export function AppTabBar() {
       </Pressable>
     );
   };
-  const todayOn = lit === MIDDLE;
+  const homeOn = lit === MIDDLE;
   return (
     <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', height: 82, borderTopWidth: 1, borderColor: colors.line }}>
@@ -68,14 +65,14 @@ export function AppTabBar() {
           <Pressable
             onPress={() => go(MIDDLE)}
             accessibilityRole="tab"
-            accessibilityState={{ selected: todayOn }}
-            style={{ position: 'absolute', left: 17, top: -22, width: 76, height: 76, borderRadius: 38, borderWidth: 4, borderColor: colors.card, backgroundColor: todayOn ? colors.navy : '#46556E', alignItems: 'center', justifyContent: 'center', gap: 2, shadowColor: colors.navy, shadowOpacity: 0.32, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 6 }}
+            accessibilityState={{ selected: homeOn }}
+            style={{ position: 'absolute', left: 17, top: -22, width: 76, height: 76, borderRadius: 38, borderWidth: 4, borderColor: colors.card, backgroundColor: homeOn ? colors.navy : '#46556E', alignItems: 'center', justifyContent: 'center', gap: 2, shadowColor: colors.navy, shadowOpacity: 0.32, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 6 }}
           >
-            <Ionicons name="calendar-outline" size={24} color={colors.gold} />
+            <Ionicons name="home-outline" size={24} color={colors.gold} />
             <Text style={{ fontSize: 13, fontWeight: '600', color: '#FFFFFF' }}>{t(`${MIDDLE}.tab`)}</Text>
           </Pressable>
         </View>
-        <View style={{ flex: 1 }}>{side(RIGHT, 'stats-chart-outline', word)}</View>
+        <View style={{ flex: 1 }}>{side(RIGHT, 'storefront-outline', t(`${RIGHT}.tab`))}</View>
       </View>
       <View style={{ height: insets.bottom, backgroundColor: colors.card }} />
       <AgentOrb />

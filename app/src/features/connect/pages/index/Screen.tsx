@@ -11,6 +11,7 @@ import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
+import '../../../lead/leadWords'; // registers the words of the first-run page
 import '../../cardWords'; // registers the words of the cards
 import { CommunityCard, ListEntry, MarketDayCard } from '../../CommunityCards';
 import { connectIndex as page } from './page';
@@ -114,6 +115,9 @@ export default function ConnectIndex() {
           <Ionicons name="people" size={40} color={colors.accent} />
           <El page={page} id="noCommunity"><Text style={[type.h2, { color: colors.ink, textAlign: 'center' }]}>{w('noCommunity')}</Text></El>
           <Text style={[type.body, { color: colors.muted, textAlign: 'center' }]}>{w('noCommunityBody')}</Text>
+          <Pressable onPress={() => navigate('connect.pick')} accessibilityRole="button" style={{ minHeight: 52, borderRadius: 12, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 20, marginTop: space.sm }}>
+            <Text style={{ fontSize: 17, fontWeight: '600', color: '#FFFFFF' }}>{t('lead.pick_banner')}</Text>
+          </Pressable>
         </View>
       ) : null}
 
@@ -143,7 +147,6 @@ export default function ConnectIndex() {
       <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg, marginTop: space.xl }}>
         <El page={page} id="explore"><ListEntry title={w('explore')} onPress={() => navigate('connect.explore')} line /></El>
         <El page={page} id="joinOrCreate"><ListEntry title={w('joinOrCreate')} onPress={() => navigate('connect.join')} line /></El>
-        <ListEntry title={t('market.index.heading')} onPress={() => navigate('market.index')} line />
         <El page={page} id="askStart"><ListEntry title={w('askStart')} onPress={() => navigate('connect.create')} /></El>
       </View>
     </Screen>

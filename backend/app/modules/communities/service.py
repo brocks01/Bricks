@@ -101,7 +101,7 @@ def detail(conn: Connection, user_id: str, community_id: str) -> dict:
     return {
         "community": {"id": str(c.id), "name": c.name, "kind": c.kind, "description": c.description, "area_name": c.area_name, "privacy": c.privacy,
                       "logo_url": c.logo_url, "cover_url": c.cover_url, "member_count": member_count, "is_demo": c.is_demo,
-                      "invite_code": c.invite_code if can_manage else None},
+                      "invite_code": c.invite_code if can_manage else None, "signature_product": c.signature_product, "meeting": c.meeting},
         "my_role": role,
         "can_manage": can_manage,
         "family_here": fam,
@@ -169,7 +169,8 @@ def upcoming(conn: Connection, user_id: str, limit: int = 3) -> list[dict]:
     """The next few activities across ALL the communities the person belongs to (for the Connect screen's "Coming up")."""
     rows = conn.execute(
         text("select x.id, x.title, x.starts_at, x.location, x.image_url, x.category, c.id as community_id, c.name as community_name, c.icon as community_icon, "
-             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going, "
+             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status in ('going', 'attended')) as i_going, "
+             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'attended') as i_attended, "
              "(select count(*) from activity_participants p where p.activity_id = x.id and p.status = 'going') as going_count, "
              "array(select u.display_name from activity_participants p join users u on u.id = p.user_id where p.activity_id = x.id and p.status = 'going' and p.user_id <> :u and u.display_name is not null limit 3) as going_names "
              "from activities x join communities c on c.id = x.community_id join memberships m on m.community_id = c.id "
@@ -177,4 +178,4 @@ def upcoming(conn: Connection, user_id: str, limit: int = 3) -> list[dict]:
              "order by x.starts_at limit :n"), {"u": user_id, "n": max(1, min(limit, 10))}).all()
     return [{"id": str(r.id), "title": r.title, "starts_at": r.starts_at.isoformat(), "location": r.location, "image_url": r.image_url,
              "community_id": str(r.community_id), "community_name": r.community_name, "community_icon": r.community_icon, "i_going": r.i_going,
-             "category": r.category, "going_count": r.going_count, "going_names": list(r.going_names or [])} for r in rows]
+             "category": r.category, "i_attended": r.i_attended, "going_count": r.going_count, "going_names": list(r.going_names or [])} for r in rows]

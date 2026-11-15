@@ -9,6 +9,8 @@ export const marketIndex = definePage({
   ...base,
   key: 'market.index',
   route: '/market',
+  tab: 3,
+  icon: 'storefront',
   summary: 'Marketplace: skills and experience that people near you offer (crafts, cooking, teaching, repair, music, advice...). Search, filter by kind, offer your own service, or open your bookings.',
   keywords: ['marketplace', 'services', 'skills', 'hire', 'book', 'sell', 'offer', 'experience'],
   elements: {

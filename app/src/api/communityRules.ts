@@ -18,7 +18,7 @@ export interface Experience { eligible: boolean; days_member: number; events_att
 export const getExperience = () => api<Experience>('GET', '/v1/communities/experience');
 
 export interface CommunityRequest { id: string; name: string; kind: CommunityKind; area_name: string | null; status: 'pending' | 'approved' | 'declined' | 'used'; note: string | null; community_id: string | null; created_at: string }
-export const requestCommunity = (body: { name: string; kind: CommunityKind; area_name?: string; description?: string; why?: string }) => api<{ id: string; status: string }>('POST', '/v1/communities/requests', body);
+export const requestCommunity = (body: { name: string; kind: CommunityKind; area_name?: string; description?: string; why?: string; product?: string; meeting?: string }) => api<{ id: string; status: string }>('POST', '/v1/communities/requests', body);
 export const getMyRequests = () => api<{ requests: CommunityRequest[] }>('GET', '/v1/communities/requests/mine').then((r) => r.requests);
 export const createFromRequest = (id: string) => api<{ id: string }>('POST', `/v1/communities/requests/${id}/create`);
 

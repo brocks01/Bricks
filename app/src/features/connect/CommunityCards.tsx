@@ -46,7 +46,7 @@ export function MarketDayCard({ act, stalls, lang, t, onReserve }: { act: Upcomi
       <View style={{ gap: 8 }}>
         <Line icon="calendar-outline" text={start.toLocaleString(lang, { weekday: 'long', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })} />
         {act.location ? <Line icon="location-outline" text={act.location} /> : null}
-        {stalls.length ? <Line icon="leaf-outline" text={t('cday.stalls', { list: stalls.map((s) => s.selling).join(', ') })} /> : null}
+        {stalls.length ? <Line icon="leaf-outline" text={t('cday.stalls', { list: stalls.map((s) => `${s.selling} (${t(`lead.slot_${s.slot}`)})`).join(', ') })} /> : null}
       </View>
       <View style={{ borderTopWidth: 1, borderColor: '#EDE6DA', paddingTop: 12 }}>
         <OutlineButton label={t('cday.reserve')} onPress={onReserve} navy />

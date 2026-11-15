@@ -5,12 +5,14 @@ import { type CommunityKind } from '../../../../api/communities';
 import { ApiError } from '../../../../api/client';
 import { createFromRequest, getExperience, getMyRequests, requestCommunity, type CommunityRequest, type Experience } from '../../../../api/communityRules';
 import { Bar, Notice, Panel, Pill, Section } from '../../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
+import { Button, ErrorText, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
+import { useT } from '../../../../i18n';
+import { RequestWizard, type RequestDraft } from '../../RequestWizard';
 import { connectCreate as page } from '../../pages';
 
 const KINDS: CommunityKind[] = ['apartment', 'block', 'neighbourhood', 'club', 'other'];
@@ -18,6 +20,7 @@ const KINDS: CommunityKind[] = ['apartment', 'block', 'neighbourhood', 'club', '
 // Ask to start a community. Communities are few and curated: a person with a little experience sends a request, the Bricks team approves it, and then the person creates it here.
 export default function CreateCommunity() {
   const w = usePageWords(page);
+  const t = useT();
   const go = useNavigate();
   const { status } = useStore(sessionStore);
   const [exp, setExp] = useState<Experience | null>(null);
@@ -41,14 +44,17 @@ export default function CreateCommunity() {
     }, [status, load])
   );
 
-  const send = async () => {
+  const send = async (draft?: RequestDraft) => {
     if (busy) return;
-    if (name.trim().length < 2) return setError(w('err_need_name'));
+    const n = (draft?.name ?? name).trim();
+    if (n.length < 2) return setError(w('err_need_name'));
     setError(null);
     setNote(null);
     setBusy(true);
     try {
-      await requestCommunity({ name: name.trim(), kind, ...(area.trim() ? { area_name: area.trim() } : {}), ...(about.trim() ? { description: about.trim() } : {}), ...(why.trim() ? { why: why.trim() } : {}) });
+      const k = draft?.kind ?? kind;
+      const a = (draft?.area ?? area).trim();
+      await requestCommunity({ name: n, kind: k, ...(a ? { area_name: a } : {}), ...(about.trim() ? { description: about.trim() } : {}), ...(why.trim() ? { why: why.trim() } : {}), ...(draft?.product.trim() ? { product: draft.product.trim() } : {}), ...(draft?.meeting.trim() ? { meeting: draft.meeting.trim() } : {}) });
       setNote(w('req_sent'));
       load();
     } catch (e) {
@@ -118,14 +124,9 @@ export default function CreateCommunity() {
       ) : null}
 
       {canAsk ? (
-        <View style={{ marginTop: space.md }}>
-          <El page={page} id="name"><Field label={w('r_name')} value={name} onChangeText={setName} maxLength={80} autoCapitalize="words" /></El>
-          <El page={page} id="kind"><ChoiceChips label={w('r_kind')} options={KINDS.map((k) => ({ value: k, label: w(`k_${k}`) }))} value={kind} onChange={(v) => setKind(v as CommunityKind)} /></El>
-          <El page={page} id="area"><Field label={w('r_area')} value={area} onChangeText={setArea} maxLength={120} autoCapitalize="words" /></El>
-          <El page={page} id="about"><Field label={w('r_about')} value={about} onChangeText={setAbout} maxLength={500} autoCapitalize="sentences" /></El>
-          <El page={page} id="why"><Field label={w('r_why')} value={why} onChangeText={setWhy} maxLength={1000} autoCapitalize="sentences" /></El>
-          <El page={page} id="createButton"><Button label={w('send_req')} onPress={() => void send()} disabled={busy} icon="paper-plane-outline" /></El>
-        </View>
+        <El page={page} id="createButton">
+          <RequestWizard w={w} t={t} busy={busy} error={null} onSend={(d) => void send(d)} />
+        </El>
       ) : null}
 
       {exp?.is_admin ? (

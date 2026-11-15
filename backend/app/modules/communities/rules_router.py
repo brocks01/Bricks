@@ -21,6 +21,8 @@ class RequestIn(BaseModel):
     area_name: str | None = Field(default=None, max_length=120)
     description: str | None = Field(default=None, max_length=500)
     why: str | None = Field(default=None, max_length=1000)
+    product: str | None = Field(default=None, max_length=80)
+    meeting: str | None = Field(default=None, max_length=200)
 
 
 class DecideIn(BaseModel):

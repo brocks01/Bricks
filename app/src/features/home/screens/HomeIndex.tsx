@@ -4,18 +4,21 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { calendarApi, type Occurrence } from '../../../api/calendar';
 import { getUpcoming, setGoing, type Upcoming } from '../../../api/communities';
+import { checkIn } from '../../../api/lead';
 import { getHomeSummary, type HomeSummary } from '../../../api/home';
 import { sendCheckin } from '../../../api/health';
 import { Figure, ListRow, Notice, Panel, Section } from '../../../components/blocks';
 import { Button, ErrorText, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
-import { useLanguage } from '../../../i18n';
+import { useLanguage, useT } from '../../../i18n';
 import { El, useAction, usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, size, space, type } from '../../../theme/tokens';
 import { dayRows, freeBefore, minutesUntil, nextUp } from '../day';
+import { TreeSummary } from '../../grow/TreeSummary';
 import { prefs } from '../../../prefs/store';
+import '../../lead/leadWords'; // registers the words of the first-run link
 import { ActivityCard, type Answer } from './ActivityCard';
 import { MonthPlanner } from './MonthPlanner';
 import { homeIndex as page } from '../pages';
@@ -24,6 +27,7 @@ const KIND_ICON: Record<string, keyof typeof Ionicons.glyphMap> = { medicine: 'm
 
 export default function HomeIndex() {
   const w = usePageWords(page);
+  const t = useT();
   const lang = useLanguage();
   const navigate = useNavigate();
   const { status, user } = useStore(sessionStore);
@@ -161,6 +165,12 @@ export default function HomeIndex() {
         </El>
       ) : null}
 
+      {sum && sum.communities.used === 0 ? (
+        <View style={{ marginBottom: space.lg }}>
+          <Button label={t('lead.pick_banner')} icon="people-outline" onPress={() => navigate('connect.pick')} />
+        </View>
+      ) : null}
+
       {act ? (
         <View style={{ marginBottom: space.lg }}>
           <ActivityCard
@@ -169,10 +179,12 @@ export default function HomeIndex() {
             lang={lang}
             w={w}
             readAloud={readAloud}
+            nowMs={now.getTime()}
             onYes={() => void answerGoing(true)}
             onNo={() => void answerGoing(false)}
             onChange={() => setAnswer(null)}
             onOpen={() => navigate('community.home', { id: act.community_id })}
+            onHere={() => void (async () => { try { await checkIn(act.id); setAct({ ...act, i_attended: true }); load(); } catch { setError(w('failed')); } })()}
           />
         </View>
       ) : null}
@@ -202,6 +214,10 @@ export default function HomeIndex() {
           <Notice text={w('nothing_next')} icon="sunny-outline" />
         )}
       </Section>
+
+      <View style={{ marginBottom: space.lg }}>
+        <TreeSummary onOpen={() => navigate('grow.progress')} refreshKey={monthOccs.length + (act?.i_attended ? 1 : 0)} />
+      </View>
 
       <View style={{ marginBottom: space.lg }}>
         <MonthPlanner now={now} occs={monthOccs} picked={picked} onPick={setPicked} lang={lang} w={w} />

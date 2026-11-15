@@ -41,6 +41,9 @@ def set_aspiration_done(conn: Connection, user_id: str, aid: str, done: bool) ->
     r = conn.execute(text("update aspirations set done_at = case when :d then coalesce(done_at, now()) end where id = :i and user_id = :u returning id, done_at is not null as done"), {"d": done, "i": _uuid(aid), "u": user_id}).mappings().first()
     if r is None:
         raise GrowError("not_found", 404)
+    title = conn.execute(text("select title from aspirations where id = :i"), {"i": _uuid(aid)}).scalar()
+    from ..nodes import feed
+    feed.aspired(conn, user_id, aid, title or "", done)
     return dict(r)
 
 

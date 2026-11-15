@@ -144,8 +144,8 @@ def request_create(conn: Connection, user_id: str, data: dict) -> dict:
     if conn.execute(text("select 1 from community_requests where user_id = :u and status in ('pending', 'approved')"), {"u": user_id}).first():
         raise CommunityError("already_open", 409)
     r = conn.execute(
-        text("insert into community_requests (user_id, name, kind, area_name, description, why) values (:u, :n, :k, :a, :d, :w) returning id"),
-        {"u": user_id, "n": data["name"].strip(), "k": data.get("kind") or "neighbourhood", "a": data.get("area_name"), "d": data.get("description"), "w": data.get("why")}).one()
+        text("insert into community_requests (user_id, name, kind, area_name, description, why, product, meeting) values (:u, :n, :k, :a, :d, :w, :p, :m) returning id"),
+        {"u": user_id, "n": data["name"].strip(), "k": data.get("kind") or "neighbourhood", "a": data.get("area_name"), "d": data.get("description"), "w": data.get("why"), "p": (data.get("product") or "").strip() or None, "m": (data.get("meeting") or "").strip() or None}).one()
     return {"id": str(r.id), "status": "pending"}
 
 
@@ -159,8 +159,8 @@ def review_list(conn: Connection, admin_id: str) -> list[dict]:
     if not is_admin(conn, admin_id):
         raise CommunityError("not_admin", 403)
     rows = conn.execute(
-        text("select r.id, r.name, r.kind, r.area_name, r.description, r.why, r.created_at, u.display_name, u.email from community_requests r join users u on u.id = r.user_id where r.status = 'pending' order by r.created_at")).all()
-    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "why": r.why, "by": r.display_name or r.email,
+        text("select r.id, r.name, r.kind, r.area_name, r.description, r.why, r.product, r.meeting, r.created_at, u.display_name, u.email from community_requests r join users u on u.id = r.user_id where r.status = 'pending' order by r.created_at")).all()
+    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "why": r.why, "product": r.product, "meeting": r.meeting, "by": r.display_name or r.email,
              "created_at": r.created_at.isoformat()} for r in rows]
 
 
@@ -186,4 +186,6 @@ def create_from_request(conn: Connection, user_id: str, request_id: str) -> dict
     from .service import create as make
     out = make(conn, user_id, {"name": r.name, "kind": r.kind, "description": r.description, "area_name": r.area_name, "privacy": "open"})
     conn.execute(text("update community_requests set status = 'used', community_id = :c where id = :r"), {"c": out["id"], "r": request_id})
+    if r.product or r.meeting:
+        conn.execute(text("update communities set signature_product = :p, signature_since = case when :p is null then null else current_date end, meeting = :m where id = :c"), {"p": r.product, "m": r.meeting, "c": out["id"]})
     return out

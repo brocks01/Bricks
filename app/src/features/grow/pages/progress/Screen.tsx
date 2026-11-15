@@ -62,7 +62,7 @@ export default function Progress() {
   );
 
   return (
-    <Screen title={w('heading')} subtitle={tree ? t('tree.level', { n: tree.level }) : undefined}>
+    <Screen title={w('heading')} back>
       {tree ? <TreeCard tree={tree} reload={load} /> : null}
       <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('tree.more')}</Text>
       {failed ? (
@@ -89,7 +89,7 @@ export default function Progress() {
   );
 }
 
-const AREA_WORD: Record<string, string> = { move: 'tree.area_move', community: 'tree.area_community', give: 'tree.area_give', goals: 'tree.goals', habits: 'tree.habits' };
+const AREA_WORD: Record<string, string> = { move: 'tree.area_move', community: 'tree.area_community', give: 'tree.area_give', goals: 'tree.goals', habits: 'tree.habits', care: 'tree.area_care', aspire: 'tree.area_aspire' };
 
 // The tree, the count of leaves with the way to the next level, a line for each branch, and how leaves are earned. Everything comes from the person's real nodes.
 function TreeCard({ tree, reload }: { tree: Tree; reload: () => void }) {
@@ -127,7 +127,7 @@ function TreeCard({ tree, reload }: { tree: Tree; reload: () => void }) {
       <View style={{ gap: space.sm }}>
         <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('tree.how')}</Text>
         <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
-          {['tree.how_walk', 'tree.how_move', 'tree.how_gather', 'tree.how_give'].map((k, i, all) => (
+          {['tree.how_walk', 'tree.how_move', 'tree.how_here', 'tree.how_care', 'tree.how_give'].map((k, i, all) => (
             <Text key={k} style={{ fontSize: 16, color: colors.ink, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: '#EDE6DA' }}>{t(k)}</Text>
           ))}
         </View>

@@ -2,7 +2,7 @@ import { type WordTable } from '../../i18n/words';
 
 // The words of the Home tab and the reminder pop-ups. Order of the six: English, Hindi, Bengali, Tamil, Chinese, Malay.
 export const W: WordTable = {
-  h_home: ['Today', 'आज', 'আজ', 'இன்று', '今天', 'Hari ini'],
+  h_home: ['Home', 'होम', 'হোম', 'முகப்பு', '首页', 'Utama'],
   greet_morning: ['Good morning, {name}', 'सुप्रभात, {name}', 'সুপ্রভাত, {name}', 'காலை வணக்கம், {name}', '早上好，{name}', 'Selamat pagi, {name}'],
   greet_afternoon: ['Good afternoon, {name}', 'नमस्कार, {name}', 'শুভ অপরাহ্ন, {name}', 'மதிய வணக்கம், {name}', '下午好，{name}', 'Selamat petang, {name}'],
   greet_evening: ['Good evening, {name}', 'शुभ संध्या, {name}', 'শুভ সন্ধ্যা, {name}', 'மாலை வணக்கம், {name}', '晚上好，{name}', 'Selamat malam, {name}'],
@@ -64,7 +64,10 @@ export const W: WordTable = {
   tap_day: ['Tap a day', 'कोई दिन दबाएँ', 'একটি দিন চাপুন', 'ஒரு நாளைத் தொடுங்கள்', '点一天', 'Ketik satu hari'],
   nothing_day: ['Nothing planned. A day to rest.', 'कुछ तय नहीं। आराम का दिन।', 'কিছু ঠিক করা নেই। বিশ্রামের দিন।', 'எதுவும் இல்லை. ஓய்வு நாள்.', '没有安排，好好आराम करें।'.replace('好好आराम करें।', '好好休息。'), 'Tiada rancangan. Hari berehat.'],
   week_n: ['Week {n}', 'सप्ताह {n}', 'সপ্তাহ {n}', 'வாரம் {n}', '第{n}周', 'Minggu {n}'],
+  today_word: ['Today', 'आज', 'আজ', 'இன்று', '今天', 'Hari ini'],
   read_aloud: ['Read this aloud', 'इसे पढ़कर सुनाएँ', 'এটি পড়ে শোনান', 'இதைப் படித்துக் காட்டு', '朗读这个', 'Baca ini dengan kuat'],
+  here_btn: ["I'm here", 'मैं यहाँ हूँ', 'আমি এখানে', 'நான் இங்கே இருக்கிறேன்', '我到了', 'Saya sudah sampai'],
+  here_done: ["You're here. Thank you for coming.", 'आप यहाँ हैं। आने के लिए धन्यवाद।', 'আপনি এখানে আছেন। আসার জন্য ধন্যবাদ।', 'நீங்கள் இங்கே இருக்கிறீர்கள். வந்ததற்கு நன்றி.', '你已到场，谢谢你的参与。', 'Anda sudah hadir. Terima kasih kerana datang.'],
   // pop-ups
   popup_title: ['Coming up', 'जल्द ही', 'শীঘ্রই', 'விரைவில்', '即将开始', 'Akan datang'],
   popup_starts: ['{title} starts {when}', '{title} {when} शुरू होगा', '{title} {when} শুরু হবে', '{title} {when} தொடங்கும்', '{title} {when}开始', '{title} bermula {when}'],

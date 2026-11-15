@@ -13,6 +13,8 @@ import { El, usePageData, usePageWords, type PageDataInput } from '../../../../k
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
+import { RotaCard, VoteCard } from '../../../lead/LeadBits';
+import '../../../lead/leadWords'; // registers the words of the vote and the rota
 import { communityHome as page } from './page';
 
 // Community Home, as in ui-samples/10-community-screens.webp (screen 1). Everything shown comes from the database.
@@ -173,6 +175,15 @@ export default function CommunityHome() {
         ))}
       </View>
 
+      {c.signature_product ? (
+        <View style={[card, { marginTop: space.lg, gap: 2 }]}>
+          <Text style={[type.small, { color: colors.muted }]}>{t('lead.product_title')}</Text>
+          <Text style={{ fontSize: 22, fontWeight: '600', color: colors.ink }}>{c.signature_product}</Text>
+          {c.meeting ? <Text style={[type.small, { color: colors.muted }]}>{c.meeting}</Text> : null}
+        </View>
+      ) : null}
+      {data.can_manage ? <View style={{ marginTop: space.md }}><Button label={t('lead.lead_link')} kind="plain" icon="ribbon-outline" onPress={() => go('community.lead', { id: String(id) })} /></View> : null}
+
       <El page={page} id="happening"><Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('happening')}</Text></El>
       {next.length ? next.map((a, i) => (
         <View key={a.id} style={[card, { flexDirection: 'row', alignItems: 'center', gap: space.md }]}>
@@ -210,6 +221,11 @@ export default function CommunityHome() {
           {u.author ? <Text style={[type.small, { color: colors.muted, marginTop: space.xs }]}>{u.author}</Text> : null}
         </Pressable>
       )) : <Text style={[type.body, { color: colors.muted }]}>{w('noUpdates')}</Text>}
+
+      <View style={{ marginTop: space.lg, gap: space.lg }}>
+        <VoteCard cid={String(id)} lead={false} t={t} />
+        <RotaCard cid={String(id)} lead={false} t={t} lang={lang} />
+      </View>
 
       {data.activities.some((a) => (a.category ?? '').trim().toLowerCase() === 'market') ? (
         <View style={{ marginTop: space.md }}>

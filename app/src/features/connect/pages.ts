@@ -2,6 +2,7 @@ import { definePage } from '../../kit/page';
 import { mergeStrings, pageWords } from '../../i18n/words';
 import { EXPLORE_ALIASES, R, REQUEST_ALIASES, REVIEW_ALIASES } from './rulesWords';
 import { strings } from './startStrings';
+import { L } from '../lead/leadWords';
 
 // Join a community with an invite code, explore the others, or ask to start one. Reached from the Community tab.
 const base = { module: 'connect', requiresAuth: true } as const;
@@ -59,4 +60,17 @@ export const connectReview = definePage({
   summary: 'For the Bricks team only: requests to start a community, each with who asked and why, to approve or decline.',
   keywords: ['review', 'approve', 'requests', 'communities'],
   elements: { heading: { kind: 'text' } },
+});
+
+export const connectPick = definePage({
+  ...base,
+  key: 'connect.pick',
+  route: '/choose-places',
+  strings: pageWords(L, { heading: 'pick_title', pickContinue: 'pick_go' }),
+  summary: 'First run: choose up to three communities to join, each with a picture, then continue. A person can be in three communities at most and can change this later.',
+  keywords: ['choose', 'places', 'paths', 'first', 'join', 'welcome', 'start'],
+  elements: {
+    heading: { kind: 'text' },
+    pickContinue: { kind: 'action', agent: 'confirm', summary: 'Join the chosen communities and go to Today.' },
+  },
 });

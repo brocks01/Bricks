@@ -4,7 +4,7 @@ import { Button } from '../components/ui';
 import { useT } from '../i18n';
 import { useCurrentPage, useNavigate } from '../navigation/NavigationProvider';
 import { colors, space } from '../theme/tokens';
-import { registerRunner } from './live';
+import { agentUi, end, registerRunner, sendText } from './live';
 import { createAgentTools } from './tools';
 
 type Pending = { title: string; input: Record<string, unknown>; resolve: (ok: boolean) => void };
@@ -21,6 +21,10 @@ export function AgentProvider({ children }: { children: ReactNode }) {
     currentRef.current = current; // kept fresh after every commit
   });
   const [pending, setPending] = useState<Pending | null>(null);
+  // Developer only: lets a test drive a typed talk with the real agent from the browser console (no microphone needed). Not present in a production build.
+  useEffect(() => {
+    if (__DEV__ && typeof globalThis !== 'undefined') (globalThis as Record<string, unknown>).__bricksAgent = { sendText, end, ui: () => agentUi.get() };
+  }, []);
 
   const tools = useMemo(
     () =>

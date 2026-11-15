@@ -396,6 +396,8 @@ def mark(conn: Connection, me: str, item_id: str, occurs_at: str, status: str) -
         """),
         {"i": item_id, "o": occurs, "s": status, "m": me},
     )
+    from ..nodes import feed
+    feed.care(conn, me, item_id, occurs.isoformat(), str(item.title), str(item.kind), status == "done")
     return {"item_id": item_id, "occurs_at": occurs.isoformat(), "status": status}
 
 
@@ -407,4 +409,6 @@ def unmark(conn: Connection, me: str, item_id: str, occurs_at: str) -> dict:
     except ValueError as e:
         raise CalendarError("validation", 422, field="occurs_at") from e
     conn.execute(text("delete from calendar_marks where item_id = :i and occurs_at = :o"), {"i": item_id, "o": occurs})
+    from ..nodes import feed
+    feed.care(conn, me, item_id, occurs.isoformat(), str(item.title), str(item.kind), False)
     return {"item_id": item_id, "occurs_at": occurs.isoformat(), "status": "pending"}
