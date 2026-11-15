@@ -160,6 +160,8 @@ def rsvp(conn: Connection, user_id: str, activity_id: str, going: bool) -> dict:
         text("insert into activity_participants (activity_id, user_id, status) values (:a, :u, :s) on conflict (activity_id, user_id) do update set status = :s"),
         {"a": activity_id, "u": user_id, "s": "going" if going else "cancelled"})
     n = conn.execute(text("select count(*) from activity_participants where activity_id = :a and status = 'going'"), {"a": activity_id}).scalar_one()
+    from ..nodes import feed
+    feed.going(conn, user_id, str(activity_id), going)
     return {"going": going, "going_count": n}
 
 

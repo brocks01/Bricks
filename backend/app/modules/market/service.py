@@ -228,6 +228,9 @@ def complete(conn: Connection, me: str, booking_id: str) -> dict:
     if b.starts_at > datetime.now(timezone.utc):
         raise MarketError("not_yet", 409)
     conn.execute(text("update service_bookings set status = 'done' where id = :i"), {"i": b.id})
+    from ..nodes import feed
+    title = conn.execute(text("select title from service_listings where id = :l"), {"l": b.listing_id}).scalar() or "Helped"
+    feed.helped(conn, me, title)
     return {"status": "done"}
 
 

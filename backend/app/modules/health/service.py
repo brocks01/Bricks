@@ -33,6 +33,9 @@ def checkin(conn: Connection, me: str, moved: bool, feeling: int | None) -> dict
         text("insert into health_checkins (user_id, day, moved, feeling) values (:u, :d, :m, :f) "
              "on conflict (user_id, day) do update set moved = excluded.moved, feeling = excluded.feeling"),
         {"u": me, "d": day, "m": moved, "f": feeling})
+    if moved:
+        from ..nodes import feed
+        feed.moved_on(conn, me, day.isoformat())
     return {"day": day.isoformat(), "moved": moved, "feeling": feeling}
 
 
@@ -82,6 +85,8 @@ def save_walk(conn: Connection, me: str, b: dict) -> dict:
     r = conn.execute(
         text("insert into health_walks (user_id, started_at, duration_s, moving_s, distance_m, steps, avg_pace_s_km) values (:u, :s, :d, :m, :dist, :st, :p) returning id"),
         {"u": me, "s": b["started_at"], "d": b["duration_s"], "m": b["moving_s"], "dist": b["distance_m"], "st": b["steps"], "p": pace}).one()
+    from ..nodes import feed
+    feed.walked(conn, me)
     return {"id": str(r.id), "avg_pace_s_km": pace}
 
 
