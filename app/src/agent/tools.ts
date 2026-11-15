@@ -6,7 +6,6 @@ import { findSkill, getModule, search } from '../navigation/registry';
 import { childrenOf, describe, parsePath } from '../navigation/tree';
 import { note } from '../navigation/log';
 import type { AgentPolicy, Decision, SkillResult } from '../navigation/types';
-import { agentSizesPanel, hideSurface, minimiseSurface, setPanelState, showSurface } from './surface';
 import { agentSettings, controlsOfPage, fillElement, getControl, pressElement, waitForPage } from './pageControls';
 
 /**
@@ -39,53 +38,7 @@ export const toolSpecs: ToolSpec[] = [
   { name: 'read', description: 'Read the page that is open now: its elements with current values, plus its data - the text, pictures, lists and actions the screen is actually showing. Describe the screen from that data only; if there is no data, say you cannot see what is on it.', inputSchema: obj({}) },
   { name: 'fill', description: 'Fill a field by its element key, for example "events.new.title". Opens its page first if needed. The person sees it glow.', inputSchema: obj({ path: { type: 'string' }, value: {} }, ['path', 'value']) },
   { name: 'press', description: 'Press a button by its element key, for example "events.new.create". Opens its page first if needed.', inputSchema: obj({ path: { type: 'string' } }, ['path']) },
-  {
-    name: 'show',
-    description:
-      'Show something in the chat: a question with choices or tiles, numbered steps, or a short explanation. Write ALL text in the person\'s language, plain and large. Always give a title and a message. Display order: question, tiles, options, typed-answer box, hint, steps. tiles are up to 12, each {id, label, icon}, icon an Ionicons name such as "heart", "walk", "calculator"; the person taps them and Next returns the labels they chose. step and step_count light up to 10 step dots; next shows a Next button. With options, allow_text, tiles or next it WAITS and returns their answer; otherwise it returns at once and stays open until they close it or you call hide. Never repeat the open screen in a panel: act on the app instead, or call hide.',
-    inputSchema: obj(
-      {
-        title: { type: 'string', description: 'The heading of the panel, short.' },
-        message: { type: 'string', description: 'One or two plain sentences under the heading.' },
-        question: { type: 'string', description: 'The bold question above the choices.' },
-        hint: { type: 'string', description: 'A short helpful note shown in a card.' },
-        steps: { type: 'array', items: { type: 'string' }, description: 'Up to 8 short numbered steps.' },
-        options: { type: 'array', items: { type: 'string' }, description: 'Up to 6 short choices; the person taps one.' },
-        allow_text: { type: 'boolean', description: 'Let the person type an answer.' },
-        tiles: {
-          type: 'array',
-          description: 'Up to 12 selectable tiles in a grid. The person taps them and Next returns the labels they chose.',
-          items: {
-            type: 'object',
-            properties: {
-              id: { type: 'string', description: 'A short unique id, letters, digits, "-" or "_", up to 40 characters.' },
-              label: { type: 'string', description: 'What the person reads, in their language, up to 40 characters.' },
-              icon: { type: 'string', description: 'An Ionicons name, for example "heart", "people", "trophy", "walk", "leaf", "calculator".' },
-            },
-            required: ['label'],
-            additionalProperties: false,
-          },
-        },
-        step: { type: 'number', description: 'Which step dot is lit, counting from 1.' },
-        step_count: { type: 'number', description: 'How many step dots to show, up to 10. 0 for none.' },
-        next: { type: 'boolean', description: 'Show a Next button that waits for the person.' },
-        full: {
-          type: 'boolean',
-          description:
-            'Open over the whole content area instead of compact. Use it when the person really needs to see a lot - a table, a lesson, many steps. Leave it off when you are mostly talking, so the screen behind stays visible.',
-        },
-      },
-      []
-    ),
-  },
-  { name: 'hide', description: 'Close the panel you opened with show.', inputSchema: obj({}) },
   { name: 'end', description: 'End this conversation and let the microphone go. Call it the moment the person says goodbye or that they are finished, so the talk does not keep listening after they have gone. Then say nothing more.', inputSchema: obj({}) },
-  {
-    name: 'panel',
-    description:
-      'Resize your own panel. The panel already fits itself to what you show, so you rarely need this. Give a size in percent of the screen (15 to 100) for any height, or a state: "compact" puts it away and leaves the app visible, "expanded" is about three quarters, "full" takes the whole screen. Use it when you need more or less room for what you are showing. The person can always drag it or close it themselves, and their drag wins.',
-    inputSchema: obj({ size: { type: 'number', description: 'Height in percent of the screen, 15 to 100.' }, state: { type: 'string', description: 'Or one of: compact, expanded, full.' } }),
-  },
   { name: 'run', description: 'Run a module skill by "module/skill", for example "events/create". Some skills need the person to approve.', inputSchema: obj({ skill: { type: 'string' }, input: { type: 'object' } }, ['skill']) },
 ];
 
@@ -181,37 +134,11 @@ export function createAgentTools(host: AgentHost) {
         return { ...result, path };
       }
 
-      case 'show':
-        return showSurface(args);
-
-      case 'hide':
-        hideSurface();
-        return { hidden: true };
-
       // The live client does the actual hanging up once this answer has been sent back (see onToolCall in live.ts),
       // so the agent is never left holding a microphone after the person has said it is over.
 
       case 'end':
         return { ended: true, summary: 'The conversation is over.' };
-
-      // The agent's own display state (spec section 2): it moves the panel the same way it opens a page, but it
-      // never dismisses the screen behind - only Close does that - so nothing the person was looking at is lost.
-      case 'panel': {
-        if (typeof args.size === 'number' && Number.isFinite(args.size)) {
-          agentSizesPanel(args.size);
-          return { size: Math.round(Math.min(100, Math.max(15, args.size))) };
-        }
-        const wanted = String(args.state ?? '');
-        if (wanted === 'compact') {
-          minimiseSurface();
-          return { state: 'compact', note: 'The screen is put away but kept; call show or panel expanded to bring it back.' };
-        }
-        if (wanted === 'expanded' || wanted === 'full') {
-          setPanelState(wanted);
-          return { state: wanted };
-        }
-        return { error: 'bad_state', hint: 'Give size (15 to 100) or state: compact, expanded or full.' };
-      }
 
       case 'run': {
         const [moduleId, skillName] = String(args.skill ?? '').split('/');

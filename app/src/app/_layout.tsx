@@ -3,7 +3,6 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { View } from 'react-native';
 import { AgentProvider, ApprovalBanner } from '../agent';
-import { AgentSurface } from '../components/AgentSurface';
 import { AppTabBar } from '../components/AppTabBar';
 import { AuthGate } from '../components/AuthGate';
 import { PhoneFrame } from '../components/PhoneFrame';
@@ -28,7 +27,6 @@ export default function RootLayout() {
             <AuthGate>
               <View style={{ flex: 1 }}>
                 <Stack screenOptions={{ headerShown: false }} />
-                <AgentSurface />
                 <ReminderPopups />
               </View>
             </AuthGate>

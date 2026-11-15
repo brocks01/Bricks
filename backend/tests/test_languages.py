@@ -57,4 +57,4 @@ def test_the_agent_prompt_guesses_only_among_their_languages_and_asks_to_repeat(
 
 def test_the_agent_asks_free_answers_aloud_instead_of_opening_a_text_box_form():
     p = system_prompt(language="en", name=None, page=None)
-    assert "do NOT open a panel with a text box" in p and "always ask aloud" in p and "never ask them to copy or paste a link" in p
+    assert "no screen of your own" in p and "ask it in one short sentence, aloud" in p and "never ask them to copy or paste a link" in p

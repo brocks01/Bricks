@@ -9,7 +9,6 @@ import { languageStore } from '../i18n/store';
 import { spokenStore } from '../i18n/spoken';
 import { audioAvailable, isSpeaking, playPcm24k, speechSeenAt, startMic, stopMic, stopPlayback } from './audio';
 import { toolSpecs } from './tools';
-import { hideSurface } from './surface';
 
 export type Phase = 'idle' | 'connecting' | 'listening' | 'speaking' | 'working';
 export interface Line {
@@ -116,9 +115,6 @@ const toolWord = (name: string) => t(`common.agent.tool.${TOOL_WORD[name] ?? 'sc
 
 async function onToolCall(m: { id: string; name: string; args: Record<string, unknown> }) {
   set({ phase: 'working' });
-  // Acting on the app means the panel has done its job: close it first so the person sees what the agent is doing, never two things at once.
-  // Lookups (tree, search, docs, read, web) and show/hide are left alone.
-  if (m.name === 'open' || m.name === 'fill' || m.name === 'press' || m.name === 'run') hideSurface();
   if (m.name !== 'end') {
     // Hanging up is not something to narrate in the transcript: the bar simply goes back to "Tap to talk".
     addLine('tool', toolWord(m.name));

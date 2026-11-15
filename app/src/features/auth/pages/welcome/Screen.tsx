@@ -26,14 +26,13 @@ export default function Welcome() {
   useAction(page, 'start', () => go('auth.signIn'));
   useAction(page, 'languageLink', () => go('language.pick'));
   useAction(page, 'spokenLink', () => go('language.spoken'));
-  // What the agent sees before sign-in: the four entries, nothing else. It can explain them, not press them.
+  // What the agent sees before sign-in: the three entries, nothing else. It can explain them, not press them.
   usePageData(page, {
     values: [{ label: w('subtitle'), value: native }],
     images: [],
     lists: [],
     actions: [
       { id: 'start', label: w('start'), run: () => { go('auth.signIn'); } },
-      { id: 'familyCode', label: w('familyCode'), run: () => { go('family.claim'); } },
       { id: 'languageLink', label: w('languageLink'), run: () => { go('language.pick'); } },
       { id: 'spokenLink', label: spokenLabel, run: () => { go('language.spoken'); } },
     ],
@@ -52,17 +51,19 @@ export default function Welcome() {
         />
       </View>
       {/* The photo grows and shrinks to fill whatever height is left, so nothing ever has to scroll. */}
-      <Image
-        source={require('../../../../../assets/images/everyday-life.jpg')}
-        accessibilityLabel="People in their community"
-        resizeMode="cover"
-        style={{ flex: 1, width: '100%', borderRadius: radius.card, backgroundColor: colors.accentSoft }}
-      />
+      {/* A Singapore photo: older people playing games together in Chinatown. Wikimedia Commons, CC BY-SA 4.0 (the credit below is the licence's attribution). */}
+      <View style={{ flex: 1, width: '100%', borderRadius: radius.card, overflow: 'hidden', backgroundColor: colors.accentSoft }}>
+        <Image
+          source={require('../../../../../assets/images/singapore-seniors.jpg')}
+          accessibilityLabel="Older neighbours playing games together in Singapore"
+          resizeMode="cover"
+          style={{ flex: 1, width: '100%' }}
+        />
+        <Text style={{ position: 'absolute', right: 8, bottom: 4, fontSize: 10, color: '#FFFFFF', textShadowColor: 'rgba(0,0,0,0.7)', textShadowRadius: 3 }}>Photo: Dangobang, CC BY-SA 4.0</Text>
+      </View>
       <Text style={[type.body, { color: colors.muted, marginTop: space.lg, textAlign: 'center' }]}>{w('subtitle')}</Text>
       <View style={{ height: space.md }} />
       <El page={page} id="start"><Button label={w('start')} onPress={() => go('auth.signIn')} /></El>
-      <View style={{ height: space.xs }} />
-      <El page={page} id="familyCode"><Button kind="plain" icon="key-outline" label={w('familyCode')} onPress={() => go('family.claim')} /></El>
       <View style={{ height: space.xs }} />
       <El page={page} id="languageLink"><Button kind="plain" icon="language" label={`${w('languageLink')}: ${native}`} onPress={() => go('language.pick')} /></El>
       <View style={{ height: space.xs }} />

@@ -162,10 +162,6 @@ export default function ConnectIndex() {
 
       <El page={page} id="limitInfo"><Text style={[type.small, { color: full ? colors.warn : colors.muted, fontWeight: full ? '700' : '400', marginBottom: space.sm }]}>{full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })}</Text></El>
       <El page={page} id="explore"><Button label={w('explore')} onPress={() => { navigate('connect.explore'); }} icon="search" /></El>
-      <View style={{ height: space.sm }} />
-      <El page={page} id="joinOrCreate"><Button label={w('joinOrCreate')} kind="plain" onPress={() => { navigate('connect.join'); }} icon="key-outline" /></El>
-      <View style={{ height: space.sm }} />
-      <El page={page} id="askStart"><Button label={w('askStart')} kind="plain" onPress={() => { navigate('connect.create'); }} icon="add-circle-outline" /></El>
       <View style={{ height: space.lg }} />
 
       {soon.length ? (
@@ -193,6 +189,12 @@ export default function ConnectIndex() {
           ))}
         </>
       ) : null}
+
+      {/* The two rarer entries sit quietly at the very bottom, so the page has one clear button. */}
+      <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.xs, paddingTop: space.lg, paddingBottom: space.md }}>
+        <El page={page} id="joinOrCreate"><QuietLink icon="key-outline" label={w('joinOrCreate')} onPress={() => navigate('connect.join')} /></El>
+        <El page={page} id="askStart"><QuietLink icon="add-circle-outline" label={w('askStart')} onPress={() => navigate('connect.create')} /></El>
+      </View>
     </Screen>
   );
 }
@@ -200,4 +202,14 @@ export default function ConnectIndex() {
 // A bare text input (the border and icon are drawn by the row around it).
 function FindInput({ value, onChange, placeholder }: { value: string; onChange: (v: string) => void; placeholder: string }) {
   return <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.muted} accessibilityLabel={placeholder} autoCapitalize="none" autoCorrect={false} style={{ fontSize: 17, paddingVertical: 12, color: colors.ink }} />;
+}
+
+// A small text link with an icon: for the entries that are not the main thing on the page.
+function QuietLink({ icon, label, onPress }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }) {
+  return (
+    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44 }}>
+      <Ionicons name={icon} size={18} color={colors.accent} />
+      <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>{label}</Text>
+    </Pressable>
+  );
 }

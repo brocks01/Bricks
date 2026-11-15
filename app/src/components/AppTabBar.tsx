@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { surfaceStore } from '../agent/surface';
 import { useStore } from '../core/store';
 import { loadFamilies } from '../features/family/state';
 import { useT } from '../i18n';
@@ -38,26 +37,20 @@ export function AppTabBar() {
   useEffect(() => {
     if (status === 'in') void loadFamilies().catch(() => undefined);
   }, [status]);
-  // The tabs sit just above the agent bar and go away as soon as the agent area is pulled open (it is never shorter than 16% of the area once it shows),
-  // including while the hand is still dragging it, and come back when it is put away.
-  const { open, live } = useStore(surfaceStore);
-  const canvasOpen = open || (live !== null && live > 0.1);
-  // The sheet has its OWN trigger: while it is up or being dragged the floating orb must not show a second copy.
-  const sheetUp = open || live !== null;
   // Signed out, the agent bar stays: an elderly person who cannot follow the sign-in or the code
   // can still ask for help at any moment (before login the agent can only SEE and explain).
   if (status !== 'in') {
     return (
       <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
-        {canvasOpen ? null : <View style={{ paddingBottom: insets.bottom }} />}
-        {sheetUp ? null : <AgentOrb />}
+        <View style={{ paddingBottom: insets.bottom }} />
+        <AgentOrb />
       </View>
     );
   }
   if (!user?.profile_complete || current?.bare) return null;
   return (
     <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
-      {canvasOpen ? null : (
+      {(
         <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
           {tabPages()
             .map((p) => {
@@ -72,8 +65,7 @@ export function AppTabBar() {
           })}
         </View>
       )}
-      {/* Once the sheet is open it has its own trigger row, so the orb steps aside. */}
-      {sheetUp ? null : <AgentOrb />}
+      <AgentOrb />
     </View>
   );
 }

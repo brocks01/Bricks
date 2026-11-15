@@ -8,7 +8,6 @@ import { languageStore } from '../i18n/store';
 import { definePage } from '../kit/page';
 import { glowStore } from '../kit/glow';
 import { pageDataOf, publishPageData } from '../kit/pageData';
-import { answerSurface, dragSurface, fitToContent, hideSurface, LIMITS, openArea, parseShow, putAway, releaseSurface, setPanelRatio, setSurfaceArea, setTyping, SHEET_RATIO, surfaceStore } from '../agent/surface';
 import { IDLE_MS } from '../agent/live';
 import { sessionStore } from '../session/store';
 import { allModules, allPages, defineModule, pageForPath, search, tabPages } from './registry';
@@ -195,47 +194,7 @@ const agent = createAgentTools({
   await agent.call('fill', { path: 'language.pick.language', value: 'ta' });
   check('choice fill by key changes the language', t('connect.index.tab') === 'சமூகம்');
 
-  // the agent canvas: what the model sends is validated before anything can be shown
-  const showSpec = toolSpecs.find((s) => s.name === 'show');
-  check('canvas: show accepts tiles, question, hint, step and next', !!showSpec && ['tiles', 'question', 'hint', 'step', 'step_count', 'next'].every((k) => k in (showSpec.inputSchema.properties as Record<string, unknown>)));
-  const spec = parseShow({
-    title: '  A title  ', message: ' Hello ', question: 'Pick one', hint: '  A hint ', steps: [' one ', '', 'two'], options: ['Yes', 'No'],
-    tiles: [{ id: 'a', label: 'Health', icon: 'heart' }, { id: 'a', label: 'Sports', icon: 'not an icon' }, { label: 'Other' }, 7],
-    step: 2, step_count: 4, next: true, evil: '<script>alert(1)</script>',
-  });
-  check('canvas: strings are trimmed, lists capped, unknown fields dropped', spec?.title === 'A title' && spec?.message === 'Hello' && spec?.hint === 'A hint' && spec?.steps.join(',') === 'one,two' && spec?.options.length === 2 && !('evil' in (spec ?? {})), JSON.stringify(spec));
-  check('canvas: tiles get a unique id and a checked icon', spec?.tiles.map((x) => x.id).join(',') === 'a,a_2,t3' && spec?.tiles.map((x) => x.label).join(',') === 'Health,Sports,Other' && spec?.tiles[0].icon === 'heart' && spec?.tiles[1].icon === '' && spec?.tiles[2].icon === '' && spec?.tiles.length === 3, JSON.stringify(spec?.tiles));
-  check('canvas: step dots are clamped to the count', spec?.step === 2 && spec?.step_count === 4, JSON.stringify([spec?.step, spec?.step_count]));
-  const wrong = parseShow({ title: 12, message: null, steps: 'not a list', options: 5, tiles: 'x', step: 'many', step_count: -3, next: 'true' });
-  check('canvas: a wrong type falls back instead of blanking the screen', wrong?.title === '' && wrong?.message === '' && wrong?.steps.length === 0 && wrong?.options.length === 0 && wrong?.tiles.length === 0 && wrong?.step === 0 && wrong?.step_count === 0 && wrong?.next === true, JSON.stringify(wrong));
-  const nothing = (await agent.call('show', { evil: true })) as object;
-  check('canvas: a show with nothing to show is refused', 'error' in nothing, JSON.stringify(nothing));
-  const shown = agent.call('show', { title: 'T', question: 'Q', step_count: 4, step: 2, tiles: [{ id: 'x', label: 'One', icon: 'heart' }] }) as Promise<Record<string, unknown>>;
-  const s = surfaceStore.get().surface;
-  check('canvas: a tile question opens and waits', surfaceStore.get().open === true && s?.title === 'T' && s?.tiles.length === 1 && s?.stepTotal === 4 && s?.step === 2, JSON.stringify(surfaceStore.get()));
-  answerSurface('One', 'option');
-  const answered = await shown;
-  check('canvas: the answer is the labels the person chose', answered.answer === 'One' && answered.how === 'option', JSON.stringify(answered));
-  check('canvas: answering spends the screen but leaves the chat open', surfaceStore.get().surface === null && surfaceStore.get().open === true);
-
-  // the agent moves its own panel between the three states (spec section 2), and only Close dismisses for good
-  const panelSpec = toolSpecs.find((s) => s.name === 'panel');
-  check('a panel tool exists so the agent can move its own panel', !!panelSpec && 'state' in ((panelSpec.inputSchema.properties ?? {}) as Record<string, unknown>));
-  check('panel refuses a state that does not exist', 'error' in ((await agent.call('panel', { state: 'huge' })) as object));
-  check('panel can size the agent area to any height, even with no screen made (the chat can be resized too)', (((await agent.call('panel', { size: 60 })) as { size?: number }).size === 60) && Math.round(surfaceStore.get().ratio * 100) === 60);
-  hideSurface();
-  await agent.call('show', { title: 'A title', message: 'A message' });
-  check('a shown screen opens as a sheet at the resting size', surfaceStore.get().open === true && surfaceStore.get().ratio === SHEET_RATIO, JSON.stringify(surfaceStore.get()));
-  await agent.call('panel', { state: 'full' });
-  check('panel full takes the whole screen', surfaceStore.get().ratio === 1, JSON.stringify(surfaceStore.get()));
-  await agent.call('panel', { state: 'compact' });
-  check('panel compact puts the screen away but keeps it', surfaceStore.get().open === false && surfaceStore.get().surface?.title === 'A title', JSON.stringify(surfaceStore.get()));
-  await agent.call('panel', { state: 'expanded' });
-  check('panel expanded brings the same screen back untouched', surfaceStore.get().open === true && surfaceStore.get().ratio === SHEET_RATIO && surfaceStore.get().surface?.title === 'A title');
-  setPanelRatio(0.5);
-  check('the sheet stays at whatever height the person leaves it', surfaceStore.get().ratio === 0.5, String(surfaceStore.get().ratio));
-  hideSurface();
-  check('canvas: the limits are small enough to fit a phone', LIMITS.tiles <= 12 && LIMITS.stepCount <= 10 && LIMITS.title <= 120);
+  check('the agent shows no screens: no show, hide, panel or build tool', ['show', 'hide', 'panel', 'build'].every((n) => !toolSpecs.some((x) => x.name === n)));
   // the talk ends by itself: the agent can hang up, and a quiet talk is cut rather than listening forever
   check('an end tool exists so the agent can hang up', !!toolSpecs.find((s) => s.name === 'end'));
   const ended = (await agent.call('end', {})) as { ended?: boolean };
@@ -243,49 +202,6 @@ const agent = createAgentTools({
   check('a quiet talk is cut after a sensible pause', IDLE_MS >= 5000 && IDLE_MS <= 60000, String(IDLE_MS));
 
 
-  // ---- the agent area: drag, resting heights, auto-fit, pop-up condition, typing line (pure logic; the screens themselves are tested in the browser) ----
-  hideSurface();
-  const st = () => surfaceStore.get();
-  setSurfaceArea(0);
-  dragSurface(-200);
-  check('area: a drag before the area is measured does nothing (no crash, no jump)', st().live === null && st().open === false);
-  setSurfaceArea(800);
-  dragSurface(-200);
-  check('area: pulling the closed bar up 200px of an 800px area follows the hand (10% + 25%)', st().live !== null && Math.abs((st().live as number) - 0.35) < 0.001, String(st().live));
-  releaseSurface(-200);
-  check('area: letting go keeps that exact height, opened, marked as chosen by the person', st().open === true && Math.abs(st().ratio - 0.35) < 0.001 && st().manual === true && st().live === null, JSON.stringify(st()));
-  dragSurface(100);
-  releaseSurface(100);
-  check('area: dragging it down 100px lowers it by 12.5%', Math.abs(st().ratio - 0.225) < 0.001, String(st().ratio));
-  dragSurface(300);
-  releaseSurface(300);
-  check('area: dragged all the way down it is put away (closed)', st().open === false && st().live === null);
-  openArea(5);
-  check('area: a height below the floor is raised to the floor, above 1 is cut to 1', st().ratio >= 0.16 && (openArea(9), st().ratio === 1));
-  putAway();
-  check('area: put away closes it but not the typing line state', st().open === false);
-  void agent.call('show', { title: 'Pick one', message: 'Choose.', options: ['A', 'B'] }); // it WAITS for an answer, so it is not awaited here
-  await new Promise((r) => setTimeout(r, 20));
-  check('area: a screen from the agent resets the manual height so it can fit itself', st().surface !== null && st().manual === false && st().open === true);
-  setPanelRatio(0.4);
-  fitToContent(100);
-  check('area: auto-fit never shrinks the sheet by itself', Math.abs(st().ratio - 0.4) < 0.001, String(st().ratio));
-  fitToContent(2000);
-  check('area: auto-fit grows it for a tall screen but never past 92%', Math.abs(st().ratio - 0.92) < 0.001, String(st().ratio));
-  releaseSurface(-50);
-  check('area: after the person drags, auto-fit leaves it alone', (() => { const r = st().ratio; fitToContent(5000); return st().ratio === r; })());
-  putAway();
-  check('area: put away keeps the screen (it will come back as a pop-up, not be lost)', st().surface !== null && st().open === false);
-  answerSurface('A', 'option');
-  check('area: answering spends the screen and leaves no pop-up', st().surface === null);
-  setTyping(true);
-  check('area: the keyboard button turns the one-line field on and off', st().typing === true && (setTyping(false), st().typing === false));
-  hideSurface();
-  check('area: closing for good clears everything', st().open === false && st().surface === null && st().typing === false && st().ratio === SHEET_RATIO);
-
-
-  check('no build tool and no html field: the agent cannot generate a page', !toolSpecs.some((x) => x.name === 'build') && !('html' in ((toolSpecs.find((x) => x.name === 'show')?.inputSchema as { properties?: object } | undefined)?.properties ?? {})));
-  hideSurface();
 
   // the server copies each description into the Gemini declaration and cuts it at 1000 characters (declarations.py): a longer one loses its tail in silence
   check('every tool description fits the server limit of 1000 characters', toolSpecs.every((s) => s.description.length <= 1000), toolSpecs.filter((s) => s.description.length > 1000).map((s) => `${s.name}:${s.description.length}`).join(', '));

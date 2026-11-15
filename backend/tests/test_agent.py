@@ -217,4 +217,5 @@ def test_show_tool_declares_cleanly_for_gemini():
         "options": {"type": "array", "items": {"type": "string"}, "description": "choices"}, "allow_text": {"type": "boolean"}}, "required": [], "additionalProperties": False}}
     d = declarations([show])[0]["parameters"]["properties"]
     assert d["steps"] == {"type": "ARRAY", "items": {"type": "STRING"}} and d["allow_text"]["type"] == "BOOLEAN" and d["options"]["description"] == "choices"
-    assert "show the person something" in system_prompt(language="en", name=None, page=None).lower()
+    prompt = system_prompt(language="en", name=None, page=None).lower()
+    assert "no screen of your own" in prompt and "build tool" not in prompt and "show tool" not in prompt
