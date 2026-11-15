@@ -34,24 +34,22 @@ export function Avatar({ name, size = 40, dot }: { name: string; size?: number; 
   );
 }
 
-/** Top of every tab page: logo and name on the left, the bell and the person's avatar (which opens their profile) on the right. */
+/** Top of every main page, as in the design: a white bar with the mark and name on the left and the person's round profile button (navy, initials, gold ring) on the right. */
 export function AppHeader() {
   const go = useNavigate();
   const { user } = useStore(sessionStore);
+  const name = (user?.display_name ?? user?.email ?? '').trim();
+  const words = name.split(/\s+/).filter(Boolean);
+  const initials = ((words[0]?.charAt(0) ?? '?') + (words.length > 1 ? words[words.length - 1].charAt(0) : '')).toUpperCase();
   return (
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.lg, paddingTop: space.md, paddingBottom: space.sm, backgroundColor: colors.bg }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-        <Logo />
-        <Text style={{ fontSize: 22, fontWeight: '700', color: colors.accent }}>Bricks</Text>
+    <View style={{ height: 64, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Logo size={34} />
+        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Bricks</Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Notifications" hitSlop={10}>
-          <Ionicons name="notifications-outline" size={24} color={colors.ink} />
-        </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => go('me.index')} hitSlop={6}>
-          <Avatar name={user?.display_name ?? user?.email ?? ''} dot />
-        </Pressable>
-      </View>
+      <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => go('me.index')} hitSlop={6} style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.gold }}>
+        <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>{initials}</Text>
+      </Pressable>
     </View>
   );
 }

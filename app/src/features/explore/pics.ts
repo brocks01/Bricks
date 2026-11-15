@@ -15,10 +15,10 @@ export const categoryPic: Record<ExploreCategoryId, ImageSourcePropType> = {
 
 // Each category's small symbol and its soft colour, as in the sample (green, red, green, orange, green, orange).
 export const categoryLook: Record<ExploreCategoryId, { icon: string; lib: 'ion' | 'mci'; color: string; tint: string }> = {
-  digital_skills: { icon: 'laptop-outline', lib: 'ion', color: '#1B7F3B', tint: '#E3F1E7' },
+  digital_skills: { icon: 'laptop-outline', lib: 'ion', color: '#B0502A', tint: '#E3F1E7' },
   health_awareness: { icon: 'heart-outline', lib: 'ion', color: '#E5372E', tint: '#FDE8E7' },
-  everyday_life: { icon: 'compass-outline', lib: 'ion', color: '#1B7F3B', tint: '#E3F1E7' },
+  everyday_life: { icon: 'compass-outline', lib: 'ion', color: '#B0502A', tint: '#E3F1E7' },
   hobbies: { icon: 'palette-outline', lib: 'mci', color: '#E58A1F', tint: '#FDF0DC' },
-  culture: { icon: 'bank-outline', lib: 'mci', color: '#1B7F3B', tint: '#E3F1E7' },
+  culture: { icon: 'bank-outline', lib: 'mci', color: '#B0502A', tint: '#E3F1E7' },
   knowledge: { icon: 'lightbulb-on-outline', lib: 'mci', color: '#E58A1F', tint: '#FDF0DC' },
 };

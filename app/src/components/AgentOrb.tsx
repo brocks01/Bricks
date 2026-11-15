@@ -7,7 +7,7 @@ import { useStore } from '../core/store';
 import { useT } from '../i18n';
 import { colors } from '../theme/tokens';
 
-const G = '#1B7F3B';
+const G = '#B0502A';
 const SIZE = 46;
 const LINE = '#E2DACB'; // the design's warm hairline
 const SHADOW = { shadowColor: '#111827', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 2 } as const;

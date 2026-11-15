@@ -12,7 +12,7 @@ import { growIndex as page } from './page';
 // each a symbol and a title with its short line. Each card opens its own page. Nothing here is sample data.
 type Card = 'health' | 'activity' | 'aspirations' | 'explore' | 'progress' | 'contributions';
 const GO = { health: 'grow.health', activity: 'grow.activity', aspirations: 'grow.aspirations', explore: 'explore.home', progress: 'grow.progress', contributions: 'grow.contributions' } as const;
-const G = '#1B7F3B';
+const G = '#B0502A';
 const CARDS: { id: Card; icon: string; lib: 'ion' | 'mci' }[] = [
   { id: 'health', icon: 'heart-pulse', lib: 'mci' },
   { id: 'activity', icon: 'run', lib: 'mci' },

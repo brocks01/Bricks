@@ -4,41 +4,41 @@ import { Pressable, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useStore } from '../core/store';
 import { loadFamilies } from '../features/family/state';
-import { useT } from '../i18n';
-import { tabPages, useCurrentPage, useNavigate } from '../navigation';
+import { LANGUAGES, useLanguage, useT } from '../i18n';
+import { useCurrentPage, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
 import { colors } from '../theme/tokens';
 import { AgentOrb } from './AgentOrb';
 
 /**
- * The bottom bar, built from the registry: one icon and label for every page that declares a tab.
+ * The bottom bar, drawn like the owner's design artifact: three places. Communities on the left, Progress on the right, and Today in the middle
+ * as a raised round navy button with a gold calendar. Health, family, the calendar list and settings are reached from the profile (the round
+ * button at the top right), the market from Communities. The agent is one small round button floating just above this bar (AgentOrb).
  * It shows only when someone is signed in with a finished profile, and never on the sign-in pages.
- * The agent is one small orb floating just above this bar (components/AgentOrb.tsx); it takes no room in the page.
- *
- * While the Agent Canvas is open the Connect/Grow tabs are hidden (design rule 1: no duplicate navigation) -
- * the Canvas takes the space they occupied, and the agent bar stays. Closing the Canvas brings the tabs back,
- * on the page the person was already on.
  */
-// Which tab a page belongs to: the pages behind a tab keep that tab lit (a listing is Marketplace, the calendar and family are Home, walks are Health).
+const LEFT = 'connect.index';
+const MIDDLE = 'home.index';
+const RIGHT = 'grow.progress';
+// Which of the three a page belongs to, so the pages behind a tab keep it lit. Profile pages (me, health, family, language) light none.
 const TAB_OF_MODULE: Record<string, string> = {
-  home: 'home.index', calendar: 'home.index', family: 'home.index', me: 'home.index', language: 'home.index',
-  connect: 'connect.index', community: 'connect.index', explore: 'connect.index',
-  market: 'market.index', health: 'health.index', grow: 'health.index',
+  connect: LEFT, community: LEFT, explore: LEFT, market: LEFT,
+  home: MIDDLE, calendar: MIDDLE,
+  grow: RIGHT,
 };
+const PROGRESS_WORD = ['Progress', 'प्रगति', 'অগ্রগতি', 'முன்னேற்றம்', '进展', 'Kemajuan'];
 
 export function AppTabBar() {
   const t = useT();
   const go = useNavigate();
+  const code = useLanguage();
   const current = useCurrentPage();
   const { status, user } = useStore(sessionStore);
   const insets = useSafeAreaInsets();
-  // The Family tab is always there (a person with no family sees how to create or join one); the list is kept fresh:
-  // refetched once on every sign-in, and again whenever the family screens change something.
+  // The family list is refetched once on every sign-in, and again whenever the family screens change something.
   useEffect(() => {
     if (status === 'in') void loadFamilies().catch(() => undefined);
   }, [status]);
-  // Signed out, the agent bar stays: an elderly person who cannot follow the sign-in or the code
-  // can still ask for help at any moment (before login the agent can only SEE and explain).
+  // Signed out, the agent button stays: someone who cannot follow the sign-in can still ask for help (before sign-in the agent can only SEE and explain).
   if (status !== 'in') {
     return (
       <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
@@ -48,23 +48,36 @@ export function AppTabBar() {
     );
   }
   if (!user?.profile_complete || current?.bare) return null;
+  const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
+  const word = PROGRESS_WORD[Math.max(0, LANGUAGES.findIndex((l) => l.code === code))] ?? PROGRESS_WORD[0];
+  const side = (key: string, icon: keyof typeof Ionicons.glyphMap, label: string) => {
+    const on = lit === key;
+    return (
+      <Pressable onPress={() => go(key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ height: 66, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+        <Ionicons name={icon} size={24} color={on ? colors.navy : '#5A6472'} />
+        <Text style={{ fontSize: 14, fontWeight: '600', color: on ? colors.navy : '#5A6472' }}>{label}</Text>
+      </Pressable>
+    );
+  };
+  const todayOn = lit === MIDDLE;
   return (
     <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
-      {(
-        <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line, paddingTop: 4, paddingBottom: 6 + insets.bottom }}>
-          {tabPages()
-            .map((p) => {
-            const active = (TAB_OF_MODULE[current?.module ?? ''] ?? current?.key) === p.key; // a page inside a section keeps its tab lit
-            const icon = (active ? p.icon : `${p.icon}-outline`) as keyof typeof Ionicons.glyphMap;
-            return (
-              <Pressable key={p.key} onPress={() => go(p.key)} accessibilityRole="tab" accessibilityState={{ selected: active }} style={{ flex: 1, alignItems: 'center', gap: 1 }}>
-                <Ionicons name={icon} size={24} color={active ? colors.accent : colors.muted} />
-                <Text style={{ fontSize: 11, fontWeight: active ? '700' : '500', color: active ? colors.accent : colors.muted }}>{t(`${p.key}.tab`)}</Text>
-              </Pressable>
-            );
-          })}
+      <View style={{ flexDirection: 'row', alignItems: 'center', height: 82, borderTopWidth: 1, borderColor: colors.line }}>
+        <View style={{ flex: 1 }}>{side(LEFT, 'people-outline', t(`${LEFT}.tab`))}</View>
+        <View style={{ width: 110, height: 82 }}>
+          <Pressable
+            onPress={() => go(MIDDLE)}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: todayOn }}
+            style={{ position: 'absolute', left: 17, top: -22, width: 76, height: 76, borderRadius: 38, borderWidth: 4, borderColor: colors.card, backgroundColor: todayOn ? colors.navy : '#46556E', alignItems: 'center', justifyContent: 'center', gap: 2, shadowColor: colors.navy, shadowOpacity: 0.32, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 6 }}
+          >
+            <Ionicons name="calendar-outline" size={24} color={colors.gold} />
+            <Text style={{ fontSize: 13, fontWeight: '600', color: '#FFFFFF' }}>{t(`${MIDDLE}.tab`)}</Text>
+          </Pressable>
         </View>
-      )}
+        <View style={{ flex: 1 }}>{side(RIGHT, 'stats-chart-outline', word)}</View>
+      </View>
+      <View style={{ height: insets.bottom, backgroundColor: colors.card }} />
       <AgentOrb />
     </View>
   );

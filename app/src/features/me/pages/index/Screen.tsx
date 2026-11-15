@@ -38,6 +38,7 @@ export default function Me() {
       <El page={page} id="editProfile"><Row icon="create-outline" label="" value={w('editProfile')} onPress={() => go('me.edit')} /></El>
       <El page={page} id="chooseLanguage"><Row icon="language" label={w('language')} value={current?.native ?? ''} onPress={() => go('language.pick')} /></El>
       <Text style={{ fontSize: 20, fontWeight: '700', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('menu.more')}</Text>
+      <Row icon="heart-outline" label="" value={t('health.index.heading')} onPress={() => go('health.index')} />
       <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
       <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
       <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />

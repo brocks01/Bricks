@@ -190,10 +190,11 @@ export default function ConnectIndex() {
         </>
       ) : null}
 
-      {/* The two rarer entries sit quietly at the very bottom, so the page has one clear button. */}
-      <View style={{ flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap', columnGap: space.lg, rowGap: space.xs, paddingTop: space.lg, paddingBottom: space.md }}>
-        <El page={page} id="joinOrCreate"><QuietLink icon="key-outline" label={w('joinOrCreate')} onPress={() => navigate('connect.join')} /></El>
-        <El page={page} id="askStart"><QuietLink icon="add-circle-outline" label={w('askStart')} onPress={() => navigate('connect.create')} /></El>
+      {/* The design's bottom list: one white card, rows with a title, a line under it and a chevron. */}
+      <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg, marginTop: space.lg }}>
+        <El page={page} id="joinOrCreate"><ListEntry title={w('joinOrCreate')} onPress={() => navigate('connect.join')} line /></El>
+        <ListEntry title={t('market.index.heading')} onPress={() => navigate('market.index')} line />
+        <El page={page} id="askStart"><ListEntry title={w('askStart')} onPress={() => navigate('connect.create')} /></El>
       </View>
     </Screen>
   );
@@ -204,12 +205,12 @@ function FindInput({ value, onChange, placeholder }: { value: string; onChange: 
   return <TextInput value={value} onChangeText={onChange} placeholder={placeholder} placeholderTextColor={colors.muted} accessibilityLabel={placeholder} autoCapitalize="none" autoCorrect={false} style={{ fontSize: 17, paddingVertical: 12, color: colors.ink }} />;
 }
 
-// A small text link with an icon: for the entries that are not the main thing on the page.
-function QuietLink({ icon, label, onPress }: { icon: keyof typeof Ionicons.glyphMap; label: string; onPress: () => void }) {
+// One row of the bottom list: a title, a chevron and (except the last) a hairline under it.
+function ListEntry({ title, onPress, line }: { title: string; onPress: () => void; line?: boolean }) {
   return (
-    <Pressable onPress={onPress} accessibilityRole="button" hitSlop={8} style={{ flexDirection: 'row', alignItems: 'center', gap: 6, minHeight: 44 }}>
-      <Ionicons name={icon} size={18} color={colors.accent} />
-      <Text style={{ fontSize: 16, fontWeight: '600', color: colors.accent }}>{label}</Text>
+    <Pressable onPress={onPress} accessibilityRole="button" style={{ minHeight: 64, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderBottomWidth: line ? 1 : 0, borderColor: '#EDE6DA' }}>
+      <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink, flex: 1 }}>{title}</Text>
+      <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
     </Pressable>
   );
 }

@@ -9,7 +9,7 @@ export const connectIndex = definePage({
   key: 'connect.index',
   module: 'connect',
   route: '/communities',
-  tab: 2,
+  tab: 1,
   icon: 'people',
   requiresAuth: true,
   summary: 'Connect: find and open your communities, join or create one, and see the next few events across them.',

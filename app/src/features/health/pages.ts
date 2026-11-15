@@ -9,8 +9,6 @@ export const healthIndex = definePage({
   ...base,
   key: 'health.index',
   route: '/health',
-  tab: 4,
-  icon: 'heart',
   summary: 'Health: a daily "did you move today?" check-in, this week at a glance, start a walk, walk history, the private health card, and a Help button. Wellness only, never medical advice.',
   keywords: ['health', 'walk', 'check-in', 'exercise', 'steps', 'streak', 'help', 'wellness'],
   elements: {

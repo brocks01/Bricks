@@ -1,14 +1,18 @@
 // Design tokens, taken from the UI samples: white cards on a soft background, one strong green, large readable text.
 export const colors = {
-  bg: '#F6F7F4',
+  bg: '#F7F4EE', // warm paper
   card: '#FFFFFF',
-  ink: '#16202A',
-  muted: '#5B6773',
-  line: '#E3E8E4',
-  accent: '#1B7F3B', // the green of the logo, buttons and progress bars
-  accentDark: '#136B2E',
-  accentSoft: '#E6F4EA',
-  accentLine: '#BFE0C7',
+  ink: '#111827',
+  muted: '#4A5361',
+  line: '#E2DACB', // warm hairline
+  accent: '#B0502A', // terracotta: the main button
+  accentDark: '#8A3D1F',
+  accentSoft: '#F6E7DF',
+  accentLine: '#E8C9BA',
+  navy: '#1B2B44', // header mark, profile circle, dark buttons
+  navySoft: '#E9EDF4',
+  gold: '#C9A24A', // the ring round the profile circle
+  leaf: '#2E6B4E', // progress bars
   danger: '#E5372E',
   warn: '#8A5A00',
   warnSoft: '#FDF1D6',

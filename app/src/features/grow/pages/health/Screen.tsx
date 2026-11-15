@@ -20,7 +20,7 @@ const KINDS: { id: HealthKind; icon: keyof typeof Ionicons.glyphMap; color: stri
   { id: 'heart_rate', icon: 'heart-outline', color: '#E5372E' },
   { id: 'sleep_hours', icon: 'moon-outline', color: '#4B5FBF' },
   { id: 'weight_kg', icon: 'scale-outline', color: '#E58A1F' },
-  { id: 'blood_pressure', icon: 'pulse-outline', color: '#1B7F3B' },
+  { id: 'blood_pressure', icon: 'pulse-outline', color: '#B0502A' },
 ];
 
 // Health (sample 11, screen 8): the latest value of four things the person records, and their records. No score and no advice:

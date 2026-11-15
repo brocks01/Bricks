@@ -2,7 +2,7 @@ import { type WordTable } from '../../i18n/words';
 
 // The words of the Home tab and the reminder pop-ups. Order of the six: English, Hindi, Bengali, Tamil, Chinese, Malay.
 export const W: WordTable = {
-  h_home: ['Home', 'होम', 'হোম', 'முகப்பு', '首页', 'Utama'],
+  h_home: ['Today', 'आज', 'আজ', 'இன்று', '今天', 'Hari ini'],
   greet_morning: ['Good morning, {name}', 'सुप्रभात, {name}', 'সুপ্রভাত, {name}', 'காலை வணக்கம், {name}', '早上好，{name}', 'Selamat pagi, {name}'],
   greet_afternoon: ['Good afternoon, {name}', 'नमस्कार, {name}', 'শুভ অপরাহ্ন, {name}', 'மதிய வணக்கம், {name}', '下午好，{name}', 'Selamat petang, {name}'],
   greet_evening: ['Good evening, {name}', 'शुभ संध्या, {name}', 'শুভ সন্ধ্যা, {name}', 'மாலை வணக்கம், {name}', '晚上好，{name}', 'Selamat malam, {name}'],

@@ -30,7 +30,7 @@ check('explore has five pages', allPages().filter((p) => p.module === 'explore')
 check('explore item page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'explore.item'); return !!p && p.route === '/explore/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
 check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
 check('every explore category and format has words in all six languages', (() => { const ids = ['digital_skills', 'health_awareness', 'everyday_life', 'hobbies', 'culture', 'knowledge', 'guide', 'video', 'interactive', 'story', 'audio', 'activity', 'easy', 'medium']; const lines = ids.filter((i) => i.indexOf('_') > 0 && i !== 'digital_skills' || i === 'digital_skills').map((i) => i + '_line'); const st = allPages().find((x) => x.key === 'explore.home')!.strings; return Object.values(st).length === 6 && Object.values(st).every((words) => [...ids, ...lines.filter((l) => l in (st.en ?? {}))].every((k) => !!(words as Record<string, string>)[k])); })());
-check('four tabs: Home, Community, Marketplace and Health', tabPages().map((p) => p.key).join(',') === 'home.index,connect.index,market.index,health.index', tabPages().map((p) => p.key).join(','));
+check('tabs: Communities and Today (Progress is drawn by the bar); Market and Health are not tabs', tabPages().map((p) => p.key).join(',') === 'connect.index,home.index', tabPages().map((p) => p.key).join(','));
 check('calendar has four pages, each needs sign-in', allPages().filter((p) => p.module === 'calendar').length === 4 && allPages().filter((p) => p.module === 'calendar').every((p) => !!p.requiresAuth));
 check('the medicine form always carries the not-medical-advice note', !!allPages().find((x) => x.key === 'calendar.new')?.elements.notMedical);
 check('the plan page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'calendar.item'); return !!p && p.route === '/calendar/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
@@ -186,7 +186,7 @@ const agent = createAgentTools({
   check('run: sign out waits for approval', w.status === 'awaiting_approval');
 
   // language (nobody is signed in, so it only changes this device)
-  check('english default', t('connect.index.tab') === 'Community' && t('home.index.tab') === 'Home' && t('market.index.tab') === 'Marketplace' && t('health.index.tab') === 'Health');
+  check('english default', t('connect.index.tab') === 'Communities' && t('home.index.tab') === 'Today');
   await agent.call('run', { skill: 'language/set', input: { code: 'hi' } });
   check('language/set hi', t('connect.index.tab') === 'समुदाय' && t('common.comingSoon') === 'जल्द आ रहा है');
   const bad = (await agent.call('fill', { path: 'language.pick.language', value: 'xx' })) as { ok?: boolean };
