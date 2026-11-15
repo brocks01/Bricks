@@ -26,6 +26,9 @@ export interface Upcoming {
   community_name: string;
   community_icon: string;
   i_going: boolean;
+  category: string | null;
+  going_count: number;
+  going_names: string[]; // up to three other members who said yes
 }
 
 /** The next few activities across all the person's communities. */

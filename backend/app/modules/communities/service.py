@@ -168,10 +168,13 @@ def rsvp(conn: Connection, user_id: str, activity_id: str, going: bool) -> dict:
 def upcoming(conn: Connection, user_id: str, limit: int = 3) -> list[dict]:
     """The next few activities across ALL the communities the person belongs to (for the Connect screen's "Coming up")."""
     rows = conn.execute(
-        text("select x.id, x.title, x.starts_at, x.location, x.image_url, c.id as community_id, c.name as community_name, c.icon as community_icon, "
-             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going "
+        text("select x.id, x.title, x.starts_at, x.location, x.image_url, x.category, c.id as community_id, c.name as community_name, c.icon as community_icon, "
+             "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going, "
+             "(select count(*) from activity_participants p where p.activity_id = x.id and p.status = 'going') as going_count, "
+             "array(select u.display_name from activity_participants p join users u on u.id = p.user_id where p.activity_id = x.id and p.status = 'going' and p.user_id <> :u and u.display_name is not null limit 3) as going_names "
              "from activities x join communities c on c.id = x.community_id join memberships m on m.community_id = c.id "
              "where m.user_id = :u and m.status = 'active' and c.status = 'active' and x.status = 'scheduled' and x.starts_at >= now() - interval '3 hours' "
              "order by x.starts_at limit :n"), {"u": user_id, "n": max(1, min(limit, 10))}).all()
     return [{"id": str(r.id), "title": r.title, "starts_at": r.starts_at.isoformat(), "location": r.location, "image_url": r.image_url,
-             "community_id": str(r.community_id), "community_name": r.community_name, "community_icon": r.community_icon, "i_going": r.i_going} for r in rows]
+             "community_id": str(r.community_id), "community_name": r.community_name, "community_icon": r.community_icon, "i_going": r.i_going,
+             "category": r.category, "going_count": r.going_count, "going_names": list(r.going_names or [])} for r in rows]

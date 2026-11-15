@@ -271,3 +271,17 @@ def test_saying_going_plants_a_gathering_and_once_it_has_passed_the_leaf_turns_g
         feed.going(conn, member["id"], past, True)  # said going before it happened
     tr = client.get("/v1/nodes/tree", headers=member["h"]).json()
     assert tr["leaves"] == 1 and tr["growing"] == 0  # the passed gathering closed by itself
+
+
+def test_upcoming_carries_the_going_count_names_and_category():
+    lead, member = person(), person()
+    cid = client.post("/v1/communities", json={"name": "Upcoming Heights"}, headers=lead["h"]).json()["id"]
+    code = client.get(f"/v1/communities/{cid}", headers=lead["h"]).json()["community"]["invite_code"]
+    client.post("/v1/communities/join", json={"code": code}, headers=member["h"])
+    with engine().begin() as conn:
+        conn.execute(text("update users set display_name = 'Lakshmi Nair' where id = :u"), {"u": lead["id"]})
+        a = str(conn.execute(text("insert into activities (community_id, organiser_id, title, category, starts_at) values (:c, :o, 'Sunday Market', 'Market', now() + interval '2 days') returning id"), {"c": cid, "o": lead["id"]}).scalar_one())
+    client.post(f"/v1/communities/activities/{a}/going", json={"going": True}, headers=lead["h"])
+    up = client.get("/v1/communities/upcoming?limit=5", headers=member["h"]).json()["activities"]
+    row = next(x for x in up if x["id"] == a)
+    assert row["category"] == "Market" and row["going_count"] == 1 and row["going_names"] == ["Lakshmi Nair"] and row["i_going"] is False

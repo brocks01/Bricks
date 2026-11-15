@@ -3,9 +3,10 @@ import { useFocusEffect } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { calendarApi, type Occurrence } from '../../../api/calendar';
+import { getUpcoming, setGoing, type Upcoming } from '../../../api/communities';
 import { getHomeSummary, type HomeSummary } from '../../../api/home';
 import { sendCheckin } from '../../../api/health';
-import { Figure, ListRow, Notice, Panel, Pill, Section } from '../../../components/blocks';
+import { Figure, ListRow, Notice, Panel, Section } from '../../../components/blocks';
 import { Button, ErrorText, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { useLanguage } from '../../../i18n';
@@ -14,6 +15,8 @@ import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, size, space, type } from '../../../theme/tokens';
 import { dayRows, freeBefore, minutesUntil, nextUp } from '../day';
+import { ActivityCard, type Answer } from './ActivityCard';
+import { MonthPlanner } from './MonthPlanner';
 import { homeIndex as page } from '../pages';
 
 const KIND_ICON: Record<string, keyof typeof Ionicons.glyphMap> = { medicine: 'medkit-outline', appointment: 'time-outline', exercise: 'fitness-outline', event: 'flag-outline', call: 'call-outline', other: 'ellipse-outline' };
@@ -27,6 +30,10 @@ export default function HomeIndex() {
   const [sum, setSum] = useState<HomeSummary | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [error, setError] = useState<string | null>(null);
+  const [act, setAct] = useState<Upcoming | null>(null);
+  const [answer, setAnswer] = useState<Answer>(null);
+  const [monthOccs, setMonthOccs] = useState<Occurrence[]>([]);
+  const [picked, setPicked] = useState(() => new Date().getDate());
 
   const load = useCallback(() => {
     const from = new Date();
@@ -34,6 +41,10 @@ export default function HomeIndex() {
     const to = new Date(from.getTime() + 2 * 86_400_000);
     calendarApi.occurrences(undefined, from.toISOString(), to.toISOString()).then((r) => { setOccs(r.occurrences); setError(null); }).catch(() => setError(w('failed')));
     getHomeSummary().then(setSum).catch(() => undefined);
+    getUpcoming(1).then((l) => { setAct(l[0] ?? null); setAnswer((a) => (l[0]?.i_going ? 'yes' : l[0] && a === 'no' ? 'no' : null)); }).catch(() => undefined);
+    const m0 = new Date(from.getFullYear(), from.getMonth(), 1);
+    const m1 = new Date(from.getFullYear(), from.getMonth() + 1, 1);
+    calendarApi.occurrences(undefined, m0.toISOString(), m1.toISOString()).then((r) => setMonthOccs(r.occurrences)).catch(() => undefined);
     setNow(new Date());
   }, [w]);
   useFocusEffect(
@@ -63,6 +74,18 @@ export default function HomeIndex() {
     }
   }, [load, w]);
 
+  const answerGoing = useCallback(async (going: boolean) => {
+    if (!act) return;
+    try {
+      const r = await setGoing(act.id, going);
+      setAct({ ...act, i_going: going, going_count: r.going_count });
+      setAnswer(going ? 'yes' : 'no');
+      load();
+    } catch {
+      setError(w('failed'));
+    }
+  }, [act, load, w]);
+
   const checkin = useCallback(async (moved: boolean) => {
     try {
       await sendCheckin(moved);
@@ -90,6 +113,9 @@ export default function HomeIndex() {
   useAction(page, 'markSkip', () => next && mark(next, 'skipped'));
   useAction(page, 'checkinYes', () => checkin(true));
   useAction(page, 'checkinNo', () => checkin(false));
+  useAction(page, 'goYes', () => answerGoing(true));
+  useAction(page, 'goNo', () => answerGoing(false));
+  useAction(page, 'changeAnswer', () => setAnswer(null));
   useAction(page, 'openCalendar', () => navigate('calendar.today'));
   useAction(page, 'addReminder', () => navigate('calendar.new'));
   useAction(page, 'openFamily', () => navigate('family.home'));
@@ -133,6 +159,21 @@ export default function HomeIndex() {
         </El>
       ) : null}
 
+      {act ? (
+        <View style={{ marginBottom: space.lg }}>
+          <ActivityCard
+            act={act}
+            answer={answer}
+            lang={lang}
+            w={w}
+            onYes={() => void answerGoing(true)}
+            onNo={() => void answerGoing(false)}
+            onChange={() => setAnswer(null)}
+            onOpen={() => navigate('community.home', { id: act.community_id })}
+          />
+        </View>
+      ) : null}
+
       <Section title={w('next_up')}>
         {next ? (
           <Panel tone="warn">
@@ -159,27 +200,9 @@ export default function HomeIndex() {
         )}
       </Section>
 
-      <Section title={w('your_day')} action={w('full_calendar')} onAction={() => navigate('calendar.today')}>
-        {rows.map((r, i) =>
-          r.kind === 'item' ? (
-            <Panel key={`i${i}`}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, opacity: r.past || r.occ.status === 'done' ? 0.6 : 1 }}>
-                <Ionicons name={KIND_ICON[r.occ.kind] ?? 'ellipse-outline'} size={size.icon.lg} color={colors.accent} />
-                <View style={{ flex: 1 }}>
-                  <Text style={[type.body, { color: colors.ink, fontWeight: '700' }]} numberOfLines={2}>{r.occ.title}</Text>
-                  <Text style={[type.small, { color: colors.muted }]}>{clockTime(r.start)}{r.end ? ` – ${clockTime(r.end)}` : ''} · {kindWord(r.occ.kind)}</Text>
-                </View>
-                {r.occ.status === 'done' ? <Pill text={w('mark_done')} /> : <Pill text={w('booked')} tone="quiet" />}
-              </View>
-            </Panel>
-          ) : (
-            <View key={`f${i}`} style={{ borderWidth: 1, borderStyle: 'dashed', borderColor: colors.accentLine, borderRadius: space.lg, padding: space.md, marginBottom: space.sm, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
-              <Ionicons name="cafe-outline" size={size.icon.md} color={colors.accent} />
-              <Text style={[type.small, { color: colors.accent, fontWeight: '700', flex: 1 }]}>{w('free_slot', { from: clockTime(r.start), to: clockTime(r.end) })} · {dur(r.minutes)}</Text>
-            </View>
-          )
-        )}
-      </Section>
+      <View style={{ marginBottom: space.lg }}>
+        <MonthPlanner now={now} occs={monthOccs} picked={picked} onPick={setPicked} lang={lang} w={w} />
+      </View>
 
       <Section title={w('checkin_title')}>
         {sum?.health.answered ? (
