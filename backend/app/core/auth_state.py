@@ -63,6 +63,7 @@ def verify(token: str, kinds: tuple[str, ...] = (security.ACCESS,)) -> tuple[dic
     if status != "active":
         return None, "gone"
     # `iat` is whole seconds: a token made in the same second as the change passes, so the refresh that follows a change is not refused again.
-    if changed_at > 0 and int(claims["iat"]) < int(changed_at):
+    # One more second of grace: the server's clock and the database's can differ by a few milliseconds (seen on Windows), which at a second boundary made a brand new token look older than its own account.
+    if changed_at > 0 and int(claims["iat"]) + 1 < int(changed_at):
         return None, "expired"
     return claims, None
