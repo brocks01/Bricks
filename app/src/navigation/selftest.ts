@@ -37,7 +37,7 @@ check('wisdom has a Paid sessions part with its own pages', (() => {
   return !!idx && (idx.elements.section.options ?? []).includes('paid') && !!idx.elements.serviceSearch && !!idx.elements.serviceKind && !!idx.elements.myServices && !!idx.elements.offerService
     && ['wisdom.service', 'wisdom.serviceOffer', 'wisdom.myServices'].every((k) => allPages().find((x) => x.key === k)?.module === 'wisdom');
 })());
-check('the marketplace tab keeps only opportunities near the person', allPages().filter((p) => p.module === 'market').every((p) => ['market.index', 'market.day', 'market.stall'].includes(p.key)), allPages().filter((p) => p.module === 'market').map((p) => p.key).join(','));
+check('the marketplace tab keeps only opportunities near the person', allPages().filter((p) => p.module === 'market').every((p) => ['market.index', 'market.more', 'market.day', 'market.stall'].includes(p.key)), allPages().filter((p) => p.module === 'market').map((p) => p.key).join(','));
 check('the moved service pages open at their new addresses', pageForPath('/wisdom/service/abc')?.key === 'wisdom.service' && pageForPath('/wisdom/service-offer')?.key === 'wisdom.serviceOffer' && pageForPath('/wisdom/services')?.key === 'wisdom.myServices');
 check('calendar has four pages, each needs sign-in', allPages().filter((p) => p.module === 'calendar').length === 4 && allPages().filter((p) => p.module === 'calendar').every((p) => !!p.requiresAuth));
 check('the medicine form always carries the not-medical-advice note', !!allPages().find((x) => x.key === 'calendar.new')?.elements.notMedical);

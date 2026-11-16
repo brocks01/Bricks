@@ -1,0 +1,20 @@
+import { type WordTable } from '../../i18n/words';
+
+// Words for the simple Market Day home. Order: English, Hindi, Bengali, Tamil, Chinese, Malay. First drafts; native-speaker review needed.
+export const HOME_M: WordTable = {
+  m_title: ['Market Day', 'बाज़ार दिवस', 'বাজার দিবস', 'சந்தை நாள்', '市集日', 'Hari Pasar'],
+  m_days: ['{n} days to go', '{n} दिन बाकी', '{n} দিন বাকি', '{n} நாட்கள் உள்ளன', '还有 {n} 天', '{n} hari lagi'],
+  m_one_day: ['1 day to go', '1 दिन बाकी', '১ দিন বাকি', '1 நாள் உள்ளது', '还有 1 天', '1 hari lagi'],
+  m_today: ['Today', 'आज', 'আজ', 'இன்று', '今天', 'Hari ini'],
+  m_going: ['{n} going', '{n} जा रहे हैं', '{n} জন যাচ্ছেন', '{n} பேர் வருகிறார்கள்', '{n} 人参加', '{n} akan hadir'],
+  m_yours: ['Your stall', 'आपका स्टॉल', 'আপনার স্টল', 'உங்கள் கடை', '你的摊位', 'Gerai anda'],
+  m_slot_first: ['Morning', 'सुबह', 'সকাল', 'காலை', '上午', 'Pagi'],
+  m_slot_second: ['Afternoon', 'दोपहर', 'বিকাল', 'மதியம்', '下午', 'Petang'],
+  m_slot_whole: ['All day', 'पूरा दिन', 'সারাদিন', 'நாள் முழுவதும்', '全天', 'Sepanjang hari'],
+  m_coming: ['Coming to see you', 'आपसे मिलने आ रहे हैं', 'আপনার সঙ্গে দেখা করতে আসছেন', 'உங்களைப் பார்க்க வருகிறார்கள்', '来看你', 'Datang berjumpa anda'],
+  m_mentees: ['{name} + {n} mentees', '{name} + {n} शिष्य', '{name} + {n} জন শিক্ষার্থী', '{name} + {n} மாணவர்கள்', '{name} + {n} 位学员', '{name} + {n} pelajar'],
+  m_none: ['No market day planned yet.', 'अभी कोई बाज़ार दिवस तय नहीं।', 'এখনও কোনো বাজার দিবস ঠিক হয়নি।', 'இன்னும் சந்தை நாள் திட்டமிடப்படவில்லை.', '暂时没有市集日安排。', 'Belum ada hari pasar dirancang.'],
+  m_open: ['See the market day', 'बाज़ार दिवस देखें', 'বাজার দিবস দেখুন', 'சந்தை நாளைப் பாருங்கள்', '查看市集日', 'Lihat hari pasar'],
+  m_stalls: ['Stalls', 'स्टॉल', 'স্টল', 'கடைகள்', '摊位', 'Gerai'],
+  m_more: ['More to do nearby', 'आसपास करने के लिए और', 'কাছাকাছি আরও কিছু করার', 'அருகில் செய்ய மேலும்', '附近更多活动', 'Lebih banyak aktiviti berdekatan'],
+};

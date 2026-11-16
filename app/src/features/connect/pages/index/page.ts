@@ -1,6 +1,7 @@
 import { definePage } from '../../../../kit/page';
 import { mergeStrings, pageWords } from '../../../../i18n/words';
 import { INDEX_EXTRA_ALIASES, R } from '../../rulesWords';
+import { HOME_C } from '../../homeWords';
 import { strings } from './strings';
 
 // The Connect dashboard is an ENTRY POINT to the person's communities and nothing else (scope locked by the owner, 12 Nov 2026).
@@ -25,5 +26,17 @@ export const connectIndex = definePage({
     askStart: { kind: 'action', summary: 'Open the form to ask the Interchange team to start a new community.' },
     comingUp: { kind: 'text', summary: 'The next few events across all the communities the person belongs to.' },
   },
-  strings: mergeStrings(strings, pageWords(R, INDEX_EXTRA_ALIASES)),
+  strings: mergeStrings(mergeStrings(strings, pageWords(R, INDEX_EXTRA_ALIASES)), pageWords(HOME_C)),
+});
+
+// The earlier, longer Communities screen (limits, invite code, every place to find a group) stays reachable from the bottom of the simple one: nothing is removed.
+export const connectMore = definePage({
+  key: 'connect.more',
+  module: 'connect',
+  route: '/communities-more',
+  requiresAuth: true,
+  summary: 'More ways to find and manage communities: join with an invite code, explore every community, ask the Interchange team to start one, and the next events across all your communities.',
+  keywords: ['community', 'communities', 'join', 'invite code', 'explore', 'more'],
+  elements: connectIndex.elements,
+  strings: connectIndex.strings,
 });

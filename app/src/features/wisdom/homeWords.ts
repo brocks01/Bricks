@@ -31,5 +31,11 @@ export const HOME: WordTable = {
   h_more: ['Stories and more', 'कहानियाँ और बहुत कुछ', 'গল্প এবং আরও', 'கதைகள் மற்றும் பல', '故事与更多', 'Cerita dan lagi'],
   h_years: ['{n} years', '{n} साल', '{n} বছর', '{n} ஆண்டுகள்', '{n} 年', '{n} tahun'],
   h_thanks: ['{n} thank-yous', '{n} धन्यवाद', '{n}টি ধন্যবাদ', '{n} நன்றிகள்', '{n} 个感谢', '{n} terima kasih'],
+  h_title: ['Wisdom', 'ज्ञान', 'প্রজ্ঞা', 'ஞானம்', '智慧', 'Kebijaksanaan'],
+  h_want_n: ['{n} people want your advice', '{n} लोग आपकी सलाह चाहते हैं', '{n} জন আপনার পরামর্শ চান', '{n} பேர் உங்கள் ஆலோசனையை விரும்புகிறார்கள்', '{n} 人想听听你的建议', '{n} orang mahu nasihat anda'],
+  h_want_1: ['1 person wants your advice', '1 व्यक्ति आपकी सलाह चाहता है', '১ জন আপনার পরামর্শ চান', '1 நபர் உங்கள் ஆலோசனையை விரும்புகிறார்', '1 人想听听你的建议', '1 orang mahu nasihat anda'],
+  h_notnow: ['Not now', 'अभी नहीं', 'এখন নয়', 'இப்போது வேண்டாம்', '暂时不用', 'Bukan sekarang'],
+  h_edit_teach: ['Edit what I teach', 'मैं क्या सिखाता/सिखाती हूँ, बदलें', 'আমি যা শেখাই তা সম্পাদনা করুন', 'நான் கற்பிப்பதைத் திருத்து', '编辑我教授的内容', 'Sunting apa yang saya ajar'],
+  h_edit_learn: ['Edit what I want to learn', 'मैं क्या सीखना चाहता/चाहती हूँ, बदलें', 'আমি যা শিখতে চাই তা সম্পাদনা করুন', 'நான் கற்க விரும்புவதைத் திருத்து', '编辑我想学的内容', 'Sunting apa yang saya mahu belajar'],
   h_message: ['Messages', 'संदेश', 'বার্তা', 'செய்திகள்', '消息', 'Mesej'],
 };

@@ -1,2 +1,2 @@
-// The Marketplace tab (the third tab).
-export { default } from '../../features/market/screens/MarketIndex';
+// The Marketplace tab: the next market day, simply.
+export { default } from '../../features/market/screens/MarketHome';

@@ -1,6 +1,7 @@
 import { definePage } from '../../kit/page';
 import { mergeStrings, pageWords } from '../../i18n/words';
 import { DAYS } from './dayWords';
+import { HOME_M } from './marketHomeWords';
 import { ALIASES, W } from './words';
 
 const strings = (headingWord: string) => pageWords(W, { ...ALIASES, heading: headingWord });
@@ -17,7 +18,18 @@ export const marketIndex = definePage({
   elements: {
     heading: { kind: 'text' },
   },
-  strings: mergeStrings(strings('h_market'), pageWords(DAYS)),
+  strings: mergeStrings(mergeStrings(strings('h_market'), pageWords(DAYS)), pageWords(HOME_M)),
+});
+
+// The earlier, longer Marketplace screen (every opportunity nearby, with filters) stays reachable from the bottom of the simple one: nothing is removed.
+export const marketMore = definePage({
+  ...base,
+  key: 'market.more',
+  route: '/market/more',
+  summary: 'More to do nearby: market days, volunteering, paid gigs, shows and activities hosted by Active Ageing Centres, malls and others, with filters.',
+  keywords: ['marketplace', 'opportunity', 'volunteer', 'gig', 'show', 'nearby', 'more'],
+  elements: marketIndex.elements,
+  strings: marketIndex.strings,
 });
 
 export const marketStall = definePage({
