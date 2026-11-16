@@ -63,6 +63,12 @@ def verify_code(body: VerifyCodeIn, request: Request, conn: Connection = Depends
         return _refuse(e)
 
 
+@router.post("/auth/demo", response_model=SessionOut)
+def demo(request: Request, conn: Connection = Depends(get_conn)):
+    """Prototype: 'Start demo' makes a throwaway account (random name and address) and signs it in, with no code."""
+    return service.demo_sign_in(conn, request.headers.get("user-agent", ""))
+
+
 @router.get("/auth/providers", response_model=ProvidersOut)
 def auth_providers():
     return service.providers()

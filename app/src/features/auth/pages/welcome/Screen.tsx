@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Image, Text, View } from 'react-native';
+import { startDemo } from '../../../../session/store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -23,7 +25,14 @@ export default function Welcome() {
   // What the person already said they speak, so the entry reads like theirs ("English, Hindi").
   const spokenNames = spoken.map((c) => SPOKEN_LANGUAGES.find((l) => l.code === c)?.native ?? c);
   const spokenLabel = spokenNames.length ? `${w('spokenLink')}: ${spokenNames.slice(0, 2).join(', ')}${spokenNames.length > 2 ? '…' : ''}` : w('spokenLink');
+  const [demoBusy, setDemoBusy] = useState(false);
+  const demo = async () => {
+    if (demoBusy) return;
+    setDemoBusy(true);
+    try { await startDemo(); } catch { setDemoBusy(false); } // on success the app moves on by itself (AuthGate)
+  };
   useAction(page, 'start', () => go('auth.signIn'));
+  useAction(page, 'startDemo', () => void demo());
   useAction(page, 'languageLink', () => go('language.pick'));
   useAction(page, 'spokenLink', () => go('language.spoken'));
   // What the agent sees before sign-in: the three entries, nothing else. It can explain them, not press them.
@@ -64,6 +73,8 @@ export default function Welcome() {
       <Text style={[type.body, { color: colors.muted, marginTop: space.lg, textAlign: 'center' }]}>{w('subtitle')}</Text>
       <View style={{ height: space.md }} />
       <El page={page} id="start"><Button label={w('start')} onPress={() => go('auth.signIn')} /></El>
+      <View style={{ height: space.xs }} />
+      <El page={page} id="startDemo"><Button kind="plain" icon="flash-outline" label={w('startDemo')} onPress={() => void demo()} disabled={demoBusy} /></El>
       <View style={{ height: space.xs }} />
       <El page={page} id="languageLink"><Button kind="plain" icon="language" label={`${w('languageLink')}: ${native}`} onPress={() => go('language.pick')} /></El>
       <View style={{ height: space.xs }} />

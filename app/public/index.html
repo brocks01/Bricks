@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#F7F4EE" />
+    <title>Wisdom</title>
+    <link rel="icon" href="/favicon.png" />
+    <style id="expo-reset">
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #f7f4ee; /* the app's paper colour, so loading is never a black screen */
+        color-scheme: light;
+      }
+      body {
+        overflow: hidden;
+      }
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+      }
+      /* Shown only until the app starts: the logo, still. React replaces it when it mounts. */
+      .boot {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+        color: #4a5361;
+      }
+      .boot img {
+        width: 72px;
+        height: 72px;
+      }
+      .boot span {
+        font-size: 16px;
+        letter-spacing: 0.02em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root">
+      <div class="boot" role="progressbar" aria-label="Loading">
+        <img src="/mark.png" alt="" />
+        <span>Wisdom</span>
+      </div>
+    </div>
+  </body>
+</html>

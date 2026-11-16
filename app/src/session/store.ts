@@ -164,6 +164,13 @@ export async function verifyCode(code: string): Promise<{ isNew: boolean; comple
   return { isNew: t.is_new, complete: sessionStore.get().user?.profile_complete ?? false };
 }
 
+/** Prototype: a throwaway account with a random name, signed in at once with no code. The app then walks it through onboarding. */
+export async function startDemo(): Promise<void> {
+  const t = await api<Tokens>('POST', '/v1/auth/demo', {}, { auth: false });
+  await accept(t);
+  await updateProfile({ language: languageStore.get().code });
+}
+
 export interface Providers {
   email: boolean;
   google: boolean;

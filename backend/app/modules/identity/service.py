@@ -131,6 +131,22 @@ def verify_google_token(id_token: str) -> dict:
     return claims
 
 
+DEMO_FIRST = ["Lim", "Tan", "Ng", "Wong", "Chua", "Goh", "Teo", "Koh", "Rahmah", "Aminah", "Kumar", "Devi", "Muthu", "Selvi", "Anthony", "Cecilia", "Priya", "Daniel", "Mei Lin", "Siew Hwa"]
+DEMO_LAST = ["Kok Leong", "Bee Choo", "binte Ismail", "bin Hamid", "Pillai", "Nair", "D'Cruz", "Pereira", "Subramaniam", "Hock Seng", "Mei Hwa", "Krishnan"]
+
+
+def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
+    """PROTOTYPE ONLY: a throwaway account with a random name and a random address, signed in at once with no code. The address ends in @demo.wisdom.test
+    so these accounts can always be told apart and removed. Used by the 'Start demo' button."""
+    import secrets
+
+    email = f"demo-{secrets.token_hex(4)}@demo.wisdom.test"
+    name = f"{secrets.choice(DEMO_FIRST)} {secrets.choice(DEMO_LAST)}"
+    user = conn.execute(text("insert into users (email, display_name) values (:e, :n) returning *"), {"e": email, "n": name}).one()
+    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}
+
+
 def google_sign_in(conn: Connection, id_token: str, user_agent: str = "") -> dict:
     claims = verify_google_token(id_token)
     email = clean_email(claims["email"])
