@@ -1,18 +1,18 @@
-// Design tokens, taken from the UI samples: white cards on a soft background, one strong green, large readable text.
+// Design tokens: white cards on a soft background, the brand's deep green and amber (from the logo: the elder and the younger person), large readable text.
 export const colors = {
   bg: '#F7F4EE', // warm paper
   card: '#FFFFFF',
   ink: '#111827',
   muted: '#4A5361',
   line: '#E2DACB', // warm hairline
-  accent: '#B0502A', // terracotta: the main button
-  accentDark: '#8A3D1F',
-  accentSoft: '#F6E7DF',
-  accentLine: '#E8C9BA',
+  accent: '#17684A', // the brand's deep green: the main button (white text on it passes contrast)
+  accentDark: '#0F4D37',
+  accentSoft: '#E3F1EA',
+  accentLine: '#B9D9C8',
   navy: '#1B2B44', // header mark, profile circle, dark buttons
   navySoft: '#E9EDF4',
-  gold: '#C9A24A', // the ring round the profile circle
-  leaf: '#2E6B4E', // progress bars
+  gold: '#F2A31B', // the brand's amber: highlights and rings
+  leaf: '#17684A', // progress bars and the selected tab
   danger: '#E5372E',
   warn: '#8A5A00',
   warnSoft: '#FDF1D6',

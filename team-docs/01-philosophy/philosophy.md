@@ -70,5 +70,14 @@ Wisdom is really **three products**, each solving a different pain. They are lin
 
 Around the three: the **agent** is the front door on every channel (welcomes, learns what a person wants, writes down their stories, reminds, nudges, connects), and the **profile** decides what a person sees. The app is one door among several.
 
+## Our three pillars, and what makes us different
+- **Heart (Communities):** where you feel you belong.
+- **Wisdom (experience sharing):** where you feel heard, valued and able to contribute back to society.
+- **Marketplace (exchange):** where you exchange value and earn.
+
+**Interests can connect people, but belonging makes them feel at home.** We are not another Instagram. Instagram understands a person and connects them; we do that too, and then go where it cannot: we bring people **physically together**, we give their **experience** a place to be heard and passed on, and we help them **earn**. That combination is our unique strength.
+
+The logo says the same thing: two people, an elder in green and a younger person in amber, in one embrace. Interchange is the idea: experience, belonging and value flow in both directions between generations.
+
 ## How we know it is working
 A person feels less lonely (a short three-question check at the start and at 3 and 6 months), and the leading signs: someone leaves the house tomorrow, an older person is asked something, a real conversation happens between generations, a market-day stall has someone behind it who last month sat at home. See `02-product/impact-and-business.md`.
