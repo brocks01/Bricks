@@ -127,7 +127,7 @@ def run_once(today: date | None = None) -> int:
     for i in ids:
         with engine().begin() as conn:
             made += roll(conn, i, today)
-    from ..market import milestones; milestones.run_once()  # one gentle word toward a market day when a circle's weekly step comes due
+    from .market import milestones; milestones.run_once()  # one gentle word toward a market day when a circle's weekly step comes due
     return made
 
 
