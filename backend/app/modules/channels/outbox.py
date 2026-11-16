@@ -135,13 +135,16 @@ def run_due(now: datetime | None = None) -> int:
 async def loop(every: float = 60.0) -> None:
     """The background ticker: nudges, then delivery. OUTBOX_LOOP=off holds it still (tests)."""
     from .. import recurrence
-    from . import nudges
+    from ..belonging import nudges as belonging_nudges
+    from . import checkins, nudges
 
     while True:
         try:
             if (os.environ.get("OUTBOX_LOOP") or "on").lower() != "off":
                 await asyncio.to_thread(recurrence.run_once)  # keeps repeating events filled ahead of time
                 await asyncio.to_thread(nudges.run_once)
+                await asyncio.to_thread(belonging_nudges.run_once)  # three days, and the day before, a day the circle keeps
+                await asyncio.to_thread(checkins.run_once)  # the daily check-in: Wisdom speaks first at the hour the person chose
                 await asyncio.to_thread(run_due)
         except Exception:  # noqa: BLE001 - a bad tick must not stop the loop
             log.exception("outbox tick failed")

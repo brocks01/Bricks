@@ -81,14 +81,21 @@ def create_activity(conn: Connection, user_id: str, community_id: str, data: dic
 
 
 def list_members(conn: Connection, user_id: str, community_id: str, q: str | None = None) -> list[dict]:
+    """The circle's people, leaders first. Who is away is shown only for the ones who chose to share it, and only as away (with where and
+    since); it never says anything else about them."""
     _member(conn, user_id, community_id)
     like = f"%{q.strip()}%" if q and q.strip() else None
     rows = conn.execute(
         text("select * from (select u.id, u.display_name, u.area_name, (select d.name from role_terms t join role_definitions d on d.id = t.role_definition_id "
-             "where t.community_id = :c and t.user_id = u.id and t.status = 'active' and t.ends_on >= current_date order by d.can_manage desc limit 1) as role "
-             "from memberships m join users u on u.id = m.user_id where m.community_id = :c and m.status = 'active' and (cast(:q as text) is null or u.display_name ilike :q)) x "
+             "where t.community_id = :c and t.user_id = u.id and t.status = 'active' and t.ends_on >= current_date order by d.can_manage desc limit 1) as role, "
+             "p.status = 'away' as away, case when p.status = 'away' then p.place else null end as away_place, "
+             "case when p.status = 'away' then p.since else null end as away_since "
+             "from memberships m join users u on u.id = m.user_id "
+             "left join circle_presence p on p.community_id = m.community_id and p.user_id = m.user_id and p.share "
+             "where m.community_id = :c and m.status = 'active' and (cast(:q as text) is null or u.display_name ilike :q)) x "
              "order by (role is null), role, display_name limit 200"), {"c": community_id, "q": like}).all()
-    return [{"id": str(r.id), "name": r.display_name, "area": r.area_name, "role": r.role or "Member"} for r in rows]
+    return [{"id": str(r.id), "name": r.display_name, "area": r.area_name, "role": r.role or "Member",
+             "away": bool(r.away), "away_place": r.away_place, "away_since": _iso(r.away_since)} for r in rows]
 
 
 def invite_info(conn: Connection, user_id: str, community_id: str) -> dict:

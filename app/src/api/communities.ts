@@ -82,7 +82,8 @@ export const getActivityCategories = (cid: string) =>
 export const getActivity = (id: string) => api<CommunityActivity & { organiser: string | null; going: { id: string; name: string }[] }>('GET', `/v1/communities/activities/${id}`);
 export const createActivity = (cid: string, body: { title: string; starts_at: string; ends_at?: string; location?: string; category?: string; description?: string; capacity?: number; repeat?: 'none' | 'daily' | 'weekdays' | 'weekly' | 'monthly' }) =>
   api<{ id: string }>('POST', `/v1/communities/${cid}/activities`, body);
-export const getMembers = (cid: string, q?: string) => api<{ members: { id: string; name: string; area: string | null; role: string }[] }>('GET', `/v1/communities/${cid}/members${q ? `?q=${encodeURIComponent(q)}` : ''}`).then((r) => r.members);
+/** The circle's people. Who is away comes back only for the ones who chose to share it, and only as away (with where and since). */
+export const getMembers = (cid: string, q?: string) => api<{ members: { id: string; name: string; area: string | null; role: string; away?: boolean; away_place?: string | null; away_since?: string | null }[] }>('GET', `/v1/communities/${cid}/members${q ? `?q=${encodeURIComponent(q)}` : ''}`).then((r) => r.members);
 export const getInvite = (cid: string) => api<{ name: string; can_invite: boolean; invite_code: string | null }>('GET', `/v1/communities/${cid}/invite`);
 export interface Initiative { id: string; title: string; summary: string | null; icon: string; status: string; member_count: number }
 export const getInitiatives = (cid: string) => api<{ initiatives: Initiative[] }>('GET', `/v1/communities/${cid}/initiatives`).then((r) => r.initiatives);
