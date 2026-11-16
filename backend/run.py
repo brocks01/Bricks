@@ -6,6 +6,7 @@
   python backend/run.py skill you@example.com [name] [json]   run or list a backend skill for one account, no app needed (see app/modules/skills)
   python backend/run.py call you@example.com [+number]   place one phone call that talks to Wisdom (see app/call_cli.py)
   python backend/run.py link-phone you@example.com +65...   let that number phone Wisdom and reach this account
+  python backend/run.py seed-wisdom [--reset]   a matured Singapore: real centres, circles, ~1000 people, stories, offers, market days (see app/seed_wisdom.py)
   python backend/run.py seed-explore [--reset]            the Explore library (see app/seed_explore.py)
 """
 import runpy
@@ -20,6 +21,10 @@ elif len(sys.argv) > 1 and sys.argv[1] == "seed-demo":
     from app.seed_demo import main as seed_main
 
     seed_main(sys.argv[2:])
+elif len(sys.argv) > 1 and sys.argv[1] == "seed-wisdom":
+    from app.seed_wisdom import main as seed_wisdom_main
+
+    seed_wisdom_main(sys.argv[2:])
 elif len(sys.argv) > 1 and sys.argv[1] == "showcase":
     from app.showcase import main as showcase_main
 

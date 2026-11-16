@@ -6,12 +6,14 @@ import { getOnboarding, putOnboarding, skipOnboarding, type OnboardingState, typ
 import { uploadVoiceIntro } from '../../../api/media';
 import { api } from '../../../api/client';
 import { ChipRow } from '../../../components/blocks';
+import { LanguageMultiPicker, TagInput } from '../../../components/pickers';
 import { Button, Card, Body, ErrorText, Field, Screen } from '../../../components/ui';
 import { usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { colors, radius, space } from '../../../theme/tokens';
 import { firstTab, loadProfile, profileStore } from '../state';
 import { whoStore, loadWho, setWho, type Who } from '../who';
+import { Wizard } from '../Wizard';
 import { onboardingIndex as page } from '../pages';
 import { exploreCommunities } from '../../../api/communityRules';
 
@@ -76,6 +78,26 @@ function Ask({ q, value, onChange, yes, no }: { q: ServerQ; value: unknown; onCh
             );
           })}
         </View>
+      </View>
+    );
+  }
+  if ((q.kind as string) === 'multi' && q.key === 'spoken_languages') {
+    const codes = Array.isArray(value) ? (value as string[]) : String(value ?? '').split(/[\s,]+/).filter(Boolean);
+    return (
+      <View style={{ marginBottom: space.md }}>
+        <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink, marginBottom: space.sm }}>{q.label}</Text>
+        <Why text={q.why} />
+        <LanguageMultiPicker value={codes} onChange={onChange} words={{ search: w('searchLanguage'), none: w('nothingFound'), chosen: w('yourLanguages') }} />
+      </View>
+    );
+  }
+  if ((q.kind as string) === 'multi') {
+    const tags = Array.isArray(value) ? (value as string[]) : String(value ?? '').split(',').map((x) => x.trim()).filter(Boolean);
+    return (
+      <View style={{ marginBottom: space.md }}>
+        <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink, marginBottom: space.sm }}>{q.label}</Text>
+        <Why text={q.why} />
+        <TagInput value={tags} onChange={onChange} words={{ placeholder: w('addPlaceholder'), add: w('addTag') }} />
       </View>
     );
   }
@@ -226,6 +248,7 @@ export default function OnboardingScreen() {
   const [values, setValues] = useState<Values>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [longForm, setLongForm] = useState(false);
   const [whoReady, setWhoReady] = useState(false);
   const [whoChosen, setWhoChosen] = useState<Who | null>(null);
   const [voiceDone, setVoiceDone] = useState(false);
@@ -278,10 +301,14 @@ export default function OnboardingScreen() {
   };
   // voice intro step shows once sections are done
   if (!whoReady) return <Screen title={w('heading')} subtitle={w('loading')}><ErrorText>{error}</ErrorText></Screen>;
+  if (!state) return <Screen title={w('heading')} subtitle={w('loading')}><ErrorText>{error}</ErrorText></Screen>;
+  // The first time: a short, one-question-at-a-time flow. The rest is asked later ("Tell us a little more" opens the longer form below).
+  if (!state.completed && !longForm) {
+    return <Wizard state={state} who={whoChosen} onWho={(x) => { setWho(x); setWhoChosen(x); }} onState={open} finish={finish} more={() => setLongForm(true)} />;
+  }
   if (whoChosen === null) {
     return <WhoStep w={w} onPicked={(who) => { setWho(who); setWhoChosen(who); }} />;
   }
-  if (!state) return <Screen title={w('heading')} subtitle={w('loading')}><ErrorText>{error}</ErrorText></Screen>;
   if (!section) {
     if (!voiceIntroDone && !voiceDone) {
       return <VoiceIntro w={w} onDone={() => { try { window.localStorage.setItem('bricks.voiceIntro', '1'); } catch {} setVoiceDone(true); }} />;

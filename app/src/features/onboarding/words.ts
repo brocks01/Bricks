@@ -67,4 +67,9 @@ export const ONBOARDING: WordTable = {
   voiceSkip: ['Skip', 'छोड़ें', 'বাদ দিন', 'தவிர்', '跳过', 'Langkau'],
   voice_record: ['Record', 'रिकॉर्ड करें', 'রেকর্ড করুন', 'பதிவு செய்', '录音', 'Rakam'],
   voice_stop: ['Stop', 'रोकें', 'থামান', 'நிறுத்து', '停止', 'Berhenti'],
+  searchLanguage: ['Search a language to add', 'जोड़ने के लिए भाषा खोजें', 'যোগ করতে ভাষা খুঁজুন', 'சேர்க்க மொழியைத் தேடுங்கள்', '搜索要添加的语言', 'Cari bahasa untuk ditambah'],
+  nothingFound: ['No language found', 'कोई भाषा नहीं मिली', 'কোনো ভাষা পাওয়া যায়নি', 'மொழி எதுவும் கிடைக்கவில்லை', '没有找到语言', 'Tiada bahasa dijumpai'],
+  yourLanguages: ['Your languages', 'आपकी भाषाएँ', 'আপনার ভাষা', 'உங்கள் மொழிகள்', '你的语言', 'Bahasa anda'],
+  addPlaceholder: ['Type one and tap Add', 'एक लिखें और जोड़ें दबाएँ', 'একটি লিখে যোগ করুন চাপুন', 'ஒன்றை எழுதி சேர் தட்டவும்', '输入一项，然后点“添加”', 'Taip satu dan ketik Tambah'],
+  addTag: ['Add', 'जोड़ें', 'যোগ করুন', 'சேர்', '添加', 'Tambah'],
 };

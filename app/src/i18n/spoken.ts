@@ -9,6 +9,12 @@ export const SPOKEN_LANGUAGES = [
   { code: 'kok', native: 'कोंकणी' }, { code: 'zh', native: '中文' }, { code: 'yue', native: '粵語' }, { code: 'nan', native: '閩南語' },
   { code: 'teo', native: '潮州话' }, { code: 'ms', native: 'Bahasa Melayu' }, { code: 'id', native: 'Bahasa Indonesia' },
 ] as const;
+/** English names, so a person can search "Tamil" and find தமிழ். The chips themselves stay in each language's own script. */
+export const SPOKEN_ENGLISH: Record<string, string> = {
+  en: 'English', hi: 'Hindi', bn: 'Bengali', ta: 'Tamil', te: 'Telugu', mr: 'Marathi', gu: 'Gujarati', kn: 'Kannada', ml: 'Malayalam', pa: 'Punjabi', ur: 'Urdu',
+  or: 'Odia', as: 'Assamese', bho: 'Bhojpuri', mai: 'Maithili', ne: 'Nepali', kok: 'Konkani', zh: 'Chinese Mandarin', yue: 'Cantonese', nan: 'Hokkien',
+  teo: 'Teochew', ms: 'Malay', id: 'Indonesian',
+};
 const CODES = new Set<string>(SPOKEN_LANGUAGES.map((l) => l.code));
 /** Keeps only known codes, once each, in order. Accepts a list or a comma / space separated string. */
 export const cleanSpoken = (v: unknown): string[] => {
