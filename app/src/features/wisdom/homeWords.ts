@@ -37,5 +37,7 @@ export const HOME: WordTable = {
   h_notnow: ['Not now', 'अभी नहीं', 'এখন নয়', 'இப்போது வேண்டாம்', '暂时不用', 'Bukan sekarang'],
   h_edit_teach: ['Edit what I teach', 'मैं क्या सिखाता/सिखाती हूँ, बदलें', 'আমি যা শেখাই তা সম্পাদনা করুন', 'நான் கற்பிப்பதைத் திருத்து', '编辑我教授的内容', 'Sunting apa yang saya ajar'],
   h_edit_learn: ['Edit what I want to learn', 'मैं क्या सीखना चाहता/चाहती हूँ, बदलें', 'আমি যা শিখতে চাই তা সম্পাদনা করুন', 'நான் கற்க விரும்புவதைத் திருத்து', '编辑我想学的内容', 'Sunting apa yang saya mahu belajar'],
+  h_failed: ['Could not load Wisdom. Check your connection.', 'ज्ञान लोड नहीं हो सका। कनेक्शन जाँचें।', 'প্রজ্ঞা লোড করা যায়নি। সংযোগ পরীক্ষা করুন।', 'ஞானத்தை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்க்கவும்.', '无法加载智慧页面，请检查网络。', 'Tidak dapat memuat Kebijaksanaan. Semak sambungan.'],
+  h_retry: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயற்சிக்கவும்', '重试', 'Cuba lagi'],
   h_message: ['Messages', 'संदेश', 'বার্তা', 'செய்திகள்', '消息', 'Mesej'],
 };

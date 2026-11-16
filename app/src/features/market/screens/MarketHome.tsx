@@ -9,6 +9,7 @@ import { languageStore } from '../../../i18n/store';
 import { usePageData, usePageWords } from '../../../kit';
 import type { PageDataAction } from '../../../kit';
 import { useNavigate } from '../../../navigation';
+import { sessionStore } from '../../../session/store';
 import { colors, radius, space, type } from '../../../theme/tokens';
 import { marketIndex as page } from '../pages';
 
@@ -19,14 +20,21 @@ export default function MarketHome() {
   const w = usePageWords(page);
   const go = useNavigate();
   const { code } = useStore(languageStore);
+  const { status } = useStore(sessionStore);
+  const [failed, setFailed] = useState(false);
+  const [tries, setTries] = useState(0);
   const locale = LOCALE[code] ?? 'en-SG';
   const [event, setEvent] = useState<MarketEventDetail | null | undefined>(undefined); // undefined = loading, null = none planned
   const [mentees, setMentees] = useState<Connection[]>([]);
 
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     (async () => {
-      const [events, conns] = await Promise.all([getMarketEvents().catch(() => [] as MarketEventCard[]), getConnections().catch(() => [] as Connection[])]);
+      let events: MarketEventCard[];
+      try { events = await getMarketEvents(); } catch { if (live) setFailed(true); return; } // a failed request is not the same as "no market day planned"
+      const conns = await getConnections().catch(() => [] as Connection[]);
+      setFailed(false);
       const soon = events.filter((e) => e.kind === 'market_day' && new Date(e.starts_at).getTime() > Date.now() - 6 * 3600000).sort((a, b) => a.starts_at.localeCompare(b.starts_at))[0];
       const detail = soon ? await getMarketEvent(soon.id).catch(() => null) : null;
       if (!live) return;
@@ -34,7 +42,7 @@ export default function MarketHome() {
       setMentees(conns.filter((c) => c.i_am === 'mentor' && c.status === 'accepted'));
     })();
     return () => { live = false; };
-  }, []);
+  }, [status, tries]);
 
   const d = event ? new Date(event.starts_at) : null;
   const days = d ? Math.max(0, Math.ceil((d.getTime() - Date.now()) / 86400000)) : 0;
@@ -58,12 +66,20 @@ export default function MarketHome() {
 
   return (
     <Screen title="" hero={<Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.navy, marginBottom: space.md }}>{w('m_title')}</Text>}>
+      {failed ? (
+        <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.lg, marginBottom: space.md }}>
+          <Text style={[type.body, { color: colors.danger }]}>{w('m_failed')}</Text>
+          <Pressable onPress={() => setTries((t) => t + 1)} accessibilityRole="button" style={{ alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginTop: space.sm, paddingHorizontal: 18, borderRadius: radius.pill, backgroundColor: colors.accent }}>
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.card }}>{w('m_retry')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
       {event ? (
         <Pressable onPress={() => { go('market.day', { id: event.id }); }} accessibilityRole="button" style={{ backgroundColor: ORANGE, borderRadius: radius.card, padding: space.lg, marginBottom: space.md }}>
           <Text style={{ fontSize: 20, fontWeight: '800', color: colors.card }}>{dateText} · {event.venue_name}</Text>
           <Text style={{ fontSize: 16, color: '#FBE3D6', marginTop: 4 }}>{daysText}{event.going_count ? ` · ${w('m_going', { n: event.going_count })}` : ''}</Text>
         </Pressable>
-      ) : event === null ? (
+      ) : event === null && !failed ? (
         <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.lg, marginBottom: space.md }}>
           <Text style={[type.body, { color: colors.muted }]}>{w('m_none')}</Text>
         </View>

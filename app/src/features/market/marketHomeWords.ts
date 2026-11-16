@@ -16,5 +16,7 @@ export const HOME_M: WordTable = {
   m_none: ['No market day planned yet.', 'अभी कोई बाज़ार दिवस तय नहीं।', 'এখনও কোনো বাজার দিবস ঠিক হয়নি।', 'இன்னும் சந்தை நாள் திட்டமிடப்படவில்லை.', '暂时没有市集日安排。', 'Belum ada hari pasar dirancang.'],
   m_open: ['See the market day', 'बाज़ार दिवस देखें', 'বাজার দিবস দেখুন', 'சந்தை நாளைப் பாருங்கள்', '查看市集日', 'Lihat hari pasar'],
   m_stalls: ['Stalls', 'स्टॉल', 'স্টল', 'கடைகள்', '摊位', 'Gerai'],
+  m_failed: ['Could not load the market day. Check your connection.', 'बाज़ार दिवस लोड नहीं हो सका। कनेक्शन जाँचें।', 'বাজার দিবস লোড করা যায়নি। সংযোগ পরীক্ষা করুন।', 'சந்தை நாளை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்க்கவும்.', '无法加载市集日，请检查网络。', 'Tidak dapat memuat hari pasar. Semak sambungan.'],
+  m_retry: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயற்சிக்கவும்', '重试', 'Cuba lagi'],
   m_more: ['More to do nearby', 'आसपास करने के लिए और', 'কাছাকাছি আরও কিছু করার', 'அருகில் செய்ய மேலும்', '附近更多活动', 'Lebih banyak aktiviti berdekatan'],
 };

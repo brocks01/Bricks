@@ -17,19 +17,25 @@ const LOCALE: Record<string, string> = { en: 'en-SG', hi: 'hi-IN', bn: 'bn-IN', 
 export default function CommunitiesHome() {
   const w = usePageWords(page);
   const go = useNavigate();
-  const { user } = useStore(sessionStore);
+  const { user, status } = useStore(sessionStore);
   const { code } = useStore(languageStore);
   const [mine, setMine] = useState<MyCommunity[] | null>(null);
   const [next, setNext] = useState<Upcoming[]>([]);
+  const [failed, setFailed] = useState(false);
   const locale = LOCALE[code] ?? 'en-SG';
   const name = user?.display_name ?? '';
 
   const load = useCallback(async () => {
-    const [m, u] = await Promise.all([getMyCommunities().catch(() => [] as MyCommunity[]), getUpcoming(20).catch(() => [] as Upcoming[])]);
-    setMine(m);
-    setNext(u);
+    try {
+      const [m, u] = await Promise.all([getMyCommunities(), getUpcoming(20)]);
+      setMine(m);
+      setNext(u);
+      setFailed(false);
+    } catch {
+      setFailed(true); // a failed request is not the same as "no groups yet"
+    }
   }, []);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { if (status === 'in') void load(); }, [status, load]);
 
   const hour = new Date().getHours();
   const greeting = w(hour < 12 ? 'c_morning' : hour < 18 ? 'c_afternoon' : 'c_evening', { name });
@@ -80,6 +86,14 @@ export default function CommunitiesHome() {
       ) : null}
 
       <Text style={{ fontSize: 24, fontWeight: '800', color: colors.ink, marginBottom: space.sm }}>{w('c_title')}</Text>
+      {failed ? (
+        <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.lg, marginBottom: space.md }}>
+          <Text style={[type.body, { color: colors.danger }]}>{w('c_failed')}</Text>
+          <Pressable onPress={() => void load()} accessibilityRole="button" style={{ alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginTop: space.sm, paddingHorizontal: 18, borderRadius: radius.pill, backgroundColor: colors.accent }}>
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.card }}>{w('c_retry')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
       {mine && !mine.length ? (
         <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.lg, marginBottom: space.md }}>
           <Text style={[type.body, { color: colors.muted }]}>{w('c_none')}</Text>

@@ -29,7 +29,8 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 export default function WisdomHome() {
   const w = usePageWords(page);
   const go = useNavigate();
-  const { user } = useStore(sessionStore);
+  const { user, status } = useStore(sessionStore);
+  const [failed, setFailed] = useState(false);
   const name = user?.display_name ?? '';
   const [tab, setTab] = useState<Tab | null>(null);
   const [conns, setConns] = useState<Connection[] | null>(null);
@@ -40,13 +41,18 @@ export default function WisdomHome() {
   const [busy, setBusy] = useState<string | null>(null);
 
   const load = useCallback(async () => {
-    const [c, o, r] = await Promise.all([getConnections().catch(() => []), getMyOffers().catch(() => []), getMyRequests().catch(() => [])]);
-    setConns(c);
-    setMine(o);
-    setAsks(r.filter((x) => x.kind === 'learn'));
-    setTab((t) => t ?? (c.some((x) => x.i_am === 'mentor' && x.status === 'pending') || o.length ? 'teach' : 'learn'));
+    try {
+      const [c, o, r] = await Promise.all([getConnections(), getMyOffers(), getMyRequests()]);
+      setConns(c);
+      setMine(o);
+      setAsks(r.filter((x) => x.kind === 'learn'));
+      setFailed(false);
+      setTab((t) => t ?? (c.some((x) => x.i_am === 'mentor' && x.status === 'pending') || o.length ? 'teach' : 'learn'));
+    } catch {
+      setFailed(true); // a failed request is not the same as "no invitations yet"
+    }
   }, []);
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => { if (status === 'in') void load(); }, [status, load]);
   useEffect(() => {
     if (tab !== 'learn') return;
     let live = true;
@@ -93,6 +99,14 @@ export default function WisdomHome() {
 
   return (
     <Screen title="" hero={<Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.navy }}>{w('h_title')}</Text>}>
+      {failed ? (
+        <View style={[card, { marginBottom: space.md }]}>
+          <Text style={[type.body, { color: colors.danger }]}>{w('h_failed')}</Text>
+          <Pressable onPress={() => void load()} accessibilityRole="button" style={{ alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginTop: space.sm, paddingHorizontal: 18, borderRadius: radius.pill, backgroundColor: BLUE }}>
+            <Text style={{ fontSize: 16, fontWeight: '800', color: colors.card }}>{w('h_retry')}</Text>
+          </Pressable>
+        </View>
+      ) : null}
       <View style={{ flexDirection: 'row', marginTop: space.sm, marginBottom: space.md, borderRadius: radius.pill, overflow: 'hidden', borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
         {(['learn', 'teach'] as Tab[]).map((t) => {
           const on = tab === t;

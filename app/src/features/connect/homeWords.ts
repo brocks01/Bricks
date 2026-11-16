@@ -20,5 +20,7 @@ export const HOME_C: WordTable = {
   c_find: ['Find groups near you', 'अपने पास के समूह खोजें', 'আপনার কাছের গ্রুপ খুঁজুন', 'உங்கள் அருகிலுள்ள குழுக்களைக் கண்டறியுங்கள்', '查找附近的小组', 'Cari kumpulan berhampiran'],
   c_none: ['You have not joined a group yet. Groups near you are waiting.', 'आप अभी किसी समूह से नहीं जुड़े हैं। आपके पास के समूह इंतज़ार कर रहे हैं।', 'আপনি এখনও কোনো গ্রুপে যোগ দেননি। আপনার কাছের গ্রুপগুলি অপেক্ষা করছে।', 'நீங்கள் இன்னும் எந்தக் குழுவிலும் சேரவில்லை. உங்கள் அருகிலுள்ள குழுக்கள் காத்திருக்கின்றன.', '你还没有加入任何小组，附近的小组在等你。', 'Anda belum menyertai mana-mana kumpulan. Kumpulan berhampiran sedang menunggu.'],
   c_next_none: ['Nothing planned yet', 'अभी कुछ तय नहीं', 'এখনও কিছু ঠিক হয়নি', 'இன்னும் எதுவும் திட்டமிடப்படவில்லை', '暂时没有安排', 'Belum ada rancangan'],
+  c_failed: ['Could not load your groups. Check your connection.', 'आपके समूह लोड नहीं हो सके। कनेक्शन जाँचें।', 'আপনার গ্রুপ লোড করা যায়নি। সংযোগ পরীক্ষা করুন।', 'உங்கள் குழுக்களை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்க்கவும்.', '无法加载你的小组，请检查网络。', 'Tidak dapat memuat kumpulan anda. Semak sambungan.'],
+  c_retry: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயற்சிக்கவும்', '重试', 'Cuba lagi'],
   c_more: ['More ways to find groups', 'समूह खोजने के और तरीके', 'গ্রুপ খোঁজার আরও উপায়', 'குழுக்களைக் கண்டறிய மேலும் வழிகள்', '更多查找小组的方式', 'Lebih banyak cara mencari kumpulan'],
 };
