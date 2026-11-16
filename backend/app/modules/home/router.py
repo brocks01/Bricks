@@ -8,6 +8,7 @@ from ..communities import rules
 from ..health import service as health
 from ..identity.router import current_user_id
 from ..market import service as market
+from . import service
 
 router = APIRouter(prefix="/v1/home")
 
@@ -20,3 +21,9 @@ def summary(user_id: str = Depends(current_user_id), conn: Connection = Depends(
         "market": market.summary(conn, user_id),
         "help_alerts": len(health.help_inbox(conn, user_id)),  # open "I need help" alerts from my family
     }
+
+
+@router.get("/upcoming")
+def upcoming(limit: int = 50, days: int = 30, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The person's upcoming events from Communities, the Marketplace and Wisdom, soonest first: from a few hours ago to `days` ahead (30, at most 92)."""
+    return service.upcoming(conn, user_id, limit, days)

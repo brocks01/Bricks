@@ -79,6 +79,86 @@ NOT tested, and the next step. Then two lists, kept up to date:
 ### Next step
 Restart the API, look at the tree page with Uncle Tan's real data, open the pull request, merge. Then B2 (needs A1 merged).
 
+## 17 Nov 2026 — B2: Home and the Marketplace
+**Who:** Sarath, with Claude Code (Claude Opus 5.5). **Branch:** `revamp-iterations-v2` (no branch per iteration), three commits (one per part), not pushed.
+Before starting: `git pull` (nothing new), then A1 (`origin/a/communities-maps`, 9 commits) was merged into `revamp-iterations-v2` with no
+conflicts, because B2 needs `geo` and `MapCard`. A2 is not done, so Home has no Wisdom sessions yet (see "Not done").
+
+### What was done
+**Part 1, Home: your upcoming events**
+- `GET /v1/home/upcoming?days=&limit=` (`modules/home/service.py`): community gatherings of the person's active communities, market events they
+  are going to, and Wisdom sessions from `wisdom.service.upcoming_sessions` **when that function exists** (it does not yet: A2). From 3 hours
+  ago to `days` ahead (30 by default, capped at 92), soonest first. Each item: `source, id, title, starts_at, ends_at, place, from_name,
+  image_url, going, open_key, open_params`, plus `total`. It reads gatherings and market events with its own read-only SQL, using the same rules
+  as those modules (active membership, community active and not hidden; a scheduled event the person is going to). It writes nothing.
+- Home (`features/home/screens/HomeIndex.tsx`) is now: a greeting, **Your upcoming events** (three, then "Show all (n)" / "Show fewer" in place),
+  **Your calendar** (Part 2). The countdown, the day's rows, the check-in, the tree card, the Today gathering card and the links are gone
+  (`ActivityCard.tsx`, `MonthPlanner.tsx`, `day.ts` stay, unlinked). The once-a-minute heartbeat and the reminder pop-ups still run.
+  **Kept on purpose:** the "{n} in your family asked for help" banner, because it is a safety alert and has no other place on the first screen.
+- `EventCard.tsx`: the time words and the source tag (Community, Market, Wisdom: each its own icon, word and colour) share the top line, so the
+  title has its own full line below and is never covered; the picture (84 by 84) on the right only when the event has one.
+- `when.ts` (Today, Tomorrow, Yesterday, a weekday within the week, a short date; six languages) and `when.check.ts` (19 checks).
+- Empty state with the two buttons; skeletons while loading; "Could not load, try again" with a retry.
+
+**Part 2, Home: your calendar**
+- `month.ts` (pure: Monday-first cells, flags, trophies, one list per day with each event once) and `month.check.ts` (25 checks).
+- `HomeCalendar.tsx`: month and year with two 56-wide arrow buttons, weekday names, day cells 60 high with a ring on today, a flag (soft fill)
+  on days from today with something coming up, a trophy on days up to today the person showed up, and the legend under the grid. Tapping a
+  day opens a centred pop-up (React Native `Modal`; the device back button and a tap outside close it) with each event's title, time, place,
+  source tag and "You are going" or "You were there", and one big Close. Tapping an event opens it.
+- Data: `/v1/home/upcoming?days=92`, the leaves from `/v1/nodes/wisdom` (paged back as far as the shown month needs), and the person's own
+  calendar occurrences of kind **appointment** and **event** only (daily medicine reminders would put a flag on every day; occurrences of
+  community gatherings are left out because the upcoming list has them). The same event from two places is one item.
+- To tell a leaf and an upcoming event apart, `/v1/nodes/wisdom` now also returns each leaf's `ref_id` (B's own endpoint; additive).
+- A day that has a trophy and something still coming up later shows the trophy (the pop-up shows both).
+
+**Part 3, the Marketplace**
+- Migration `0062`: `market_events.interests` (only the eight keys, checked) and `market_event_attendance`.
+- `modules/market/attendance.py`: `recommended`, `mark` / `unmark`, `mine`, `event_summary`, `summary`, `clean_interests`; routes in
+  `events_router.py` exactly as the iteration file names them; `q` on `list_events`; `interests` on every event card and on create
+  (admins and hosts) and edit (hosts); `attended` on `GET /v1/market/events/{id}`. Counts only in both summaries.
+- `test_market_attendance.py`: 7 tests (not going, before the start and after 30 days refused; change and undo; the leaf follows the answer;
+  my market days; summaries for admins and the event's own host only, no names; search; ranking by interests, distance, the area fallback and
+  soon, going ones left out; the intent filter; only the eight interests). Distances in the test come from places written into `geo_places`.
+- The tab (`MarketHome.tsx`, rewritten): the search bar (56 high, clear button, 0.4 s pause); **Your market days** with the status pill
+  (Going, Did you go?, You went, You didn't go) and, on "Did you go?", the two equal buttons side by side (filled green tick "I went", outlined
+  cross "I didn't go") — after a tap the pill changes, a Change link appears, the toast says "Thank you, noted." and `refreshWisdom()` runs;
+  **Recommended for you** with the intent chips, grouped under date headings, each row with the host, time, venue, distance and one reason chip.
+  The "My host" row stays for host members. Rows waiting for "Did you go?" come first, then the coming ones, then the answered ones.
+- Event page (`MarketDay.tsx`): `MapCard` with the address (or venue and area) and, once the day has started and the person was going, the
+  same pill and buttons. Host form (`HostHome.tsx`): eight interest chips.
+- Words: `features/home/homeWords.ts`, `features/home/when.ts`, `features/market/revampWords.ts` (also used by the host form), six languages.
+- Demo (`showcase.py`): `python backend/run.py showcase uncle.tan@demo.wisdom.test --market` makes or moves seven market events in real
+  Singapore venues (Our Tampines Hub as their host): one this week he is going to, four to recommend, one past day answered "I went" (a leaf and a
+  trophy), one past day waiting for his answer. The dates move with today, so it is safe to run every day. Run twice locally: the same seven events.
+
+### What was tested and how
+- Backend: `test_health_home.py` (3 new tests), `test_nodes.py`, `test_market_attendance.py` pass. Whole suite: **431 passed, 16 failed**; the 16
+  are the same tests that fail on `main` (A's A1 log lists the same set: checkins, wisdom conversation, hosts milestones, tunnels, recurrence,
+  safety agent, belonging nudge).
+- App: `tsc` clean; `when.check.ts`, `month.check.ts`, `wisdomTree.check.ts`, `day.check.ts` pass; `selftest.ts` only `Singpass is person-only`
+  fails (A's, as before); `expo lint` shows 6 problems, all in A's files (`connect/pages/index/Screen.tsx`, `wisdom/screens/*`). The old lint
+  errors in `MarketHome.tsx` are gone with the rewrite.
+- In the browser (Edge through Playwright, 390 by 844, signed in as Uncle Tan): Home with five events (tags, the picture on one card only,
+  "Show all (5)" and "Show fewer"), the calendar (trophy days, flag days, a day pop-up and Close), the Marketplace (Did you go?, Going, You went,
+  Change, "I went" with the toast, search for "tai chi", a search with no match) and the event page with the map card and the answer.
+  **The running API on port 8800 does not have the new routes yet** (it needs a restart, which the house rules leave to the owner), so the test
+  browser answered them: for the Marketplace with **Uncle Tan's real responses computed by the new backend code from the local database**, for
+  Home with a stand-in list of five events.
+
+### NOT done or NOT tested
+- **Wisdom sessions on Home**: waiting for A2's `wisdom.service.upcoming_sessions`; Home picks them up by itself once it exists (it uses the
+  session's own `open_key` and `open_params` when A2 returns them, otherwise `wisdom.index`).
+- Not tested: the real API in a browser (restart needed), a real Google Maps key (without one the map picture hides and the address and the
+  button show), a real phone, the five other languages on screen, the largest text size, a screen reader, reduced motion.
+- The interests of a **repeating** market day are kept only on the days made at creation (`modules/recurrence.py` is shared and was not changed).
+- On the event page "Not going" still shows after the day has started.
+- No pull request, nothing pushed.
+
+### Next step
+Restart the API, run `python backend/run.py showcase uncle.tan@demo.wisdom.test --market`, look at Home and the Marketplace as Uncle Tan, then push.
+A3 (Person A) adds the Wisdom items on Home if A2 does not provide `upcoming_sessions` in the contract's shape.
+
 ## Requests for the other person
 - **A (A2):** switch A's sub-screens from `<Screen … back>` to `BackScreen` from `components/BackButton.tsx` (same `title` and `subtitle`
   props), or put `<BackButton />` beside your own layout and leave `BACK_SPACE` free at the top.
@@ -88,8 +168,15 @@ Restart the API, look at the tree page with Uncle Tan's real data, open the pull
   touching your file; once Wisdom is 3, B sets the Marketplace to 2.
 - **A:** `selftest.ts` check `Singpass is person-only` fails on `main` (the `singpass` element of `auth.signIn` is not `agent: 'human'`).
 - **A (A3):** `AuthGate` should land on `home.index` (contract point 8); today `firstTab` still prefers Wisdom.
+- **A (A2):** `wisdom.service.upcoming_sessions(conn, user_id, until)` as in contract point 5. If each row also carries `open_key` and
+  `open_params` (the session page), Home opens it there; otherwise Home opens `wisdom.index`.
+- **A (A2):** after "I'm here" on a gathering, call `refreshWisdom()` so the header tree and Home's calendar trophy update at once.
 
 ## Later
 - Agent skill: "how many leaves do I have" and "what did I show up to" from `/v1/nodes/wisdom` (skills are frozen for the revamp).
 - The header title is centred on the bar; with a much longer app name it would need to shrink.
-- The 16 failing backend tests and the 11 lint problems above are older than the revamp and belong to other areas.
+- The 16 failing backend tests and the lint problems in A's files are older than the revamp and belong to other areas.
+- Agent skills for the Marketplace answer ("did I go?", "I went to …") and for "what is on Thursday" (skills are frozen; the app pages already
+  publish them, so the in-app agent can do both today).
+- `modules/recurrence.py`: carry `interests` onto repeating market days made later.
+- Hide "Not going" on a market day page once the day has started.

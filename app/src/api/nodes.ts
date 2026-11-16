@@ -35,7 +35,7 @@ export interface Habit { nid: string; title: string; kind: 'daily' | 'weekly'; s
 export const getTree = () => api<Tree>('GET', '/v1/nodes/tree');
 
 /** One event the person showed up to: the leaf it grew on their Tree of Wisdom. */
-export interface WisdomEvent { id: string; title: string; at: string; source: 'community' | 'market' | 'wisdom'; source_name: string | null }
+export interface WisdomEvent { id: string; title: string; at: string; source: 'community' | 'market' | 'wisdom'; source_name: string | null; ref_id: string } // ref_id: the gathering, market event or session it came from
 /** The Tree of Wisdom: how many leaves (one per event shown up to) and a page of those events, newest first. `next_before` asks for the next page. */
 export interface Wisdom { leaves: number; events: WisdomEvent[]; next_before: string | null }
 export const getWisdom = (limit = 5, before?: string) => api<Wisdom>('GET', `/v1/nodes/wisdom?limit=${limit}${before ? `&before=${encodeURIComponent(before)}` : ''}`);

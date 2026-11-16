@@ -5,6 +5,7 @@ seed_demo.py); nothing is a placeholder. Safe to run again: it checks before it 
 
   python backend/run.py showcase you@example.com          # fill it
   python backend/run.py showcase you@example.com --undo   # take this account's showcase history out again (the demo communities stay)
+  python backend/run.py showcase uncle.tan@demo.wisdom.test --market   # only the market days (safe to run every day: the dates move with today)
 """
 import sys
 from datetime import date, datetime, timedelta, timezone
@@ -176,6 +177,46 @@ def personal(conn, me: str, email: str) -> None:
     print(f"showcase: {email} now has a month of history (tree, habits, goal, aspirations, calendar, health card, a service)")
 
 
+# Market events in real Singapore venues for the Marketplace and Home: one this week he is going to, a few to recommend, one past day he
+# answered "I went" (a leaf and a trophy day) and one past day still waiting for his answer, so every state shows. Dates move with today.
+MARKET_HOST = ("Our Tampines Hub", "community_centre", "Tampines", "1 Tampines Walk, Singapore 528523")
+MARKET_DAYS = [  # title, venue, area, address, days from today, local hour, kind, intents, interests, his part: going / went / waiting / None
+    ("Tampines Makers' Market Day", "Our Tampines Hub", "Tampines", "1 Tampines Walk, Singapore 528523", 3, 9, "market_day", ["earn", "enjoy"], ["cooking"], "going"),
+    ("Tai Chi by the Lake", "Tampines Eco Green", "Tampines", "Tampines Avenue 12, Singapore 529140", 5, 7, "activity", ["enjoy"], ["taichi", "walking"], None),
+    ("Getai songs of the sixties", "Bedok Community Centre", "Bedok", "850 New Upper Changi Road, Singapore 467352", 9, 15, "show", ["enjoy"], ["music"], None),
+    ("Kampung cooking demonstration", "Kampung Admiralty", "Woodlands", "676 Woodlands Drive 71, Singapore 730676", 12, 10, "activity", ["contribute", "enjoy"], ["cooking"], None),
+    ("Chess under the trees", "Toa Payoh Town Park", "Toa Payoh", "Lorong 6 Toa Payoh, Singapore 319394", 15, 16, "activity", ["enjoy"], ["chess"], None),
+    ("Bedok Mall Craft Market", "Bedok Mall", "Bedok", "311 New Upper Changi Road, Singapore 467360", -6, 10, "market_day", ["earn", "enjoy"], ["cooking"], "went"),
+    ("Changi Village Heritage Fair", "Changi Village Hawker Centre", "Changi", "2 Changi Village Road, Singapore 500002", -2, 10, "market_day", ["enjoy"], ["music"], "waiting"),
+]
+
+
+def market(conn, me: str) -> None:
+    off = conn.execute(text("select coalesce(tz_offset_min, 480) from users where id = :u"), {"u": me}).scalar_one()
+    today = (datetime.now(UTC) + timedelta(minutes=off)).date()
+    name, kind, area, address = MARKET_HOST
+    hid = conn.execute(text("select id from hosts where name = :n"), {"n": name}).scalar() or conn.execute(
+        text("insert into hosts (name, kind, area_name, address) values (:n, :k, :a, :ad) returning id"), {"n": name, "k": kind, "a": area, "ad": address}).scalar_one()
+    for title, venue, ar, addr, days, hour, k, intents, interests, part in MARKET_DAYS:
+        starts = datetime.combine(today + timedelta(days=days), datetime.min.time(), tzinfo=UTC) + timedelta(hours=hour) - timedelta(minutes=off)
+        vals = {"t": title, "v": venue, "ar": ar, "ad": addr, "s": starts, "e": starts + timedelta(hours=4), "k": k, "i": intents, "it": interests, "h": hid if venue == name else None}
+        eid = conn.execute(text("select id from market_events where title = :t and venue_name = :v"), vals).scalar()
+        if eid:
+            conn.execute(text("update market_events set starts_at = :s, ends_at = :e, kind = :k, intents = :i, interests = :it, area_name = :ar, address = :ad, host_id = :h, status = 'scheduled' where id = :id"), {**vals, "id": eid})
+        else:
+            eid = conn.execute(text("insert into market_events (title, venue_name, venue_kind, area_name, address, starts_at, ends_at, kind, intents, interests, host_id, stalls_total) "
+                                    "values (:t, :v, 'community_centre', :ar, :ad, :s, :e, :k, :i, :it, :h, 12) returning id"), vals).scalar_one()
+        if part:
+            conn.execute(text("insert into market_event_goers (event_id, user_id) values (:e, :u) on conflict do nothing"), {"e": eid, "u": me})
+        if part == "went":
+            conn.execute(text("insert into market_event_attendance (event_id, user_id, attended, source) values (:e, :u, true, 'app') on conflict (event_id, user_id) do update set attended = true"), {"e": eid, "u": me})
+            feed.showed_up(conn, me, "market", str(eid), title, starts, name if venue == name else None)
+        elif part == "waiting":
+            conn.execute(text("delete from market_event_attendance where event_id = :e and user_id = :u"), {"e": eid, "u": me})
+            feed.showed_up(conn, me, "market", str(eid), title, starts, None, on=False)
+    print("showcase: market days ready (one this week, four to recommend, one answered, one waiting for an answer)")
+
+
 def undo(conn, me: str) -> None:
     """Takes the account's showcase history out: its tree, repeats, health history, calendar, aspirations and the service. The demo communities stay."""
     service.erase(conn, me)
@@ -189,13 +230,16 @@ def undo(conn, me: str) -> None:
 def main(argv: list[str]) -> None:
     emails = [a for a in argv if "@" in a]
     if not emails:
-        raise SystemExit("usage: python backend/run.py showcase you@example.com [--undo]")
+        raise SystemExit("usage: python backend/run.py showcase you@example.com [--undo | --market]")
     with engine().begin() as conn:
         u = conn.execute(text("select id from users where email = :e"), {"e": emails[0].lower()}).first()
         if u is None:
             raise SystemExit(f"no account for {emails[0]}: sign in once first")
         if "--undo" in argv:
             undo(conn, str(u.id))
+            return
+        market(conn, str(u.id))
+        if "--market" in argv:  # only the market days (for Uncle Tan, whose other data is kept in step by the server itself)
             return
         communities(conn, str(u.id))
         personal(conn, str(u.id), emails[0])

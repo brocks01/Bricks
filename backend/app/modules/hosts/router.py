@@ -44,6 +44,7 @@ class EventPatch(BaseModel):
     cover_url: str | None = Field(default=None, max_length=300)
     kind: str | None = None  # market_day, volunteer, gig, show or activity
     intents: list[str] | None = None  # what a person can do there: earn, contribute, volunteer, enjoy
+    interests: list[str] | None = None  # what it is about: walking, taichi, cooking, chess, music, gardening, teaching, tech
     external_url: str | None = Field(default=None, max_length=300)
 
 
