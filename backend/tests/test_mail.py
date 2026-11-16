@@ -42,7 +42,7 @@ def test_brevo_send_uses_the_first_active_sender_when_email_from_is_not_set(monk
     monkeypatch.setattr(mail.httpx, "post", fake.post)
     assert mail.send_login_code("asha@example.com", "654321", 10) is True
     m = fake.sent[0]
-    assert m["sender"] == {"email": "hello@bricks.test", "name": "Wisdom"} and m["to"] == [{"email": "asha@example.com"}] and "654321" in m["htmlContent"]
+    assert m["sender"] == {"email": "hello@bricks.test", "name": "Interchange"} and m["to"] == [{"email": "asha@example.com"}] and "654321" in m["htmlContent"]
 
 
 def test_email_from_wins_and_needs_no_lookup(monkeypatch):
@@ -107,7 +107,7 @@ def test_resend_send_over_rest_when_only_a_resend_key_is_set(monkeypatch):
     assert mail.configured() and mail.send_login_code("asha@example.com", "246810", 10) is True
     url, headers, body = sent[0]
     assert url == "https://api.resend.com/emails" and headers["Authorization"] == "Bearer re_test"
-    assert body["from"] == "Wisdom <hello@bricks.test>" and body["to"] == ["asha@example.com"] and "246810" in body["html"]
+    assert body["from"] == "Interchange <hello@bricks.test>" and body["to"] == ["asha@example.com"] and "246810" in body["html"]
 
 
 def test_resend_needs_a_sender_and_names_its_refusals(monkeypatch):

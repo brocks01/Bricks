@@ -22,7 +22,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     void bootSession();
   }, []);
 
-  // The server says who this person is to Wisdom (roles, which tabs to show, whether their getting-to-know-you is finished).
+  // The server says who this person is to Interchange (roles, which tabs to show, whether their getting-to-know-you is finished).
   useEffect(() => {
     if (status === 'in' && complete) void loadProfile();
     if (status === 'out') clearProfile();

@@ -3,7 +3,7 @@ import { type WordTable } from '../../i18n/words';
 // Order of the six: English, Hindi, Bengali, Tamil, Chinese, Malay. First drafts; native-speaker review needed for hi, bn, ta, zh, ms.
 // The questions themselves come from the server (the same ones a phone call or a chat asks); these are the words around them.
 export const START: WordTable = {
-  heading: ['Wisdom', 'Wisdom', 'Wisdom', 'Wisdom', 'Wisdom', 'Wisdom'],
+  heading: ['Interchange', 'Interchange', 'Interchange', 'Interchange', 'Interchange', 'Interchange'],
 };
 
 export const ONBOARDING: WordTable = {
@@ -17,10 +17,10 @@ export const ONBOARDING: WordTable = {
   step: ['Part {n} of {total}', 'भाग {n} / {total}', 'অংশ {n} / {total}', 'பகுதி {n} / {total}', '第 {n} 部分，共 {total} 部分', 'Bahagian {n} daripada {total}'],
   needed: ['This part is needed', 'यह भाग ज़रूरी है', 'এই অংশটি প্রয়োজন', 'இந்தப் பகுதி தேவை', '此部分必填', 'Bahagian ini diperlukan'],
   optional: ['This part is optional', 'यह भाग वैकल्पिक है', 'এই অংশটি ঐচ্ছিক', 'இந்தப் பகுதி விருப்பமானது', '此部分可选', 'Bahagian ini pilihan'],
-  intro: ['A few short questions so Wisdom can show you the right things. You can also do this by phone or chat.', 'कुछ छोटे सवाल, ताकि Wisdom आपको सही चीज़ें दिखा सके। आप यह फ़ोन या चैट पर भी कर सकते हैं।', 'কয়েকটি ছোট প্রশ্ন, যাতে Wisdom আপনাকে সঠিক জিনিস দেখাতে পারে। আপনি ফোনে বা চ্যাটেও এটি করতে পারেন।', 'Wisdom உங்களுக்குச் சரியானவற்றைக் காட்ட சில சிறு கேள்விகள். இதைத் தொலைபேசியிலும் அரட்டையிலும் செய்யலாம்.', '几个简短的问题，让 Wisdom 为你展示合适的内容。你也可以通过电话或聊天完成。', 'Beberapa soalan ringkas supaya Wisdom dapat menunjukkan perkara yang sesuai. Anda juga boleh melakukannya melalui telefon atau sembang.'],
+  intro: ['A few short questions so Interchange can show you the right things. You can also do this by phone or chat.', 'कुछ छोटे सवाल, ताकि Interchange आपको सही चीज़ें दिखा सके। आप यह फ़ोन या चैट पर भी कर सकते हैं।', 'কয়েকটি ছোট প্রশ্ন, যাতে Interchange আপনাকে সঠিক জিনিস দেখাতে পারে। আপনি ফোনে বা চ্যাটেও এটি করতে পারেন।', 'Interchange உங்களுக்குச் சரியானவற்றைக் காட்ட சில சிறு கேள்விகள். இதைத் தொலைபேசியிலும் அரட்டையிலும் செய்யலாம்.', '几个简短的问题，让 Interchange 为你展示合适的内容。你也可以通过电话或聊天完成。', 'Beberapa soalan ringkas supaya Interchange dapat menunjukkan perkara yang sesuai. Anda juga boleh melakukannya melalui telefon atau sembang.'],
   loading: ['One moment…', 'एक पल…', 'এক মুহূর্ত…', 'ஒரு நிமிடம்…', '请稍候…', 'Sebentar…'],
   failed: ['That did not save. Please check the answers and try again.', 'यह सहेजा नहीं गया। कृपया जवाब जाँचें और फिर कोशिश करें।', 'এটি সংরক্ষিত হয়নি। উত্তরগুলি দেখে আবার চেষ্টা করুন।', 'இது சேமிக்கப்படவில்லை. பதில்களைச் சரிபார்த்து மீண்டும் முயலவும்.', '未能保存。请检查答案后重试。', 'Tidak berjaya disimpan. Sila semak jawapan dan cuba lagi.'],
-  allDone: ['All done. Welcome to Wisdom.', 'सब हो गया। Wisdom में आपका स्वागत है।', 'সব হয়ে গেছে। Wisdom-এ স্বাগতম।', 'முடிந்தது. Wisdom-க்கு வரவேற்கிறோம்.', '全部完成。欢迎来到 Wisdom。', 'Selesai. Selamat datang ke Wisdom.'],
+  allDone: ['All done. Welcome to Interchange.', 'सब हो गया। Interchange में आपका स्वागत है।', 'সব হয়ে গেছে। Interchange-এ স্বাগতম।', 'முடிந்தது. Interchange-க்கு வரவேற்கிறோம்.', '全部完成。欢迎来到 Interchange。', 'Selesai. Selamat datang ke Interchange.'],
   interests_title: ['What you enjoy', 'जो आपको पसंद है', 'আপনার পছন্দ', 'நீங்கள் விரும்புவது', '你喜欢什么', 'Apa yang anda suka'],
   interest_walking: ['Walking', 'सैर', 'হাঁটা', 'நடை', '散步', 'Berjalan'],
   interest_taichi: ['Tai chi', 'ताई ची', 'তাই চি', 'தாய்ச்சி', '太极', 'Tai chi'],
@@ -31,7 +31,7 @@ export const ONBOARDING: WordTable = {
   interest_teaching: ['Teaching', 'पढ़ाना', 'শেখানো', 'கற்பித்தல்', '教学', 'Mengajar'],
   interest_tech: ['Phones and computers', 'फ़ोन और कंप्यूटर', 'ফোন ও কম্পিউটার', 'தொலைபேசி மற்றும் கணினி', '手机与电脑', 'Telefon dan komputer'],
   belonging_title: ['Where you are from', 'आप कहाँ से हैं', 'আপনি কোথা থেকে', 'நீங்கள் எங்கிருந்து', '你来自哪里', 'Anda dari mana'],
-  who_intro: ['Who is setting up Wisdom?', 'Wisdom कौन सेट अप कर रहा है?', 'কে Wisdom সেট আপ করছেন?', 'யார் Wisdom-ஐ அமைக்கிறார்?', '谁在设置 Wisdom？', 'Siapa yang menyediakan Wisdom?'],
+  who_intro: ['Who is setting up Interchange?', 'Interchange कौन सेट अप कर रहा है?', 'কে Interchange সেট আপ করছেন?', 'யார் Interchange-ஐ அமைக்கிறார்?', '谁在设置 Interchange？', 'Siapa yang menyediakan Interchange?'],
   who_myself: ['Myself', 'मैं खुद', 'আমি নিজে', 'நானே', '我自己', 'Saya sendiri'],
   who_myself_line: ['I am setting it up for me.', 'मैं अपने लिए सेट अप कर रहा हूँ।', 'আমি নিজের জন্য সেট আপ করছি।', 'நான் எனக்காக அமைக்கிறேன்.', '我为自己设置。', 'Saya sedang sediakannya untuk diri sendiri.'],
   who_family: ['My family', 'मेरा परिवार', 'আমার পরিবার', 'என் குடும்பம்', '我的家人', 'Keluarga saya'],
@@ -47,7 +47,7 @@ export const ONBOARDING: WordTable = {
   voice_next: ['Next', 'आगे', 'এগিয়ে', 'அடுத்து', '下一步', 'Seterusnya'],
   voice_skip: ['Skip for now', 'अभी छोड़ें', 'এখন বাদ দিন', 'இப்போது தவிர்', '暂时跳过', 'Langkau buat masa ini'],
   voice_saving: ['Saving…', 'सहेजा जा रहा है…', 'সংরক্ষণ হচ্ছে…', 'சேமிக்கிறது…', '正在保存…', 'Menyimpan…'],
-  voice_permission: ['Wisdom could not use the microphone. You can still continue.', 'Wisdom माइक्रोफ़ोन का उपयोग नहीं कर सका। आप फिर भी आगे बढ़ सकते हैं।', 'Wisdom মাইক্রোফোন ব্যবহার করতে পারেনি। তবুও আপনি এগিয়ে যেতে পারেন।', 'Wisdom மைக்ரோஃபோனைப் பயன்படுத்த முடியவில்லை. நீங்கள் தொடரலாம்.', 'Wisdom 无法使用麦克风。你仍可继续。', 'Wisdom tidak dapat menggunakan mikrofon. Anda masih boleh teruskan.'],
+  voice_permission: ['Interchange could not use the microphone. You can still continue.', 'Interchange माइक्रोफ़ोन का उपयोग नहीं कर सका। आप फिर भी आगे बढ़ सकते हैं।', 'Interchange মাইক্রোফোন ব্যবহার করতে পারেনি। তবুও আপনি এগিয়ে যেতে পারেন।', 'Interchange மைக்ரோஃபோனைப் பயன்படுத்த முடியவில்லை. நீங்கள் தொடரலாம்.', 'Interchange 无法使用麦克风。你仍可继续。', 'Interchange tidak dapat menggunakan mikrofon. Anda masih boleh teruskan.'],
   voice_not_saved: ['It could not be saved just now. You can still continue.', 'अभी यह सहेजा नहीं जा सका। आप फिर भी आगे बढ़ सकते हैं।', 'এখন এটি সংরক্ষণ করা যায়নি। তবুও আপনি এগিয়ে যেতে পারেন।', 'இப்போது இதைச் சேமிக்க முடியவில்லை. நீங்கள் தொடரலாம்.', '暂时无法保存。你仍可继续。', 'Tidak dapat disimpan sekarang. Anda masih boleh teruskan.'],
   gender_man: ['Man', 'पुरुष', 'পুরুষ', 'ஆண்', '男性', 'Lelaki'],
   gender_woman: ['Woman', 'महिला', 'নারী', 'பெண்', '女性', 'Wanita'],

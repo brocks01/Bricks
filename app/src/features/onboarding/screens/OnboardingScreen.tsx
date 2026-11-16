@@ -1,5 +1,5 @@
 // Onboarding after sign-in: only the reference screens (name, where, enjoy, voice, reminders, welcome) in Wizard.tsx. There is no long form any more;
-// whatever else Wisdom needs to know is asked later, by the agent or in the profile.
+// whatever else Interchange needs to know is asked later, by the agent or in the profile.
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { exploreCommunities } from '../../../api/communityRules';

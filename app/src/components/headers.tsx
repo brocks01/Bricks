@@ -8,13 +8,13 @@ import { sessionStore } from '../session/store';
 import { colors, space, type } from '../theme/tokens';
 
 /**
- * The Wisdom mark: a green leaf. Rasterised to PNG (`assets/brand/mark.png`) and used at any size, so one file updates every header and the welcome screen together.
+ * The Interchange mark: a green leaf. Rasterised to PNG (`assets/brand/mark.png`) and used at any size, so one file updates every header and the welcome screen together.
  */
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <Image
       source={require('../../assets/brand/mark.png')}
-      accessibilityLabel="Wisdom"
+      accessibilityLabel="Interchange"
       resizeMode="contain"
       style={{ width: size, height: size }}
     />
@@ -49,7 +49,7 @@ export function AppHeader() {
     <View style={{ height: 64, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <Logo size={34} />
-        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Wisdom</Text>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Interchange</Text>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Notifications" onPress={() => go('channels.notices')} hitSlop={8}>

@@ -22,7 +22,7 @@ export const connectIndex = definePage({
     joinOrCreate: { kind: 'action', summary: 'Open the page to join a community with an invite code.' },
     explore: { kind: 'action', summary: 'Open the page that lists every community, to search and join an open one.' },
     limitInfo: { kind: 'text', summary: 'How many of the three community places the person uses.' },
-    askStart: { kind: 'action', summary: 'Open the form to ask the Wisdom team to start a new community.' },
+    askStart: { kind: 'action', summary: 'Open the form to ask the Interchange team to start a new community.' },
     comingUp: { kind: 'text', summary: 'The next few events across all the communities the person belongs to.' },
   },
   strings: mergeStrings(strings, pageWords(R, INDEX_EXTRA_ALIASES)),

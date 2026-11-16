@@ -29,12 +29,12 @@ export const safetyReport = definePage({
   keywords: ['report', 'unsafe', 'unkind', 'spam', 'false', 'flag'],
   elements: {
     heading: { kind: 'text', summary: 'Report something.' },
-    intro: { kind: 'text', summary: 'Every report is read by a person on the Wisdom team; nobody is told who reported.' },
+    intro: { kind: 'text', summary: 'Every report is read by a person on the Interchange team; nobody is told who reported.' },
     kind: { kind: 'choice', type: 'string', options: ['capsule', 'offer', 'request', 'message', 'community', 'event', 'person'], summary: 'What is being reported.' },
     target: { kind: 'field', type: 'string', required: true, summary: 'The id of the thing being reported (filled in when the form is opened from the thing itself).' },
     reason: { kind: 'choice', type: 'string', options: ['unsafe', 'unkind', 'spam', 'false_experience', 'other'], required: true, summary: 'Why it is being reported.' },
     note: { kind: 'field', type: 'string', summary: 'Anything to add, in your own words (optional, up to 500 characters).' },
-    send: { kind: 'action', agent: 'confirm', summary: 'Send the report to the Wisdom team. Needs the person yes.' },
+    send: { kind: 'action', agent: 'confirm', summary: 'Send the report to the Interchange team. Needs the person yes.' },
   },
   strings: pageWords(SAFETY, { heading: 'reportAction', intro: 'reportIntro' }),
 });
@@ -58,7 +58,7 @@ export const safetyAdmin = definePage({
   ...base,
   key: 'safety.admin',
   route: '/safety/admin',
-  summary: 'The Wisdom team’s review of open reports: dismiss it, hide the thing, or suspend the person behind it. Platform admins only; everyone else is refused by the server.',
+  summary: 'The Interchange team’s review of open reports: dismiss it, hide the thing, or suspend the person behind it. Platform admins only; everyone else is refused by the server.',
   keywords: ['admin', 'reports', 'review', 'moderate', 'hide', 'suspend'],
   elements: {
     heading: { kind: 'text', summary: 'Reports to review.' },

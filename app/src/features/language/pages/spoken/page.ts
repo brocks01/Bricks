@@ -10,11 +10,11 @@ export const languageSpoken = definePage({
   key: 'language.spoken',
   module: 'language',
   route: '/settings/spoken',
-  summary: 'The languages the person speaks to Wisdom and the one they prefer to talk in. Saved on the phone before sign-in, and to the account after.',
+  summary: 'The languages the person speaks to Interchange and the one they prefer to talk in. Saved on the phone before sign-in, and to the account after.',
   keywords: ['spoken', 'speak', 'talk', 'languages', 'voice', 'hindi', 'bhojpuri'],
   elements: {
     heading: { kind: 'text' },
-    intro: { kind: 'text', summary: 'One sentence: tell Wisdom which languages you talk in, and it answers only in those.' },
+    intro: { kind: 'text', summary: 'One sentence: tell Interchange which languages you talk in, and it answers only in those.' },
     spoken: { kind: 'field', type: 'string', summary: 'The languages the person speaks, as comma-separated codes (for example en,hi,bho).' },
     save: { kind: 'action', summary: 'Save these languages on this phone, and to the account when signed in.' },
     ...speakElements,

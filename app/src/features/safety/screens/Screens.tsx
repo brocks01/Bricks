@@ -172,7 +172,7 @@ export function SafetyIndexScreen() {
   );
 }
 
-/** The Wisdom team: open reports, and the three actions. Everyone else is refused by the server. */
+/** The Interchange team: open reports, and the three actions. Everyone else is refused by the server. */
 export function AdminScreen() {
   const page = safetyAdmin;
   const w = usePageWords(page);

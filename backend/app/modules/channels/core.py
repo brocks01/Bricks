@@ -15,10 +15,10 @@ from . import agent, guard
 CODE_TTL = timedelta(minutes=15)
 ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  # no 0/O/1/I/L: read aloud or typed by someone who is not used to it
 
-HELP = ("I'm Wisdom. Ask me anything in your own words, for example “what's on today?”, “I walked this morning”, “I'm going to the kopi morning”.\n\n"
+HELP = ("I'm Interchange. Ask me anything in your own words, for example “what's on today?”, “I walked this morning”, “I'm going to the kopi morning”.\n\n"
         "Quick words: /today · /tree · /markets · /help")
 def not_linked(channel: str) -> str:
-    return f"I don't know who you are yet. Open Wisdom, go to Profile → Connect {channel.capitalize()}, and send me the code you see there."
+    return f"I don't know who you are yet. Open Interchange, go to Profile → Connect {channel.capitalize()}, and send me the code you see there."
 
 
 # ---------- linking ----------
@@ -44,7 +44,7 @@ def link(channel: str, external_id: str, code: str) -> str | None:
 
 
 def link_phone(user_id: str, number: str) -> bool:
-    """Ties a phone number to a person so that calling Wisdom from it reaches their account. Only for a number that is proven theirs (they messaged from it)
+    """Ties a phone number to a person so that calling Interchange from it reaches their account. Only for a number that is proven theirs (they messaged from it)
     or one the owner sets by hand. Returns False if it is not a valid international number."""
     from ..voice import logic as L
 
@@ -200,7 +200,7 @@ def handle(channel: str, external_id: str, body: str) -> list[str]:
         return ["Something went wrong on my side. Please try again in a moment."]
 
 
-WELCOME = ("Hello, I'm Wisdom. I'm a friend who can help you stay active and connected, and help you pass on what you know. "
+WELCOME = ("Hello, I'm Interchange. I'm a friend who can help you stay active and connected, and help you pass on what you know. "
            "You can talk to me here any time, in your own words. First, what should I call you?")
 
 
@@ -213,12 +213,12 @@ def _welcome(uid: str, channel: str) -> str:
 
 def _linked_reply(channel: str, external_id: str, code: str) -> str:
     name = link(channel, external_id, code)
-    if name is not None and channel in ("whatsapp", "sms"):  # a message came from this number, so the number is theirs: they may phone Wisdom from it too
+    if name is not None and channel in ("whatsapp", "sms"):  # a message came from this number, so the number is theirs: they may phone Interchange from it too
         uid = who(channel, external_id)
         if uid:
             link_phone(uid, external_id)
     if name is None:
-        return f"That code did not work. It lasts 15 minutes. Open Wisdom → Profile → Connect {channel.capitalize()} for a new one."
+        return f"That code did not work. It lasts 15 minutes. Open Interchange → Profile → Connect {channel.capitalize()} for a new one."
     return f"Connected, {name}! 🎉\n\n{HELP}"
 
 

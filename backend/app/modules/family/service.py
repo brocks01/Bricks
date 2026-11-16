@@ -259,7 +259,7 @@ def leave_or_remove(conn: Connection, family_id: str, actor_id: str, member_id: 
 
 
 def create_assisted(conn: Connection, family_id: str, helper_id: str, fields: dict) -> dict:
-    """A profile for a family member who cannot set Wisdom up themselves. Born restricted: no email, no login,
+    """A profile for a family member who cannot set Interchange up themselves. Born restricted: no email, no login,
     invisible outside this family, unable to invite or create - until they claim it with their own contact."""
     if _require_member(conn, family_id, helper_id) not in ("owner", "helper"):
         raise FamilyError("helper_only", 403)

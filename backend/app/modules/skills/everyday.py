@@ -165,7 +165,7 @@ def suggest_for_me(conn, me, args):
     return {"suggestions": [{"interest": s["interest"], "people_nearby": s["nearby_people"], "groups": s["groups"], "could_start_one": s["start_one"]} for s in r["suggestions"]]}
 
 
-@skill("set_contact_preference", "How to reach me", "Save where the person likes Wisdom to message them first (for a nudge, an introduction or a reminder): telegram, whatsapp, sms or app only. Use it for 'message me on WhatsApp', 'only use the app'.",
+@skill("set_contact_preference", "How to reach me", "Save where the person likes Interchange to message them first (for a nudge, an introduction or a reminder): telegram, whatsapp, sms or app only. Use it for 'message me on WhatsApp', 'only use the app'.",
        {"channel": S("telegram, whatsapp, sms, call or app", enum=["telegram", "whatsapp", "sms", "call", "app"])}, ["channel"])
 def set_contact_preference(conn, me, args):
     from ..onboarding import service as onboarding
@@ -178,7 +178,7 @@ def set_contact_preference(conn, me, args):
     return {"preferred": str(args["channel"]).lower()}
 
 
-@skill("my_notifications", "What did I miss", "What Wisdom told the person while they were away (nudges, someone asking for their guidance, reminders). Reading them marks them as seen. Use it for 'what did I miss', 'any news'.", risk="read")
+@skill("my_notifications", "What did I miss", "What Interchange told the person while they were away (nudges, someone asking for their guidance, reminders). Reading them marks them as seen. Use it for 'what did I miss', 'any news'.", risk="read")
 def my_notifications(conn, me, args):
     from ..channels import outbox
 

@@ -1,4 +1,4 @@
-"""python backend/run.py link-phone you@example.com +6591234567   let this number phone Wisdom and reach this account (owner use: for a number you know is theirs)."""
+"""python backend/run.py link-phone you@example.com +6591234567   let this number phone Interchange and reach this account (owner use: for a number you know is theirs)."""
 import sys
 
 from sqlalchemy import text
@@ -16,7 +16,7 @@ def main(argv: list[str]) -> None:
     if uid is None:
         print("No account with that email.")
     elif core.link_phone(str(uid), argv[1]):
-        print("Linked. That number can now phone Wisdom.")
+        print("Linked. That number can now phone Interchange.")
     else:
         print("The number must be in international form, like +6591234567.")
 

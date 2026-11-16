@@ -1,4 +1,4 @@
-"""The loneliness check: three short questions (UCLA 3-item scale) asked at the start and again at 3 and 6 months, so Wisdom can show whether people feel more connected.
+"""The loneliness check: three short questions (UCLA 3-item scale) asked at the start and again at 3 and 6 months, so Interchange can show whether people feel more connected.
 Each answer is 1 (hardly ever), 2 (some of the time) or 3 (often); the total is 3 to 9, higher is lonelier. Never shown to anyone but the person; centres and the pilot see only counts and averages of groups of five or more."""
 import json
 

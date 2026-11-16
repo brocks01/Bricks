@@ -258,7 +258,7 @@ function Settings({ t, go, language }: { t: (k: string) => string; go: (k: strin
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <View style={{ flex: 1 }}>
               <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{w('checkinSwitch')}</Text>
-              <Text style={{ fontSize: 14, color: '#4A5361' }}>{w('checkinNote') || 'Wisdom asks one gentle question each day.'}</Text>
+              <Text style={{ fontSize: 14, color: '#4A5361' }}>{w('checkinNote') || 'Interchange asks one gentle question each day.'}</Text>
             </View>
             <Pressable onPress={() => void toggleCheckin(!(checkinOn === true))} accessibilityRole="switch" accessibilityState={{ checked: checkinOn === true }} style={{ width: 52, height: 30, borderRadius: 999, padding: 3, backgroundColor: checkinOn === true ? colors.navy : '#CFC6B6', justifyContent: 'center', alignItems: checkinOn === true ? 'flex-end' : 'flex-start' }}>
               <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFFFFF' }} />

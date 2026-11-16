@@ -17,7 +17,7 @@ export const connectJoin = definePage({
   elements: {
     code: { kind: 'field', type: 'string', required: true, summary: 'The invite code, for example ABCD-2345.' },
     joinButton: { kind: 'action', agent: 'confirm', summary: 'Join the community with the code. Refused when the person is already in three communities.' },
-    goCreate: { kind: 'action', summary: 'Open the form to ask the Wisdom team to start a new community.' },
+    goCreate: { kind: 'action', summary: 'Open the form to ask the Interchange team to start a new community.' },
   },
 });
 
@@ -26,7 +26,7 @@ export const connectCreate = definePage({
   key: 'connect.create',
   route: '/create-community',
   strings: mergeStrings(strings, pageWords(R, REQUEST_ALIASES)),
-  summary: 'Ask to start a new community. Only people with some experience (a while in a community and a few events) can ask, and the Wisdom team approves each one. Once approved, the person creates it here and becomes its Community Lead.',
+  summary: 'Ask to start a new community. Only people with some experience (a while in a community and a few events) can ask, and the Interchange team approves each one. Once approved, the person creates it here and becomes its Community Lead.',
   keywords: ['create', 'community', 'start', 'new', 'request', 'approve'],
   elements: {
     name: { kind: 'field', type: 'string', required: true, summary: 'The name of the community.' },
@@ -36,8 +36,8 @@ export const connectCreate = definePage({
     why: { kind: 'field', type: 'string', summary: 'Why it would thrive and who would come.' },
     circle: { kind: 'choice', type: 'string', options: ['origin', 'faith', 'place', 'life', 'interest'], summary: 'What brings the circle together: where we are from, what we keep, where we live, who we were or are, or something we enjoy.' },
     audience: { kind: 'choice', type: 'string', options: ['all', 'men', 'women'], summary: 'Who the circle is for: everyone, men only or women only. Never guessed from the person; they choose.' },
-    createButton: { kind: 'action', agent: 'confirm', summary: 'Send the request to the Wisdom team. Needs approval.' },
-    reviewLink: { kind: 'action', summary: 'For the Wisdom team only: open the list of requests waiting for a decision.' },
+    createButton: { kind: 'action', agent: 'confirm', summary: 'Send the request to the Interchange team. Needs approval.' },
+    reviewLink: { kind: 'action', summary: 'For the Interchange team only: open the list of requests waiting for a decision.' },
   },
 });
 
@@ -59,7 +59,7 @@ export const connectReview = definePage({
   key: 'connect.review',
   route: '/review-communities',
   strings: pageWords(R, REVIEW_ALIASES),
-  summary: 'For the Wisdom team only: requests to start a community, each with who asked and why, to approve or decline.',
+  summary: 'For the Interchange team only: requests to start a community, each with who asked and why, to approve or decline.',
   keywords: ['review', 'approve', 'requests', 'communities'],
   elements: { heading: { kind: 'text' } },
 });

@@ -2,6 +2,9 @@
 
 **Wisdom connects generations to live a whole life together.** Elders pass on what a lifetime taught them; younger people learn, help and grow; the bonds between them make a society stronger. *Every life has something to teach.*
 
+## Naming
+The app is called **Interchange** (from 16 Nov 2026). **Wisdom** is one of its three pillars: the round centre tab where experience is passed on (the other two are Communities and the Marketplace). Older pages in this folder that say "Wisdom" for the whole app mean Interchange; where they mean the tab, they still say Wisdom.
+
 ## Read in this order
 1. `01-philosophy/philosophy.md`: the one thing we solve (social isolation and loneliness), the feeling at the centre, who we are, our motto, our principles, how we solve it.
 2. `02-product/tabs-requirements.md`: what each of the three tabs is for, the rule that keeps them apart, and the decisions taken.

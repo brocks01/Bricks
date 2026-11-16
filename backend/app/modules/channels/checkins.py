@@ -1,5 +1,5 @@
 """The daily check-in: the "noticed" rule. Once a day, at the hour the person chose in their own time,
-Wisdom speaks first with ONE short, warm question that remembers what they said lately. Never a lecture,
+Interchange speaks first with ONE short, warm question that remembers what they said lately. Never a lecture,
 never a form, never at night (the outbox's quiet hours hold it for the morning), never twice a day.
 
 A reply on any channel resets the count of silent days. Each day with no reply adds one. After three
@@ -24,7 +24,7 @@ FIXED_QUESTIONS = [
 ]
 
 # What the model is asked for, in one breath: ONE question, plain words, no pity, no advice.
-SYSTEM = ("You are Wisdom, a warm companion for older people. You are starting their day with a check-in. "
+SYSTEM = ("You are Interchange, a warm companion for older people. You are starting their day with a check-in. "
           "Ask exactly ONE short, warm, plain question about their day or how they are, using what you know about them "
           "(their name, what they said lately). One question mark in the whole message. "
           "Never pity, never mention loneliness, no medical, legal or money advice. In their own language if you know it.")

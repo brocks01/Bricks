@@ -23,7 +23,7 @@ from .config import get_settings
 
 log = logging.getLogger("wisdom.mail")
 BREVO = "https://api.brevo.com/v3"
-BRAND = "Wisdom"
+BRAND = "Interchange"
 
 
 class MailError(Exception):
@@ -130,7 +130,7 @@ def send(to: str, subject: str, html: str, text: str) -> bool:
         msg = EmailMessage()
         msg["Subject"], msg["From"], msg["To"] = subject, formataddr((BRAND, s.email_from or s.smtp_user)), to
         msg["Date"] = formatdate(localtime=False)
-        msg["Message-ID"] = make_msgid(domain=(s.email_from or s.smtp_user).split("@")[-1])  # a proper, unique id from the sender's own domain  # "Wisdom <no-reply@...>", as Jambagrad does
+        msg["Message-ID"] = make_msgid(domain=(s.email_from or s.smtp_user).split("@")[-1])  # a proper, unique id from the sender's own domain  # "Interchange <no-reply@...>", as Jambagrad does
         msg.set_content(text)
         msg.add_alternative(html, subtype="html")
         try:

@@ -1,14 +1,14 @@
 import { definePage } from '../../../../kit/page';
 import { strings } from './strings';
 
-// "My Wisdom accounts": my own account plus the accounts of the family members I help.
+// "My Interchange accounts": my own account plus the accounts of the family members I help.
 // Switching here decides whose account the WHOLE app works on (the on-behalf header).
 export const familyAccounts = definePage({
   key: 'family.accounts',
   module: 'family',
   route: '/accounts',
   requiresAuth: true,
-  summary: 'My Wisdom accounts: switch between my own account and the accounts of family members I help, see who has access to my account and at what level, and end access.',
+  summary: 'My Interchange accounts: switch between my own account and the accounts of family members I help, see who has access to my account and at what level, and end access.',
   keywords: ['accounts', 'switch', 'delegation', 'access', 'on behalf'],
   elements: {
     heading: { kind: 'text' },

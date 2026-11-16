@@ -1,4 +1,4 @@
-"""The one way Wisdom speaks first: a message to a person outside a conversation (an introduction request, a nudge, a reminder).
+"""The one way Interchange speaks first: a message to a person outside a conversation (an introduction request, a nudge, a reminder).
 - It goes to the channel the person prefers (their answer in onboarding), then their other connected chats, and always lands in the in-app inbox too.
 - Not at night: a message that is not urgent waits for the morning in the person's own time (quiet hours 21:00 to 08:00, WISDOM_QUIET="HH:MM-HH:MM" to change).
 - A failed send is tried again later, three times, then the message stays in the inbox only.
@@ -144,7 +144,7 @@ async def loop(every: float = 60.0) -> None:
                 await asyncio.to_thread(recurrence.run_once)  # keeps repeating events filled ahead of time
                 await asyncio.to_thread(nudges.run_once)
                 await asyncio.to_thread(belonging_nudges.run_once)  # three days, and the day before, a day the circle keeps
-                await asyncio.to_thread(checkins.run_once)  # the daily check-in: Wisdom speaks first at the hour the person chose
+                await asyncio.to_thread(checkins.run_once)  # the daily check-in: Interchange speaks first at the hour the person chose
                 await asyncio.to_thread(run_due)
         except Exception:  # noqa: BLE001 - a bad tick must not stop the loop
             log.exception("outbox tick failed")

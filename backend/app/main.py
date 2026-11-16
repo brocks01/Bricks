@@ -1,4 +1,4 @@
-﻿"""Wisdom API. One service, one database, split into modules. Start it with:  python backend/run.py"""
+﻿"""Interchange API. One service, one database, split into modules. Start it with:  python backend/run.py"""
 import asyncio
 import os
 from contextlib import asynccontextmanager
@@ -97,7 +97,7 @@ async def lifespan(_: FastAPI):
             t.cancel()
 
 
-app = FastAPI(title="Wisdom API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Interchange API", version="0.1.0", lifespan=lifespan)
 
 # Who may call the API from a browser: this computer and its network, any Vercel address (the website is deployed there), and the exact
 # addresses listed in CORS_ORIGINS (a comma list, for example the final domain). The API uses Authorization tokens, not cookies, so this is not a

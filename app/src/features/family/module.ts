@@ -14,7 +14,7 @@ import { familyJoin } from './pages/join/page';
 defineModule({
   id: 'family',
   title: 'Family',
-  summary: 'The family space: family members help each other set up and look after their Wisdom accounts, with clear levels of access and a record of everything done.',
+  summary: 'The family space: family members help each other set up and look after their Interchange accounts, with clear levels of access and a record of everything done.',
   keywords: ['family', 'members', 'help', 'invite', 'assisted', 'delegation', 'accounts'],
   pages: [familyHome, familyCreate, familyJoin, familyDetail, familyInvite, familyAssisted, familyAccounts, familyClaim, familyHistory],
   skills: [

@@ -26,7 +26,7 @@ export default function Welcome() {
   });
   return (
     <Frame top={<Collage />} primary={{ label: w('o_next'), onPress: () => go('auth.textSize') }}>
-      <Text accessibilityRole="header" style={{ fontSize: 36, fontWeight: '800', color: colors.ink }}>Wisdom</Text>
+      <Text accessibilityRole="header" style={{ fontSize: 36, fontWeight: '800', color: colors.ink }}>Interchange</Text>
       <View style={{ marginTop: space.md, marginBottom: space.md, gap: 2 }}>
         {LINES.map((t, i) => <Text key={t} style={[type.body, { color: colors.ink, fontWeight: LANGUAGES[i].code === code ? '800' : '500' }]}>{t}</Text>)}
       </View>

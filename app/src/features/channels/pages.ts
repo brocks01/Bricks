@@ -8,7 +8,7 @@ export const channelsNotices = definePage({
   ...base,
   key: 'channels.notices',
   route: '/notices',
-  summary: 'What Wisdom told the person on any channel (nudges, someone asking for their guidance, reminders), newest first. Opening it marks everything as seen.',
+  summary: 'What Interchange told the person on any channel (nudges, someone asking for their guidance, reminders), newest first. Opening it marks everything as seen.',
   keywords: ['notifications', 'inbox', 'messages', 'news', 'missed'],
   elements: { heading: { kind: 'text', summary: 'Notifications.' } },
   strings: pageWords(NOTICES),
@@ -18,7 +18,7 @@ export const channelsChats = definePage({
   ...base,
   key: 'channels.chats',
   route: '/chats',
-  summary: 'Connect Telegram, WhatsApp or text messages, so the same Wisdom agent can talk to the person there, remind them and tell them when someone asks for their guidance.',
+  summary: 'Connect Telegram, WhatsApp or text messages, so the same Interchange agent can talk to the person there, remind them and tell them when someone asks for their guidance.',
   keywords: ['telegram', 'whatsapp', 'sms', 'connect', 'chat', 'phone', 'link'],
   elements: {
     heading: { kind: 'text', summary: 'Connect your chats.' },

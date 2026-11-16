@@ -1,4 +1,4 @@
-"""Insights: what Wisdom tells the people who run centres, and what the pilot measures. Counts and averages only, never names or one person's answers.
+"""Insights: what Interchange tells the people who run centres, and what the pilot measures. Counts and averages only, never names or one person's answers.
 - Only people who said yes to the 'insights' consent are counted in the interest report.
 - A group smaller than MIN_GROUP (5) is never shown, so nobody can be picked out of a small number.
 - The loneliness average needs at least MIN_GROUP people with a baseline and a later check."""

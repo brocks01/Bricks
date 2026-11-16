@@ -59,8 +59,8 @@ async def twilio_voice(request: Request):
     return Response(proto.twiml(stream_url, {"callId": rec["call_id"], "token": rec["_token"]}), media_type="text/xml")
 
 
-UNKNOWN_CALLER = "Hello, this is Wisdom. I do not know this number yet. Please open the Wisdom app, go to Profile, and connect your phone. Goodbye."
-BUSY = "Hello, this is Wisdom. I am helping someone else right now. Please call again in a few minutes. Goodbye."
+UNKNOWN_CALLER = "Hello, this is Interchange. I do not know this number yet. Please open the Interchange app, go to Profile, and connect your phone. Goodbye."
+BUSY = "Hello, this is Interchange. I am helping someone else right now. Please call again in a few minutes. Goodbye."
 
 
 def _say_and_hang_up(words: str) -> Response:
@@ -69,7 +69,7 @@ def _say_and_hang_up(words: str) -> Response:
 
 @router.post("/twilio/incoming")
 async def twilio_incoming(request: Request):
-    """Someone phones the Wisdom number (set it as the number's "A call comes in" webhook: VOICE_PUBLIC_URL + /twilio/incoming). Signature checked.
+    """Someone phones the Interchange number (set it as the number's "A call comes in" webhook: VOICE_PUBLIC_URL + /twilio/incoming). Signature checked.
     A linked number gets the agent (the same one as in the chats); an unknown number hears one sentence and is hung up: no AI minutes for strangers."""
     params = {k: str(v) for k, v in (await request.form()).items()}
     if not await _verified(request, params):

@@ -134,7 +134,7 @@ def _finish_if_ready(conn: Connection, me: str) -> dict:
 
 
 def profile(conn: Connection, me: str) -> dict:
-    """What every screen and every channel asks first: who is this person to Wisdom, and what should they see."""
+    """What every screen and every channel asks first: who is this person to Interchange, and what should they see."""
     st = state(conn, me)
     u = conn.execute(text("select display_name, age_band, interests, voice_intro_url from users where id = :u"), {"u": me}).one()
     chosen = bool(st["roles"])

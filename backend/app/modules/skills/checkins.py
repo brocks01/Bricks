@@ -1,4 +1,4 @@
-"""The daily check-in skills: the person chooses the hour Wisdom speaks first each day, and whether the
+"""The daily check-in skills: the person chooses the hour Interchange speaks first each day, and whether the
 family may be told after three days of silence (their own yes, never assumed), and can stop it at any word.
 Starting the check-in tells the person things day after day, so it needs the person's yes first (risk confirm)."""
 from datetime import time
@@ -16,7 +16,7 @@ def _hour(raw) -> time:
         raise SkillError("time_needed", "What time of day should I check in, for example 9:30?") from None
 
 
-@skill("set_daily_checkin", "Daily check-in on", "Wisdom speaks first every day at the hour given (in the person's own time, for example 9:30), with one short warm question. "
+@skill("set_daily_checkin", "Daily check-in on", "Interchange speaks first every day at the hour given (in the person's own time, for example 9:30), with one short warm question. "
        "It starts reaching out day after day, so FIRST ask the person to confirm, then call it with confirmed true. "
        "family_notify true means that after three days with no reply, the family may be told gently (only if the person says yes to that too).",
        {"time": S("The hour of day in the person's own time, for example 9:30"), "family_notify": B("true if the family may be told after three days of silence (optional)")},
@@ -32,7 +32,7 @@ def set_daily_checkin(conn: Connection, me: str, args: dict):
     return {"daily_checkin": "on", "at": t.strftime("%H:%M"), "family_will_be_told_after_three_silent_days": bool(f) if f is not None else None}
 
 
-@skill("stop_daily_checkin", "Daily check-in off", "Stop the daily check-in. Wisdom will not speak first any more until they ask for it again.")
+@skill("stop_daily_checkin", "Daily check-in off", "Stop the daily check-in. Interchange will not speak first any more until they ask for it again.")
 def stop_daily_checkin(conn: Connection, me: str, args: dict):
     n = conn.execute(text("update daily_checkins set enabled = false, updated_at = now() where user_id = :u"), {"u": me}).rowcount
     if not n:

@@ -1,4 +1,4 @@
-"""Backend skills: the things a person can ask Wisdom to DO, written once on the server, so any channel (a Telegram chat, a phone call, a test, the command line)
+"""Backend skills: the things a person can ask Interchange to DO, written once on the server, so any channel (a Telegram chat, a phone call, a test, the command line)
 can read and change their data with no app open. Each skill takes the person's id and some small arguments and returns a small dict the agent can say in a sentence.
 
 Rules every skill follows:

@@ -1,4 +1,4 @@
-"""Hosts: who runs things. An Active Ageing Centre, a mall, a community centre or an organisation. Wisdom is not the event provider or a community creator: it brings people to what hosts run.
+"""Hosts: who runs things. An Active Ageing Centre, a mall, a community centre or an organisation. Interchange is not the event provider or a community creator: it brings people to what hosts run.
 Platform admins create hosts for now; a host's own owners and editors list, make, edit and cancel its opportunities and import its communities."""
 from datetime import datetime
 

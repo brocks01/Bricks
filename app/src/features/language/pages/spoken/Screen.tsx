@@ -19,7 +19,7 @@ const ENGLISH: Record<string, string> = {
 const SUGGEST = ['en', 'zh', 'ms', 'ta', 'hi', 'bn']; // shown first, before anything is typed
 
 /**
- * The languages the person SPEAKS to Wisdom, and the one they prefer to talk in. The choice is saved
+ * The languages the person SPEAKS to Interchange, and the one they prefer to talk in. The choice is saved
  * on the PHONE first (this page is reachable from the welcome screen before any account exists) and
  * copied into the account when there is one, so a guest talk already follows their languages.
  * Added one at a time from a search box; the chosen ones show as chips that can be removed.

@@ -1,4 +1,4 @@
-"""python backend/run.py call you@example.com [+6591234567] [--lang en] [--brief "..."]   place ONE phone call to this person, who can then talk to Wisdom and change their data by voice.
+"""python backend/run.py call you@example.com [+6591234567] [--lang en] [--brief "..."]   place ONE phone call to this person, who can then talk to Interchange and change their data by voice.
 The call is placed through the running API (it owns the live call), using VOICE_ADMIN_KEY from backend/.env. Without a number, the first one in VOICE_ALLOWED_NUMBERS is used.
 Run it only when the person knows the call is coming."""
 import os
@@ -12,7 +12,7 @@ import app.core.config  # noqa: F401  (loads backend/.env)
 from .core.db import engine
 from .modules.skills import registry
 
-BRIEF = ("You are Wisdom, a friendly helper calling {who}. Greet them by name, say it is Wisdom, and ask how they are. Then offer: what is on today, how their tree is growing, "
+BRIEF = ("You are Interchange, a friendly helper calling {who}. Greet them by name, say it is Interchange, and ask how they are. Then offer: what is on today, how their tree is growing, "
          "or to note something for them (they moved today, took medicine, are going to a gathering or a market). Do what they ask with your tools, then say in one sentence what you did. "
          "Keep it warm, short and slow. Never give medical advice. If they sound unwell or in danger, ask if you should tell their family and tell them to call 995 (Singapore) or 112 (India) for an emergency.")
 

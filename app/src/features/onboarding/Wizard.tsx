@@ -1,5 +1,5 @@
 // Onboarding after sign-in, screen for screen like the reference: name (step 1 of 3), where you live (2 of 3), what you enjoy (3 of 3), your voice,
-// how to remind you, welcome. Only these. Everything else Wisdom needs is asked later (by the agent or in the profile), never here.
+// how to remind you, welcome. Only these. Everything else Interchange needs is asked later (by the agent or in the profile), never here.
 // Every step also publishes what it shows to the agent (usePageData / useField), so the floating mic can read the page, fill the name, pick an option
 // and press Next in any language, on the front end only, exactly as a person's own taps would.
 import { Ionicons } from '@expo/vector-icons';

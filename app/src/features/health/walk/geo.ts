@@ -1,5 +1,5 @@
 // Walk geometry: distances and the filters that keep a GPS track honest.
-// Ported from the teammates' Wisdom app (branch sayan, lib/geo.ts); the encoded-polyline helpers were left out because we do not store routes.
+// Ported from the teammates' Interchange app (branch sayan, lib/geo.ts); the encoded-polyline helpers were left out because we do not store routes.
 
 export interface LatLng {
   lat: number;

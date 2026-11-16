@@ -2,7 +2,7 @@ import { definePage } from '../../../../kit/page';
 import { strings } from '../../strings';
 
 // The form to add a plan (or to change one, when opened with the plan's values). Medicine always shows
-// the words "not medical advice": Wisdom reminds at the set time, it never advises on the medicine itself.
+// the words "not medical advice": Interchange reminds at the set time, it never advises on the medicine itself.
 export const calendarNew = definePage({
   key: 'calendar.new',
   module: 'calendar',

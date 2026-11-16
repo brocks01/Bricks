@@ -24,7 +24,7 @@ const KINDS: { id: HealthKind; icon: keyof typeof Ionicons.glyphMap; color: stri
 ];
 
 // Health (sample 11, screen 8): the latest value of four things the person records, and their records. No score and no advice:
-// Wisdom shows back what the person typed in. Private to them.
+// Interchange shows back what the person typed in. Private to them.
 export default function Health() {
   const w = usePageWords(page);
   const lang = useLanguage();

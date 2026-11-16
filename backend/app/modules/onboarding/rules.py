@@ -34,10 +34,10 @@ DEFAULT_ROLES = {"60plus": ("connect", "share"), "40to59": ("care", "learn"), "u
 CHANNELS = ("call", "whatsapp", "telegram", "sms", "app")
 CONSENTS = {
     "privacy": "keep my information private and use it only to help me (PDPA, DPDP)",
-    "terms": "the terms of using Wisdom",
-    "notes_memory": "let Wisdom remember what I tell it",
+    "terms": "the terms of using Interchange",
+    "notes_memory": "let Interchange remember what I tell it",
     "family_share": "let my family see my day",
-    "insights": "let Wisdom use my interests, without my name, to help centres plan what to run",
+    "insights": "let Interchange use my interests, without my name, to help centres plan what to run",
 }
 REQUIRED_CONSENTS = ("privacy", "terms")
 # The interests step: fixed keys, so a circle or an event can be matched to a person without parsing free text.

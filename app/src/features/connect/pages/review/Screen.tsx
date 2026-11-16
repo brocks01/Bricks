@@ -10,7 +10,7 @@ import { sessionStore } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
 import { connectReview as page } from '../../pages';
 
-// For the Wisdom team only. A person who is not on the team gets a plain "nothing here" (the server refuses the list).
+// For the Interchange team only. A person who is not on the team gets a plain "nothing here" (the server refuses the list).
 export default function Review() {
   const w = usePageWords(page);
   const { status } = useStore(sessionStore);

@@ -1,4 +1,4 @@
-// The in-app agent, client side: one WebSocket to the Wisdom API (which talks to Gemini Live), the microphone up, the voice down,
+// The in-app agent, client side: one WebSocket to the Interchange API (which talks to Gemini Live), the microphone up, the voice down,
 // and the agent's tool requests run HERE, in the app, so the person watches the glow and gives approvals on their own screen.
 // The same agent will also be reachable by phone call (backend/app/modules/voice); both use the same engine.
 import { t } from '../i18n/tables';

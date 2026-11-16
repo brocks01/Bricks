@@ -70,7 +70,7 @@ async def start_call(data: dict, admin_id: str = "admin") -> dict:
     return store.public_view(rec)
 
 
-INBOUND_BRIEF = ("The person is calling YOU, Wisdom. Greet them warmly by name, say it is good to hear from them, and ask how you can help. "
+INBOUND_BRIEF = ("The person is calling YOU, Interchange. Greet them warmly by name, say it is good to hear from them, and ask how you can help. "
                  "You can tell them what is on today, how their tree is growing, note something for them, or tell them about gatherings and market events.")
 
 
@@ -81,7 +81,7 @@ def _with_memory(head: str, memory_text: str) -> str:
 
 
 def accept_inbound(from_number: str, call_sid: str) -> tuple[dict | None, str]:
-    """A person dials the Wisdom number. Returns (call record, "") if they may talk, or (None, reason): unknown number, busy, or too many calls.
+    """A person dials the Interchange number. Returns (call record, "") if they may talk, or (None, reason): unknown number, busy, or too many calls.
     The caller's number only says WHICH account to open; anything risky still needs the person's spoken yes (skills with risk "confirm")."""
     from ..channels import core, memory, persona
     from ..skills import registry

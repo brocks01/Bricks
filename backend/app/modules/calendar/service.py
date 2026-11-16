@@ -121,7 +121,7 @@ def _clean_title(title: str) -> str:
 
 
 def _clean_brief(v) -> str | None:
-    """What the person wants Wisdom to do on a scheduled call (their own words), at most 500 characters."""
+    """What the person wants Interchange to do on a scheduled call (their own words), at most 500 characters."""
     if v is None:
         return None
     v = str(v).strip()

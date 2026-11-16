@@ -55,5 +55,5 @@ def daily_checkin_state(user_id: str = Depends(current_user_id), conn: Connectio
 
 @profile_router.get("/profile")
 def get_profile(user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
-    """Who this person is to Wisdom: their roles, the surfaces to show them, and whether setup is finished."""
+    """Who this person is to Interchange: their roles, the surfaces to show them, and whether setup is finished."""
     return service.profile(conn, user_id)

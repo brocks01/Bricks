@@ -1,7 +1,7 @@
 import { createStore } from '../../core/store';
 import { getProfile, type Profile, type Surface } from '../../api/wisdom';
 
-// Who the person is to Wisdom and what to show them. The backend decides (GET /v1/profile); the bottom bar and the doors read this one store.
+// Who the person is to Interchange and what to show them. The backend decides (GET /v1/profile); the bottom bar and the doors read this one store.
 interface ProfileState { loaded: boolean; profile: Profile | null }
 export const profileStore = createStore<ProfileState>({ loaded: false, profile: null });
 

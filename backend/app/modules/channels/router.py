@@ -55,7 +55,7 @@ async def webhook(secret: str, request: Request):
 
 @router.post("/{channel}/link-code")
 def link_code_for(channel: str, user_id: str = Depends(current_user_id)):
-    """The same one-time code for WhatsApp or SMS: the person sends it as their first message to the Wisdom number."""
+    """The same one-time code for WhatsApp or SMS: the person sends it as their first message to the Interchange number."""
     if channel not in ("whatsapp", "sms"):
         return JSONResponse(status_code=404, content={"detail": {"code": "unknown_channel"}})
     if not (config().twilio_sid and config().twilio_token):
@@ -125,7 +125,7 @@ inbox_router = APIRouter(prefix="/v1/notifications")
 
 @inbox_router.get("")
 def inbox(user_id: str = Depends(current_user_id)):
-    """What Wisdom told this person (nudges, introduction requests, reminders), on any channel, newest first, with the unread count."""
+    """What Interchange told this person (nudges, introduction requests, reminders), on any channel, newest first, with the unread count."""
     from . import outbox
 
     return outbox.inbox(user_id)

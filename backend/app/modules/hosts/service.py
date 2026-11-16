@@ -1,6 +1,6 @@
 """Hosts list their own opportunities (Marketplace): who works on a host — an Active Ageing Centre, a mall, a community centre, an organisation.
 A platform admin adds the first owner by email; an owner adds editors. Owners and editors list, make, edit and cancel ONLY their own host's
-opportunities, and import their own host's communities. Wisdom is not the event provider or a community creator: it brings people to what hosts run.
+opportunities, and import their own host's communities. Interchange is not the event provider or a community creator: it brings people to what hosts run.
 Plain functions over one database connection; every rule lives here, not in the router."""
 from sqlalchemy import Connection, text
 
