@@ -2,7 +2,7 @@ import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
 import { AppLoading } from './AppLoading';
 import { useStore } from '../core/store';
-import { clearProfile, firstTab, loadProfile, profileStore } from '../features/onboarding/state';
+import { clearProfile, firstTab, loadProfile, onboardingLocal, profileStore } from '../features/onboarding/state';
 import { useCurrentPage, useNavigate } from '../navigation';
 import { bootSession, sessionStore } from '../session/store';
 
@@ -34,7 +34,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
       if (current.requiresAuth) go('auth.welcome', {}, { replace: true });
     } else if (!complete) {
       if (current.module !== 'onboarding') go('onboarding.index', {}, { replace: true });
-    } else if (prof.profile && !prof.profile.onboarded && current.module !== 'onboarding') {
+    } else if (prof.profile && !prof.profile.onboarded && !onboardingLocal.done && current.module !== 'onboarding') {
       go('onboarding.index', {}, { replace: true });
     } else if (current.module === 'auth') {
       go(firstTab(prof.profile), {}, { replace: true });

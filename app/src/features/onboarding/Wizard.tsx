@@ -13,6 +13,7 @@ import { sessionStore } from '../../session/store';
 import { colors, radius, space, type } from '../../theme/tokens';
 import { Bar, Chip, Frame, Interest, ListCard, SayIt, grid, type Icon } from './kit';
 import { onboardingIndex as page } from './pages';
+import { onboardingLocal } from './state';
 import { whoStore } from './who';
 
 const TOWNS = ['Bishan', 'Toa Payoh', 'Ang Mo Kio', 'Tampines', 'Jurong West', 'Woodlands'];
@@ -65,7 +66,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
     );
   }
   if (step === 'where') {
-    const save = () => run(() => (area.trim() ? putOnboarding('basics', { country: typed ? 'other' : 'SG', area_name: area.trim() }) : Promise.resolve()));
+    const save = () => run(() => putOnboarding('basics', { country: typed ? 'other' : 'SG', ...(area.trim() ? { area_name: area.trim() } : {}) }));
     return (
       <Frame {...common} step={w('o_step3', { n: 2 })} title={w('o_where_t')} primary={{ label: w('o_next'), onPress: () => void save(), disabled: busy }}>
         <View style={grid}>
@@ -105,7 +106,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
       </Frame>
     );
   }
-  return <Welcome name={name.trim() || user?.display_name || ''} finish={async () => { try { await putOnboarding('consent', { privacy: true, terms: true }); } catch { /* the server asks again at the next start */ } await finish(); }} />;
+  return <Welcome name={name.trim() || user?.display_name || ''} finish={async () => { try { await putOnboarding('consent', { privacy: true, terms: true }); } catch { /* the server asks again at the next start */ } onboardingLocal.done = true; await finish(); }} />;
 }
 
 // ---------- your voice: record up to ten seconds, or skip ----------

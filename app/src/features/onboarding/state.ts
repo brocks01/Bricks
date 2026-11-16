@@ -14,7 +14,7 @@ export async function loadProfile(): Promise<void> {
   }
 }
 
-export const clearProfile = () => profileStore.set({ loaded: false, profile: null });
+export const clearProfile = () => { onboardingLocal.done = false; profileStore.set({ loaded: false, profile: null }); };
 
 /** Does the profile show this part of Wisdom? Before the profile is known, the original three tabs show. */
 export function shows(state: ProfileState, surface: Surface): boolean {
@@ -32,3 +32,6 @@ export function firstTab(p: Profile | null): string {
 }
 
 export const showsWisdom = (state: ProfileState): boolean => !!state.profile && state.profile.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help');
+
+/** Set when the person has walked through the welcome screens in this session, so the app never sends them back even if the server has not flagged them yet (an older server, a slow save). */
+export const onboardingLocal = { done: false };
