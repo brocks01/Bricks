@@ -1,0 +1,11 @@
+{
+  "email": "uncle.tan@demo.wisdom.test",
+  "name": "Tan Boon Huat",
+  "area": "Tampines",
+  "languages": ["Mandarin", "English"],
+  "nric": "S****123A",
+  "interests": ["taichi", "music"],
+  "work": { "field": "Tech sales manager", "years": 40 },
+  "share": { "title": "Sales, career guidance", "about": "Tech sales manager, 40 years", "skills": ["Sales", "Career guidance"], "topics": ["sales", "career"] },
+  "learn": ["Digital photography"]
+}

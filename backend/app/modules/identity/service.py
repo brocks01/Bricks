@@ -168,39 +168,60 @@ def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}
 
 
-UNCLE_TAN = {"name": "Tan Boon Huat", "area": "Tampines", "languages": ["Mandarin", "English"], "nric": "S****123A"}
+def _persona() -> dict:
+    import json
+    from pathlib import Path
+
+    return json.loads((Path(__file__).resolve().parents[3] / "seed_data" / "uncle_tan.json").read_text(encoding="utf-8"))
 
 
-def singpass_demo(conn: Connection, user_agent: str = "") -> dict:
-    """PROTOTYPE ONLY: the mock Singpass login. It stands in for what Singpass really gives (name, home area, age group) and makes a fresh account for
-    Uncle Tan with those already set, so the first questions only ask what Singpass cannot know. The address ends in @demo.wisdom.test like every demo account."""
-    import secrets
+UNCLE_TAN = {k: v for k, v in _persona().items() if k in ("name", "area", "languages", "nric")}  # what the mock Singpass tells the app
 
-    email = f"uncle-tan-{secrets.token_hex(4)}@demo.wisdom.test"
-    user = conn.execute(
-        text("insert into users (email, display_name, age_band, area_name, language, spoken_languages) values (:e, :n, '60plus', :a, 'en', :l) returning *"),
-        {"e": email, "n": UNCLE_TAN["name"], "a": UNCLE_TAN["area"], "l": UNCLE_TAN["languages"]},
-    ).one()
-    # Uncle Tan lives in Tampines, so he starts as a member of three active circles there (any area if Tampines has fewer): his Communities tab is not empty.
-    conn.execute(
-        text(
-            "insert into memberships (community_id, user_id) select c.id, :u from communities c where c.status = 'active' "
-            "order by (c.area_name ilike :a || '%') desc nulls last, (select count(*) from memberships m where m.community_id = c.id and m.status = 'active') desc limit 3 "
-            "on conflict (community_id, user_id) do nothing"
-        ),
-        {"u": str(user.id), "a": UNCLE_TAN["area"]},
-    )
+
+def ensure_uncle_tan(conn: Connection):
+    """PROTOTYPE ONLY: Uncle Tan, the one person the mock Singpass signs in. Made once from seed_data/uncle_tan.json with everything Interchange asks at the start
+    already answered (so he lands on the dashboard), and topped up with his groups, learners, market days and notices (each insert checks first, so this can run
+    on every start and every login). Returns his user row."""
+    from ..onboarding import service as onboarding
+    from ..wisdom import service as wisdom
+    from ...seed_uncle_tan import seed_uncle
+
+    p = _persona()
+    user = conn.execute(text("select * from users where email = :e"), {"e": p["email"]}).first()
+    if user is None:
+        user = conn.execute(
+            text("insert into users (email, display_name, age_band, area_name, language, spoken_languages) values (:e, :n, '60plus', :a, 'en', :l) returning *"),
+            {"e": p["email"], "n": p["name"], "a": p["area"], "l": p["languages"]},
+        ).one()
+        me = str(user.id)
+        # roles first (the other parts depend on them), then each part the first questions would have asked
+        onboarding.answer(conn, me, "purpose", {"roles": ["connect", "share", "learn"]})
+        onboarding.answer(conn, me, "basics", {"country": "SG", "age_band": "60plus", "area_name": p["area"]})
+        onboarding.answer(conn, me, "interests", {"interests": p["interests"]})
+        onboarding.answer(conn, me, "share", {"field": p["work"]["field"], "years": p["work"]["years"], "skills": p["share"]["skills"]})
+        onboarding.answer(conn, me, "learn", {"age_15_plus": True, "topics": p["learn"]})
+        wisdom.create_offer(conn, me, {"title": p["share"]["title"], "about": p["share"]["about"], "kind": "mentoring", "mode": "volunteer", "domain": "professional",
+                                       "proof_field": p["work"]["field"], "proof_years": p["work"]["years"], "topics": p["share"]["topics"], "languages": p["languages"]})
+        for topic in p["learn"]:
+            wisdom.create_request(conn, me, {"topic": topic, "kind": "learn"})
+        onboarding.answer(conn, me, "consent", {"privacy": True, "terms": True})
+        user = conn.execute(text("select * from users where id = cast(:u as uuid)"), {"u": me}).one()
     try:
-        with conn.begin_nested():  # his groups, learners and market days; if anything is missing the login still works
-            from ...seed_uncle_tan import seed_uncle
-
+        with conn.begin_nested():  # if anything here fails the login and the start still work
             seed_uncle(conn, str(user.id))
     except Exception:
         import logging
 
         logging.getLogger("uvicorn.error").exception("Uncle Tan seed failed")
+    return user
+
+
+def singpass_demo(conn: Connection, user_agent: str = "") -> dict:
+    """PROTOTYPE ONLY: the mock Singpass login. Singpass always signs in the same person, Uncle Tan, so he lands straight on the dashboard. The questions the app
+    would otherwise ask are left for the agent to ask later, in conversation."""
+    user = ensure_uncle_tan(conn)
     access, refresh = _issue_session(conn, str(user.id), user_agent)
-    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True, "singpass": UNCLE_TAN}
+    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False, "singpass": UNCLE_TAN}
 
 
 DEMO_DOMAINS = ("@seed.wisdom.test", "@demo.wisdom.test")

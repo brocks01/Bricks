@@ -72,6 +72,21 @@ async def _boot(tasks: list) -> None:
     else:
         print("the database migrations did not apply:", last)
         return
+    # Keep the demo person in step with the database this server uses (the live one on Render, the local one on a laptop): one small JSON, nothing duplicated.
+    # DEMO_SYNC=off holds it still.
+    if (os.environ.get("DEMO_SYNC") or "on") != "off":
+        try:
+            from .core.db import engine
+            from .modules.identity import service as identity_service
+
+            def _sync() -> None:
+                with engine().begin() as conn:
+                    identity_service.ensure_uncle_tan(conn)
+
+            await asyncio.to_thread(_sync)
+            print("demo data in step: Uncle Tan")
+        except Exception as e:  # noqa: BLE001 - the server works without it
+            print("demo data not synced:", str(e).splitlines()[0][:180])
     # The ONE background thing in the app: the reminder loop (calls, retries, reconciliation).
     # It checks REMINDER_LOOP=off on every tick, so tests can hold it still.
     from .modules.calendar import calls as calendar_calls
