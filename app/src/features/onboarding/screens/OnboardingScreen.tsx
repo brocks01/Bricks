@@ -144,7 +144,7 @@ function VoiceIntro({ w, onDone }: { w: (id: string) => string; onDone: () => vo
   const player = useAudioPlayer(uri);
   const [seconds, setSeconds] = useState(0);
   useEffect(() => {
-    if (!recording) { setSeconds(0); return; }
+    if (!recording) return;
     const id = setInterval(() => {
       setSeconds((s) => {
         if (s + 1 >= 10) { recorder.stop().then(() => { setUri(recorder.uri ?? null); setRecording(false); }).catch(() => setRecording(false)); return 10; }
@@ -153,6 +153,8 @@ function VoiceIntro({ w, onDone }: { w: (id: string) => string; onDone: () => vo
     }, 1000);
     return () => clearInterval(id);
   }, [recording, recorder]);
+  // reset counter when a recording ends
+  useEffect(() => { if (!recording) setSeconds(0); }, [recording]);
   const start = async () => {
     setMessage(null);
     try {
