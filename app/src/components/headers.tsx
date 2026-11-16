@@ -4,6 +4,8 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { getInbox } from '../api/wisdom';
 import { useStore } from '../core/store';
 import '../features/home/shellWords'; // registers the shell's words
+import { MiniTree } from '../features/grow/MiniTree';
+import { wisdomStore } from '../features/grow/wisdomStore';
 import { useT } from '../i18n';
 import { useGoBack, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
@@ -47,6 +49,7 @@ export function AppHeader() {
   const go = useNavigate();
   const t = useT();
   const { user } = useStore(sessionStore);
+  const { leaves } = useStore(wisdomStore);
   const [unread, setUnread] = useState(0);
   useEffect(() => {
     getInbox().then((r) => setUnread(r.unread)).catch(() => undefined);
@@ -56,12 +59,12 @@ export function AppHeader() {
   const initials = ((words[0]?.charAt(0) ?? '?') + (words.length > 1 ? words[words.length - 1].charAt(0) : '')).toUpperCase();
   return (
     <View style={{ height: 68, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
-      <View pointerEvents="none" style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+      <View style={{ pointerEvents: 'none', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
         <Logo size={30} />
         <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink, letterSpacing: -0.2 }}>Interchange</Text>
       </View>
-      <Pressable accessibilityRole="button" accessibilityLabel={t('shell.tree')} onPress={() => go('grow.progress')} hitSlop={4} style={{ width: ROUND, height: ROUND, borderRadius: ROUND / 2, backgroundColor: tints.green, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: TREE_RING }}>
-        <Ionicons name="leaf" size={24} color={TREE_RING} accessible={false} />
+      <Pressable accessibilityRole="button" accessibilityLabel={leaves === null ? t('shell.tree') : leaves === 1 ? t('shell.tree_one') : t('shell.tree_n', { n: leaves })} onPress={() => go('grow.progress')} hitSlop={4} style={{ width: ROUND, height: ROUND, borderRadius: ROUND / 2, backgroundColor: tints.green, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: TREE_RING }}>
+        <MiniTree size={38} />
       </Pressable>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <Pressable accessibilityRole="button" accessibilityLabel={t('shell.notices')} onPress={() => go('channels.notices')} hitSlop={8} style={{ width: 40, height: ROUND, alignItems: 'center', justifyContent: 'center' }}>
