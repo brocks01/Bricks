@@ -319,3 +319,4 @@ def run_for_user(user_id: str, name: str, args: dict | None) -> dict:
 
 
 from . import everyday, onboarding, schedule, wisdom  # noqa: E402,F401  (registers the everyday, onboarding, scheduled-call and Wisdom skills)
+from ..hosts import skill as host_skill  # noqa: E402,F401  (registers the host's own skills)

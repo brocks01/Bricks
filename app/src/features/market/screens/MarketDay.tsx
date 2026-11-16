@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { ApiError } from '../../../api/client';
 import { cancelMarketStall, getMarketEvent, setMarketGoing, takeMarketStall, type MarketEventDetail } from '../../../api/market';
+import { addMilestone, getMilestones, tickMilestone, type Milestone } from '../../../api/marketSteps';
 import { Empty, ListRow, Notice, Pill, Section } from '../../../components/blocks';
 import { Body, Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
 import { usePageWords } from '../../../kit';
@@ -21,9 +22,18 @@ export default function MarketDay() {
   const [selling, setSelling] = useState('');
   const [slot, setSlot] = useState<Slot>('whole');
   const [error, setError] = useState<string | null>(null);
+  const [steps, setSteps] = useState<Milestone[]>([]);
+  const [canAddStep, setCanAddStep] = useState(false);
+  const [stepCommunity, setStepCommunity] = useState<string | null>(null);
+  const [stepTitle, setStepTitle] = useState('');
+  const [stepDue, setStepDue] = useState('');
 
   const load = useCallback(() => { getMarketEvent(String(id)).then(setE).catch(() => setFailed(true)); }, [id]);
-  useEffect(() => { load(); }, [load]);
+  const loadSteps = useCallback(() => {
+    getMilestones(String(id)).then((r) => { setSteps(r.milestones); setCanAddStep(r.can_add); setStepCommunity(r.my_community_id); })
+      .catch(() => { setSteps([]); setCanAddStep(false); setStepCommunity(null); });
+  }, [id]);
+  useEffect(() => { load(); loadSteps(); }, [load, loadSteps]);
 
   const going = async (on: boolean) => {
     try { await setMarketGoing(String(id), on); setError(null); load(); } catch { setError(w('dayFailed')); }
@@ -33,6 +43,18 @@ export default function MarketDay() {
     catch (err) { setError(err instanceof ApiError && err.code === 'sellers_are_seniors' ? w('sellersOnly') : w('dayFailed')); }
   };
   const give = async () => { try { await cancelMarketStall(String(id)); load(); } catch { setError(w('dayFailed')); } };
+  // The circle's weekly steps toward its stall: the lead of a circle that planned the visit adds them, every member ticks them.
+  const addStep = async () => {
+    const cid = stepCommunity ?? e?.my_communities[0]?.community_id;
+    if (!cid) return;
+    try {
+      await addMilestone(String(id), { community_id: cid, title: stepTitle.trim(), due_on: stepDue.trim() || undefined });
+      setStepTitle(''); setStepDue(''); setError(null); loadSteps();
+    } catch { setError(w('dayFailed')); }
+  };
+  const tickStep = async (s: Milestone) => {
+    try { await tickMilestone(String(id), s.id, !s.done); setError(null); loadSteps(); } catch { setError(w('dayFailed')); }
+  };
 
   if (failed) return <Screen title={w('dayHeading')} back><Body muted>{w('dayNotFound')}</Body></Screen>;
   if (!e) return <Screen title={w('dayHeading')} back><Body muted>…</Body></Screen>;
@@ -67,6 +89,26 @@ export default function MarketDay() {
           <View style={{ height: space.sm }} />
           <Button label={w('takeStall')} onPress={() => void stall()} disabled={selling.trim().length < 2} />
         </Card>
+      ) : null}
+      {e.my_communities.length ? (
+        <Section title={w('daySteps')}>
+          {steps.length === 0 ? <Empty text={w('noSteps')} /> : null}
+          {steps.map((s) => (
+            <ListRow key={s.id} icon={s.done ? 'checkmark-circle' : 'ellipse-outline'} title={s.title}
+              sub={[s.community,
+                    s.due_on ? `${w('stepBy')} ${new Date(`${s.due_on}T00:00`).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}` : '',
+                    s.done ? w('stepDone') : ''].filter(Boolean).join(' · ')}
+              onPress={() => void tickStep(s)} />
+          ))}
+          {canAddStep ? (
+            <Card title={w('addStep')}>
+              <Field label={w('step_title')} value={stepTitle} onChangeText={setStepTitle} maxLength={200} />
+              <Field label={w('step_by')} value={stepDue} onChangeText={setStepDue} keyboardType="numbers-and-punctuation" maxLength={10} />
+              <View style={{ height: space.sm }} />
+              <Button label={w('addStep')} onPress={() => void addStep()} disabled={stepTitle.trim().length < 2} />
+            </Card>
+          ) : null}
+        </Section>
       ) : null}
     </Screen>
   );

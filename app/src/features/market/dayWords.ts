@@ -40,4 +40,11 @@ export const DAYS: WordTable = {
   dayStalls: ['Stalls', 'स्टॉल', 'স্টল', 'கடைகள்', '摊位', 'Gerai'],
   myHost: ['My host', 'मेरा आयोजক', 'আমার আয়োজক', 'என் ஏற்பாட்டாளர்', '我的主办方', 'Penganjur saya'],
   myHostSub: ['See what is coming up and add one', 'देखें क्या आ रहा है और एक जोड़ें', 'কী আসছে দেখুন এবং একটি যোগ করুন', 'என்ன வருகிறது என்று பார்த்து ஒன்றைச் சேர்க்கவும்', '查看即将开始的活动并添加一个', 'Lihat apa yang akan datang dan tambah satu'],
+  daySteps: ['Steps toward our stall', 'हमारे स्टॉल की ओर कदम', 'আমাদের স্টলের দিকে পদক্ষেপ', 'உங்கள் கடையை நோக்கிய படிகள்', '走向我们摊位的步骤', 'Langkah ke gerai kita'],
+  noSteps: ['No steps yet. The circle can add small ones here.', 'अभी कोई कदम नहीं। समुदाय यहाँ छोटे कदम जोड़ सकता है।', 'এখনো কোনো পদক্ষেপ নেই। ঘরা এখানে ছোট পদক্ষেপ যোগ করতে পারে।', 'இப்போது படிகள் இல்லை. சமூகம் இங்கே சிறு படிகளைச் சேர்க்கலாம்.', '还没有步骤。社群可以在这里添加小步骤。', 'Tiada langkah lagi. Boleh tambah langkah kecil di sini.'],
+  stepDone: ['Done', 'हो गया', 'হয়ে গেছে', 'முடிந்தது', '已完成', 'Selesai'],
+  stepBy: ['By', 'तक', 'পর্যন্ত', 'வரை', '截止', 'Sebelum'],
+  step_title: ['What is the step?', 'कदम क्या है?', 'পদক্ষেপটি কী?', 'அந்தப் படி என்ன?', '这个步骤是什么？', 'Apa langkahnya?'],
+  step_by: ['By (2026-11-20)', 'तारीख तक (2026-11-20)', 'তারিখ পর্যন্ত (2026-11-20)', 'தேதி வரை (2026-11-20)', '截止日期 (2026-11-20)', 'Tarikh (2026-11-20)'],
+  addStep: ['Add a step', 'कदम जोड़ें', 'পদক্ষেপ যোগ করুন', 'ஒரு படி சேர்க்கவும்', '添加步骤', 'Tambah langkah'],
 };

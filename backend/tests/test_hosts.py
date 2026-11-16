@@ -1,6 +1,8 @@
 """Hosts list their own opportunities (Marketplace): who works on a host, and what only they may do there —
 members only, editors cannot add members, never another host's, importing a community is idempotent,
-and the host's own people make, edit and cancel their opportunities (the same fields as the platform admin's form)."""
+and the host's own people make, edit and cancel their opportunities (the same fields as the platform admin's form).
+Also the circle's weekly steps before a market day: the lead sets them, the members tick them, one gentle nudge each
+through the outbox when a step comes due."""
 import uuid
 from datetime import datetime, timedelta, timezone
 
@@ -159,3 +161,86 @@ def test_a_repeating_opportunity_can_be_stopped_by_a_host_member():
     ended = client.post(f"/v1/hosts/{hid}/events/{listed[0]['id']}/end-series", headers=owner["h"])
     assert ended.status_code == 200 and ended.json()["ended"] is True
     assert client.get(f"/v1/hosts/{hid}/events", headers=owner["h"]).json()["events"] == []
+
+
+# ---------- the circle's weekly steps before a market day ("four weeks of herbs, one market day") ----------
+def make_event(admin, title="Herb market day") -> str:
+    body = {"title": f"HM{TAG} {title}", "venue_name": "Tampines Hub", "starts_at": tomorrow().isoformat(),
+            "kind": "market_day", "intents": ["earn", "enjoy"]}
+    return client.post("/v1/market/events", json=body, headers=admin["h"]).json()["id"]
+
+
+def circle(lead, name="Herb growers") -> str:
+    made = client.post("/v1/communities", json={"name": f"HM{TAG} {name}", "privacy": "open"}, headers=lead["h"])
+    assert made.status_code == 200, made.text
+    return made.json()["id"]
+
+
+def test_weekly_steps_toward_a_stall_are_set_by_the_lead_shown_to_members_and_ticked():
+    admin, lead, member, outsider = person("Platform Admin", admin=True), person("Meena Iyer"), person("Ravi Kumar"), person("Sunita Devi")
+    eid, cid = make_event(admin), circle(lead)
+    assert client.post(f"/v1/communities/{cid}/join", headers=member["h"]).status_code == 200
+    # steps belong to a visit the circle really planned
+    assert client.get(f"/v1/market/events/{eid}/milestones", headers=lead["h"]).json() == {"milestones": [], "can_add": False, "my_community_id": None}
+    early = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Seeds and soil"}, headers=lead["h"])
+    assert early.status_code == 409 and early.json()["detail"]["code"] == "not_planned"
+    assert client.post(f"/v1/market/events/{eid}/communities/{cid}", json={"on": True}, headers=lead["h"]).status_code == 200
+    due = (datetime.now(UTC).date() + timedelta(days=2)).isoformat()
+    added = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Seeds and soil", "due_on": due}, headers=lead["h"])
+    assert added.status_code == 201 and added.json()["added"] is True
+    # a plain member of the circle sees the steps and ticks them, but may not set one
+    refused = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Water every day"}, headers=member["h"])
+    assert refused.status_code == 403 and refused.json()["detail"]["code"] == "not_a_lead"
+    seen = client.get(f"/v1/market/events/{eid}/milestones", headers=member["h"]).json()
+    assert seen["can_add"] is False and seen["my_community_id"] == cid
+    assert [(s["title"], s["done"], s["due_on"]) for s in seen["milestones"]] == [("Seeds and soil", False, due)]
+    mid = seen["milestones"][0]["id"]
+    assert client.post(f"/v1/market/events/{eid}/milestones/{mid}/tick", json={"done": True}, headers=member["h"]).json() == {"done": True}
+    assert client.get(f"/v1/market/events/{eid}/milestones", headers=lead["h"]).json()["milestones"][0]["done"] is True
+    assert client.get(f"/v1/market/events/{eid}/milestones", headers=lead["h"]).json()["can_add"] is True  # the lead may set steps
+    # the same step twice, a circle that did not plan a visit, and someone outside the circle
+    again = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Seeds and soil"}, headers=lead["h"])
+    assert again.status_code == 409
+    unplanned = circle(lead, "Tai chi friends")
+    not_planned = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": unplanned, "title": "Print flyers"}, headers=lead["h"])
+    assert not_planned.status_code == 409 and not_planned.json()["detail"]["code"] == "not_planned"
+    outsider_view = client.get(f"/v1/market/events/{eid}/milestones", headers=outsider["h"]).json()
+    assert outsider_view["milestones"] == [] and outsider_view["can_add"] is False
+    assert client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Sneak in"}, headers=outsider["h"]).status_code == 403
+    # only a lead may take a step back out
+    assert client.delete(f"/v1/market/events/{eid}/milestones/{mid}", headers=member["h"]).status_code == 403
+    assert client.delete(f"/v1/market/events/{eid}/milestones/{mid}", headers=lead["h"]).json() == {"removed": True}
+    assert client.get(f"/v1/market/events/{eid}/milestones", headers=member["h"]).json()["milestones"] == []
+
+
+def test_a_step_that_is_due_nudges_the_circle_once_each_through_the_outbox():
+    admin, lead, member = person("Platform Admin", admin=True), person("Meena Iyer"), person("Ravi Kumar")
+    eid, cid = make_event(admin), circle(lead)
+    client.post(f"/v1/communities/{cid}/join", headers=member["h"])
+    client.post(f"/v1/market/events/{eid}/communities/{cid}", json={"on": True}, headers=lead["h"])
+    due = (datetime.now(UTC).date() + timedelta(days=2)).isoformat()  # inside the three-day window
+    step = client.post(f"/v1/market/events/{eid}/milestones", json={"community_id": cid, "title": "Plant the seedlings", "due_on": due}, headers=lead["h"]).json()
+    # 12:00 in each person's own time, so the nudge is polite whatever hour the tests run at
+    now = datetime.now(UTC)
+    off = 12 * 60 - (now.hour * 60 + now.minute)
+    while off > 720:
+        off -= 1440
+    while off < -720:
+        off += 1440
+    with engine().begin() as conn:
+        conn.execute(text("update users set tz_offset_min = :o where id = any(cast(:ids as uuid[]))"),
+                     {"o": off, "ids": [lead["id"], member["id"]]})
+    from app.modules.market import milestones
+
+    def nudged() -> int:
+        with engine().connect() as conn:
+            return conn.execute(text("select count(*) from notifications where dedupe_key = :k and user_id = any(cast(:ids as uuid[]))"),
+                                {"k": f"milestone:{step['id']}", "ids": [lead["id"], member["id"]]}).scalar_one()
+
+    milestones.run_once(now)
+    assert nudged() == 2  # the lead and the member each got one gentle word
+    milestones.run_once(now)  # and running it again never doubles a nudge: one per person per step
+    assert nudged() == 2
+    with engine().connect() as conn:
+        body = conn.execute(text("select body from notifications where dedupe_key = :k limit 1"), {"k": f"milestone:{step['id']}"}).scalar_one()
+    assert "Plant the seedlings" in body and "Herb market day" in body

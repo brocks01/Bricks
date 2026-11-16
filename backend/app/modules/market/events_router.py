@@ -7,7 +7,7 @@ from sqlalchemy import Connection
 
 from ...core.db import get_conn
 from ..identity.router import current_user_id
-from . import events
+from . import events, milestones
 from .service import MarketError
 
 router = APIRouter(prefix="/v1/market")
@@ -48,6 +48,16 @@ class StallIn(BaseModel):
     kind: str = Field(default="goods", pattern="^(goods|skill)$")
     helper_name: str | None = Field(default=None, max_length=60)
     slot: str = Field(default="whole", pattern="^(first|second|whole)$")
+
+
+class MilestoneIn(BaseModel):
+    community_id: str
+    title: str = Field(min_length=2, max_length=200)
+    due_on: date | None = None  # "four weeks of herbs": the day this small step should be done by
+
+
+class TickIn(BaseModel):
+    done: bool = True
 
 
 def _run(fn, *a):
@@ -103,3 +113,28 @@ def create_event(body: EventIn, user_id: str = Depends(current_user_id), conn: C
 def end_event_series(eid: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     """Stop a repeating market day: no more are made and the coming ones are cancelled. Platform admins only."""
     return _run(events.end_series, conn, user_id, eid)
+
+
+# ---------- the circle's weekly steps toward its stall ----------
+@router.get("/events/{eid}/milestones")
+def list_milestones(eid: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The steps the circles of mine that planned this visit are ticking off (members only), and whether I may add one (I lead one of them)."""
+    return _run(milestones.list_for, conn, user_id, eid)
+
+
+@router.post("/events/{eid}/milestones", status_code=201)
+def add_milestone(eid: str, body: MilestoneIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A Community Lead of a circle that planned this visit sets one small step toward the stall (a date to do it by is optional)."""
+    return _run(milestones.add, conn, user_id, eid, body.community_id, body.title, body.due_on)
+
+
+@router.post("/events/{eid}/milestones/{mid}/tick")
+def tick_milestone(eid: str, mid: str, body: TickIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Tick a step off (or back on). Anyone in that circle may: it is the circle's plan, not one person's list."""
+    return _run(milestones.tick, conn, user_id, eid, mid, body.done)
+
+
+@router.delete("/events/{eid}/milestones/{mid}")
+def delete_milestone(eid: str, mid: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A Community Lead of that circle takes one step back out."""
+    return _run(milestones.remove, conn, user_id, eid, mid)
