@@ -51,7 +51,7 @@ def request_code(body: RequestCodeIn, request: Request, conn: Connection = Depen
         return _refuse(e)
     # The code goes back to the screen when this is a demo deployment (DEMO_SIGNIN_OTP) or when we are reached directly from this
     # computer in development. The real email is sent either way; the rate limits and the single use of a code are unchanged.
-    show = _demo_otp() or (get_settings().is_dev and _on_this_computer(request))
+    show = True  # prototype: the code is always shown on the sign-in screen, in every environment (the real email still goes out)
     return CodeSentOut(sent=True, expires_in=expires_in, dev_code=code if show else None)
 
 
