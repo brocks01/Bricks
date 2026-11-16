@@ -8,7 +8,6 @@
 
 The documentation is the single source of truth. There is no handoff file and no log: keep your area's product page true (its Status section) when behaviour changes.
 
-
 ## Hard rules (the owner's, non-negotiable)
 - **Never print, paste, log or commit a secret** (API keys, tokens, passwords, database URLs). `.env` files are never committed and never opened to read values; scripts may read them in-process and print only names.
 - **Never place a phone call.** **ngrok belongs to the owner**: never start, stop or reconfigure it.
