@@ -4,8 +4,8 @@ Append one entry per iteration: the date, who (tool and model), the iteration, w
 NOT tested, and the next step. Then two lists, kept up to date:
 
 ## 17 Nov 2026 — B1: the app shell, leaves, and the Tree of Wisdom
-**Who:** Sarath, with Claude Code (Claude Fable 5.2). **Branch:** `b/shell-leaves-tree`, three commits (one per part), not pushed.
-The branch was made from `revamp-iterations-v2` (the branch that holds this folder; it is not on `main` yet) with `origin/main` merged in.
+**Who:** Sarath, with Claude Code (Claude Fable 5.2). **Branch:** `revamp-iterations-v2` (Sarath chose to work on this branch directly, no branch per iteration), three commits (one per part), not pushed.
+`origin/main` (17 Nov) was merged into the branch before the work.
 
 ### What was done
 **Part 1, the shell**
