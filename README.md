@@ -8,7 +8,8 @@ Built for the Singapore–India Hackathon 2026 (raiSE, Social Innovation and Inc
 - **One agent** on a phone call, Telegram, WhatsApp, SMS and the app, with one memory and one set of abilities.
 
 ## Folders
-| Folder | What it holds |
+| Folder | What it holds |'
+
 |---|---|
 | `app/` | the Expo app and website |
 | `backend/` | the Python API and database migrations |
