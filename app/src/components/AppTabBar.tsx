@@ -17,7 +17,7 @@ import { AgentOrb } from './AgentOrb';
  * Which of the three a person sees is decided by the server's profile, never hard-coded here: a young learner sees Wisdom alone,
  * an elder who came to share sees Wisdom and the Marketplace, someone who came for company sees all three.
  * Today, health, family, notifications and chats are reached from the profile (the round avatar at the top right).
- * The agent is one small round button floating just above this bar (AgentOrb). It shows only when someone is signed in with a finished profile, never on the sign-in pages.
+ * The agent is one small round button floating just above this bar (AgentOrb). It shows on every screen, signed in or not, including setup and onboarding.
  */
 const COMMUNITIES = 'connect.index';
 const WISDOM = 'wisdom.index';
@@ -49,7 +49,15 @@ export function AppTabBar() {
       </View>
     );
   }
-  if (!user?.profile_complete || current?.bare) return null;
+  // Setup, onboarding and full-screen pages have no tabs, but the agent stays: a person can talk their way through getting started, in their own language.
+  if (!user?.profile_complete || current?.bare) {
+    return (
+      <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
+        <View style={{ paddingBottom: insets.bottom }} />
+        <AgentOrb />
+      </View>
+    );
+  }
   const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
   const centre = !prof.profile || showsWisdom(prof); // until the server has answered, show all three
   const left = shows(prof, 'community');
