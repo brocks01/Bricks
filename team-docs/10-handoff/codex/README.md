@@ -3,7 +3,7 @@
 The **orchestrator** is Claude Code (in the owner's main session). It decides direction, keeps the documentation true, reviews and merges. **Worker agents** (Codex, or any other coding agent) each take **one brief** from this folder and commit **straight to `main`** (the owner works alone, so there are no branches and no pull requests). The owner starts the workers and says when a task is done.
 
 ## Where to commit
-Straight to `main`, always: `git pull --rebase origin main`, run the checks, small commits, `git push origin main`. If two workers run at once, pull with rebase before every push and keep to your lane (below) so rebases stay clean.
+Straight to `main`, always: `git pull --rebase ankit main`, run the checks, small commits, `git push ankit main`. If two workers run at once, pull with rebase before every push and keep to your lane (below) so rebases stay clean.
 
 ## The tasks, in order
 Run tasks **in the same row in parallel**; a task in a later row waits for the earlier row it names.
@@ -23,7 +23,7 @@ Run tasks **in the same row in parallel**; a task in a later row waits for the e
 
 ## Shared rules (every worker)
 1. **Read first, in this order:** `AGENTS.md`, `team-docs/10-handoff/HANDOFF.md`, `team-docs/01-philosophy/philosophy.md`, `team-docs/02-product/tabs-requirements.md`, then your own brief.
-2. **Commit and push straight to `main`** (no branches, no pull requests): `git pull --rebase origin main` first, run the checks, then `git push origin main`.
+2. **Commit and push straight to `main`** (no branches, no pull requests): `git pull --rebase ankit main` first, run the checks, then `git push ankit main`.
 3. **Stay in your lane.** Touch only the files your brief names, plus the small shared files below. If you need something outside your lane, write the question in `team-docs/10-handoff/progress/<task>-questions.md` and continue with what you can.
 4. **Shared files that always conflict, so follow these rules:**
    - **Migrations:** use only your reserved number range (below). Never edit an existing migration.

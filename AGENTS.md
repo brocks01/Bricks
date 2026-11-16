@@ -20,7 +20,7 @@ agents, so the next one must be able to continue from the files alone. Never cla
 - **Discuss before building** anything the owner did not ask for. No extra features, no extra docs, no invented content or sample data in the app.
 - **Real names and realistic data only** in anything the owner sees (demo people, accounts, labels, greetings): never "test", "UI Check", "Neighbour 7" or similar. Use his real account for his own testing.
 - **No hard-coded sample data** in the app: every tab that is not built shows "Coming soon".
-- **The owner works alone for now: commit and push straight to `main`.** Run `git pull --rebase origin main` first, run the checks, make small commits, push often. Do not create branches or pull requests unless he asks.
+- **The owner works alone for now: commit and push straight to `main`.** Run `git pull --rebase ankit main` first, run the checks, make small commits, push often. Do not create branches or pull requests unless he asks. (The git remote is called `ankit`, not `origin`.)
 - Say plainly what was tested and what was not. Short, solution-first answers.
 
 ## Quick facts
