@@ -1,5 +1,6 @@
 import { pageWords } from '../../i18n/words';
 import { definePage } from '../../kit/page';
+import { HOME } from './homeWords';
 import { ASK, INDEX, OFFER, SERVICES, STORY, SUPPORT } from './words';
 
 const base = { module: 'wisdom', requiresAuth: true } as const;
@@ -16,6 +17,11 @@ export const wisdomIndex = definePage({
   keywords: ['wisdom', 'stories', 'mentor', 'learn', 'teach', 'advice', 'experience', 'generations', 'paid', 'session', 'service'],
   elements: {
     heading: { kind: 'text', summary: 'Wisdom.' },
+    search: { kind: 'field', type: 'string', summary: 'Type to search: invitations under Teach, people who can teach you under Learn.' },
+    learnTab: { kind: 'action', summary: 'Show the Learn side: who can teach you.' },
+    teachTab: { kind: 'action', summary: 'Show the Teach side: your profile and the invitations waiting for you.' },
+    edit: { kind: 'action', summary: 'Edit what you teach (Teach) or what you want to learn (Learn).' },
+    shareProfile: { kind: 'action', summary: 'Share your teaching profile with your circle.' },
     section: { kind: 'choice', type: 'string', options: ['stories', 'mentors', 'learners', 'mine', 'paid'], summary: 'Which part of Wisdom is open: stories, mentors, people who want to learn, mine, or paid sessions.' },
     story: { kind: 'action', summary: 'Open the form to keep a story, skill or lesson.' },
     offer: { kind: 'action', summary: 'Open the form to offer to teach or help.' },
@@ -34,11 +40,23 @@ export const wisdomIndex = definePage({
     endorseNote: { kind: 'field', type: 'string', summary: 'A few kind words for the mentor, after a session.' },
     endorse: { kind: 'action', summary: 'Thank the mentor for this offer (only after a logged session, once).' },
   },
-  strings: pageWords(INDEX, {
+  strings: pageWords({ ...INDEX, ...HOME }, {
+    search: 'h_search', learnTab: 'h_learn', teachTab: 'h_teach', edit: 'h_edit', shareProfile: 'h_share',
     serviceSearch: 'searchServices', serviceKind: 'kindOfService', offerService: 'offer_service', myServices: 'my_market',
     mentorSearch: 'searchMentors', mentorMode: 'modeLabel', mentorTopic: 'topicLabel', mentorLanguage: 'languageLabel', mentorNear: 'whereLabel',
     threadMessage: 'messagePlaceholder', sendThread: 'send', endorseNote: 'thankNote', endorse: 'thankYou',
   }),
+});
+
+// The earlier, longer Wisdom screen (stories library, mentors, paid sessions) stays reachable from the bottom of the Wisdom home: nothing is removed.
+export const wisdomMore = definePage({
+  ...base,
+  key: 'wisdom.more',
+  route: '/wisdom/more',
+  summary: 'More of Wisdom: the library of shared stories, mentors with filters, what people want to learn, paid sessions by the hour and your own services.',
+  keywords: ['stories', 'library', 'mentors', 'paid', 'services', 'more'],
+  elements: wisdomIndex.elements,
+  strings: wisdomIndex.strings,
 });
 
 export const wisdomStory = definePage({

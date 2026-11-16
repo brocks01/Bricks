@@ -151,26 +151,42 @@ DEMO_DOMAINS = ("@seed.wisdom.test", "@demo.wisdom.test")
 
 
 def demo_profiles(conn: Connection) -> list[dict]:
-    """PROTOTYPE ONLY: a handful of seeded people, one of each kind, for the mock Singpass login to offer. Stable: the same people every time."""
-    picks = [
-        ("60plus", "share", "aunty"), ("60plus", "share", "other"), ("60plus", "connect", "alone"), ("40to59", "care", ""), ("40to59", "help", ""), ("under40", "learn", ""),
+    """PROTOTYPE ONLY: a handful of seeded people for the mock Singpass login, chosen to show the app well: an elder with invitations waiting, one with none yet,
+    one with learners, a learner who has asked, a daughter caring for a parent, a quiet neighbour. Stable: the same people every time."""
+    rows = conn.execute(
+        text(
+            "select u.id, u.display_name, u.age_band, u.area_name, u.language, p.roles, md5(u.email) as h, "
+            "(select count(*) from memberships m where m.user_id = u.id and m.status = 'active') as circles, "
+            "(select o.title from wisdom_offers o where o.user_id = u.id and o.status = 'active' order by o.created_at limit 1) as teaches, "
+            "(select r.topic from wisdom_requests r where r.user_id = u.id and r.status = 'open' and r.kind = 'learn' order by r.created_at limit 1) as wants, "
+            "(select count(*) from wisdom_connections k where k.mentor_id = u.id and k.status = 'pending') as inv, "
+            "(select count(*) from wisdom_connections k where k.mentor_id = u.id and k.status = 'accepted') as lrn, "
+            "(select count(*) from wisdom_connections k where k.learner_id = u.id) as sent "
+            "from users u join profiles p on p.user_id = u.id where u.email like '%@seed.wisdom.test' and u.status = 'active'"
+        )
+    ).all()
+    rows = sorted(rows, key=lambda r: r.h)
+    picked: list = []
+
+    def take(pred, key=None, reverse=False):
+        pool = [r for r in rows if r not in picked and pred(r)]
+        if key:
+            pool.sort(key=key, reverse=reverse)
+        if pool:
+            picked.append(pool[0])
+
+    sharer = lambda r: "share" in (r.roles or []) and r.age_band == "60plus"
+    take(lambda r: sharer(r) and r.inv > 0 and r.teaches, key=lambda r: r.inv, reverse=True)  # invitations waiting
+    take(lambda r: sharer(r) and r.inv == 0 and r.teaches)  # no invitations yet: the empty state
+    take(lambda r: sharer(r) and r.lrn > 0, key=lambda r: r.lrn, reverse=True)  # has learners
+    take(lambda r: "learn" in (r.roles or []) and r.sent > 0)  # a learner who asked someone
+    take(lambda r: "care" in (r.roles or []))  # a daughter caring for a parent
+    take(lambda r: r.age_band == "60plus" and "share" not in (r.roles or []))  # a quiet neighbour
+    return [
+        {"id": str(r.id), "name": r.display_name, "age_band": r.age_band, "area": r.area_name, "language": r.language, "roles": list(r.roles or []),
+         "circles": int(r.circles), "teaches": r.teaches, "wants": r.wants, "invitations": int(r.inv)}
+        for r in picked
     ]
-    out, seen = [], set()
-    for band, role, _tag in picks:
-        row = conn.execute(
-            text(
-                "select u.id, u.display_name, u.age_band, u.area_name, u.language, p.roles, "
-                "(select count(*) from memberships m where m.user_id = u.id and m.status = 'active') as circles "
-                "from users u join profiles p on p.user_id = u.id "
-                "where u.email like '%@seed.wisdom.test' and u.age_band = :b and :r = any(p.roles) and u.id <> all(cast(:seen as uuid[])) "
-                "order by md5(u.email || :salt) limit 1"
-            ),
-            {"b": band, "r": role, "seen": list(seen), "salt": _tag},
-        ).first()
-        if row:
-            seen.add(str(row.id))
-            out.append({"id": str(row.id), "name": row.display_name, "age_band": row.age_band, "area": row.area_name, "language": row.language, "roles": list(row.roles or []), "circles": int(row.circles)})
-    return out
 
 
 def demo_sign_in_as(conn: Connection, user_id: str, user_agent: str = "") -> dict:

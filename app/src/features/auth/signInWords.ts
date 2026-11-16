@@ -16,6 +16,8 @@ const T: WordTable = {
   sp_r_learn: ['Here to learn', 'सीखने आए हैं', 'শিখতে এসেছেন', 'கற்க வந்தவர்', '来学习', 'Datang untuk belajar'],
   sp_r_help: ['Helps others', 'दूसरों की मदद करते हैं', 'অন্যদের সাহায্য করেন', 'பிறருக்கு உதவுகிறார்', '帮助他人', 'Membantu orang lain'],
   sp_r_care: ['Looks after family', 'परिवार का ध्यान रखते हैं', 'পরিবারের যত্ন নেন', 'குடும்பத்தைக் கவனிக்கிறார்', '照顾家人', 'Menjaga keluarga'],
+  sp_teaches: ['Teaches: {what}', 'सिखाते हैं: {what}', 'শেখান: {what}', 'கற்பிக்கிறார்: {what}', '教授：{what}', 'Mengajar: {what}'],
+  sp_wants: ['Wants to learn: {what}', 'सीखना चाहते हैं: {what}', 'শিখতে চান: {what}', 'கற்க விரும்புகிறார்: {what}', '想学习：{what}', 'Mahu belajar: {what}'],
   sp_circles: ['{n} circles', '{n} समुदाय', '{n}টি কমিউনিটি', '{n} வட்டங்கள்', '{n} 个圈子', '{n} bulatan'],
 };
 export const signInStrings = pageWords({ ...WIZARD, ...T, failed: ONBOARDING.failed });

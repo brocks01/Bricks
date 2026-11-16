@@ -30,7 +30,8 @@ export default function SingpassMock() {
   };
   const blurb = (p: DemoProfile) => {
     const role = ROLE_ORDER.find((r) => p.roles.includes(r)) ?? 'connect';
-    return [w(`sp_r_${role}`), p.age_band ? w(AGE[p.age_band] ?? 'o_age_60') : '', p.area ?? ''].filter(Boolean).join(' · ');
+    const doing = p.teaches ? w('sp_teaches', { what: p.teaches }) : p.wants ? w('sp_wants', { what: p.wants }) : w(`sp_r_${role}`);
+    return [doing, p.age_band ? w(AGE[p.age_band] ?? 'o_age_60') : ''].filter(Boolean).join(' · ');
   };
 
   usePageData(page, profiles ? {

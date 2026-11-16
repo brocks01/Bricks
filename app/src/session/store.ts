@@ -164,7 +164,7 @@ export async function verifyCode(code: string): Promise<{ isNew: boolean; comple
   return { isNew: t.is_new, complete: sessionStore.get().user?.profile_complete ?? false };
 }
 
-export interface DemoProfile { id: string; name: string; age_band: string | null; area: string | null; language: string; roles: string[]; circles: number }
+export interface DemoProfile { id: string; name: string; age_band: string | null; area: string | null; language: string; roles: string[]; circles: number; teaches: string | null; wants: string | null }
 /** Prototype: the demo people the mock Singpass screen offers (seeded, with their circles, stories and offers already in place). */
 export async function loadDemoProfiles(): Promise<DemoProfile[]> {
   const r = await api<{ profiles: DemoProfile[] }>('GET', '/v1/auth/demo-profiles', undefined, { auth: false });

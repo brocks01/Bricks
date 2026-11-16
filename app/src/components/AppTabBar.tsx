@@ -59,9 +59,9 @@ export function AppTabBar() {
     );
   }
   const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
-  const centre = !prof.profile || showsWisdom(prof); // until the server has answered, show all three
-  const left = shows(prof, 'community');
-  const right = shows(prof, 'markets') || shows(prof, 'freelance');
+  const centre = true; // for now every person sees all three tabs, Wisdom in the centre; specialised views come later
+  const left = true;
+  const right = true;
   const side = (key: string, icon: keyof typeof Ionicons.glyphMap) => {
     const on = lit === key;
     return (

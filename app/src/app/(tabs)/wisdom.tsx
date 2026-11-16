@@ -1,2 +1,2 @@
-// The Wisdom tab.
-export { default } from '../../features/wisdom/screens/WisdomIndex';
+// The Wisdom tab: Learn | Teach.
+export { default } from '../../features/wisdom/screens/WisdomHome';
