@@ -30,6 +30,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (status === 'loading' || !current) return;
+    if (status === 'in' && complete && !prof.loaded) return; // signed in, but we do not know yet if onboarding is done: wait, so the app never flashes before it
     if (status === 'out') {
       if (current.requiresAuth) go('auth.welcome', {}, { replace: true });
     } else if (!complete) {
@@ -39,12 +40,12 @@ export function AuthGate({ children }: { children: ReactNode }) {
     } else if (current.module === 'auth') {
       go(firstTab(prof.profile), {}, { replace: true });
     }
-  }, [status, complete, current, go, prof.profile]);
+  }, [status, complete, current, go, prof.profile, prof.loaded]);
 
   return (
     <View style={{ flex: 1 }}>
       {children}
-      {status === 'loading' ? (
+      {status === 'loading' || (status === 'in' && complete && !prof.loaded) ? (
         <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
           <AppLoading />
         </View>

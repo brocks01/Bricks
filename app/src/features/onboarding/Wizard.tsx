@@ -12,7 +12,8 @@ import { createOffer, putOnboarding, skipOnboarding, type CapsuleKind, type Onbo
 import { useStore } from '../../core/store';
 import { useField, usePageData, usePageWords } from '../../kit';
 import type { PageDataAction } from '../../kit';
-import { sessionStore } from '../../session/store';
+import { useNavigate } from '../../navigation';
+import { sessionStore, signOut } from '../../session/store';
 import { colors, radius, space, tints, type } from '../../theme/tokens';
 import { Bar, Chip, Frame, Interest, ListCard, grid, type Icon } from './kit';
 import { onboardingIndex as page } from './pages';
@@ -36,6 +37,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 export function Wizard({ state, onState, finish }: { state: OnboardingState; onState: (s: OnboardingState) => void; finish: () => Promise<void> }) {
   const w = usePageWords(page);
   const { user } = useStore(sessionStore);
+  const go = useNavigate();
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -56,7 +58,9 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
 
   const step = ORDER[i];
   const next = () => { setError(null); setI((x) => Math.min(x + 1, ORDER.length - 1)); };
-  const back = i > 0 && step !== 'welcome' ? () => { setError(null); setI((x) => (ORDER[x] === 'voice' && share === false ? ORDER.indexOf('teach') : x - 1)); } : undefined;
+  // Back inside onboarding goes to the step before; on the very first step it cancels the sign-up and returns to sign-in.
+  const cancel = () => { void signOut().then(() => { go('auth.signIn', {}, { replace: true }); }).catch(() => undefined); };
+  const back = step === 'welcome' ? undefined : i > 0 ? () => { setError(null); setI((x) => (ORDER[x] === 'voice' && share === false ? ORDER.indexOf('teach') : x - 1)); } : cancel;
   const run = async (fn: () => Promise<OnboardingState | void>) => {
     setBusy(true); setError(null);
     try { const s = await fn(); if (s) onState(s); next(); } catch { setError(w('failed')); } finally { setBusy(false); }
