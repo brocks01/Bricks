@@ -318,5 +318,7 @@ def run_for_user(user_id: str, name: str, args: dict | None) -> dict:
         return run(conn, user_id, name, args)
 
 
-from . import everyday, onboarding, schedule, wisdom  # noqa: E402,F401  (registers the everyday, onboarding, scheduled-call and Wisdom skills)
+from . import everyday, onboarding, safety, schedule, wisdom  # noqa: E402,F401  (registers the everyday, onboarding, safety, scheduled-call and Wisdom skills)
+from . import checkins  # noqa: E402,F401  (registers the daily check-in skills)
+from . import belonging  # noqa: E402,F401  (registers the belonging skills: our days, sending for a day, away, our stories)
 from ..hosts import skill as host_skill  # noqa: E402,F401  (registers the host's own skills)

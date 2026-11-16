@@ -17,6 +17,7 @@ from .modules.communities.router import router as communities_router
 from .modules.communities.rules_router import router as community_rules_router
 from .modules.communities.lead_router import router as community_lead_router
 from .modules.communities.screens_router import router as community_screens_router
+from .modules.belonging.router import router as belonging_router
 from .modules.explore.router import router as explore_router
 from .modules.grow.router import router as grow_router
 from .modules.media.router import router as media_router
@@ -35,6 +36,7 @@ from .modules.onboarding.router import profile_router, router as onboarding_rout
 from .modules.wisdom.router import router as wisdom_router
 from .modules.insights.router import router as insights_router
 from .modules.hosts.router import router as hosts_router
+from .modules.safety.router import router as safety_router
 
 # Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
 # One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
@@ -104,6 +106,7 @@ app.include_router(community_rules_router)  # before communities_router: that on
 app.include_router(community_lead_router)
 app.include_router(communities_router)
 app.include_router(community_screens_router)
+app.include_router(belonging_router)
 app.include_router(explore_router)
 app.include_router(grow_router)
 app.include_router(media_router)
@@ -122,6 +125,7 @@ app.include_router(onboarding_router)
 app.include_router(wisdom_router)
 app.include_router(insights_router)
 app.include_router(hosts_router)
+app.include_router(safety_router)
 app.include_router(profile_router)
 
 
