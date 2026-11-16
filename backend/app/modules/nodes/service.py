@@ -11,6 +11,7 @@ The roll-up is kept incrementally: each card holds the sums of what is below it,
 increment per level, and nothing is rescanned. `reconcile` repairs drift. There is no cap on how many nodes hang below a goal; depth is capped (16).
 """
 import json
+import uuid
 from datetime import date, datetime, timedelta, timezone
 
 from sqlalchemy import Connection, text
@@ -439,6 +440,30 @@ def tree(conn: Connection, me: str, limit: int = 600) -> dict:
     leaves = c.get("closed", 0)
     return {"nodes": nodes, "truncated": truncated, "leaves": leaves, "growing": c.get("open", 0) + c.get("active", 0) + c.get("blocked", 0) + c.get("paused", 0),
             "level": leaves // 10 + 1, "habits": habits, "roots": roots_of(conn, me, today)}
+
+
+# ---------- the Tree of Wisdom ----------
+def wisdom(conn: Connection, me: str, limit: int = 20, before: str | None = None) -> dict:
+    """The leaves of the Tree of Wisdom: how many events the person showed up to, and those events newest first, a page at a time.
+    `before` is the `next_before` of the page before; a cursor that cannot be read starts from the newest again."""
+    limit = max(1, min(int(limit), 50))
+    total = conn.execute(text("select count(*) from wisdom_leaves where user_id = :u"), {"u": me}).scalar_one()
+    where, args = "", {"u": me, "l": limit + 1}
+    if before:
+        try:
+            at, _, lid = before.partition("~")
+            args.update({"at": datetime.fromisoformat(at), "id": str(uuid.UUID(lid))})
+            where = " and (at, id) < (:at, cast(:id as uuid))"
+        except ValueError:
+            where = ""
+    rows = conn.execute(text(f"select id, title, at, source, source_name from wisdom_leaves where user_id = :u{where} order by at desc, id desc limit :l"), args).all()
+    more = len(rows) > limit
+    rows = rows[:limit]
+    return {
+        "leaves": total,
+        "events": [{"id": str(r.id), "title": r.title, "at": r.at.isoformat(), "source": r.source, "source_name": r.source_name} for r in rows],
+        "next_before": f"{rows[-1].at.isoformat()}~{rows[-1].id}" if more and rows else None,
+    }
 
 
 # ---------- goals and repeating habits ----------

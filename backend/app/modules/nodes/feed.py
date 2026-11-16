@@ -84,7 +84,8 @@ def sync_events(conn: Connection, me: str) -> None:
 
 
 def attended(conn: Connection, me: str, activity_id: str) -> None:
-    """Checked in at a gathering (by the person or by their Community Lead): its leaf turns green. If it was never planted, it is planted already closed."""
+    """Checked in at a gathering (by the person or by their Community Lead): its leaf turns green. If it was never planted, it is planted already closed.
+    The check-in is also what earns the Tree of Wisdom leaf (through `showed_up`), whether or not the person said "going" first."""
     def go():
         have = conn.execute(text("select nid from nodes where user_id = :u and kind = 'gathering' and ref->>'id' = :a and not archived"), {"u": me, "a": activity_id}).scalar()
         if have:
@@ -97,6 +98,46 @@ def attended(conn: Connection, me: str, activity_id: str) -> None:
         service.attach(conn, me, "event", a.title, parent_id=area["nid"], kind="gathering", badge={"status": "closed", "own": 1},
                        ref={"module": "communities", "model": "activity", "id": activity_id}, actor="system")
     _safe(conn, "attended", go)
+    _community_leaf(conn, me, activity_id)
+
+
+def _community_leaf(conn: Connection, me: str, activity_id: str) -> None:
+    """The Tree of Wisdom leaf of a check-in: the gathering's title and time, and its community's name."""
+    try:
+        with conn.begin_nested():
+            a = conn.execute(text("select a.title, a.starts_at, c.name from activities a join communities c on c.id = a.community_id where a.id = :a"), {"a": activity_id}).first()
+    except Exception:  # noqa: BLE001 - see the module note
+        log.warning("nodes feed community leaf failed", exc_info=True)
+        return
+    if a:
+        showed_up(conn, me, "community", activity_id, a.title, a.starts_at, a.name)
+
+
+# ---------- the Tree of Wisdom: a leaf only for showing up ----------
+SOURCES = ("community", "market", "wisdom")
+SELF_REPORTED = {"market"}  # leaves that rest on the person's own answer ("I went"); a check-in or a completed session is never taken back
+
+
+def showed_up(conn: Connection, user_id: str, source: str, ref_id: str, title: str, at: datetime, source_name: str | None = None, on: bool = True) -> None:
+    """THE one call that grows a leaf on the Tree of Wisdom: the person showed up to an event.
+
+    `source` is 'community' (checked in at a gathering), 'market' (answered "I went" after a market event) or 'wisdom' (a session was completed).
+    One leaf per person, source and `ref_id`, however often it is reported. `on=False` withdraws the leaf, and only if it came from a
+    self-report (the Marketplace's "I went" changed to "I didn't go"); a check-in leaf is never taken away.
+    Like every call here it never raises into the caller's request.
+    """
+    def go():
+        if source not in SOURCES:
+            raise ValueError(f"unknown leaf source {source!r}")
+        if on:
+            conn.execute(text(
+                "insert into wisdom_leaves (user_id, source, ref_id, title, at, source_name, self_reported) values (:u, :s, :r, :t, :at, :n, :self) "
+                "on conflict (user_id, source, ref_id) do nothing"),
+                {"u": user_id, "s": source, "r": str(ref_id), "t": (title or "").strip()[:200] or "Event", "at": at or datetime.now(timezone.utc),
+                 "n": (source_name or "").strip()[:200] or None, "self": source in SELF_REPORTED})
+        else:
+            conn.execute(text("delete from wisdom_leaves where user_id = :u and source = :s and ref_id = :r and self_reported"), {"u": user_id, "s": source, "r": str(ref_id)})
+    _safe(conn, "showed_up", go)
 
 
 def care(conn: Connection, me: str, item_id: str, occurs_iso: str, title: str, kind: str, done: bool) -> None:

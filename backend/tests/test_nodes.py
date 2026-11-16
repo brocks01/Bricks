@@ -277,6 +277,119 @@ def test_saying_going_plants_a_gathering_and_once_it_has_passed_the_leaf_turns_g
     assert tr["leaves"] == 0 and tr["growing"] == 0  # long past and never attended: taken off the tree
 
 
+# ---------- the Tree of Wisdom: a leaf only for showing up ----------
+def wisdom_of(p, **q):
+    r = client.get("/v1/nodes/wisdom", params=q, headers=p["h"])
+    assert r.status_code == 200, r.text
+    return r.json()
+
+
+def circle(name):
+    """A lead, a member and a gathering that is on right now (so the member may check themself in)."""
+    lead, member = person(), person()
+    cid = client.post("/v1/communities", json={"name": name}, headers=lead["h"]).json()["id"]
+    code = client.get(f"/v1/communities/{cid}", headers=lead["h"]).json()["community"]["invite_code"]
+    client.post("/v1/communities/join", json={"code": code}, headers=member["h"])
+    return lead, member, cid
+
+
+def gathering(cid, lead, title, when="now()"):
+    with engine().begin() as conn:
+        return str(conn.execute(text(f"insert into activities (community_id, organiser_id, title, starts_at) values (:c, :o, :t, {when}) returning id"), {"c": cid, "o": lead["id"], "t": title}).scalar_one())
+
+
+def test_going_alone_gives_no_leaf_and_a_check_in_gives_exactly_one():
+    lead, member, cid = circle("Bishan Walkers")
+    a = gathering(cid, lead, "Morning walk")
+    client.post(f"/v1/communities/activities/{a}/going", json={"going": True}, headers=member["h"])
+    assert wisdom_of(member) == {"leaves": 0, "events": [], "next_before": None}  # saying "I'm going" earns nothing
+    assert client.post(f"/v1/communities/activities/{a}/checkin", json={}, headers=member["h"]).status_code == 200
+    w = wisdom_of(member)
+    assert w["leaves"] == 1 and len(w["events"]) == 1
+    e = w["events"][0]
+    assert e["title"] == "Morning walk" and e["source"] == "community" and e["source_name"] == "Bishan Walkers" and e["at"] and e["id"]
+    client.post(f"/v1/communities/activities/{a}/checkin", json={}, headers=member["h"])  # reported again, by the person
+    client.post(f"/v1/communities/activities/{a}/checkin", json={"user_id": member["id"]}, headers=lead["h"])  # and by their lead
+    assert wisdom_of(member)["leaves"] == 1
+    client.post(f"/v1/communities/activities/{a}/going", json={"going": False}, headers=member["h"])  # "going" changed to no afterwards
+    assert wisdom_of(member)["leaves"] == 1  # a check-in leaf is never taken away
+
+
+def test_a_check_in_without_going_first_still_gives_a_leaf():
+    lead, member, cid = circle("Toa Payoh Gardeners")
+    a = gathering(cid, lead, "Herb morning")
+    assert client.post(f"/v1/communities/activities/{a}/checkin", json={"user_id": member["id"]}, headers=lead["h"]).status_code == 200
+    w = wisdom_of(member)
+    assert w["leaves"] == 1 and w["events"][0]["title"] == "Herb morning"
+    assert wisdom_of(lead)["leaves"] == 0  # the lead who checked them in earns nothing for it
+
+
+def test_showed_up_for_market_and_wisdom_gives_one_each_and_only_a_self_report_can_be_withdrawn():
+    from datetime import datetime, timedelta, timezone
+    from app.modules.nodes import feed
+    lead, member, cid = circle("Ang Mo Kio Singers")
+    a = gathering(cid, lead, "Choir practice")
+    client.post(f"/v1/communities/activities/{a}/checkin", json={}, headers=member["h"])
+    now = datetime.now(timezone.utc)
+    market_ref, session_ref = str(uuid.uuid4()), str(uuid.uuid4())
+    with engine().begin() as conn:
+        for _ in range(2):  # reported twice: still one leaf each
+            feed.showed_up(conn, member["id"], "market", market_ref, "Sunday market day", now - timedelta(days=1), "Bishan Active Ageing Centre")
+            feed.showed_up(conn, member["id"], "wisdom", session_ref, "Repairing a bicycle", now - timedelta(days=2), "Lakshmi Nair")
+        feed.showed_up(conn, member["id"], "festival", "x", "Not a source", now)  # an unknown source is refused quietly and never raises
+    w = wisdom_of(member)
+    assert w["leaves"] == 3 and [e["source"] for e in w["events"]] == ["community", "market", "wisdom"]  # newest first
+    assert w["events"][1]["source_name"] == "Bishan Active Ageing Centre" and w["events"][2]["source_name"] == "Lakshmi Nair"
+    with engine().begin() as conn:
+        feed.showed_up(conn, member["id"], "market", market_ref, "Sunday market day", now, on=False)  # "I went" changed to "I didn't go"
+        feed.showed_up(conn, member["id"], "community", a, "Choir practice", now, on=False)  # a check-in cannot be withdrawn
+        feed.showed_up(conn, member["id"], "wisdom", session_ref, "Repairing a bicycle", now, on=False)  # nor a completed session
+    w = wisdom_of(member)
+    assert w["leaves"] == 2 and [e["source"] for e in w["events"]] == ["community", "wisdom"]
+    with engine().begin() as conn:
+        feed.showed_up(conn, member["id"], "market", market_ref, "Sunday market day", now - timedelta(days=1))  # changed back to "I went"
+    assert wisdom_of(member)["leaves"] == 3
+
+
+def test_a_reminder_ticked_a_walk_and_a_goal_give_no_wisdom_leaf():
+    from app.modules.nodes import feed
+    p = person()
+    with engine().begin() as conn:
+        feed.care(conn, p["id"], str(uuid.uuid4()), "2026-11-17T08:00:00+00:00", "Morning medicine", "medicine", True)
+        feed.walked(conn, p["id"])
+        service.earn(conn, p["id"], "give", "Giving back", "Garden session")
+    assert client.get("/v1/nodes/tree", headers=p["h"]).json()["leaves"] >= 3  # the old tree still counts them, exactly as before
+    assert wisdom_of(p) == {"leaves": 0, "events": [], "next_before": None}
+
+
+def test_the_history_is_paged_in_order_once_each_and_never_shows_another_person():
+    from datetime import datetime, timedelta, timezone
+    from app.modules.nodes import feed
+    p, other = person(), person()
+    now = datetime.now(timezone.utc)
+    with engine().begin() as conn:
+        for i in range(7):
+            feed.showed_up(conn, p["id"], "market", f"day-{i}", f"Market day {i}", now - timedelta(days=i), None)
+        feed.showed_up(conn, p["id"], "wisdom", "same-time-a", "Session A", now - timedelta(days=3), "Tan Ah Kow")  # same moment as day 3: the id breaks the tie
+        feed.showed_up(conn, other["id"], "market", "day-0", "Somebody else's day", now, None)
+    seen, before, pages = [], None, 0
+    while True:
+        w = wisdom_of(p, limit=3, **({"before": before} if before else {}))
+        assert w["leaves"] == 8 and len(w["events"]) <= 3
+        seen += w["events"]
+        pages += 1
+        before = w["next_before"]
+        if not before:
+            break
+    assert pages == 3 and len(seen) == 8 and len({e["id"] for e in seen}) == 8
+    assert [e["at"] for e in seen] == sorted((e["at"] for e in seen), reverse=True)
+    assert all(e["title"] != "Somebody else's day" for e in seen) and seen[0]["source_name"] is None
+    assert wisdom_of(other)["leaves"] == 1
+    assert len(wisdom_of(p, limit=500)["events"]) == 8  # the limit is capped at 50, not refused
+    assert len(wisdom_of(p, before="nonsense")["events"]) == 8  # a cursor that cannot be read starts again from the newest
+    assert client.get("/v1/nodes/wisdom").status_code in (401, 403)
+
+
 def test_upcoming_carries_the_going_count_names_and_category():
     lead, member = person(), person()
     cid = client.post("/v1/communities", json={"name": "Upcoming Heights"}, headers=lead["h"]).json()["id"]
