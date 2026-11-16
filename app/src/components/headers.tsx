@@ -53,7 +53,7 @@ export function AppHeader() {
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
         <Pressable accessibilityRole="button" accessibilityLabel="Notifications" onPress={() => go('channels.notices')} hitSlop={8}>
-          <Ionicons name="notifications-outline" size={26} color={colors.ink} />
+          <Ionicons name="notifications-outline" size={26} color={colors.ink} accessible={false} />
           {unread > 0 ? <View style={{ position: 'absolute', right: -1, top: -1, width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.card }} /> : null}
         </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => go('me.index')} hitSlop={6} style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.gold }}>
@@ -70,7 +70,7 @@ export function BackHeader({ title }: { title: string }) {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: space.lg, paddingVertical: space.md, backgroundColor: colors.bg, gap: 14 }}>
       <Pressable onPress={back} accessibilityRole="button" accessibilityLabel="Back" hitSlop={10}>
-        <Ionicons name="arrow-back" size={26} color={colors.ink} />
+        <Ionicons name="arrow-back" size={26} color={colors.ink} accessible={false} />
       </Pressable>
       <Text style={[type.h2, { color: colors.ink }]} accessibilityRole="header">{title}</Text>
     </View>

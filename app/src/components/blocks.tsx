@@ -45,7 +45,7 @@ export function Panel({ children, tone, onPress, label }: { children: ReactNode;
 export function Tile({ icon, i = 0, dim = size.thumb }: { icon: IconName; i?: number; dim?: number }) {
   return (
     <View style={{ width: dim, height: dim, borderRadius: radius.button, backgroundColor: tintFor(i), alignItems: 'center', justifyContent: 'center' }}>
-      <Ionicons name={icon} size={dim * 0.5} color={colors.accent} />
+      <Ionicons name={icon} size={dim * 0.5} color={colors.accent} accessible={false} />
     </View>
   );
 }
@@ -115,7 +115,7 @@ export function Notice({ text, tone = 'soft', icon }: { text: string; tone?: 'so
   return (
     <Panel tone={tone}>
       <View style={{ flexDirection: 'row', gap: space.sm, alignItems: 'center' }}>
-        <Ionicons name={icon ?? (tone === 'warn' ? 'alert-circle-outline' : 'information-circle-outline')} size={size.icon.md} color={tone === 'warn' ? colors.warn : colors.accent} />
+        <Ionicons name={icon ?? (tone === 'warn' ? 'alert-circle-outline' : 'information-circle-outline')} size={size.icon.md} color={tone === 'warn' ? colors.warn : colors.accent} accessible={false} />
         <Text style={[type.small, { flex: 1, color: colors.ink }]}>{text}</Text>
       </View>
     </Panel>
@@ -140,7 +140,7 @@ export function Bar({ value }: { value: number }) {
 export function Figure({ n, label, icon }: { n: string | number; label: string; icon?: IconName }) {
   return (
     <View style={{ flex: 1, alignItems: 'center', gap: 2, paddingVertical: space.md, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
-      {icon ? <Ionicons name={icon} size={size.icon.md} color={colors.accent} /> : null}
+      {icon ? <Ionicons name={icon} size={size.icon.md} color={colors.accent} accessible={false} /> : null}
       <Text style={{ fontSize: 22, fontWeight: '800', color: colors.ink }}>{n}</Text>
       <Text style={[type.small, { color: colors.muted, textAlign: 'center' }]} numberOfLines={2}>{label}</Text>
     </View>

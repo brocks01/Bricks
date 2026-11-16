@@ -62,7 +62,7 @@ export function Button({ label, onPress, kind = 'primary', icon, disabled }: { l
       accessibilityState={{ disabled: !!disabled }}
       style={({ pressed }) => [styles.btn, primary ? { backgroundColor: colors.accent } : { backgroundColor: colors.card, borderWidth: 2, borderColor: danger ? colors.danger : colors.accent }, (pressed || disabled) && { opacity: disabled ? 0.5 : 0.85 }]}
     >
-      {icon ? <Ionicons name={icon} size={20} color={fg} style={{ marginRight: 8 }} /> : null}
+      {icon ? <Ionicons name={icon} size={20} color={fg} style={{ marginRight: 8 }} accessible={false} /> : null}
       <Text style={{ fontSize: 18, fontWeight: '700', color: fg }}>{label}</Text>
     </Pressable>
   );
@@ -118,7 +118,7 @@ export function ChoiceChips({ label, options, value, onChange }: { label: string
 export function Row({ icon, label, value, onPress }: { icon: IconName; label: string; value: string; onPress?: () => void }) {
   const inner = (
     <>
-      <Ionicons name={icon} size={24} color={colors.accent} />
+      <Ionicons name={icon} size={24} color={colors.accent} accessible={false} />
       <View style={{ flex: 1 }}>
         <Text style={[type.small, { color: colors.muted }]}>{label}</Text>
         <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink }}>{value}</Text>
