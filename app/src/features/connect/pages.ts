@@ -3,6 +3,7 @@ import { mergeStrings, pageWords } from '../../i18n/words';
 import { EXPLORE_ALIASES, R, REQUEST_ALIASES, REVIEW_ALIASES } from './rulesWords';
 import { strings } from './startStrings';
 import { L } from '../lead/leadWords';
+import { RV } from './revampWords';
 
 // Join a community with an invite code, explore the others, or ask to start one. Reached from the Community tab.
 const base = { module: 'connect', requiresAuth: true } as const;
@@ -68,11 +69,12 @@ export const connectPick = definePage({
   ...base,
   key: 'connect.pick',
   route: '/choose-places',
-  strings: pageWords(L, { heading: 'pick_title', pickContinue: 'pick_go' }),
-  summary: 'First run: choose up to three communities to join, each with a picture, then continue. A person can be in three communities at most and can change this later.',
-  keywords: ['choose', 'places', 'paths', 'first', 'join', 'welcome', 'start'],
+  strings: pageWords(RV, { heading: 'pick_title', pickContinue: 'pick_go', pickSkip: 'pick_skip' }),
+  summary: 'After onboarding: the ten communities that suit the person best (what they enjoy, how near), each with its picture, members, next gathering and why it was suggested. They tick up to three (a person can be in three at most) and join them, then go to Home.',
+  keywords: ['choose', 'places', 'paths', 'first', 'join', 'welcome', 'start', 'recommended', 'communities'],
   elements: {
     heading: { kind: 'text' },
-    pickContinue: { kind: 'action', agent: 'confirm', summary: 'Join the chosen communities and go to Today.' },
+    pickContinue: { kind: 'action', agent: 'confirm', summary: 'Join the chosen communities and go to Home.' },
+    pickSkip: { kind: 'action', summary: 'Go to Home without joining any community now.' },
   },
 });

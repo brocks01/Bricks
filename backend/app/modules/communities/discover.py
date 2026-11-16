@@ -98,7 +98,7 @@ def _card(conn: Connection, me: str, c, places: _Places, here, my_area: str | No
         "source": c.source, "host_name": c.host_name, "privacy": c.privacy, "area_name": c.area_name, "address": _place(c), "interests": list(c.interests or []),
         "member_count": c.member_count, "faces": faces, "leader": _first(leader) if not member else None, "leader_name": leader,
         "next_event": {"title": nxt.title, "starts_at": _iso(nxt.starts_at), "place": nxt.location} if nxt else None,
-        "distance_km": km, "reasons": reasons, "is_member": member, "has_whatsapp": bool(c.whatsapp_url),
+        "distance_km": km, "reasons": reasons, "is_member": member, "can_manage": bool(member and _my_role(conn, me, str(c.id))[1]), "has_whatsapp": bool(c.whatsapp_url),
         "whatsapp_url": c.whatsapp_url if member else None, "events_url": c.events_url,
     }
 

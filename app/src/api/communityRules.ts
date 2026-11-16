@@ -27,3 +27,25 @@ export const createFromRequest = (id: string) => api<{ id: string }>('POST', `/v
 export interface ReviewRequest { id: string; name: string; kind: CommunityKind; area_name: string | null; description: string | null; why: string | null; circle: Circle; audience: Audience; by: string; created_at: string }
 export const getReviewQueue = () => api<{ requests: ReviewRequest[] }>('GET', '/v1/communities/requests/review').then((r) => r.requests);
 export const decideRequest = (id: string, approve: boolean, note?: string) => api<{ status: string }>('POST', `/v1/communities/requests/${id}/decide`, { approve, note });
+
+// ---- Finding communities (revamp v2): one card shape for every list, ranked for the person ----
+export type InterestKey = 'walking' | 'taichi' | 'cooking' | 'chess' | 'music' | 'gardening' | 'teaching' | 'tech';
+export type CardReason = { kind: 'near'; km: number | null; area: string | null } | { kind: 'interest'; key: InterestKey };
+export interface CommunityCard {
+  id: string; name: string; description: string | null; cover_url: string | null; icon: string | null; audience: Audience; circle: Circle; source: 'people' | 'imported';
+  host_name: string | null; privacy: 'open' | 'invite'; area_name: string | null; address: string | null; interests: InterestKey[]; member_count: number;
+  faces: { name: string | null; avatar_url: string | null }[]; leader: string | null; leader_name: string | null;
+  next_event: { title: string; starts_at: string; place: string | null } | null; distance_km: number | null; reasons: CardReason[];
+  is_member: boolean; can_manage: boolean; has_whatsapp: boolean; whatsapp_url: string | null; events_url: string | null;
+}
+export interface AboutEvent { id: string; title: string; starts_at: string; ends_at: string | null; location: string | null; image_url: string | null; going_count: number }
+/** Open communities the person is not in, best first (shared interests, then how near, then size). Searchable. */
+export const recommendedCommunities = (q = '', limit = 10) =>
+  api<{ limits: Limits; communities: CommunityCard[] }>('GET', `/v1/communities/recommended?q=${encodeURIComponent(q)}&limit=${limit}`);
+/** The person's own communities as cards (members see the WhatsApp link). */
+export const myCommunityCards = () => api<{ communities: CommunityCard[] }>('GET', '/v1/communities/cards/mine').then((r) => r.communities);
+/** What anyone signed in may see before joining: the card and, for an open community, what is coming up. */
+export const communityAbout = (id: string) => api<{ community: CommunityCard; events: AboutEvent[]; can_manage: boolean }>('GET', `/v1/communities/${id}/about`);
+/** A Community Lead or a platform admin saves the meeting place, the WhatsApp group link, the interests and the events page. */
+export const saveCommunityDetails = (id: string, body: { address?: string; whatsapp_url?: string; events_url?: string; interests?: InterestKey[] }) =>
+  api<{ community: CommunityCard; events: AboutEvent[]; can_manage: boolean }>('PATCH', `/v1/communities/${id}/details`, body);
