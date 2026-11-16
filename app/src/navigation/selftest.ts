@@ -23,7 +23,7 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('seventeen modules', allModules().length === 17, String(allModules().length));
+check('eighteen modules', allModules().length === 18, String(allModules().length));
 check('grow has six pages, each needs sign-in', allPages().filter((p) => p.module === 'grow').length === 6 && allPages().filter((p) => p.module === 'grow').every((p) => !!p.requiresAuth));
 check('grow pages have a heading in all six languages', allPages().filter((p) => p.module === 'grow' && p.key !== 'grow.index').every((p) => Object.values(p.strings).length === 6 && Object.values(p.strings).every((w) => !!(w as Record<string, string>).heading)));
 check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);

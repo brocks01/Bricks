@@ -38,4 +38,6 @@ export const DAYS: WordTable = {
   dayFailed: ['That did not work. Please try again.', 'यह नहीं हुआ। कृपया फिर कोशिश करें।', 'এটি হয়নি। আবার চেষ্টা করুন।', 'இது நடக்கவில்லை. மீண்டும் முயலவும்.', '没有成功，请重试。', 'Tidak berjaya. Sila cuba lagi.'],
   dayNotFound: ['That market day was not found.', 'वह बाज़ार का दिन नहीं मिला।', 'সেই বাজারের দিন পাওয়া যায়নি।', 'அந்தச் சந்தை நாள் கிடைக்கவில்லை.', '找不到该集市日。', 'Hari pasar itu tidak ditemui.'],
   dayStalls: ['Stalls', 'स्टॉल', 'স্টল', 'கடைகள்', '摊位', 'Gerai'],
+  myHost: ['My host', 'मेरा आयोजক', 'আমার আয়োজক', 'என் ஏற்பாட்டாளர்', '我的主办方', 'Penganjur saya'],
+  myHostSub: ['See what is coming up and add one', 'देखें क्या आ रहा है और एक जोड़ें', 'কী আসছে দেখুন এবং একটি যোগ করুন', 'என்ன வருகிறது என்று பார்த்து ஒன்றைச் சேர்க்கவும்', '查看即将开始的活动并添加一个', 'Lihat apa yang akan datang dan tambah satu'],
 };
