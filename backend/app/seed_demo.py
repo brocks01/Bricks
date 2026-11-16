@@ -1,4 +1,4 @@
-"""Seeds four Singapore demo communities, run by seniors, so the whole Connect UI can be tried before real data exists.
+"""Seeds ten Singapore demo communities, run by seniors, so the whole Connect UI can be tried before real data exists.
 
   python backend/run.py seed-demo                      # create them (if they are not there)
   python backend/run.py seed-demo you@example.com ...  # also add these existing accounts as members (the first one becomes Secretary of each)
@@ -8,8 +8,10 @@ The demo communities cover the social purpose of Wisdom: seniors as leaders and 
 (paid part-time work, mentoring), child care by the community, sustainability and culture. Everything is marked `is_demo` (the community) or uses the
 address domain @demo.bricks.test (the people), so it can always be removed with --reset. The demo people cannot sign in. Join codes: BEDK-DEMO,
 TOAP-DEMO, TAMP-DEMO, JURO-DEMO."""
+import json
 import sys
 from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 
 from sqlalchemy import text
 
@@ -100,7 +102,112 @@ COMMUNITIES = [
         "opportunities": [(0, "job", "Garden workshop facilitator", "Paid S$25 per session, once or twice a month. Seniors with gardening experience welcome.", "Message Leong Chee Keong (Blk 646)"),
                           (3, "service", "Volunteers to water the garden on weekdays", "Pick your own day. Fresh vegetables to take home.", "Message Tan Mei Xin (Blk 652)")],
     },
+    # ---- six more (revamp v2): so every interest and every onboarding area has a community near it ----
+    {
+        "name": "Bishan Walkers", "slug": "bishan-walkers-demo", "kind": "club", "icon": "walk", "target": 74, "code": "BISH-DEMO",
+        "area": "Bishan, Singapore",
+        "desc": "A steady morning walk round Bishan-Ang Mo Kio Park, then kopi together. Every pace is welcome.",
+        "people": [("Seah Kim Huat", "Blk 152 Bishan Street 11", "60plus", LEAD), ("Norhayati binte Kassim", "Blk 154 Bishan Street 13", "60plus", SECRETARY),
+                   ("Anand Ramasamy", "Blk 150 Bishan Street 11", "60plus", TREASURER), ("Cheryl Lim", "Blk 158 Bishan Street 13", "40to59", EVENTS),
+                   ("Koh Ah Moi", "Blk 152 Bishan Street 11", "60plus", None), ("Bernard Fernandez", "Blk 156 Bishan Street 13", "60plus", None)],
+        "announcements": [("Welcome to Bishan Walkers", "We walk three mornings a week and finish with kopi. Come as you are; nobody is left behind.", True, 0, 21),
+                          ("New route by the river", "From next week we try the river path. It is flat and shaded.", False, 1, 3)],
+        "activities": [("Morning Walk in Bishan Park", "Five kilometres at an easy pace, then kopi at the hawker centre.", "Fitness", 1, 2, "Bishan-Ang Mo Kio Park, Car Park A", None),
+                       ("Riverside Walk and Kopi", "The flat, shaded river path. Bring a hat and water.", "Fitness", 3, 2, "Bishan-Ang Mo Kio Park, Pond Gardens", None),
+                       ("Walk and Talk: Health Check Morning", "A short walk, then free blood pressure checks by volunteer nurses.", "Health", 9, 3, "Bishan Community Club", 40)],
+        "contributions": [(0, "time", "Led the Monday walk for two months", 8.0), (3, "time", "Organised the health check morning with the polyclinic", 4.0)],
+        "opportunities": [(0, "service", "Walking buddy for a neighbour recovering from surgery", "Twice a week, slow pace, about 30 minutes.", "Message Seah Kim Huat (Blk 152)")],
+    },
+    {
+        "name": "Ang Mo Kio Tai Chi Circle", "slug": "ang-mo-kio-tai-chi-circle-demo", "kind": "club", "icon": "body", "target": 88, "code": "AMKT-DEMO",
+        "area": "Ang Mo Kio, Singapore",
+        "desc": "Slow tai chi under the trees before the sun is high, followed by a gentle walk for those who want one.",
+        "people": [("Low Teck Seng", "Blk 405 Ang Mo Kio Avenue 10", "60plus", LEAD), ("Siti Mariam binte Ali", "Blk 407 Ang Mo Kio Avenue 10", "60plus", SECRETARY),
+                   ("Gopal Krishnan", "Blk 409 Ang Mo Kio Avenue 10", "60plus", TREASURER), ("Jasmine Tay", "Blk 411 Ang Mo Kio Avenue 10", "40to59", EVENTS),
+                   ("Chan Kwai Fong", "Blk 405 Ang Mo Kio Avenue 10", "60plus", None), ("Yeo Bee Hong", "Blk 413 Ang Mo Kio Avenue 10", "60plus", None)],
+        "announcements": [("Welcome to the Tai Chi Circle", "Every weekday at 7 am. Beginners stand at the back and follow; nobody minds a wrong step.", True, 0, 30),
+                          ("Beginners' class on Saturday", "Mr Low teaches the first eight movements slowly. Wear comfortable shoes.", False, 1, 4)],
+        "activities": [("Morning Tai Chi", "Thirty minutes of slow tai chi, then a gentle walk round the garden.", "Fitness", 1, 1, "Ang Mo Kio Town Garden West", None),
+                       ("Tai Chi for Beginners", "The first eight movements, taught slowly. Chairs for anyone who needs one.", "Fitness", 4, 1, "Ang Mo Kio Town Garden West", 30),
+                       ("Fan Tai Chi Workshop", "Learn the fan form, step by step.", "Workshop", 11, 2, "Ang Mo Kio Community Centre", 25)],
+        "contributions": [(0, "skill", "Taught the beginners' class every Saturday this term", 12.0), (1, "time", "Kept the attendance and called members who missed a week", 3.0)],
+        "opportunities": [(0, "job", "Tai chi instructor for an Active Ageing Centre", "Paid S$30 per class, weekday mornings.", "Message Low Teck Seng (Blk 405)")],
+    },
+    {
+        "name": "Woodlands Chess Corner", "slug": "woodlands-chess-corner-demo", "kind": "club", "icon": "grid", "target": 46, "code": "WOOD-DEMO",
+        "area": "Woodlands, Singapore",
+        "desc": "Xiangqi and chess at the void deck every afternoon, with kopi. Children learn from the uncles on Saturdays.",
+        "people": [("Teo Chin Hock", "Blk 768 Woodlands Avenue 6", "60plus", LEAD), ("Abdul Rahim bin Yusof", "Blk 770 Woodlands Avenue 6", "60plus", SECRETARY),
+                   ("Selvam Pillai", "Blk 772 Woodlands Drive 60", "60plus", TREASURER), ("Ryan Ng", "Blk 774 Woodlands Drive 60", "under40", EVENTS),
+                   ("Lau Kim Swee", "Blk 768 Woodlands Avenue 6", "60plus", None), ("Ho Siew Choo", "Blk 776 Woodlands Drive 60", "60plus", None)],
+        "announcements": [("Welcome to Woodlands Chess Corner", "Bring nothing but yourself: boards, pieces and kopi are here every afternoon from 2 pm.", True, 0, 19),
+                          ("Saturday lessons for children", "Uncle Teo teaches xiangqi to children aged 7 to 12. Parents are welcome to watch.", False, 1, 2)],
+        "activities": [("Afternoon Xiangqi and Kopi", "Open games for all levels. Boards provided.", "Social", 1, 3, "Blk 768 Woodlands Avenue 6 Void Deck", None),
+                       ("Xiangqi for Children", "Uncles teach children the moves and the old strategies.", "Education", 3, 2, "Woodlands Regional Library", 20),
+                       ("Friendly Tournament with Marsiling", "A friendly match against the Marsiling chess group, with lunch.", "Competition", 13, 4, "Woodlands Community Club", 40)],
+        "contributions": [(0, "skill", "Taught xiangqi to twelve children this term", 10.0), (2, "goods", "Donated six chess sets", None)],
+        "opportunities": [(0, "service", "Chess coach for a primary school club", "One afternoon a week; a small allowance is paid.", "Message Teo Chin Hock (Blk 768)")],
+    },
+    {
+        "name": "Toa Payoh Music Makers", "slug": "toa-payoh-music-makers-demo", "kind": "club", "icon": "musical-notes", "target": 63, "code": "TPMM-DEMO",
+        "area": "Toa Payoh, Singapore",
+        "desc": "Old songs in four languages, a harmonica band and a ukulele circle. We sing for ourselves and for the wards nearby.",
+        "people": [("Wong Kah Wai", "Blk 79 Toa Payoh Central", "60plus", LEAD), ("Zaleha binte Ahmad", "Blk 81 Toa Payoh Central", "60plus", SECRETARY),
+                   ("Joseph D'Silva", "Blk 83 Toa Payoh Lorong 4", "60plus", TREASURER), ("Melissa Goh", "Blk 85 Toa Payoh Lorong 4", "40to59", EVENTS),
+                   ("Lim Siew Kheng", "Blk 79 Toa Payoh Central", "60plus", None), ("Murugan Raj", "Blk 87 Toa Payoh Lorong 4", "60plus", None)],
+        "announcements": [("Welcome to Toa Payoh Music Makers", "No experience needed. If you can hum, you can join the choir.", True, 0, 24),
+                          ("Ukulele circle needs two more players", "Ukuleles can be borrowed. First lesson is free.", False, 1, 3)],
+        "activities": [("Sing-along of Old Favourites", "Songs in Mandarin, Malay, Tamil and English. Lyrics in large print.", "Cultural Event", 2, 2, "Toa Payoh Central Community Club", 50),
+                       ("Ukulele Circle for Beginners", "Learn three chords and play your first song in an hour.", "Workshop", 5, 1, "Blk 79 Toa Payoh Central, Level 1", 15),
+                       ("Choir Practice for the Year-end Concert", "We practise the songs for the year-end concert at the community club.", "Cultural Event", 12, 2, "Toa Payoh Central Community Club", 40)],
+        "contributions": [(0, "skill", "Arranged ten songs for the choir in large print", 6.0), (2, "time", "Set up the sound system for every sing-along", 3.0)],
+        "opportunities": [(0, "job", "Music facilitator for an Active Ageing Centre", "Paid S$40 per session, twice a month.", "Message Wong Kah Wai (Blk 79)")],
+    },
+    {
+        "name": "Jurong West Digital Buddies", "slug": "jurong-west-digital-buddies-demo", "kind": "club", "icon": "phone-portrait", "target": 52, "code": "JWDB-DEMO",
+        "area": "Jurong West, Singapore",
+        "desc": "Young volunteers and tech-savvy seniors helping neighbours with phones, banking apps and video calls, one question at a time.",
+        "people": [("Kwek Hui Ling", "Blk 503 Jurong West Avenue 1", "60plus", LEAD), ("Mohammad Iskandar", "Blk 505 Jurong West Avenue 1", "40to59", SECRETARY),
+                   ("Lakshmi Narayanan", "Blk 507 Jurong West Street 52", "60plus", TREASURER), ("Darren Ong", "Blk 509 Jurong West Street 52", "under40", EVENTS),
+                   ("Chew Boon Lay", "Blk 503 Jurong West Avenue 1", "60plus", None), ("Rosmah binte Said", "Blk 511 Jurong West Street 52", "60plus", None)],
+        "announcements": [("Welcome to Digital Buddies", "Bring your phone and your question. We sit with you until it works.", True, 0, 22),
+                          ("Beware of scam calls", "If someone asks for your bank code, hang up and call us. We will check it with you.", False, 0, 2)],
+        "activities": [("Phone Help Clinic", "Bring your phone: banking apps, WhatsApp, HealthHub and more.", "Workshop", 2, 2, "Jurong West Public Library", 30),
+                       ("Video Calls with Family Abroad", "Set up video calls and practise with a volunteer.", "Workshop", 6, 2, "Blk 503 Jurong West Avenue 1 Void Deck", 20),
+                       ("Spot the Scam", "Real scam messages, and how to tell them apart from your bank.", "Talk", 10, 1, "Jurong Spring Community Club", 50)],
+        "contributions": [(0, "skill", "Helped 30 seniors set up their banking apps safely", 10.0), (3, "time", "Ran the phone help clinic every Saturday", 8.0)],
+        "opportunities": [(0, "service", "Tech mentor for seniors", "Teach one neighbour a week. Retired engineers and teachers welcome.", "Message Kwek Hui Ling (Blk 503)")],
+    },
+    {
+        "name": "Bishan Home Cooks", "slug": "bishan-home-cooks-demo", "kind": "club", "icon": "restaurant", "target": 57, "code": "BHCK-DEMO",
+        "area": "Bishan, Singapore",
+        "desc": "Recipes from our mothers' kitchens: we cook together, eat together and write the recipes down for the grandchildren.",
+        "people": [("Chia Poh Lin", "Blk 236 Bishan Street 22", "60plus", LEAD), ("Faridah binte Hashim", "Blk 238 Bishan Street 22", "60plus", SECRETARY),
+                   ("Mary Thomas", "Blk 240 Bishan Street 23", "60plus", TREASURER), ("Kelvin Yeo", "Blk 242 Bishan Street 23", "under40", EVENTS),
+                   ("Soh Geok Lian", "Blk 236 Bishan Street 22", "60plus", None), ("Parvathi Subramaniam", "Blk 244 Bishan Street 23", "60plus", None)],
+        "announcements": [("Welcome to Bishan Home Cooks", "We cook one family recipe a month and write it into our book. Bring an apron and an appetite.", True, 0, 27),
+                          ("Ondeh-ondeh with Madam Chia", "This month: ondeh-ondeh and kueh salat. Ingredients provided.", False, 1, 4)],
+        "activities": [("Ondeh-ondeh and Kueh Salat", "Madam Chia shows how her mother made them. Take a box home.", "Cooking", 3, 3, "Bishan Community Club Kitchen", 20),
+                       ("Curry Afternoon with Mary", "Mary Thomas teaches her family's fish curry.", "Cooking", 9, 3, "Bishan Community Club Kitchen", 20),
+                       ("Recipe Book Writing Morning", "Young volunteers type and photograph the recipes the elders dictate.", "Cultural Event", 15, 2, "Bishan Public Library", 25)],
+        "contributions": [(0, "skill", "Taught three classes of traditional kueh", 9.0), (3, "time", "Photographed twenty recipes for the book", 5.0)],
+        "opportunities": [(1, "service", "Kueh orders for festivals", "Order from the group; the money goes to the members who bake.", "Message Faridah (Blk 238)")],
+    },
 ]
+
+# Where each demo community meets and what it is about (the eight onboarding interests), used for the map and to rank communities for a person.
+DETAILS = {  # slug -> (address, interests)
+    "bedok-heritage-kakis-demo": ("Bedok North Community Club, 1 Bedok North Street 1, Singapore 469659", ["teaching", "music"]),
+    "toa-payoh-silver-mentors-demo": ("Toa Payoh Public Library, 6 Toa Payoh Central, Singapore 319191", ["teaching", "tech"]),
+    "tampines-kampung-spirit-demo": ("Blk 455 Tampines Street 42, Singapore 520455", ["cooking", "taichi"]),
+    "jurong-green-gardeners-demo": ("Blk 646 Jurong West Street 61, Singapore 640646", ["gardening"]),
+    "bishan-walkers-demo": ("Bishan-Ang Mo Kio Park, 1384 Ang Mo Kio Avenue 1, Singapore 569931", ["walking"]),
+    "ang-mo-kio-tai-chi-circle-demo": ("Ang Mo Kio Town Garden West, Ang Mo Kio Avenue 6, Singapore", ["taichi", "walking"]),
+    "woodlands-chess-corner-demo": ("Blk 768 Woodlands Avenue 6, Singapore 730768", ["chess"]),
+    "toa-payoh-music-makers-demo": ("Toa Payoh Central Community Club, 93 Toa Payoh Central, Singapore 319194", ["music"]),
+    "jurong-west-digital-buddies-demo": ("Jurong West Public Library, 60 Jurong West Central 3, Singapore 648346", ["tech", "teaching"]),
+    "bishan-home-cooks-demo": ("Bishan Community Club, 51 Bishan Street 13, Singapore 579799", ["cooking"]),
+}
 
 # Real photos, linked directly from Unsplash (free to use under the Unsplash License; no key needed). Replace with your own uploads (Cloudinary) any time:
 # change the cover_url / image_url in the database, or upload through POST /v1/media/upload once the CLOUDINARY_* keys are in backend/.env.
@@ -114,6 +221,30 @@ PHOTOS = {  # slug -> (cover, [one image per activity, in order])
     "tampines-kampung-spirit-demo": ("1624730088819-01a310dbc10b", ["1763901682710-a18f6a7d9531", "1604940293595-be295d67ad9e", "1770184428372-ad4d28b9aef4"]),
     "jurong-green-gardeners-demo": ("1757585267523-f689c297fa2d", ["1621460248083-6271cc4437a8", "1611843467160-25afb8df1074", "1597868165956-03a6827955b1"]),
 }
+# The six newer communities take their pictures from the checked list in seed_data/images.json (Wikimedia, free-licensed, with credit there),
+# chosen by hand so each fits: (category, index) for the cover, then one per activity.
+PICKS = {
+    "bishan-walkers-demo": [("activity_exercise", 15), ("activity_exercise", 14), ("elders", 14), ("activity_exercise", 15)],
+    "ang-mo-kio-tai-chi-circle-demo": [("activity_exercise", 0), ("activity_exercise", 1), ("activity_exercise", 3), ("activity_exercise", 2)],
+    "woodlands-chess-corner-demo": [("activity_social", 9), ("activity_social", 6), ("activity_social", 9), ("activity_social", 8)],
+    "toa-payoh-music-makers-demo": [("activity_social", 13), ("activity_social", 14), ("activity_social", 13), ("activity_social", 14)],
+    "jurong-west-digital-buddies-demo": [("elders", 0), ("elders", 2), ("elders", 0), ("elders", 2)],
+    "bishan-home-cooks-demo": [("activity_cooking", 5), ("activity_cooking", 6), ("activity_cooking", 0), ("activity_cooking", 7)],
+}
+
+
+def _photos(slug: str, n: int) -> tuple[str, list[str]]:
+    """The cover and one picture per activity: the Unsplash ones for the first four, the hand-picked checked ones for the rest."""
+    if slug in PHOTOS:
+        cover, acts = PHOTOS[slug]
+        return _img(cover), [_img(a) for a in acts]
+    cats = json.loads((Path(__file__).resolve().parents[1] / "seed_data" / "images.json").read_text(encoding="utf-8"))["by_category"]
+    urls = []
+    for cat, i in PICKS[slug][: n + 1]:
+        item = cats[cat][i]
+        u = item["url"] if isinstance(item, dict) else item
+        urls.append(u.split("?")[0] if "wikimedia.org" in u else u)
+    return urls[0], urls[1:]
 
 # Names for the rest of each community (Singapore's Chinese, Malay, Indian and Eurasian communities). Mostly seniors, as in the communities themselves.
 FIRST = ["Ah Hock", "Ai Ling", "Beng Huat", "Bee Lian", "Cheng Hock", "Chin Siong", "Siew Mei", "Eng Kiat", "Geok Eng", "Hock Seng", "Kim Hwa", "Lay Choo", "Mei Lan", "Poh Choo",
@@ -161,10 +292,12 @@ def seed_community(conn, c: dict) -> None:
     for name, area, band, _role_key in c["people"]:
         ids.append(conn.execute(text("insert into users (email, display_name, area_name, age_band) values (:e, :n, :a, :b) returning id"),
                                 {"e": _handle(name, c["slug"]), "n": name, "a": area, "b": band}).one().id)
+    cover, pictures = _photos(c["slug"], len(c["activities"]))
+    address, interests = DETAILS[c["slug"]]
     cid = conn.execute(
-        text("insert into communities (name, slug, kind, icon, description, area_name, cover_url, privacy, invite_code, is_demo, created_by) values "
-             "(:n, :s, :k, :i, :d, :a, :cv, 'open', :c, true, :u) returning id"),
-        {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "cv": _img(PHOTOS[c["slug"]][0]), "c": c["code"], "u": ids[0]}).one().id
+        text("insert into communities (name, slug, kind, icon, description, area_name, address, interests, cover_url, privacy, invite_code, is_demo, created_by) values "
+             "(:n, :s, :k, :i, :d, :a, :ad, cast(:it as text[]), :cv, 'open', :c, true, :u) returning id"),
+        {"n": c["name"], "s": c["slug"], "k": c["kind"], "i": c["icon"], "d": c["desc"], "a": c["area"], "ad": address, "it": interests, "cv": cover, "c": c["code"], "u": ids[0]}).one().id
     for u in ids:
         conn.execute(text("insert into memberships (community_id, user_id) values (:c, :u)"), {"c": cid, "u": u})
     for (_n, _a, _b, role_key), user in zip(c["people"], ids):
@@ -182,7 +315,7 @@ def seed_community(conn, c: dict) -> None:
             text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity, image_url) values "
                  "(:c, :o, :t, :d, :cat, :s, :e, :l, :cap, :img) returning id"),
             {"c": cid, "o": ids[3], "t": title, "d": desc, "cat": cat, "s": start, "e": start + timedelta(hours=hours), "l": place, "cap": cap,
-             "img": _img(PHOTOS[c["slug"]][1][n])}).one().id)
+             "img": pictures[n]}).one().id)
     for i, a in enumerate(acts):
         for u in ids[: 3 + i * 2]:
             conn.execute(text("insert into activity_participants (activity_id, user_id) values (:a, :u)"), {"a": a, "u": u})
@@ -243,10 +376,18 @@ def seed_initiatives(conn) -> None:
     print("demo initiatives ready")
 
 
+def enrich(conn) -> None:
+    """Communities seeded before the address and interests existed get them now (only where still empty). Safe to run again."""
+    for slug, (address, interests) in DETAILS.items():
+        conn.execute(text("update communities set address = coalesce(address, :a), interests = case when interests = '{}' then cast(:i as text[]) else interests end where slug = :s"),
+                     {"a": address, "i": interests, "s": slug})
+
+
 def seed(extra_emails: list[str]) -> None:
     with engine().begin() as conn:
         for c in COMMUNITIES:
             seed_community(conn, c)
+        enrich(conn)
         real = [e.strip().lower() for e in extra_emails]
         for n, c in enumerate(COMMUNITIES):
             cid = conn.execute(text("select id from communities where slug = :s"), {"s": c["slug"]}).one().id

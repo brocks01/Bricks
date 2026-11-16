@@ -10,14 +10,15 @@ _iso = lambda d: d.isoformat() if d else None  # noqa: E731
 _ACT = ("x.id, x.community_id, x.title, x.description, x.category, x.starts_at, x.ends_at, x.location, x.capacity, x.image_url, x.status, "
         "(select rc.repeat from recurrences rc where rc.id = x.series_id) as repeat, "
         "(select count(*) from activity_participants p where p.activity_id = x.id and p.status = 'going') as going_count, "
-        "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going")
+        "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going, "
+        "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'attended') as i_attended")
 _OVER = "coalesce(x.ends_at, x.starts_at + interval '3 hours') < now()"
 
 
 def _act(r) -> dict:
     return {"id": str(r.id), "community_id": str(r.community_id), "title": r.title, "description": r.description, "category": r.category, "starts_at": _iso(r.starts_at),
             "ends_at": _iso(r.ends_at), "location": r.location, "capacity": r.capacity, "image_url": r.image_url, "status": r.status,
-            "going_count": r.going_count, "i_going": r.i_going, "repeat": getattr(r, "repeat", None)}
+            "going_count": r.going_count, "i_going": r.i_going, "i_attended": bool(getattr(r, "i_attended", False)), "repeat": getattr(r, "repeat", None)}
 
 
 def list_activities(conn: Connection, user_id: str, community_id: str, when: str = "upcoming", category: str | None = None) -> list[dict]:

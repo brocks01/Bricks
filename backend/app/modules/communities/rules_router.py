@@ -9,7 +9,7 @@ from sqlalchemy import Connection
 
 from ...core.db import get_conn
 from ..identity.router import current_user_id
-from . import rules
+from . import discover, rules
 from .service import CommunityError
 
 router = APIRouter(prefix="/v1/communities")
@@ -47,6 +47,14 @@ class ShareIn(BaseModel):
     share: bool
 
 
+class DetailsIn(BaseModel):
+    """Only the fields sent change; an empty text clears one."""
+    whatsapp_url: str | None = Field(default=None, max_length=80)
+    events_url: str | None = Field(default=None, max_length=300)
+    address: str | None = Field(default=None, max_length=200)
+    interests: list[str] | None = Field(default=None, max_length=8)
+
+
 def _is_uuid(v: str) -> bool:
     try:
         uuid.UUID(v)
@@ -78,6 +86,18 @@ def limits(user_id: str = Depends(current_user_id), conn: Connection = Depends(g
 @router.get("/explore")
 def explore(q: str = "", limit: int = 30, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return rules.explore(conn, user_id, q, limit)
+
+
+@router.get("/recommended")
+def recommended(q: str = "", limit: int = 10, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Open communities the person is not in, best first: shared interests, then how near, then size. Searchable with q."""
+    return discover.recommend(conn, user_id, q, limit)
+
+
+@router.get("/cards/mine")
+def my_cards(user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The person's own communities as cards (with the WhatsApp link, since they are members)."""
+    return {"communities": discover.mine(conn, user_id)}
 
 
 @router.get("/experience")
@@ -122,6 +142,28 @@ def create_from_request(request_id: str, user_id: str = Depends(current_user_id)
         return JSONResponse(status_code=404, content={"detail": {"code": "not_found"}})
     try:
         return rules.create_from_request(conn, user_id, request_id)
+    except CommunityError as e:
+        return _refuse(e)
+
+
+@router.get("/{community_id}/about")
+def about(community_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A community's public basics, for someone deciding whether to join."""
+    if not _is_uuid(community_id):
+        return JSONResponse(status_code=404, content={"detail": {"code": "not_found"}})
+    try:
+        return discover.about(conn, user_id, community_id)
+    except CommunityError as e:
+        return _refuse(e)
+
+
+@router.patch("/{community_id}/details")
+def details(community_id: str, body: DetailsIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A Community Lead or a platform admin saves the address, the WhatsApp group link, the interests and the events page."""
+    if not _is_uuid(community_id):
+        return JSONResponse(status_code=404, content={"detail": {"code": "not_found"}})
+    try:
+        return discover.set_details(conn, user_id, community_id, body.model_dump(exclude_unset=True))
     except CommunityError as e:
         return _refuse(e)
 
