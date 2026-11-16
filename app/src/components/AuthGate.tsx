@@ -33,7 +33,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     if (status === 'out') {
       if (current.requiresAuth) go('auth.welcome', {}, { replace: true });
     } else if (!complete) {
-      if (current.key !== 'auth.setup') go('auth.setup', {}, { replace: true });
+      if (current.module !== 'onboarding') go('onboarding.index', {}, { replace: true });
     } else if (prof.profile && !prof.profile.onboarded && current.module !== 'onboarding') {
       go('onboarding.index', {}, { replace: true });
     } else if (current.module === 'auth') {
