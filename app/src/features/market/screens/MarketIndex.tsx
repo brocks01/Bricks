@@ -10,6 +10,7 @@ import { El, useAction, useField, usePageData, usePageWords } from '../../../kit
 import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, radius, size, space, type } from '../../../theme/tokens';
+import { MarketDays } from '../MarketDays';
 import { marketIndex as page } from '../pages';
 import { CATEGORY_ICON, categoryWord, money, tierWord } from '../ui';
 
@@ -58,6 +59,7 @@ export default function MarketIndex() {
 
   return (
     <Screen title={w('heading')} subtitle={w('intro')}>
+      <MarketDays />
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: radius.button, paddingHorizontal: space.md, marginBottom: space.md }}>
         <Ionicons name="search-outline" size={size.icon.md} color={colors.muted} style={{ marginRight: space.sm }} />
         <El page={page} id="search">

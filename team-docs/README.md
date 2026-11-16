@@ -1,9 +1,16 @@
-# Team docs (internal)
+# Wisdom: documentation
 
-Our own documents: vision, decisions, design notes, research, meeting notes.
+**Wisdom connects generations to live a whole life together.** Elders pass on what a lifetime taught them; younger people learn, help and grow; the bonds between them make a society stronger. *Every life has something to teach.*
 
-Technical documentation goes here later, in its own sub-folder, when the overall features are settled.
-Public, user-facing documentation lives in `../platform-docs/`, not here.
+## Read in this order
+1. `01-philosophy/philosophy.md`: the one thing we solve (social isolation and loneliness), the feeling at the centre, who we are, our motto, our principles, how we solve it.
+2. `02-product/tabs-requirements.md`: what each of the three tabs is for, the rule that keeps them apart, and the decisions taken.
+3. The three tabs in detail: `02-product/wisdom.md` (the round centre button), `communities.md` (left), `marketplace.md` (right).
+4. `02-product/people-and-onboarding.md`: who we build for, roles, what decides what a person sees, onboarding.
+5. `02-product/agent-and-channels.md`: the one agent on phone, Telegram, WhatsApp, SMS and the app; notifications; safety against spam.
+6. `02-product/impact-and-business.md`: what we measure, safety and privacy, the pilot, how it stays running.
+7. `03-technical/architecture.md`: modules, data, how to run it, environment names.
+8. `10-handoff/HANDOFF.md` and `PROGRESS.md`: where the work stands and what is next (coding agents read these first).
+9. `10-handoff/codex/README.md`: how work is split between the orchestrator and worker agents (Codex and others), with one brief per task.
 
-## Start here if you are a new agent or teammate
-`10-handoff/HANDOFF.md` (what exists, how to run it, what is not done) and `10-handoff/PROGRESS.md` (the running log). Also `../AGENTS.md`.
+The documentation from before the rewrite was removed; it is in git history.

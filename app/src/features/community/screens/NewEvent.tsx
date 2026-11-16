@@ -2,7 +2,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { createActivity } from '../../../api/communities';
-import { Button, ErrorText, Field, Screen } from '../../../components/ui';
+import { Notice } from '../../../components/blocks';
+import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useGoBack } from '../../../navigation';
 import { communityNewEvent as page } from '../pages';
@@ -18,6 +19,7 @@ export default function NewEvent() {
   const [place, setPlace] = useState('');
   const [category, setCategory] = useState('');
   const [about, setAbout] = useState('');
+  const [repeat, setRepeat] = useState<'none' | 'daily' | 'weekdays' | 'weekly' | 'monthly'>('none');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -36,6 +38,7 @@ export default function NewEvent() {
         ...(place.trim() ? { location: place.trim() } : {}),
         ...(category.trim() ? { category: category.trim() } : {}),
         ...(about.trim() ? { description: about.trim() } : {}),
+        ...(repeat !== 'none' ? { repeat } : {}),
       });
       back();
     } catch (e) {
@@ -50,6 +53,7 @@ export default function NewEvent() {
   useField(page, 'fPlace', place, (v) => setPlace(String(v)));
   useField(page, 'fCategory', category, (v) => setCategory(String(v)));
   useField(page, 'fAbout', about, (v) => setAbout(String(v)));
+  useField(page, 'fRepeat', repeat, (v) => setRepeat(String(v) as typeof repeat));
   useAction(page, 'save', save);
 
   return (
@@ -60,6 +64,10 @@ export default function NewEvent() {
       <El page={page} id="fPlace"><Field label={w('fPlace')} value={place} onChangeText={setPlace} maxLength={160} autoCapitalize="words" /></El>
       <El page={page} id="fCategory"><Field label={w('fCategory')} value={category} onChangeText={setCategory} maxLength={60} autoCapitalize="words" /></El>
       <El page={page} id="fAbout"><Field label={w('fAbout')} value={about} onChangeText={setAbout} maxLength={1000} autoCapitalize="sentences" /></El>
+      <El page={page} id="fRepeat">
+        <ChoiceChips label={w('fRepeat')} options={(['none', 'daily', 'weekdays', 'weekly', 'monthly'] as const).map((r) => ({ value: r, label: w(`repeat_${r}`) }))} value={repeat} onChange={(v) => setRepeat(v as typeof repeat)} />
+      </El>
+      {repeat !== 'none' ? <Notice text={w('repeatNote')} icon="repeat-outline" /> : null}
       <ErrorText>{error}</ErrorText>
       <El page={page} id="save"><Button label={w('save')} onPress={() => void save()} disabled={busy} /></El>
     </Screen>

@@ -41,3 +41,9 @@ def never_send_real_mail(monkeypatch):
     monkeypatch.setattr(mail.smtplib, "SMTP", _NoSmtp)
     _NoSmtp.sent.clear()
     yield
+
+
+@pytest.fixture(autouse=True)
+def sign_up_closed_unless_a_test_opens_it(monkeypatch):
+    """Strangers are refused in every test, so tests that use made-up chats and numbers never leave accounts behind. The contact sign-up tests open it themselves."""
+    monkeypatch.setenv("WISDOM_OPEN_SIGNUP", "false")

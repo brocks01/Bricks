@@ -1,3 +1,4 @@
+import { StandingCard } from '../../StandingCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -183,6 +184,8 @@ export default function CommunityHome() {
         </View>
       ) : null}
       {data.can_manage ? <View style={{ marginTop: space.md }}><Button label={t('lead.lead_link')} kind="plain" icon="ribbon-outline" onPress={() => go('community.lead', { id: String(id) })} /></View> : null}
+
+      <StandingCard communityId={String(id)} />
 
       <El page={page} id="happening"><Text style={[type.h2, { color: colors.ink, marginTop: space.lg, marginBottom: space.sm }]}>{w('happening')}</Text></El>
       {next.length ? next.map((a, i) => (

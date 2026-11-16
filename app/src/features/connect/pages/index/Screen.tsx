@@ -1,3 +1,4 @@
+import { SuggestionsCard } from '../../SuggestionsCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -96,6 +97,7 @@ export default function ConnectIndex() {
 
   return (
     <Screen title={w('heading')} subtitle={mine ? (full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })) : undefined}>
+      <SuggestionsCard />
       {mine === null ? <SkeletonList count={3} /> : null}
 
       {mine && mine.length ? (

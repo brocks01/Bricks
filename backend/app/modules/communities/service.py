@@ -117,10 +117,11 @@ def detail(conn: Connection, user_id: str, community_id: str) -> dict:
 
 def create(conn: Connection, user_id: str, data: dict) -> dict:
     row = conn.execute(
-        text("insert into communities (name, slug, kind, description, area_name, privacy, invite_code, created_by) "
-             "values (:name, :slug, :kind, :description, :area, :privacy, :code, :u) returning id"),
+        text("insert into communities (name, slug, kind, description, area_name, privacy, invite_code, created_by, circle, audience, host_id, source, external_ref) "
+             "values (:name, :slug, :kind, :description, :area, :privacy, :code, :u, :circle, :audience, :host, :source, :ref) returning id"),
         {"name": data["name"].strip(), "slug": _slug(data["name"]), "kind": data.get("kind") or "apartment", "description": data.get("description"),
-         "area": data.get("area_name"), "privacy": data.get("privacy") or "invite", "code": _code(), "u": user_id},
+         "area": data.get("area_name"), "privacy": data.get("privacy") or "invite", "code": _code(), "u": user_id, "circle": data.get("circle") or "life", "audience": data.get("audience") or "all", "host": data.get("host_id"),
+         "source": data.get("source") or "people", "ref": data.get("external_ref")},
     ).one()
     cid = str(row.id)
     lead = None
@@ -135,11 +136,24 @@ def create(conn: Connection, user_id: str, data: dict) -> dict:
     return {"id": cid}
 
 
+def check_audience(conn: Connection, user_id: str, community_id: str) -> None:
+    """A circle can be for everyone, for men only or for women only. The person's own optional answer (never inferred) decides; unknown means they are asked."""
+    a = conn.execute(text("select audience from communities where id = :c"), {"c": community_id}).scalar()
+    if a in (None, "all"):
+        return
+    g = conn.execute(text("select answers -> 'basics' ->> 'gender' from profiles where user_id = :u"), {"u": user_id}).scalar()
+    if not g or g == "prefer_not_to_say":
+        raise CommunityError("gender_needed", 409)
+    if g != ("man" if a == "men" else "woman"):
+        raise CommunityError(f"audience_{a}", 403)
+
+
 def join(conn: Connection, user_id: str, code: str) -> dict:
     c = conn.execute(text("select id from communities where invite_code = :c and status = 'active'"), {"c": code.strip().upper()}).first()
     if c is None:
         raise CommunityError("code_invalid", 404)
     from . import rules  # imported here: rules.py imports this module
+    check_audience(conn, user_id, str(c.id))  # a men-only or women-only circle needs the person's own declaration
     rules.check_slot(conn, user_id, str(c.id))  # three communities at most
     conn.execute(
         text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active', left_at = null, joined_at = now()"),

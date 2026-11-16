@@ -75,7 +75,7 @@ export default function Verify() {
 
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 4 }}>
           <Logo size={58} />
-          <Text style={{ fontSize: 40, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 }}>Bricks</Text>
+          <Text style={{ fontSize: 40, fontWeight: '800', color: colors.ink, letterSpacing: -0.5 }}>Wisdom</Text>
         </View>
 
         <Text accessibilityRole="header" style={{ fontSize: 32, fontWeight: '800', color: colors.ink, textAlign: 'center', marginTop: 36 }}>{w('heading')}</Text>

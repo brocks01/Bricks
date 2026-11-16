@@ -30,6 +30,17 @@ class DecideIn(BaseModel):
     note: str | None = Field(default=None, max_length=300)
 
 
+class ImportIn(BaseModel):
+    host_id: str
+    external_ref: str = Field(min_length=1, max_length=120)
+    name: str = Field(min_length=2, max_length=80)
+    description: str | None = Field(default=None, max_length=500)
+    area_name: str | None = Field(default=None, max_length=120)
+    circle: Literal["origin", "faith", "place", "life", "interest"] = "place"
+    audience: Literal["all", "men", "women"] = "all"
+    privacy: Literal["open", "invite"] = "open"
+
+
 class ShareIn(BaseModel):
     share: bool
 
@@ -44,6 +55,17 @@ def _is_uuid(v: str) -> bool:
 
 def _refuse(e: CommunityError) -> JSONResponse:
     return JSONResponse(status_code=e.status, content={"detail": {"code": e.code}})
+
+
+@router.post("/import")
+def import_one(body: ImportIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Bring in an existing community under its host (an Active Ageing Centre, for example). Safe to run again. Platform admins only."""
+    if not _is_uuid(body.host_id):
+        return JSONResponse(status_code=404, content={"detail": {"code": "no_such_host"}})
+    try:
+        return rules.import_community(conn, user_id, body.model_dump())
+    except CommunityError as e:
+        return _refuse(e)
 
 
 @router.get("/limits")

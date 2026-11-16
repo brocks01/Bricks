@@ -105,6 +105,9 @@ export default function Me() {
           </View>
 
           <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.md }} accessibilityRole="header">{t('menu.more')}</Text>
+          <Row icon="today-outline" label="" value={t('home.index.tab')} onPress={() => go('home.index')} />
+          <Row icon="notifications-outline" label="" value={t('channels.notices.heading')} onPress={() => go('channels.notices')} />
+          <Row icon="chatbubbles-outline" label="" value={t('channels.chats.heading')} onPress={() => go('channels.chats')} />
           <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
           <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
           <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />

@@ -62,7 +62,7 @@ def upload(conn: Connection, owner_id: str, kind: str, data: bytes) -> dict:
         raise MediaError("too_big" if data else "empty", 413 if data else 400)
     if not sniff(data):
         raise MediaError("not_an_image", 415)
-    params = {"folder": f"bricks/{kind}", "timestamp": int(time.time())}
+    params = {"folder": f"wisdom/{kind}", "timestamp": int(time.time())}
     try:
         r = httpx.post(
             f"https://api.cloudinary.com/v1_1/{s['cloud']}/image/upload",

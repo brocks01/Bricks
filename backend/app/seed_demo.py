@@ -4,7 +4,7 @@
   python backend/run.py seed-demo you@example.com ...  # also add these existing accounts as members (the first one becomes Secretary of each)
   python backend/run.py seed-demo --reset              # delete the demo communities and the demo people again
 
-The demo communities cover the social purpose of Bricks: seniors as leaders and contributors (heritage, storytelling), earning and employability
+The demo communities cover the social purpose of Wisdom: seniors as leaders and contributors (heritage, storytelling), earning and employability
 (paid part-time work, mentoring), child care by the community, sustainability and culture. Everything is marked `is_demo` (the community) or uses the
 address domain @demo.bricks.test (the people), so it can always be removed with --reset. The demo people cannot sign in. Join codes: BEDK-DEMO,
 TOAP-DEMO, TAMP-DEMO, JURO-DEMO."""

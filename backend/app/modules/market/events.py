@@ -43,7 +43,11 @@ def _card(conn: Connection, me: str, r, mine: dict[str, str]) -> dict:
         "select p.community_id, c.name, (select count(*) from market_event_goers g where g.event_id = p.event_id and g.community_id = p.community_id) as n "
         "from market_event_plans p join communities c on c.id = p.community_id where p.event_id = :e order by n desc, c.name"), {"e": r.id}).all()
     my_plans = [{"community_id": str(p.community_id), "name": p.name, "going": p.n} for p in plans if str(p.community_id) in mine]
+    rep = conn.execute(text("select repeat, week_of_month from recurrences where id = :s"), {"s": r.series_id}).first() if r.series_id else None
+    host = conn.execute(text("select name, kind from hosts where id = :h"), {"h": r.host_id}).first() if r.host_id else None
     return {
+        "kind": r.kind, "intents": list(r.intents or []), "source": r.source, "external_url": r.external_url, "host": host.name if host else None, "host_kind": host.kind if host else None,
+        "repeat": rep.repeat if rep else None, "week_of_month": rep.week_of_month if rep else None,
         "id": str(r.id), "title": r.title, "description": r.description, "venue_name": r.venue_name, "venue_kind": r.venue_kind, "address": r.address, "area_name": r.area_name,
         "starts_at": _iso(r.starts_at), "ends_at": _iso(r.ends_at), "cover_url": r.cover_url, "stalls_total": r.stalls_total, "stalls_taken": taken, "stalls_left": max(0, r.stalls_total - taken),
         "going_count": going, "i_going": i_going is not None, "going_with": str(i_going.community_id) if i_going and i_going.community_id else None,
@@ -51,10 +55,13 @@ def _card(conn: Connection, me: str, r, mine: dict[str, str]) -> dict:
     }
 
 
-def list_events(conn: Connection, me: str, limit: int = 10) -> list[dict]:
-    """The coming events, soonest first. Each says which of the person's communities are going and how many of them."""
+def list_events(conn: Connection, me: str, limit: int = 10, intent: str | None = None, area: str | None = None, kind: str | None = None) -> list[dict]:
+    """What is happening near a person, soonest first: events and opportunities hosted by Active Ageing Centres, malls and others (and our own market days). Filter by what they want to do
+    there (earn, contribute, volunteer, enjoy), by area and by kind. Each says which of the person's communities are going."""
     mine = _my_communities(conn, me)
-    rows = conn.execute(text("select * from market_events where status = 'scheduled' and coalesce(ends_at, starts_at + interval '4 hours') >= now() order by starts_at limit :n"), {"n": max(1, min(limit, 30))}).all()
+    rows = conn.execute(text("select * from market_events where status = 'scheduled' and coalesce(ends_at, starts_at + interval '4 hours') >= now() "
+                             "and (:i = '' or :i = any(intents)) and (:k = '' or kind = :k) and (not :ha or lower(coalesce(area_name, '')) like :a) order by starts_at limit :n"),
+                        {"i": intent or "", "k": kind or "", "ha": bool((area or "").strip()), "a": f"%{(area or '').strip().lower()}%", "n": max(1, min(limit, 30))}).all()
     return [_card(conn, me, r, mine) for r in rows]
 
 
@@ -139,3 +146,64 @@ def for_community(conn: Connection, me: str, cid: str) -> list[dict]:
         "select e.* from market_events e join market_event_plans p on p.event_id = e.id where p.community_id = :c and e.status = 'scheduled' "
         "and coalesce(e.ends_at, e.starts_at + interval '4 hours') >= now() order by e.starts_at"), {"c": cid}).all()
     return [_card(conn, me, r, mine) for r in rows]
+
+
+INTENTS = ("earn", "contribute", "volunteer", "enjoy")
+EVENT_KINDS = ("market_day", "volunteer", "gig", "show", "activity")
+
+
+def create_event(conn: Connection, me: str, data: dict) -> dict:
+    """An opportunity near people (a market day, a volunteering slot, a paid gig, a show, an activity), hosted by someone (an Active Ageing Centre, a mall, a community centre) or ours.
+    Once, or repeating weekly or monthly. With a host and an external reference it is an import: the same one updates in place. Platform admins only for now."""
+    from .. import recurrence
+    from ..communities import rules as comm_rules
+
+    if not comm_rules.is_admin(conn, me):
+        raise MarketError("not_allowed", 403)
+    kind = data.get("kind") or "market_day"
+    intents = list(dict.fromkeys(data.get("intents") or ["earn", "enjoy"]))
+    if kind not in EVENT_KINDS or not intents or any(i not in INTENTS for i in intents):
+        raise MarketError("validation", 422)
+    host = data.get("host_id") or None
+    if host and conn.execute(text("select 1 from hosts where id = :h"), {"h": host}).first() is None:
+        raise MarketError("no_such_host", 404)
+    ref = (data.get("external_ref") or "").strip() or None
+    source = data.get("source") or ("imported" if ref else "partner" if host else "ours")
+    template = {k: data.get(k) for k in ("title", "description", "venue_name", "venue_kind", "address", "area_name", "stalls_total", "cover_url", "external_url")}
+    template.update({"stalls_total": data.get("stalls_total") or 12, "host_id": host, "kind": kind, "intents": intents, "source": source})
+    if data.get("repeat") and data["repeat"] != "none":
+        if data["repeat"] not in ("weekly", "monthly"):
+            raise MarketError("bad_repeat", 422)
+        try:
+            made = recurrence.create(conn, "market", me, data["repeat"], data["starts_at"], data.get("ends_at"), template, data.get("repeat_days"), data.get("week_of_month"), data.get("until"))
+        except recurrence.RepeatError as e:
+            raise MarketError(e.code, e.status) from None
+        first = conn.execute(text("select id from market_events where series_id = :s order by starts_at limit 1"), {"s": made["series_id"]}).scalar()
+        return {"id": str(first) if first else None, "series_id": made["series_id"], "made": made["made"]}
+    params = {"t": template["title"], "d": template["description"], "v": template["venue_name"], "vk": template["venue_kind"] or "mall", "a": template["address"], "ar": template["area_name"],
+              "s": data["starts_at"], "e": data.get("ends_at"), "n": template["stalls_total"], "cv": template["cover_url"], "h": host, "k": kind, "i": intents, "src": source,
+              "u": template["external_url"], "ref": ref}
+    if host and ref:
+        row = conn.execute(text("select id from market_events where host_id = :h and external_ref = :ref"), {"h": host, "ref": ref}).first()
+        if row:
+            conn.execute(text("update market_events set title = :t, description = :d, venue_name = :v, venue_kind = :vk, address = :a, area_name = :ar, starts_at = :s, ends_at = :e, "
+                              "stalls_total = :n, kind = :k, intents = :i, source = :src, external_url = :u where id = :id"), {**params, "id": row.id})
+            return {"id": str(row.id), "created": False}
+    r = conn.execute(text("insert into market_events (title, description, venue_name, venue_kind, address, area_name, starts_at, ends_at, stalls_total, cover_url, host_id, kind, intents, source, external_url, external_ref) "
+                          "values (:t, :d, :v, :vk, :a, :ar, :s, :e, :n, :cv, :h, :k, :i, :src, :u, :ref) returning id"), params).one()
+    return {"id": str(r.id), "created": True}
+
+
+def end_series(conn: Connection, me: str, event_id: str) -> dict:
+    from .. import recurrence
+    from ..communities import rules as comm_rules
+
+    if not comm_rules.is_admin(conn, me):
+        raise MarketError("not_allowed", 403)
+    sid = conn.execute(text("select series_id from market_events where id = :e"), {"e": _uuid(event_id)}).scalar()
+    if sid is None:
+        raise MarketError("not_found", 404)
+    try:
+        return {"ended": True, "cancelled": recurrence.end(conn, str(sid))}
+    except recurrence.RepeatError as e:
+        raise MarketError(e.code, e.status) from None

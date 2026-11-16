@@ -49,6 +49,9 @@ def join_open(conn: Connection, user_id: str, community_id: str) -> dict:
         raise CommunityError("not_found", 404)
     if c.privacy != "open":
         raise CommunityError("invite_only", 403)
+    from .service import check_audience
+
+    check_audience(conn, user_id, community_id)
     check_slot(conn, user_id, community_id)
     conn.execute(
         text("insert into memberships (community_id, user_id) values (:c, :u) on conflict (community_id, user_id) do update set status = 'active', left_at = null, joined_at = now()"),
@@ -107,7 +110,7 @@ def explore(conn: Connection, user_id: str, q: str = "", limit: int = 30) -> dic
     like = f"%{q.strip().lower()}%"
     has_q = bool(q.strip())
     rows = conn.execute(
-        text("select c.id, c.name, c.kind, c.area_name, c.description, c.privacy, c.logo_url, c.cover_url, c.icon, "
+        text("select c.id, c.name, c.kind, c.area_name, c.description, c.privacy, c.logo_url, c.cover_url, c.icon, c.audience, c.circle, c.source, "
              "(select count(*) from memberships m where m.community_id = c.id and m.status = 'active') as member_count, "
              "exists (select 1 from memberships m where m.community_id = c.id and m.user_id = :u and m.status = 'active') as joined "
              "from communities c where c.status = 'active' and (not :hasq or lower(c.name) like :q or lower(coalesce(c.area_name, '')) like :q or lower(coalesce(c.description, '')) like :q) "
@@ -117,7 +120,7 @@ def explore(conn: Connection, user_id: str, q: str = "", limit: int = 30) -> dic
     lim = limits(conn, user_id)
     return {
         "limits": lim,
-        "communities": [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "privacy": r.privacy, "icon": r.icon,
+        "communities": [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "privacy": r.privacy, "icon": r.icon, "audience": r.audience, "circle": r.circle, "source": r.source,
                          "logo_url": r.logo_url, "cover_url": r.cover_url, "member_count": r.member_count, "joined": r.joined,
                          "family_here": fam[str(r.id)], "can_join": (not r.joined) and r.privacy == "open" and lim["left"] > 0} for r in rows],
     }
@@ -189,3 +192,25 @@ def create_from_request(conn: Connection, user_id: str, request_id: str) -> dict
     if r.product or r.meeting:
         conn.execute(text("update communities set signature_product = :p, signature_since = case when :p is null then null else current_date end, meeting = :m where id = :c"), {"p": r.product, "m": r.meeting, "c": out["id"]})
     return out
+
+
+def import_community(conn: Connection, admin_id: str, data: dict) -> dict:
+    """Bring in a community that already exists (for example a group at an Active Ageing Centre), under its host. Safe to run again: the same host and reference update the same community.
+    Platform admins only for now."""
+    if not is_admin(conn, admin_id):
+        raise CommunityError("not_admin", 403)
+    host, ref = data.get("host_id"), (data.get("external_ref") or "").strip()
+    if not host or not ref:
+        raise CommunityError("host_and_ref_needed", 422)
+    if conn.execute(text("select 1 from hosts where id = :h"), {"h": host}).first() is None:
+        raise CommunityError("no_such_host", 404)
+    row = conn.execute(text("select id from communities where host_id = :h and external_ref = :r"), {"h": host, "r": ref}).first()
+    if row:
+        conn.execute(text("update communities set name = :n, description = :d, area_name = :a, circle = :c, audience = :u, updated_at = now() where id = :i"),
+                     {"n": data["name"].strip(), "d": data.get("description"), "a": data.get("area_name"), "c": data.get("circle") or "place", "u": data.get("audience") or "all", "i": row.id})
+        return {"id": str(row.id), "created": False}
+    from .service import create as make
+
+    out = make(conn, admin_id, {**data, "privacy": data.get("privacy") or "open", "source": "imported", "kind": data.get("kind") or "neighbourhood", "host_id": host, "external_ref": ref,
+                                "circle": data.get("circle") or "place"})
+    return {"id": out["id"], "created": True}

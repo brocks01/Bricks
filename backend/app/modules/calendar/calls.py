@@ -40,21 +40,21 @@ STUCK_MIN = 30         # a queued attempt that could never be placed becomes fai
 
 # The call's opening line, in the person's language. The agent may never give medical advice.
 BRIEFS = {
-    "en": ("Hello {name}, this is Bricks. It is time for {title}. Have you done it? "
+    "en": ("Hello {name}, this is Wisdom. It is time for {title}. Have you done it? "
            "Say yes if you have done it, later if you will do it after some time, and help if you need someone. "
            "I never give medical advice - about medicines, ask your doctor."),
-    "hi": ("नमस्ते {name}, मैं Bricks बोल रहा हूँ। {title} का समय हो गया है। क्या आपने कर लिया? "
+    "hi": ("नमस्ते {name}, मैं Wisdom बोल रहा हूँ। {title} का समय हो गया है। क्या आपने कर लिया? "
            "हाँ बोलिए अगर कर लिया; बाद में अगर थोड़ी देर में करेंगे; मदद अगर किसी की चाहिए। "
            "मैं दवा की सलाह नहीं देती - दवा के बारे में अपने डॉक्टर से पूछें।"),
-    "bn": ("নমস্কার {name}, আমি Bricks থেকে বলছি। {title}-এর সময় হয়ে গেছে। আপনি কি করেছেন? "
+    "bn": ("নমস্কার {name}, আমি Wisdom থেকে বলছি। {title}-এর সময় হয়ে গেছে। আপনি কি করেছেন? "
            "হ্যাঁ বলুন যদি করে থাকেন; পরে বলুন যদি একটু পরে করবেন; সাহায্য বলুন যদি কারও দরকার হয়। "
            "আমি ওষুধের পরামর্শ দিই না - ওষুধের বিষয়ে ডাক্তারকে জিজ্ঞাসা করুন।"),
-    "ta": ("வணக்கம் {name}, நான் Bricks சொல்கிறேன். {title} க்கான நேரம் ஆகிவிட்டது. நீங்கள் செய்தீர்களா? "
+    "ta": ("வணக்கம் {name}, நான் Wisdom சொல்கிறேன். {title} க்கான நேரம் ஆகிவிட்டது. நீங்கள் செய்தீர்களா? "
            "செய்திருந்தால் ஆம் என்று சொல்லுங்கள்; பிறகு செய்வீர்கள் என்றால் பிறகு என்று சொல்லுங்கள்; "
            "உதவி வேண்டுமானால் உதவி என்று சொல்லுங்கள். மருந்து பற்றி நான் ஆலோசனை சொல்வதில்லை - உங்கள் மருத்துவரிடம் கேளுங்கள்."),
-    "zh": ("您好{name}，我是 Bricks。到{title}的时间了。您做了吗？做完了请说“做了”；稍后做请说“稍后”；需要人说请说“帮忙”。"
+    "zh": ("您好{name}，我是 Wisdom。到{title}的时间了。您做了吗？做完了请说“做了”；稍后做请说“稍后”；需要人说请说“帮忙”。"
            "我不提供用药建议——关于药物，请问您的医生。"),
-    "ms": ("Halo {name}, saya dari Bricks. Sudah masanya untuk {title}. Sudah buat? "
+    "ms": ("Halo {name}, saya dari Wisdom. Sudah masanya untuk {title}. Sudah buat? "
            "Kata ya jika sudah, nanti jika akan buat selepas ini, dan tolong jika perlukan seseorang. "
            "Saya tidak memberi nasihat perubatan - tentang ubat, tanya doktor anda."),
 }
@@ -152,6 +152,20 @@ def _window(value, default: str, field: str) -> time_of_day:
 
 # ---------------------------------------------------------------- the loop's tick
 
+AGENT_CALL = ("You are calling {name} as they asked, on a schedule they set themselves ({title}). Their own request for this call: “{brief}”. "
+              "Open warmly, do exactly that (teach, quiz, practise, prepare, talk it through), keep your turns short and interactive, and let them lead the pace. "
+              "When the session is done, or they want to stop, call calendar_outcome: took_it if the session happened, will_do_later if they ask to do it later, needs_help if they need someone. Then say goodbye.")
+
+
+def _call_tools(full: bool) -> list[str]:
+    """A plain reminder call stays small; a call with the person's own instruction is the full companion (skills, memory, web search)."""
+    if not full:
+        return ["calendar_outcome"]
+    from ..skills import registry
+
+    return ["calendar_outcome", "web_search", *[s["name"] for s in registry.listing(voice_only=True)]]
+
+
 def brief_for(language: str, name: str, title: str) -> str:
     return BRIEFS.get(language, BRIEFS["en"]).format(name=name, title=title)
 
@@ -201,7 +215,7 @@ def _book_attempt(conn: Connection, it, occurs: datetime, consent, now: datetime
         {"i": str(it.id), "o": occurs},
     ).all()
     base = {"item_id": str(it.id), "occurs_at": occurs, "person_id": str(it.person_id), "title": str(it.title)[:80],
-            "first_name": first_name}
+            "first_name": first_name, "agent_brief": getattr(it, "agent_brief", None)}
     if any(r.status in ("acknowledged", "answered") for r in rows):
         return None
     if not consent or consent.revoked_at is not None:
@@ -283,9 +297,11 @@ async def _place(work: dict, now: datetime) -> None:
             "to": work["phone"],
             "consent": True,  # the consent table IS the standing yes; the voice layer re-checks the allowlist
             "language": work["voice_language"],
-            "brief": brief_for(work["language"], work["first_name"], work["title"]) + _language_rules(work["person_id"]),
+            "brief": (AGENT_CALL.format(name=work["first_name"], title=work["title"], brief=work["agent_brief"]) if work.get("agent_brief")
+                      else brief_for(work["language"], work["first_name"], work["title"])) + _language_rules(work["person_id"]),
             "name": work["first_name"],
-            "tools": ["calendar_outcome"],
+            "tools": _call_tools(bool(work.get("agent_brief"))),
+            "user_id": work["person_id"] if work.get("agent_brief") else None,
             "reminder": {"item_id": work["item_id"], "occurs_at": work["occurs_at"].isoformat(),
                          "attempt_no": work["attempt_no"], "person_id": work["person_id"], "title": work["title"]},
         }, admin_id="reminder-loop")

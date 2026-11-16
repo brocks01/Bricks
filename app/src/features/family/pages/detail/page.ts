@@ -14,7 +14,7 @@ export const familyDetail = definePage({
   elements: {
     heading: { kind: 'text' },
     invite: { kind: 'action', summary: 'Invite a family member by contact; owners may invite helpers, helpers invite members.' },
-    assisted: { kind: 'action', summary: 'Set up a Bricks account for a family member who cannot do it themselves.' },
+    assisted: { kind: 'action', summary: 'Set up a Wisdom account for a family member who cannot do it themselves.' },
     rename: { kind: 'action', summary: 'Owners may rename the family.' },
     leave: { kind: 'action', summary: 'Leave this family. The owner cannot leave.' },
   },

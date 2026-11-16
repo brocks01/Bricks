@@ -2,7 +2,7 @@
 
 Read these two files first, in this order, before you change anything:
 
-1. `team-docs/10-handoff/HANDOFF.md` : what Bricks is, how it is built, how to run it, what is done, what is not, and the rules.
+1. `team-docs/10-handoff/HANDOFF.md` : what Wisdom is, how it is built, how to run it, what is done, what is not, and the rules. Then `team-docs/01-philosophy/philosophy.md` (why we build it).
 2. `team-docs/10-handoff/PROGRESS.md` : the running log. **Read the last entries to see where the previous agent stopped.**
 
 ## Your duty: keep the log current
@@ -20,11 +20,11 @@ agents, so the next one must be able to continue from the files alone. Never cla
 - **Discuss before building** anything the owner did not ask for. No extra features, no extra docs, no invented content or sample data in the app.
 - **Real names and realistic data only** in anything the owner sees (demo people, accounts, labels, greetings): never "test", "UI Check", "Neighbour 7" or similar. Use his real account for his own testing.
 - **No hard-coded sample data** in the app: every tab that is not built shows "Coming soon".
-- Work on a branch (see `CONTRIBUTING.md`), never on `main`. Open a pull request.
+- **The owner works alone for now: commit and push straight to `main`.** Run `git pull --rebase origin main` first, run the checks, make small commits, push often. Do not create branches or pull requests unless he asks.
 - Say plainly what was tested and what was not. Short, solution-first answers.
 
 ## Quick facts
-- Monorepo: `app/` (Expo SDK 58 app and website), `backend/` (Python FastAPI + Postgres), `team-docs/`, `platform-docs/`.
+- Monorepo: `app/` (Expo SDK 58 app and website), `backend/` (Python FastAPI + Postgres), `team-docs/`.
 - Typecheck and self-test the app: `cd app && npx tsc --noEmit && npx tsx src/navigation/selftest.ts`
 - Backend tests: `cd backend && python -m pytest tests -q` (needs the local database and `backend/.env`).
 - The app's own `AGENTS.md` in `app/` says Expo APIs change between releases: check the docs for SDK 58 before touching Expo APIs.

@@ -40,11 +40,11 @@ export default function Welcome() {
 
   return (
     <View style={{ flex: 1, backgroundColor: colors.bg, paddingHorizontal: space.lg, paddingTop: insets.top, paddingBottom: insets.bottom }}>
-      {/* The approved lockup: mark, Bricks wordmark and the tagline, so the heading is not repeated below. */}
+      {/* The approved lockup: mark, Wisdom wordmark and the tagline, so the heading is not repeated below. */}
       <View style={{ alignItems: 'center', paddingTop: space.xl * 2, paddingBottom: space.lg }}>
         <Image
           source={require('../../../../../assets/brand/logo.png')}
-          accessibilityLabel="Bricks"
+          accessibilityLabel="Wisdom"
           accessibilityRole="header"
           resizeMode="contain"
           style={{ width: 220, height: 80 }}

@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Bricks"><title>Bricks</title><defs>
-<linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4FA629"/><stop offset="1" stop-color="#2E8F2A"/></linearGradient>
-<linearGradient id="g2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8AC82F"/><stop offset="1" stop-color="#6CB02A"/></linearGradient>
-<linearGradient id="g3" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1E8E34"/><stop offset="1" stop-color="#0B6F28"/></linearGradient>
-<linearGradient id="g4" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#34A23A"/><stop offset="1" stop-color="#1F8A32"/></linearGradient>
-</defs><g><rect x="58" y="22" width="86" height="50" rx="17" transform="rotate(0 100 100) rotate(-48 101 47)" fill="url(#g1)"/><rect x="58" y="22" width="86" height="50" rx="17" transform="rotate(90 100 100) rotate(-48 101 47)" fill="url(#g2)"/><rect x="58" y="22" width="86" height="50" rx="17" transform="rotate(180 100 100) rotate(-48 101 47)" fill="url(#g3)"/><rect x="58" y="22" width="86" height="50" rx="17" transform="rotate(270 100 100) rotate(-48 101 47)" fill="url(#g4)"/></g></svg>

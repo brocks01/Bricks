@@ -10,7 +10,7 @@ import { colors, radius, space, type } from '../../../../theme/tokens';
 import { languageSpoken as page } from './page';
 
 /**
- * The languages the person SPEAKS to Bricks, and the one they prefer to talk in. The choice is saved
+ * The languages the person SPEAKS to Wisdom, and the one they prefer to talk in. The choice is saved
  * on the PHONE first (this page is reachable from the welcome screen before any account exists) and
  * copied into the account when there is one, so a guest talk already follows their languages.
  */

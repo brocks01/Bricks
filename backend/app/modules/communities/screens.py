@@ -2,10 +2,13 @@
 Every function first checks that the person is an active member; a plain member can read and join, only someone who may manage can create."""
 from sqlalchemy import Connection, text
 
+from .. import recurrence
 from .service import CommunityError, _member, _my_role
+from . import standing as _standing
 
 _iso = lambda d: d.isoformat() if d else None  # noqa: E731
 _ACT = ("x.id, x.community_id, x.title, x.description, x.category, x.starts_at, x.ends_at, x.location, x.capacity, x.image_url, x.status, "
+        "(select rc.repeat from recurrences rc where rc.id = x.series_id) as repeat, "
         "(select count(*) from activity_participants p where p.activity_id = x.id and p.status = 'going') as going_count, "
         "exists (select 1 from activity_participants p where p.activity_id = x.id and p.user_id = :u and p.status = 'going') as i_going")
 _OVER = "coalesce(x.ends_at, x.starts_at + interval '3 hours') < now()"
@@ -14,7 +17,7 @@ _OVER = "coalesce(x.ends_at, x.starts_at + interval '3 hours') < now()"
 def _act(r) -> dict:
     return {"id": str(r.id), "community_id": str(r.community_id), "title": r.title, "description": r.description, "category": r.category, "starts_at": _iso(r.starts_at),
             "ends_at": _iso(r.ends_at), "location": r.location, "capacity": r.capacity, "image_url": r.image_url, "status": r.status,
-            "going_count": r.going_count, "i_going": r.i_going}
+            "going_count": r.going_count, "i_going": r.i_going, "repeat": getattr(r, "repeat", None)}
 
 
 def list_activities(conn: Connection, user_id: str, community_id: str, when: str = "upcoming", category: str | None = None) -> list[dict]:
@@ -60,6 +63,15 @@ def create_activity(conn: Connection, user_id: str, community_id: str, data: dic
     _member(conn, user_id, community_id)
     if not _my_role(conn, user_id, community_id)[1]:
         raise CommunityError("not_allowed", 403)
+    if data.get("repeat") and data["repeat"] != "none":  # a series: daily, weekdays, weekly or monthly; the real events are made ahead of time
+        try:
+            made = recurrence.create(conn, "activity", user_id, data["repeat"], data["starts_at"], data.get("ends_at"),
+                                     {"community_id": community_id, "organiser_id": user_id, "title": data["title"].strip(), "description": data.get("description"), "category": data.get("category"),
+                                      "location": data.get("location"), "capacity": data.get("capacity")}, data.get("repeat_days"), data.get("week_of_month"), data.get("until"))
+        except recurrence.RepeatError as e:
+            raise CommunityError(e.code, e.status) from None
+        first = conn.execute(text("select id from activities where series_id = :s order by starts_at limit 1"), {"s": made["series_id"]}).scalar()
+        return {"id": str(first) if first else None, "series_id": made["series_id"], "repeat": data["repeat"], "made": made["made"]}
     r = conn.execute(
         text("insert into activities (community_id, organiser_id, title, description, category, starts_at, ends_at, location, capacity) "
              "values (:c, :u, :t, :d, :cat, :s, :e, :l, :cap) returning id"),
@@ -168,3 +180,21 @@ def like_update(conn: Connection, user_id: str, announcement_id: str, liked: boo
         conn.execute(text("delete from announcement_likes where announcement_id = :a and user_id = :u"), {"a": announcement_id, "u": user_id})
     n = conn.execute(text("select count(*) from announcement_likes where announcement_id = :a"), {"a": announcement_id}).scalar_one()
     return {"liked": liked, "likes": n}
+
+
+def end_series(conn: Connection, user_id: str, activity_id: str) -> dict:
+    """Stop a repeating event for good: the coming ones are cancelled. A Community Lead can do it."""
+    a = conn.execute(text("select community_id, series_id from activities where id = :a"), {"a": activity_id}).first()
+    if a is None or a.series_id is None:
+        raise CommunityError("not_found", 404)
+    _member(conn, user_id, str(a.community_id))
+    if not _my_role(conn, user_id, str(a.community_id))[1]:
+        raise CommunityError("not_allowed", 403)
+    try:
+        return {"ended": True, "cancelled": recurrence.end(conn, str(a.series_id))}
+    except recurrence.RepeatError as e:
+        raise CommunityError(e.code, e.status) from None
+
+
+def standing(conn: Connection, user_id: str, community_id: str) -> dict:
+    return _standing.standing(conn, user_id, community_id)

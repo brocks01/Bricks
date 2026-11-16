@@ -1,5 +1,5 @@
 -- Grow: a person's own wellbeing, activity and aspirations (private to them). Spec: team-docs/02-product/grow-and-explore.md.
--- No scores and no medical claims: Bricks records what the person enters and shows it back, nothing more.
+-- No scores and no medical claims: Wisdom records what the person enters and shows it back, nothing more.
 
 create table aspirations (
   id          uuid primary key default gen_random_uuid(),

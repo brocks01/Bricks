@@ -6,6 +6,7 @@
     WS   /media          the audio stream; its first message must carry the call's one-time token
   Administrator only (header X-Voice-Admin-Key must equal VOICE_ADMIN_KEY; unset = switched off):
     GET /v1/voice/overview   POST /v1/voice/calls   GET /v1/voice/calls   GET /v1/voice/calls/{id}   POST /v1/voice/calls/{id}/hangup"""
+import asyncio
 import hmac
 import logging
 
@@ -14,6 +15,7 @@ from fastapi.responses import JSONResponse
 
 from . import service, store, twilio as proto
 from .config import config
+from .logic import mask
 from .session import CallSession, hangup_live
 
 log = logging.getLogger("voice")
@@ -53,6 +55,31 @@ async def twilio_voice(request: Request):
     if not rec:
         return Response("unknown call", status_code=404)
     log.info("[voice] call %s answered: the provider asked for instructions, opening the audio stream", rec["call_id"][:8])
+    stream_url = config().public_url.replace("http", "ws", 1) + "/media"
+    return Response(proto.twiml(stream_url, {"callId": rec["call_id"], "token": rec["_token"]}), media_type="text/xml")
+
+
+UNKNOWN_CALLER = "Hello, this is Wisdom. I do not know this number yet. Please open the Wisdom app, go to Profile, and connect your phone. Goodbye."
+BUSY = "Hello, this is Wisdom. I am helping someone else right now. Please call again in a few minutes. Goodbye."
+
+
+def _say_and_hang_up(words: str) -> Response:
+    return Response(f'<?xml version="1.0" encoding="UTF-8"?><Response><Say language="en-GB">{words}</Say><Hangup/></Response>', media_type="text/xml")
+
+
+@router.post("/twilio/incoming")
+async def twilio_incoming(request: Request):
+    """Someone phones the Wisdom number (set it as the number's "A call comes in" webhook: VOICE_PUBLIC_URL + /twilio/incoming). Signature checked.
+    A linked number gets the agent (the same one as in the chats); an unknown number hears one sentence and is hung up: no AI minutes for strangers."""
+    params = {k: str(v) for k, v in (await request.form()).items()}
+    if not await _verified(request, params):
+        log.warning("[voice] a webhook failed its signature check")
+        return Response("bad signature", status_code=403)
+    rec, why = await asyncio.to_thread(service.accept_inbound, params.get("From", ""), params.get("CallSid", ""))
+    if rec is None:
+        log.info("[voice] inbound call refused: %s", why)
+        return _say_and_hang_up(UNKNOWN_CALLER if why == "unknown" else BUSY)
+    log.info("[voice] inbound call %s from %s: opening the audio stream", rec["call_id"][:8], mask(rec["to"]))
     stream_url = config().public_url.replace("http", "ws", 1) + "/media"
     return Response(proto.twiml(stream_url, {"callId": rec["call_id"], "token": rec["_token"]}), media_type="text/xml")
 

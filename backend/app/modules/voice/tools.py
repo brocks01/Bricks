@@ -77,6 +77,30 @@ TOOLS = {
 }
 
 
+# ---- the person's own things: every backend skill is also a phone tool, so a call can read and change what the app and the chat can ----
+# They act for the person recorded on the call (user_id, set by whoever placed it); a call with nobody linked can use none of them.
+def _skill_tools() -> dict:
+    from ..skills import registry
+
+    out = {}
+    for s in registry.SKILLS.values():
+        if not s.voice:
+            continue
+        extra = (" This tells other people: first ask the person if they want it, and call it with confirmed true only after they say yes." if s.risk == "confirm" else
+                 " Do not ask permission for something they just asked you to do; just do it." if s.risk == "safe" else "")
+        out[s.name] = {
+            "label": s.label, "timeout": 10, "skill": True,
+            "hint": (f"{s.name}: {s.description}{extra} Say one short natural phrase in the language you are speaking, call it, then tell the person in one short sentence what happened. "
+                     "If it answers with options or says it could not find it, ask which one they meant. Never guess between options. Never read out ids."),
+            "declaration": registry.declaration(s),
+        }
+    return out
+
+
+TOOLS.update(_skill_tools())
+CALL_ONLY.update(n for n, t in TOOLS.items() if t.get("skill"))  # the in-app agent has the app's own screens for this; skills are for calls and chats
+
+
 def names() -> list[str]:
     return list(TOOLS)
 
@@ -193,7 +217,7 @@ async def read_page(args: dict, memo: dict) -> dict:
         return {"error": f"There is no result {_clip((args or {}).get('id'), 10)}. Use an id from your latest search (1 to {len(pages)})."}
     page = pages[n - 1]
     url = page["url"]
-    async with httpx.AsyncClient(timeout=15, follow_redirects=False, headers={"User-Agent": "BricksVoice/1.0 (+read_page)", "Accept-Encoding": "identity"}) as client:
+    async with httpx.AsyncClient(timeout=15, follow_redirects=False, headers={"User-Agent": "WisdomVoice/1.0 (+read_page)", "Accept-Encoding": "identity"}) as client:
         for _hop in range(4):
             await _check_host(url)
             r = await client.get(url)
@@ -213,8 +237,22 @@ async def read_page(args: dict, memo: dict) -> dict:
     return {"title": _clip(title or page["title"], 120), "source": _host_of(page["url"]), "text": text}
 
 
-async def run(name: str, args: dict, memo: dict) -> dict:
+async def run_skill(name: str, args: dict, user_id: str | None) -> dict:
+    if not user_id:
+        return {"error": "no_person", "message": "This call is not linked to a person, so I cannot change anything for them."}
+    from ..skills import registry
+
+    return await asyncio.wait_for(asyncio.to_thread(registry.run_for_user, user_id, name, args or {}), TOOLS[name]["timeout"])
+
+
+async def run(name: str, args: dict, memo: dict, user_id: str | None = None) -> dict:
     """Runs one tool for the model. Never raises: a failed tool is an answer ("it did not work") the model can say aloud."""
+    if TOOLS.get(name, {}).get("skill"):
+        try:
+            return await run_skill(name, args, user_id)
+        except Exception as e:  # noqa: BLE001
+            log.warning("[voice] skill %s failed: %s", name, type(e).__name__)
+            return {"error": "failed", "message": "That did not work just now. Say so briefly and carry on."}
     fn = {"web_search": web_search, "read_page": read_page}.get(name)
     if not fn:
         return {"error": "That tool does not exist."}

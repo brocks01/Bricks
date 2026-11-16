@@ -129,7 +129,7 @@ class GeminiProvider:
         from_name = LANG_NAMES.get(source, source) if source else "whatever language each string is written in"
         to_name = LANG_NAMES.get(target, target)
         system = (
-            f"You are a translator for a neighbourhood community app. Translate every string in the JSON array "
+            f"You are a translator for Wisdom, an app that connects generations. Translate every string in the JSON array "
             f"you are given from {from_name} into {to_name}.\n"
             "Answer with a JSON array of strings only: the same number of elements, in the same order, no "
             "commentary, no labels, no code fences.\n"

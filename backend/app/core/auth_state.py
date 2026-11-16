@@ -5,7 +5,7 @@
   changed at            per person, kept in memory for a few seconds: a token issued BEFORE it is answered "refresh" (a ban, a role or
                         permission change, "sign out everywhere"). The app then refreshes once and the new token is right.
 
-If the person's record cannot be read, the request is refused (503), never waved through. This is process-local memory: when Bricks runs
+If the person's record cannot be read, the request is refused (503), never waved through. This is process-local memory: when Wisdom runs
 as several processes, the list and the cache move to a shared store (Redis); nothing else changes."""
 import time
 

@@ -5,9 +5,7 @@ import { ALIASES, W } from './words';
 export const homeIndex = definePage({
   key: 'home.index',
   module: 'home',
-  route: '/',
-  tab: 2,
-  icon: 'home',
+  route: '/today',
   requiresAuth: true,
   summary: 'Home: a greeting, the next thing to do (highlighted, with how much free time there is before it), the whole day with booked and free windows, the daily check-in, this week at a glance, and links to the calendar, reminders and family.',
   keywords: ['home', 'today', 'calendar', 'reminder', 'schedule', 'plan', 'next', 'free time', 'alarm'],

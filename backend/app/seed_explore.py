@@ -3,7 +3,7 @@
   python backend/run.py seed-explore            # add the items (skips the ones already there, by title)
   python backend/run.py seed-explore --reset    # remove the seeded items again
 
-These are ORIGINAL Bricks drafts, not copied from anywhere. They are marked reviewed_by = "Bricks draft, pending expert review" so they show in the app, but an
+These are ORIGINAL Wisdom drafts, not copied from anywhere. They are marked reviewed_by = "Wisdom draft, pending expert review" so they show in the app, but an
 expert (a doctor for health, a bank for payments) must still check them before real launch. Health items are educational and never medical advice.
 Everything is marked is_demo so --reset removes exactly these. Photos are direct Unsplash links already used for the demo communities; items without a
 fitting photo have none and the app shows the category symbol instead."""
@@ -14,8 +14,8 @@ from sqlalchemy import text
 
 from .core.db import engine
 
-SRC = "Original Bricks guide (draft)"
-REVIEW = "Bricks draft, pending expert review"
+SRC = "Original Wisdom guide (draft)"
+REVIEW = "Wisdom draft, pending expert review"
 G, V, I, S, A = "guide", "video", "interactive", "story", "activity"
 
 

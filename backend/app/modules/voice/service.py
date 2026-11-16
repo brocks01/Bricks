@@ -48,9 +48,14 @@ async def start_call(data: dict, admin_id: str = "admin") -> dict:
     if store.started_since(3600) >= cfg.max_calls_per_hour:
         raise Refused(429, "RATE_LIMITED", f"At most {cfg.max_calls_per_hour} calls an hour")
 
+    if data.get("user_id"):  # the same companion as in the chats: persona and what it knows about this person
+        from ..channels import memory, persona
+
+        brief = _with_memory(brief + "\n\n" + persona.PERSONA + " " + persona.PHONE, memory.context(str(data["user_id"]), 900))
     rec = store.create(to=to, language=language, brief=brief, voice=str(data.get("voice") or "")[:40], name=L.clean_name(data.get("name")),
                        tools=tools.pick(data.get("tools")), consent=True, by_admin=admin_id, provider=provider.name, **{"from": cfg.twilio_from},
-                       reminder=data.get("reminder") if isinstance(data.get("reminder"), dict) else None)
+                       reminder=data.get("reminder") if isinstance(data.get("reminder"), dict) else None,
+                       user_id=str(data["user_id"]) if data.get("user_id") else None)  # the person this call acts for (their skills); None = web tools only
     try:
         placed = await provider.create_call(to, rec["call_id"])
         store.update(rec["call_id"], provider_sid=placed["sid"], status="ringing" if provider.name == "twilio" else "queued")
@@ -63,6 +68,54 @@ async def start_call(data: dict, admin_id: str = "admin") -> dict:
         raise Refused(502, "PROVIDER_UNREACHABLE", "The call could not be placed.")
     log.info("[voice] call %s placed to %s (%s, %s)", rec["call_id"][:8], L.mask(to), provider.name, language)
     return store.public_view(rec)
+
+
+INBOUND_BRIEF = ("The person is calling YOU, Wisdom. Greet them warmly by name, say it is good to hear from them, and ask how you can help. "
+                 "You can tell them what is on today, how their tree is growing, note something for them, or tell them about gatherings and market events.")
+
+
+def _with_memory(head: str, memory_text: str) -> str:
+    """The call brief has a length limit. What the agent knows about the person must never be the part that is cut: shorten the instructions instead."""
+    keep = max(0, L.MAX_BRIEF - len(memory_text) - 2)
+    return (head[:keep].rstrip() + "\n\n" + memory_text)[:L.MAX_BRIEF]
+
+
+def accept_inbound(from_number: str, call_sid: str) -> tuple[dict | None, str]:
+    """A person dials the Wisdom number. Returns (call record, "") if they may talk, or (None, reason): unknown number, busy, or too many calls.
+    The caller's number only says WHICH account to open; anything risky still needs the person's spoken yes (skills with risk "confirm")."""
+    from ..channels import core, memory, persona
+    from ..skills import registry
+
+    cfg = config()
+    number = L.normalize_number(from_number)
+    from ..channels import guard
+
+    recent = sum(1 for r in store._calls.values() if r.get("direction") == "inbound" and r.get("to") == number and (store._now() - r["created_at"]).total_seconds() < 3600)
+    if guard.blocked(number):
+        return None, "unknown"
+    if not guard.calls_allowed(number, recent):
+        return None, "limit"
+    user_id = core.resolve("phone", number)[0] if L.is_e164(number) else None
+    if user_id is None:
+        return None, "unknown"
+    for r in list(store._calls.values()):  # a caller who hung up before the audio opened leaves a "ringing" record that would block everyone: drop it after 90 s
+        if r.get("direction") == "inbound" and r["status"] == "ringing" and (store._now() - r["created_at"]).total_seconds() > 90:
+            store.update(r["call_id"], status="failed", ended_at=store._now(), end_reason="never-connected")
+    if store.active_count() > 0:
+        return None, "busy"
+    if store.started_since(3600) >= cfg.max_calls_per_hour:
+        return None, "limit"
+    from sqlalchemy import text
+
+    from ...core.db import engine
+
+    with engine().connect() as conn:
+        name = conn.execute(text("select coalesce(nullif(split_part(display_name, ' ', 1), ''), '') from users where id = :u"), {"u": user_id}).scalar() or ""
+    brief = _with_memory(INBOUND_BRIEF + "\n\n" + persona.PERSONA + " " + persona.PHONE, memory.context(user_id, 900))
+    rec = store.create(to=number, language="auto", brief=brief, voice="", name=L.clean_name(name), tools=["web_search", *[s["name"] for s in registry.listing(voice_only=True)]],
+                       consent=True, by_admin="inbound", provider="twilio" if cfg.provider == "twilio" else cfg.provider, provider_sid=call_sid, status="ringing",
+                       direction="inbound", user_id=user_id, **{"from": number})
+    return rec, ""
 
 
 async def hang_up(call_id: str) -> dict:

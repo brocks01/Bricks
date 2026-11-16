@@ -6,14 +6,14 @@ export const authWelcome = definePage({
   module: 'auth',
   route: '/welcome',
   bare: true,
-  summary: 'The first page for someone who is not signed in: what Bricks is, and the button to start.',
+  summary: 'The first page for someone who is not signed in: what Wisdom is, and the button to start.',
   keywords: ['start', 'welcome', 'begin'],
   elements: {
     heading: { kind: 'text' },
     subtitle: { kind: 'text' },
     start: { kind: 'action', summary: 'Goes to the sign-in page.' },
     languageLink: { kind: 'action', summary: 'Opens the list of languages.' },
-    spokenLink: { kind: 'action', summary: 'Opens the page where the person says which languages they speak to Bricks, before signing in.' },
+    spokenLink: { kind: 'action', summary: 'Opens the page where the person says which languages they speak to Wisdom, before signing in.' },
   },
   strings,
 });

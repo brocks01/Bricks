@@ -26,6 +26,7 @@ class ItemIn(BaseModel):
     remind_before_min: int = 0
     channel: str = "app"
     notify_family: bool = True
+    agent_brief: str | None = None
 
 
 class ItemPatch(BaseModel):
@@ -40,6 +41,7 @@ class ItemPatch(BaseModel):
     remind_before_min: int | None = None
     channel: str | None = None
     notify_family: bool | None = None
+    agent_brief: str | None = None
 
 
 class ItemIdOut(BaseModel):

@@ -2,7 +2,7 @@
 
 The access token is STATELESS: checking it needs only the signature, the expiry and a few fixed claims, no database call.
   sub  the person            t  type: "a" access, "g" agent (an agent token is for the in-app agent: shorter, never wider than its owner)
-  s    the session id        iss/aud  "bricks"        iat/exp  issued at / expires at (15 minutes by default)
+  s    the session id        iss/aud  "wisdom"        iat/exp  issued at / expires at (15 minutes by default)
 Instant revocation without a database call per request is in auth_state.py (a logged-out session list and a per-person "changed at")."""
 import base64
 import hashlib
@@ -13,8 +13,8 @@ import time
 
 from .config import get_settings
 
-ISSUER = "bricks"
-AUDIENCE = "bricks"
+ISSUER = "wisdom"
+AUDIENCE = "wisdom"
 ACCESS, AGENT = "a", "g"
 
 

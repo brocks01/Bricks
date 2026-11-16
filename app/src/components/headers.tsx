@@ -1,20 +1,20 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
+import { getInbox } from '../api/wisdom';
 import { useStore } from '../core/store';
 import { useGoBack, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
 import { colors, space, type } from '../theme/tokens';
 
 /**
- * The Bricks mark: four connected bricks, the approved logo (owner, 12 Nov 2026) - drawn by hand as an SVG
- * in `team-docs/05-design/brand/bricks-mark.svg` and rasterised to PNG, because the app has no SVG renderer.
- * Used at any size, so one file updates every header and the welcome screen together.
+ * The Wisdom mark: a green leaf. Rasterised to PNG (`assets/brand/mark.png`) and used at any size, so one file updates every header and the welcome screen together.
  */
 export function Logo({ size = 28 }: { size?: number }) {
   return (
     <Image
       source={require('../../assets/brand/mark.png')}
-      accessibilityLabel="Bricks"
+      accessibilityLabel="Wisdom"
       resizeMode="contain"
       style={{ width: size, height: size }}
     />
@@ -38,6 +38,10 @@ export function Avatar({ name, size = 40, dot }: { name: string; size?: number; 
 export function AppHeader() {
   const go = useNavigate();
   const { user } = useStore(sessionStore);
+  const [unread, setUnread] = useState(0);
+  useEffect(() => {
+    getInbox().then((r) => setUnread(r.unread)).catch(() => undefined);
+  }, []);
   const name = (user?.display_name ?? user?.email ?? '').trim();
   const words = name.split(/\s+/).filter(Boolean);
   const initials = ((words[0]?.charAt(0) ?? '?') + (words.length > 1 ? words[words.length - 1].charAt(0) : '')).toUpperCase();
@@ -45,11 +49,17 @@ export function AppHeader() {
     <View style={{ height: 64, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
         <Logo size={34} />
-        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Bricks</Text>
+        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Wisdom</Text>
       </View>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Notifications" onPress={() => go('channels.notices')} hitSlop={8}>
+          <Ionicons name="notifications-outline" size={26} color={colors.ink} />
+          {unread > 0 ? <View style={{ position: 'absolute', right: -1, top: -1, width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.card }} /> : null}
+        </Pressable>
       <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => go('me.index')} hitSlop={6} style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.gold }}>
         <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>{initials}</Text>
       </Pressable>
+      </View>
     </View>
   );
 }

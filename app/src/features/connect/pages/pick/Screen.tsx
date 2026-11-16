@@ -51,7 +51,7 @@ export default function Pick() {
     setBusy(true);
     try {
       for (const id of chosen) await joinOpenCommunity(id);
-      go('home.index', undefined, { replace: true });
+      go('connect.index', undefined, { replace: true });
     } catch {
       setNote(t('lead.failed'));
       setBusy(false);

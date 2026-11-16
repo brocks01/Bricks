@@ -1,6 +1,6 @@
 # How we work
 
-One monorepo: `app/` (Expo app and website), `backend/` (Python API), `team-docs/` and `platform-docs/`.
+One monorepo: `app/` (Expo app and website), `backend/` (Python API), and `team-docs/`.
 
 ## Branches
 - `main` is always working and is what gets deployed. Nobody pushes to it directly.

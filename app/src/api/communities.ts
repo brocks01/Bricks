@@ -71,6 +71,7 @@ export interface CommunityActivity {
   status: string;
   going_count: number;
   i_going: boolean;
+  repeat: 'daily' | 'weekdays' | 'weekly' | 'monthly' | null;
 }
 export type ActivityWhen = 'upcoming' | 'mine' | 'past';
 export const getActivities = (cid: string, when: ActivityWhen = 'upcoming', category?: string) =>
@@ -78,7 +79,7 @@ export const getActivities = (cid: string, when: ActivityWhen = 'upcoming', cate
 export const getActivityCategories = (cid: string) =>
   api<{ categories: { name: string; ongoing: number; completed: number; image_url: string | null }[] }>('GET', `/v1/communities/${cid}/activity-categories`).then((r) => r.categories);
 export const getActivity = (id: string) => api<CommunityActivity & { organiser: string | null; going: { id: string; name: string }[] }>('GET', `/v1/communities/activities/${id}`);
-export const createActivity = (cid: string, body: { title: string; starts_at: string; ends_at?: string; location?: string; category?: string; description?: string; capacity?: number }) =>
+export const createActivity = (cid: string, body: { title: string; starts_at: string; ends_at?: string; location?: string; category?: string; description?: string; capacity?: number; repeat?: 'none' | 'daily' | 'weekdays' | 'weekly' | 'monthly' }) =>
   api<{ id: string }>('POST', `/v1/communities/${cid}/activities`, body);
 export const getMembers = (cid: string, q?: string) => api<{ members: { id: string; name: string; area: string | null; role: string }[] }>('GET', `/v1/communities/${cid}/members${q ? `?q=${encodeURIComponent(q)}` : ''}`).then((r) => r.members);
 export const getInvite = (cid: string) => api<{ name: string; can_invite: boolean; invite_code: string | null }>('GET', `/v1/communities/${cid}/invite`);
@@ -97,3 +98,7 @@ export const joinCommunity = (code: string) => api<{ id: string }>('POST', '/v1/
 export type CommunityKind = 'apartment' | 'block' | 'neighbourhood' | 'club' | 'other';
 /** Start a community; the creator becomes its Community Lead and gets the invite code to share. */
 export const createCommunity = (body: { name: string; kind: CommunityKind; area_name?: string; description?: string }) => api<{ id: string }>('POST', '/v1/communities', body);
+
+/** How often the person comes to one community (check-ins only): this month, streaks, level, and the regulars of the month. */
+export interface Standing { this_month: number; last_month: number; total: number; day_streak: number; week_streak: number; level: 'newcomer' | 'regular' | 'stalwart'; regulars: { name: string; times: number; me: boolean }[] }
+export const getStanding = (cid: string) => api<Standing>('GET', `/v1/communities/${cid}/standing`);

@@ -1,4 +1,4 @@
-// Walk recording engine. Ported unchanged (imports only) from the teammates' Bricks app (branch sayan, features/walk/engine.ts): distance, active time, automatic pause, steps.
+// Walk recording engine. Ported unchanged (imports only) from the teammates' Wisdom app (branch sayan, features/walk/engine.ts): distance, active time, automatic pause, steps.
 import { cleanTrack, haversine, pathLength, type TrackPoint } from './geo';
 
 /**

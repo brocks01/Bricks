@@ -164,7 +164,7 @@ def test_token_carries_fixed_claims_and_lasts_15_minutes():
     import base64, json
     t = sign_in(fresh_email())["access_token"]
     c = json.loads(base64.urlsafe_b64decode(t.split(".")[1] + "=="))
-    assert c["t"] == "a" and c["iss"] == "bricks" and c["aud"] == "bricks" and c["s"] and c["exp"] - c["iat"] == 15 * 60
+    assert c["t"] == "a" and c["iss"] == "wisdom" and c["aud"] == "wisdom" and c["s"] and c["exp"] - c["iat"] == 15 * 60
 
 
 def test_forged_or_wrong_type_tokens_are_refused():

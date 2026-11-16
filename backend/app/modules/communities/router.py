@@ -19,6 +19,8 @@ class CreateIn(BaseModel):
     description: str | None = Field(default=None, max_length=500)
     area_name: str | None = Field(default=None, max_length=120)
     privacy: Literal["open", "invite"] = "invite"
+    circle: Literal["origin", "faith", "place", "life", "interest"] = "life"  # the feeling that holds the circle together
+    audience: Literal["all", "men", "women"] = "all"
 
 
 class JoinIn(BaseModel):

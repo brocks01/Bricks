@@ -7,7 +7,7 @@ export const familyAssisted = definePage({
   route: '/family/[id]/assisted',
   params: ['id'],
   requiresAuth: true,
-  summary: 'Set up a Bricks account for a family member who cannot do it themselves: their name, language and how they belong to us. No email is asked; they can take the account over later with a family code.',
+  summary: 'Set up a Wisdom account for a family member who cannot do it themselves: their name, language and how they belong to us. No email is asked; they can take the account over later with a family code.',
   keywords: ['assisted', 'set up', 'someone else', 'grandparent', 'help'],
   elements: {
     heading: { kind: 'text' },

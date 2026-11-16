@@ -116,7 +116,7 @@ def cloud(monkeypatch):
 
     def fake_post(url, data=None, files=None, timeout=None):
         sent.update(url=url, data=data, files=files)
-        return httpx.Response(200, json={"secure_url": "https://res.cloudinary.com/democloud/image/upload/v1/bricks/other/x.png", "public_id": "bricks/other/x", "bytes": 72, "width": 4, "height": 4},
+        return httpx.Response(200, json={"secure_url": "https://res.cloudinary.com/democloud/image/upload/v1/wisdom/other/x.png", "public_id": "bricks/other/x", "bytes": 72, "width": 4, "height": 4},
                               request=httpx.Request("POST", url))
 
     monkeypatch.setattr(media.httpx, "post", fake_post)
@@ -131,7 +131,7 @@ def test_media_upload_signs_the_request_and_keeps_a_row(cloud):
     p = person()
     r = upload(p, kind="avatar")
     assert r.status_code == 200 and r.json()["url"].startswith("https://res.cloudinary.com/democloud/") and r.json()["kind"] == "avatar"
-    assert cloud["data"]["api_key"] == "key123" and cloud["data"]["folder"] == "bricks/avatar" and "secret456" not in str(cloud["data"]) and len(cloud["data"]["signature"]) == 40
+    assert cloud["data"]["api_key"] == "key123" and cloud["data"]["folder"] == "wisdom/avatar" and "secret456" not in str(cloud["data"]) and len(cloud["data"]["signature"]) == 40
     with engine().connect() as conn:
         assert conn.execute(text("select count(*) from media_assets where owner_id = :o"), {"o": p["id"]}).scalar_one() == 1
 

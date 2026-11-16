@@ -18,7 +18,7 @@ LANGUAGES = {
     "ms-MY": "Malay",
 }
 
-MAX_BRIEF = 2000
+MAX_BRIEF = 4000
 
 
 def normalize_number(s) -> str:

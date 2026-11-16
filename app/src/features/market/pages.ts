@@ -1,5 +1,6 @@
 import { definePage } from '../../kit/page';
-import { pageWords } from '../../i18n/words';
+import { mergeStrings, pageWords } from '../../i18n/words';
+import { DAYS } from './dayWords';
 import { ALIASES, W } from './words';
 
 const strings = (headingWord: string) => pageWords(W, { ...ALIASES, heading: headingWord });
@@ -20,7 +21,7 @@ export const marketIndex = definePage({
     offer: { kind: 'action', summary: 'Open the form to offer a service of your own.' },
     mine: { kind: 'action', summary: 'Open your services and bookings.' },
   },
-  strings: strings('h_market'),
+  strings: mergeStrings(strings('h_market'), pageWords(DAYS)),
 });
 
 export const marketOffer = definePage({
@@ -92,4 +93,15 @@ export const marketStall = definePage({
     giveUp: { kind: 'action', agent: 'confirm', summary: 'Give up the reserved stall.' },
   },
   strings: strings('h_stall'),
+});
+
+export const marketDay = definePage({
+  ...base,
+  key: 'market.day',
+  route: '/market/day/[id]',
+  params: ['id'],
+  summary: 'One market day at an Active Ageing Centre, a mall or a community centre: when and where, how many are going, the stalls, a button to say you are going and a form to take a stall (people aged 60 and over). It may repeat every week or month.',
+  keywords: ['market day', 'stall', 'sell', 'going', 'mall', 'centre'],
+  elements: { heading: { kind: 'text', summary: 'The name of the market day.' } },
+  strings: pageWords(DAYS, { heading: 'dayHeading' }),
 });

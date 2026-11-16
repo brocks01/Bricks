@@ -5,7 +5,7 @@ export const strings: PageStrings = {
   en: {
     tab: 'Family',
     heading: 'Family',
-    intro: 'Where family members help each other set up and look after their Bricks accounts.',
+    intro: 'Where family members help each other set up and look after their Wisdom accounts.',
     create: 'Create a family',
     join: 'Join with a code',
     empty: 'No family yet',
@@ -21,7 +21,7 @@ export const strings: PageStrings = {
   hi: {
     tab: 'परिवार',
     heading: 'परिवार',
-    intro: 'जहाँ परिवार के सदस्य एक-दूसरे के Bricks खाते शुरू करने और सँभालने में मदद करते हैं।',
+    intro: 'जहाँ परिवार के सदस्य एक-दूसरे के Wisdom खाते शुरू करने और सँभालने में मदद करते हैं।',
     create: 'परिवार बनाएँ',
     join: 'कोड से जुड़ें',
     empty: 'अभी कोई परिवार नहीं',
@@ -37,7 +37,7 @@ export const strings: PageStrings = {
   bn: {
     tab: 'পরিবার',
     heading: 'পরিবার',
-    intro: 'যেখানে পরিবারের সদস্যরা একে অপরের Bricks অ্যাকাউন্ট শুরু করতে ও দেখাশোনা করতে সাহায্য করেন।',
+    intro: 'যেখানে পরিবারের সদস্যরা একে অপরের Wisdom অ্যাকাউন্ট শুরু করতে ও দেখাশোনা করতে সাহায্য করেন।',
     create: 'পরিবার তৈরি করুন',
     join: 'কোড দিয়ে যোগ দিন',
     empty: 'এখনো কোনো পরিবার নেই',
@@ -53,7 +53,7 @@ export const strings: PageStrings = {
   ta: {
     tab: 'குடும்பம்',
     heading: 'குடும்பம்',
-    intro: 'குடும்ப உறுப்பினர்கள் ஒருவருக்கொருவர் Bricks கணக்குகளைத் தொடங்கவும் பராமரிக்கவும் உதவும் இடம்.',
+    intro: 'குடும்ப உறுப்பினர்கள் ஒருவருக்கொருவர் Wisdom கணக்குகளைத் தொடங்கவும் பராமரிக்கவும் உதவும் இடம்.',
     create: 'குடும்பத்தை உருவாக்கு',
     join: 'குறியீட்டுடன் சேர்',
     empty: 'இன்னும் குடும்பம் இல்லை',
@@ -69,7 +69,7 @@ export const strings: PageStrings = {
   zh: {
     tab: '家人',
     heading: '家人',
-    intro: '家人在这里互相帮助，开始并打理各自的 Bricks 账户。',
+    intro: '家人在这里互相帮助，开始并打理各自的 Wisdom 账户。',
     create: '创建家庭',
     join: '用邀请码加入',
     empty: '还没有家庭',
@@ -85,7 +85,7 @@ export const strings: PageStrings = {
   ms: {
     tab: 'Keluarga',
     heading: 'Keluarga',
-    intro: 'Tempat ahli keluarga membantu antara satu sama lain memulakan dan menjaga akaun Bricks mereka.',
+    intro: 'Tempat ahli keluarga membantu antara satu sama lain memulakan dan menjaga akaun Wisdom mereka.',
     create: 'Cipta keluarga',
     join: 'Sertai dengan kod',
     empty: 'Belum ada keluarga',

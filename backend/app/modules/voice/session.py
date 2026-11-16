@@ -213,7 +213,7 @@ class CallSession:
         else:
             what = f"{name}: {str(args['query'])[:120]}" if args.get("query") else name
             log.info("[voice] %s tool %s", self.tag(), name)
-            response = await tools.run(name, args, self.memo)
+            response = await tools.run(name, args, self.memo, rec.get("user_id"))
             n = len(response["results"]) if isinstance(response.get("results"), list) else None
             outcome = "failed" if response.get("error") else "done" if n is None else f"{n} result{'' if n == 1 else 's'}"
             # The tool line goes in when the tool is DONE, so the words spoken before it ("one sec, let me check") are already above it.
@@ -292,6 +292,8 @@ class CallSession:
         duration = round((ended_at - rec["started_at"]).total_seconds()) if rec["started_at"] else 0
         store.update(rec["call_id"], status="failed" if rec["error"] and rec["status"] != "completed" else "completed", ended_at=ended_at, duration_s=duration, end_reason=reason)
         store.close_turn(rec["call_id"])
+        if rec.get("user_id"):  # what was said goes into the person's one memory, so a chat can pick the conversation up
+            asyncio.create_task(asyncio.to_thread(_remember_call, rec["user_id"], [(t["role"], t["text"]) for t in rec["transcript"] if t["role"] in ("agent", "person")]))
         # We ended it (the phone side is still up): tell the provider.
         if reason in ("max-duration", "admin-hangup", "model-error", "model-gone", "ai-unavailable", "model-ended", "ended-by-agent"):
             from .twilio import provider_for
@@ -340,3 +342,14 @@ def hangup_live(call_id: str, reason: str = "admin-hangup") -> bool:
 
 def live_count() -> int:
     return len(_live)
+
+
+def _remember_call(user_id: str, lines: list[tuple[str, str]]) -> None:
+    """The last few lines of a call, kept in the person's one memory (never raises: a failed save must not hurt a call that has already ended)."""
+    try:
+        from ..channels import memory
+
+        for role, body in lines[-6:]:
+            memory.remember(user_id, "call", role, body)
+    except Exception:  # noqa: BLE001
+        log.warning("[voice] could not save the call to memory")

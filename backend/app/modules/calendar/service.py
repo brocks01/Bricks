@@ -120,6 +120,16 @@ def _clean_title(title: str) -> str:
     return title
 
 
+def _clean_brief(v) -> str | None:
+    """What the person wants Wisdom to do on a scheduled call (their own words), at most 500 characters."""
+    if v is None:
+        return None
+    v = str(v).strip()
+    if len(v) > 500:
+        raise CalendarError("validation", 422, field="agent_brief")
+    return v or None
+
+
 def _parse_starts_at(starts_at: str) -> tuple[datetime, date, time, int]:
     """An aware ISO datetime -> (utc, local_date, local_time, offset_minutes). A bare datetime is refused."""
     try:
@@ -165,19 +175,20 @@ def create_item(conn: Connection, me: str, **b) -> dict:
         if until < first_date:
             raise CalendarError("validation", 422, field="until_date")
     remind = int(b.get("remind_before_min") or 0)
+    agent_brief = _clean_brief(b.get("agent_brief"))
     channel = b.get("channel") or "app"
     duration = b.get("duration_min")
     row = conn.execute(
         text("""
             insert into calendar_items
               (person_id, created_by, updated_by, kind, title, note, first_date, local_time, tz_offset_min,
-               duration_min, repeat, repeat_days, until_date, remind_before_min, channel, notify_family)
-            values (:p, :m, :m, :k, :t, :n, :fd, :lt, :tz, :du, :r, cast(:rd as smallint[]), :un, :rb, :ch, :nf)
+               duration_min, repeat, repeat_days, until_date, remind_before_min, channel, notify_family, agent_brief)
+            values (:p, :m, :m, :k, :t, :n, :fd, :lt, :tz, :du, :r, cast(:rd as smallint[]), :un, :rb, :ch, :nf, :ab)
             returning id
         """),
         {"p": person_id, "m": me, "k": kind, "t": title, "n": note, "fd": first_date, "lt": local_time, "tz": offset_min,
          "du": duration, "r": repeat, "rd": repeat_days, "un": until, "rb": remind, "ch": channel,
-         "nf": True if b.get("notify_family") is None else bool(b["notify_family"])},
+         "nf": True if b.get("notify_family") is None else bool(b["notify_family"]), "ab": agent_brief},
     ).first()
     from . import warnings as warns  # late import: the warnings module imports expand from here
 
@@ -231,6 +242,8 @@ def update_item(conn: Connection, me: str, item_id: str, **b) -> dict:
         sets["until_date"] = until
     if "channel" in b:
         sets["channel"] = b["channel"]
+    if "agent_brief" in b:
+        sets["agent_brief"] = _clean_brief(b["agent_brief"])
     cols = ", ".join(f"{k} = :{k}" for k in sets)
     sets["i"] = item_id
     conn.execute(text(f"update calendar_items set {cols}, updated_at = now() where id = :i"), sets)
@@ -257,7 +270,7 @@ def item_detail(conn: Connection, me: str, item_id: str) -> dict:
         "tz_offset_min": item.tz_offset_min, "duration_min": item.duration_min, "repeat": item.repeat,
         "repeat_days": list(item.repeat_days) if item.repeat_days is not None else None,
         "until_date": item.until_date.isoformat() if item.until_date else None,
-        "remind_before_min": item.remind_before_min, "channel": item.channel, "status": item.status,
+        "remind_before_min": item.remind_before_min, "channel": item.channel, "status": item.status, "agent_brief": item.agent_brief,
         "added_by_name": (row.display_name or "") if row else "",
     }
 

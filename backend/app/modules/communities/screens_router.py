@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime
+from datetime import date, datetime
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -22,6 +22,10 @@ class ActivityIn(BaseModel):
     ends_at: datetime | None = None
     location: str | None = Field(default=None, max_length=160)
     capacity: int | None = Field(default=None, gt=0, le=10000)
+    repeat: str | None = Field(default=None, pattern="^(none|daily|weekdays|weekly|monthly)$")  # a repeating event: a jogging group every morning, a weekly kopi, a monthly market
+    repeat_days: list[int] | None = None  # weekly: 0 = Monday ... 6 = Sunday
+    week_of_month: int | None = None  # monthly: 1 to 4 or -1 (last), "the first Sunday"; empty means the same date each month
+    until: date | None = None
 
 
 class InitiativeIn(BaseModel):
@@ -99,6 +103,18 @@ def categories(community_id: str, user_id: str = Depends(current_user_id), conn:
 @router.post("/{community_id}/activities")
 def activity_create(community_id: str, body: ActivityIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return _call([community_id], screens.create_activity, conn, user_id, community_id, body.model_dump())
+
+
+@router.get("/{community_id}/standing")
+def standing(community_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """How often this person comes: this month, streaks of days and weeks, their level, and the regulars of the month."""
+    return _call([community_id], screens.standing, conn, user_id, community_id)
+
+
+@router.post("/activities/{activity_id}/end-series")
+def end_series(activity_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Stop a repeating event: no more are made and the coming ones are cancelled. A Community Lead only."""
+    return _call([activity_id], screens.end_series, conn, user_id, activity_id)
 
 
 @router.get("/{community_id}/members")

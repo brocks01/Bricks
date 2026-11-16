@@ -36,8 +36,8 @@ class Settings:
     smtp_password: str
     email_from: str
     google_client_id: str  # public id, not a secret; empty means Google sign-in is off
-    singpass_client_id: str  # empty until Bricks is registered with Singpass; sign-in stays off
-    digilocker_client_id: str  # empty until Bricks is registered with DigiLocker (API Setu); sign-in stays off
+    singpass_client_id: str  # empty until Wisdom is registered with Singpass; sign-in stays off
+    digilocker_client_id: str  # empty until Wisdom is registered with DigiLocker (API Setu); sign-in stays off
 
     # Translation of member-written content. The provider KEYS are not here: GEMINI_API_KEY is read by the
     # provider module itself, exactly like the voice module reads it, and GOOGLE_TRANSLATE_API_KEY below is

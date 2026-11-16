@@ -1,10 +1,11 @@
 import { definePage } from '../../kit/page';
-import { pageWords } from '../../i18n/words';
+import { mergeStrings, pageWords } from '../../i18n/words';
+import { EXTRA } from './extraWords';
 import { L } from '../lead/leadWords';
 import { strings } from './strings';
 
 // The community screens, as in ui-samples/10-community-screens.webp (screens 2 to 10). All of them share one list of words (strings.ts).
-const base = { module: 'community', requiresAuth: true, strings } as const;
+const base = { module: 'community', requiresAuth: true, strings: mergeStrings(strings, pageWords(EXTRA)) } as const;
 
 export const communityEvents = definePage({
   ...base,
@@ -131,6 +132,7 @@ export const communityNewEvent = definePage({
     fPlace: { kind: 'field', type: 'string', summary: 'Where it takes place.' },
     fCategory: { kind: 'field', type: 'string', summary: 'The kind of activity, for example Fitness.' },
     fAbout: { kind: 'field', type: 'string', summary: 'A short description.' },
+    fRepeat: { kind: 'choice', type: 'string', options: ['none', 'daily', 'weekdays', 'weekly', 'monthly'], summary: 'Whether the event repeats: just once, every day, weekdays, every week or every month.' },
     save: { kind: 'action', agent: 'confirm', summary: 'Create the event.' },
   },
 });

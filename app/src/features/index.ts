@@ -12,3 +12,6 @@ import './calendar/module';
 import './health/module';
 import './home/module';
 import './market/module';
+import './onboarding/module';
+import './wisdom/module';
+import './channels/module';

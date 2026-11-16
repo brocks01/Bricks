@@ -57,6 +57,7 @@ export default function Event() {
             <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink, marginBottom: space.md }}>{d.title}</Text>
             <Fact icon="calendar-outline" text={when(d.starts_at)} />
             {d.location ? <Fact icon="location-outline" text={d.location} /> : null}
+            {d.repeat ? <Fact icon="repeat-outline" text={w(`repeat_${d.repeat}`)} /> : null}
             <Fact icon="people-outline" text={w('goingCount', { n: d.going_count })} />
             {d.organiser ? <Text style={[type.small, { color: colors.muted, marginBottom: space.sm }]}>{w('by', { name: d.organiser })}</Text> : null}
             {d.description ? <Text style={[type.body, { color: colors.ink, marginTop: space.sm }]}>{d.description}</Text> : null}

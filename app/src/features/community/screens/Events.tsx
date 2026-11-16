@@ -65,7 +65,7 @@ export default function Events() {
                 icon="calendar"
                 i={i}
                 title={a.title}
-                lines={[when(a.starts_at), a.location]}
+                lines={[when(a.starts_at), a.location, a.repeat ? w(`repeat_${a.repeat}`) : null]}
                 onPress={() => go('community.event', { id: cid, eid: a.id })}
                 right={tab === 'past' ? undefined : <JoinPill on={a.i_going} label={a.i_going ? w('going') : w('join')} onPress={() => void toggle(a.id, a.i_going)} />}
               />

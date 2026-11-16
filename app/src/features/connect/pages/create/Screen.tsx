@@ -17,7 +17,7 @@ import { connectCreate as page } from '../../pages';
 
 const KINDS: CommunityKind[] = ['apartment', 'block', 'neighbourhood', 'club', 'other'];
 
-// Ask to start a community. Communities are few and curated: a person with a little experience sends a request, the Bricks team approves it, and then the person creates it here.
+// Ask to start a community. Communities are few and curated: a person with a little experience sends a request, the Wisdom team approves it, and then the person creates it here.
 export default function CreateCommunity() {
   const w = usePageWords(page);
   const t = useT();

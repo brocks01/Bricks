@@ -182,6 +182,12 @@ def get_user(conn: Connection, user_id: str):
     return conn.execute(text("select * from users where id = :u and status = 'active'"), {"u": user_id}).first()
 
 
+def open_from_contact(conn: Connection, phone: str | None = None) -> str:
+    """An account for a person who reached Wisdom from a phone call, WhatsApp, SMS or Telegram, with no email yet. Which interface they came from does not matter:
+    this is the one way such an account is made. They fill in the rest by onboarding (the agent asks), and may add an email later."""
+    return str(conn.execute(text("insert into users (email, phone) values (null, :p) returning id"), {"p": phone}).scalar_one())
+
+
 def update_profile(conn: Connection, user_id: str, fields: dict) -> dict:
     fields = {k: v for k, v in fields.items() if k in PROFILE_COLUMNS}
     if "display_name" in fields and fields["display_name"] is not None:

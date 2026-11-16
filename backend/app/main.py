@@ -1,4 +1,4 @@
-﻿"""Bricks API. One service, one database, split into modules. Start it with:  python backend/run.py"""
+﻿"""Wisdom API. One service, one database, split into modules. Start it with:  python backend/run.py"""
 import asyncio
 import os
 from contextlib import asynccontextmanager
@@ -26,9 +26,15 @@ from .modules.family.router import router as family_router
 from .modules.calendar.router import router as calendar_router
 from .modules.market.router import router as market_router
 from .modules.market.events_router import router as market_events_router
+from .modules.skills.router import router as skills_router
+from .modules.channels.router import inbox_router, router as channels_router
 from .modules.health.router import router as health_router
 from .modules.nodes.router import router as nodes_router
 from .modules.home.router import router as home_router
+from .modules.onboarding.router import profile_router, router as onboarding_router
+from .modules.wisdom.router import router as wisdom_router
+from .modules.insights.router import router as insights_router
+from .modules.hosts.router import router as hosts_router
 
 # Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
 # One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
@@ -64,13 +70,21 @@ async def lifespan(_: FastAPI):
     from .modules.calendar import calls as calendar_calls
 
     reminder_task = asyncio.create_task(calendar_calls.loop())
+    # The Telegram bot listens only when a token is set and no webhook is configured (TELEGRAM_MODE=webhook).
+    from .modules.channels import outbox, telegram
+
+    outbox_task = asyncio.create_task(outbox.loop())  # nudges and queued messages (OUTBOX_LOOP=off holds it still)
+    chat_task = asyncio.create_task(telegram.poll_loop()) if telegram.enabled() and (os.environ.get("TELEGRAM_MODE") or "poll") == "poll" else None
     try:
         yield
     finally:
         reminder_task.cancel()
+        outbox_task.cancel()
+        if chat_task:
+            chat_task.cancel()
 
 
-app = FastAPI(title="Bricks API", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Wisdom API", version="0.1.0", lifespan=lifespan)
 
 # Who may call the API from a browser: this computer and its network, any Vercel address (the website is deployed there), and the exact
 # addresses listed in CORS_ORIGINS (a comma list, for example the final domain). The API uses Authorization tokens, not cookies, so this is not a
@@ -98,9 +112,17 @@ app.include_router(family_router)
 app.include_router(calendar_router)
 app.include_router(market_router)
 app.include_router(market_events_router)
+app.include_router(skills_router)
+app.include_router(channels_router)
+app.include_router(inbox_router)
 app.include_router(health_router)
 app.include_router(nodes_router)
 app.include_router(home_router)
+app.include_router(onboarding_router)
+app.include_router(wisdom_router)
+app.include_router(insights_router)
+app.include_router(hosts_router)
+app.include_router(profile_router)
 
 
 @app.get("/v1/health")

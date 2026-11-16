@@ -272,7 +272,7 @@ def test_the_brief_speaks_the_persons_language_and_never_advises():
     en = calls.brief_for("en", "Anita", "blood pressure tablet")
     assert "Anita" in en and "blood pressure tablet" in en and "never give medical advice" in en
     hi = calls.brief_for("hi", "Anita", "blood pressure tablet")
-    assert "Bricks" in hi and "डॉक्टर" in hi
+    assert "Wisdom" in hi and "डॉक्टर" in hi
     for code in ("bn", "ta", "zh", "ms"):
         assert calls.brief_for(code, "Anita", "tablet")
     assert calls.VOICE_LANGUAGES["zh"] == "zh-CN" and calls.VOICE_LANGUAGES["ms"] == "ms-MY"
