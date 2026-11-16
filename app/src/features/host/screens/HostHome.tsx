@@ -6,7 +6,8 @@ import {
   type HostEvent, type HostEventBody, type Intent, type MyHost, type OpportunityKind,
 } from '../../../api/hosts';
 import { Empty, ListRow, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { Body, Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { colors, radius, space, type } from '../../../theme/tokens';
 import { hostHome as page } from '../pages';
@@ -114,27 +115,27 @@ export default function HostHome() {
   useField(page, 'link', link, (v) => setLink(String(v)));
   useAction(page, 'add', add);
 
-  if (hosts === null) return <Screen title={w('h_host')} back><Body muted>…</Body></Screen>;
+  if (hosts === null) return <BackScreen title={w('h_host')}><Body muted>…</Body></BackScreen>;
   if (hosts.length === 0) {
     return (
-      <Screen title={w('h_host')} back>
+      <BackScreen title={w('h_host')}>
         <Empty text={w('host_none')} />
         <Body muted>{w('host_none_d')}</Body>
-      </Screen>
+      </BackScreen>
     );
   }
   if (!active) {
     return (
-      <Screen title={w('h_host')} subtitle={w('choose_host')} back>
+      <BackScreen title={w('h_host')} subtitle={w('choose_host')}>
         {hosts.map((h) => (
           <ListRow key={h.id} icon="business-outline" title={h.name} sub={h.area_name ?? ''} onPress={() => choose(h)} />
         ))}
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={w('h_host')} subtitle={`${active.name} · ${w(`role_${active.role}`)}`} back>
+    <BackScreen title={w('h_host')} subtitle={`${active.name} · ${w(`role_${active.role}`)}`}>
       <Section title={w('coming_up')}>
         {events.length === 0 ? <Empty text={w('no_events')} /> : null}
         {events.map((e) => (
@@ -188,6 +189,6 @@ export default function HostHome() {
           <Button label={w('add')} icon="add" disabled={busy} onPress={() => void add()} />
         </El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }

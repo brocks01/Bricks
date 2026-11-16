@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { cancelStall, getStalls, reserveStall, type StallSlot, type Stalls } from '../../../api/market';
 import { Empty, ListRow, Notice, Section } from '../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { useStore } from '../../../core/store';
 import { useLanguage, useT } from '../../../i18n';
 import '../../lead/leadWords'; // registers the words of the time slots
@@ -59,12 +60,12 @@ export default function StallScreen() {
   useAction(page, 'giveUp', giveUp);
   usePageData(page, data === null ? null : { values: [{ label: w('stalls_title'), value: String(data.stalls.length) }], images: [], lists: [], actions: [] });
 
-  if (lost) return <Screen back title={w('heading')}><Empty text={w('not_found')} /></Screen>;
+  if (lost) return <BackScreen title={w('heading')}><Empty text={w('not_found')} /></BackScreen>;
   const mine = data?.stalls.find((s) => s.mine);
   const when = data ? new Date(data.activity.starts_at).toLocaleString(lang, { weekday: 'long', day: 'numeric', month: 'long', hour: 'numeric', minute: '2-digit' }) : '';
 
   return (
-    <Screen back title={data?.activity.title ?? w('heading')}>
+    <BackScreen title={data?.activity.title ?? w('heading')}>
       {data ? <Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{when}</Text> : null}
       <ErrorText>{error}</ErrorText>
       {msg ? <Notice text={msg} /> : null}
@@ -89,6 +90,6 @@ export default function StallScreen() {
           )}
         </Section>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

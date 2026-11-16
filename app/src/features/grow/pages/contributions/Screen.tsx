@@ -3,7 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 import { addContribution, getContributions, type ContributionKind, type ContributionsData } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Field, Screen } from '../../../../components/ui';
+import { Button, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, useField, usePageData, usePageWords } from '../../../../kit';
@@ -74,7 +75,7 @@ export default function Contributions() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Hero source={require('../../../../../assets/images/contributions.jpg')} height={150} light={false} />
       <Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w('contrib_intro')}</Text>
       {failed ? (
@@ -116,6 +117,6 @@ export default function Contributions() {
           ))}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

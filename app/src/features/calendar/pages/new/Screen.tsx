@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { calendarApi, type CalendarKind, type CalendarPerson, type CalendarRepeat, type Clash } from '../../../../api/calendar';
 import { ApiError } from '../../../../api/client';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
@@ -130,7 +131,7 @@ export default function CalendarNew() {
   const wtime = (iso: string) => new Date(iso).toLocaleTimeString(lang, { hour: 'numeric', minute: '2-digit' });
 
   return (
-    <Screen title={editing ? w('editHeading') : w('newHeading')} back>
+    <BackScreen title={editing ? w('editHeading') : w('newHeading')}>
       {!editing && people.length > 1 ? (
         <El page={page} id="forWho">
           <ChoiceChips
@@ -223,7 +224,7 @@ export default function CalendarNew() {
           </El>
         </View>
       )}
-    </Screen>
+    </BackScreen>
   );
 }
 

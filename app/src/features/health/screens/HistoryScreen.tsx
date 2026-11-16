@@ -3,7 +3,8 @@ import { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { deleteWalk, getWalks, type Walk, type WalkTotals } from '../../../api/health';
 import { Empty, Figure, ListRow, Section } from '../../../components/blocks';
-import { ErrorText, Screen } from '../../../components/ui';
+import { ErrorText } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { useStore } from '../../../core/store';
 import { useLanguage, useT } from '../../../i18n';
 import { usePageData, usePageWords } from '../../../kit';
@@ -56,7 +57,7 @@ export default function HistoryScreen() {
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <ErrorText>{error}</ErrorText>
       <Section title={w('this_week')}>
         <View style={{ flexDirection: 'row', gap: space.sm }}>
@@ -88,6 +89,6 @@ export default function HistoryScreen() {
           />
         ))}
       </View>
-    </Screen>
+    </BackScreen>
   );
 }

@@ -4,7 +4,8 @@ import { Pressable, Text, View } from 'react-native';
 import { getProgress, type ProgressData } from '../../../../api/grow';
 import { getTree, type Tree } from '../../../../api/nodes';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { Button } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useT } from '../../../../i18n';
 import { usePageData, usePageWords } from '../../../../kit';
@@ -62,7 +63,7 @@ export default function Progress() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       {tree ? <TreeCard tree={tree} reload={load} /> : null}
       <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('tree.more')}</Text>
       {failed ? (
@@ -85,7 +86,7 @@ export default function Progress() {
           <Text style={[type.small, { color: colors.accent, textAlign: 'center', marginTop: space.md }]}>{w('keepGoing')}</Text>
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }
 

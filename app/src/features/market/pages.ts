@@ -11,7 +11,7 @@ export const marketIndex = definePage({
   ...base,
   key: 'market.index',
   route: '/market',
-  tab: 3,
+  tab: 1.5, // third in the bar: after Communities (1), before Wisdom (2)
   icon: 'storefront',
   summary: 'Marketplace: what is happening near you, hosted by Active Ageing Centres, malls and others — market days, volunteering, paid gigs, shows and activities, with a filter for what you want to do there. Paid sessions (services by the hour) live in Wisdom.',
   keywords: ['marketplace', 'market day', 'opportunity', 'event', 'volunteer', 'nearby', 'stall'],

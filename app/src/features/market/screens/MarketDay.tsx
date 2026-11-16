@@ -5,7 +5,8 @@ import { ApiError } from '../../../api/client';
 import { cancelMarketStall, getMarketEvent, setMarketGoing, takeMarketStall, type MarketEventDetail } from '../../../api/market';
 import { addMilestone, getMilestones, tickMilestone, type Milestone } from '../../../api/marketSteps';
 import { Empty, ListRow, Notice, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { Body, Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { usePageWords } from '../../../kit';
 import { colors, space } from '../../../theme/tokens';
 import { marketDay as page } from '../pages';
@@ -56,12 +57,12 @@ export default function MarketDay() {
     try { await tickMilestone(String(id), s.id, !s.done); setError(null); loadSteps(); } catch { setError(w('dayFailed')); }
   };
 
-  if (failed) return <Screen title={w('dayHeading')} back><Body muted>{w('dayNotFound')}</Body></Screen>;
-  if (!e) return <Screen title={w('dayHeading')} back><Body muted>…</Body></Screen>;
+  if (failed) return <BackScreen title={w('dayHeading')}><Body muted>{w('dayNotFound')}</Body></BackScreen>;
+  if (!e) return <BackScreen title={w('dayHeading')}><Body muted>…</Body></BackScreen>;
   const mine = e.stalls.find((s) => s.mine);
   const when = new Date(e.starts_at).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
   return (
-    <Screen title={e.title} subtitle={[when, e.venue_name, e.host ? w('hostedBy', { name: e.host }) : ''].filter(Boolean).join(' · ')} back>
+    <BackScreen title={e.title} subtitle={[when, e.venue_name, e.host ? w('hostedBy', { name: e.host }) : ''].filter(Boolean).join(' · ')}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.md }}>
         {e.repeat ? <Pill text={w(`dayRepeat_${e.repeat}`)} /> : null}
         {e.intents.map((i) => <Pill key={i} text={w(`intent_${i}`)} />)}
@@ -110,6 +111,6 @@ export default function MarketDay() {
           ) : null}
         </Section>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

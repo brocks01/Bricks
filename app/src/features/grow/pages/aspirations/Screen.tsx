@@ -4,7 +4,8 @@ import { Pressable, Text, View } from 'react-native';
 import { addAspiration, getAspirations, removeAspiration, setAspirationDone, type Aspiration, type AspirationKind } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Field, Screen } from '../../../../components/ui';
+import { Button, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { El, useField, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
@@ -84,7 +85,7 @@ export default function Aspirations() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Hero source={require('../../../../../assets/images/aspirations.jpg')} title={w('heading')} subtitle={w('asp_intro')} height={150} />
       {failed ? (
         <>
@@ -126,6 +127,6 @@ export default function Aspirations() {
           )}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

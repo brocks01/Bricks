@@ -2,7 +2,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Text, View } from 'react-native';
 import { saveWalk } from '../../../api/health';
 import { Figure, Notice, Pill } from '../../../components/blocks';
-import { Button, ErrorText, Screen } from '../../../components/ui';
+import { Button, ErrorText } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { useT } from '../../../i18n';
 import { El, useAction, usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
@@ -107,7 +108,7 @@ export default function WalkScreen() {
   const pace = summary && summary.distance_m >= 100 ? paceParts(summary.moving_s / (summary.distance_m / 1000)) : null;
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <ErrorText>{error}</ErrorText>
 
       {phase === 'idle' ? (
@@ -157,6 +158,6 @@ export default function WalkScreen() {
           )}
         </View>
       )}
-    </Screen>
+    </BackScreen>
   );
 }
