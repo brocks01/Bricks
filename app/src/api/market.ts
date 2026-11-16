@@ -10,10 +10,25 @@ export const cancelStall = (activityId: string) => api<{ cancelled: boolean }>('
 export interface MarketSummary { waiting_for_me: number; my_listings: number }
 
 // ---- market days: a day at an Active Ageing Centre, a mall or a community centre; once, weekly or monthly ----
-export interface MarketEventCard { id: string; title: string; description: string | null; venue_name: string; address: string | null; starts_at: string; ends_at: string | null; stalls_total: number; stalls_left: number; going_count: number; i_going: boolean; repeat: 'weekly' | 'monthly' | null; kind: 'market_day' | 'volunteer' | 'gig' | 'show' | 'activity'; intents: ('earn' | 'contribute' | 'volunteer' | 'enjoy')[]; host: string | null; source: string; external_url: string | null; my_communities: { community_id: string; name: string; going: number }[] }
-export interface MarketEventDetail extends MarketEventCard { stalls: { id: string; selling: string; kind: string; helper_name: string | null; slot: string; seller: string; community: string | null; mine: boolean }[] }
+export interface MarketEventCard { id: string; title: string; description: string | null; venue_name: string; address: string | null; starts_at: string; ends_at: string | null; stalls_total: number; stalls_left: number; going_count: number; i_going: boolean; repeat: 'weekly' | 'monthly' | null; kind: 'market_day' | 'volunteer' | 'gig' | 'show' | 'activity'; intents: ('earn' | 'contribute' | 'volunteer' | 'enjoy')[]; host: string | null; source: string; external_url: string | null; my_communities: { community_id: string; name: string; going: number }[]; interests: Interest[]; area_name: string | null; cover_url: string | null }
+export interface MarketEventDetail extends MarketEventCard { attended: boolean | null; stalls: { id: string; selling: string; kind: string; helper_name: string | null; slot: string; seller: string; community: string | null; mine: boolean }[] }
 export const getMarketEvents = (intent?: string) => api<{ events: MarketEventCard[] }>('GET', `/v1/market/events?limit=20${intent ? `&intent=${intent}` : ''}`).then((r) => r.events);
 export const getMarketEvent = (id: string) => api<MarketEventDetail>('GET', `/v1/market/events/${id}`);
 export const setMarketGoing = (id: string, going: boolean) => api<{ going: boolean }>('POST', `/v1/market/events/${id}/going`, { going });
 export const takeMarketStall = (id: string, b: { selling: string; slot: 'first' | 'second' | 'whole'; kind: 'goods' | 'skill'; helper_name?: string }) => api<{ id?: string }>('POST', `/v1/market/events/${id}/stall`, b);
 export const cancelMarketStall = (id: string) => api<{ cancelled?: boolean }>('DELETE', `/v1/market/events/${id}/stall`);
+
+// ---- the revamp: search, recommended for you, "I went" / "I didn't go" ----
+export type Interest = 'walking' | 'taichi' | 'cooking' | 'chess' | 'music' | 'gardening' | 'teaching' | 'tech';
+export const INTERESTS: Interest[] = ['walking', 'taichi', 'cooking', 'chess', 'music', 'gardening', 'teaching', 'tech'];
+/** Why an event is recommended: 'near', 'soon', or an interest it shares with the person. */
+export type Reason = 'near' | 'soon' | Interest;
+export interface RecommendedEvent extends MarketEventCard { distance_km: number | null; reasons: Reason[]; score: number }
+export const getRecommended = (q?: string, intent?: string, limit = 20) =>
+  api<{ events: RecommendedEvent[] }>('GET', `/v1/market/events/recommended?limit=${limit}${q ? `&q=${encodeURIComponent(q)}` : ''}${intent ? `&intent=${intent}` : ''}`).then((r) => r.events);
+export interface MyMarketDay extends MarketEventCard { attended: boolean | null }
+export interface MyMarket { upcoming: MyMarketDay[]; to_answer: MyMarketDay[]; answered: MyMarketDay[] }
+export const getMyMarket = () => api<MyMarket>('GET', '/v1/market/mine');
+/** After the day: "I went" (true) or "I didn't go" (false). It can be changed; "I went" grows a leaf on the Tree of Wisdom. */
+export const markAttendance = (id: string, attended: boolean, source: 'app' | 'agent' = 'app') => api<{ attended: boolean }>('POST', `/v1/market/events/${id}/attendance`, { attended, source });
+export const undoAttendance = (id: string) => api<{ attended: null }>('DELETE', `/v1/market/events/${id}/attendance`);

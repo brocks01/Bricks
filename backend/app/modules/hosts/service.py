@@ -126,6 +126,14 @@ def edit_event(conn: Connection, me: str, host_id: str, event_id: str, data: dic
     if kind not in EVENT_KINDS or not intents or any(i not in INTENTS for i in intents):
         raise HostError("validation", 422)
     cols = {"kind": kind, "intents": intents}
+    if "interests" in data:
+        from ..market.attendance import clean_interests
+        from ..market.service import MarketError
+
+        try:
+            cols["interests"] = clean_interests(data["interests"])
+        except MarketError:
+            raise HostError("validation", 422) from None
     for key in ("title", "description", "venue_name", "venue_kind", "address", "area_name", "starts_at", "ends_at", "stalls_total", "cover_url", "external_url"):
         if key in data:
             cols[key] = data[key]

@@ -5,6 +5,7 @@ import {
   cancelHostEvent, createHostEvent, endHostSeries, getHostEvents, getMyHosts, INTENTS, OPPORTUNITY_KINDS, REPEATS,
   type HostEvent, type HostEventBody, type Intent, type MyHost, type OpportunityKind,
 } from '../../../api/hosts';
+import { INTERESTS, type Interest } from '../../../api/market';
 import { Empty, ListRow, Pill, Section } from '../../../components/blocks';
 import { Body, Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
 import { BackScreen } from '../../../components/BackButton';
@@ -32,6 +33,7 @@ export default function HostHome() {
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<OpportunityKind>('market_day');
   const [intents, setIntents] = useState<Intent[]>(DEFAULT_INTENTS.market_day);
+  const [interests, setInterests] = useState<Interest[]>([]); // what it is about: the Marketplace recommends it to people who enjoy these
   const [venue, setVenue] = useState('');
   const [address, setAddress] = useState('');
   const [date, setDate] = useState('');
@@ -61,6 +63,7 @@ export default function HostHome() {
 
   const choose = (h: MyHost) => { setActive(h); loadEvents(h); };
   const pickKind = (k: OpportunityKind) => { setKind(k); setIntents(DEFAULT_INTENTS[k]); };
+  const toggleInterest = (i: Interest) => setInterests((cur) => (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i]));
   const toggleIntent = (i: Intent) => setIntents((cur) => (cur.includes(i) ? (cur.length > 1 ? cur.filter((x) => x !== i) : cur) : [...cur, i]));
 
   const add = async () => {
@@ -76,6 +79,7 @@ export default function HostHome() {
         title: title.trim(),
         kind,
         intents,
+        interests,
         venue_name: venue.trim(),
         address: address.trim() || undefined,
         starts_at: starts.toISOString(),
@@ -87,6 +91,7 @@ export default function HostHome() {
       setError(null);
       setTitle(''); setVenue(''); setAddress(''); setDate(''); setTime(''); setStalls(''); setLink(''); setRepeat('none');
       setIntents(DEFAULT_INTENTS[kind]);
+      setInterests([]);
       loadEvents(active);
     } catch {
       setError(w('failed'));
@@ -172,6 +177,18 @@ export default function HostHome() {
               <Pressable key={i} onPress={() => toggleIntent(i)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}
                 style={{ minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.accent : colors.card, borderWidth: 1, borderColor: on ? colors.accent : colors.line }}>
                 <Text style={{ fontSize: 16, fontWeight: '700', color: on ? '#FFFFFF' : colors.ink }}>{w(`intent_${i}`)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        <Text style={[type.small, { color: colors.ink, fontWeight: '700', marginBottom: space.xs }]}>{w('interests_label')}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.md }}>
+          {INTERESTS.map((i) => {
+            const on = interests.includes(i);
+            return (
+              <Pressable key={i} onPress={() => toggleInterest(i)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}
+                style={{ minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.accent : colors.card, borderWidth: 1, borderColor: on ? colors.accent : colors.line }}>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: on ? '#FFFFFF' : colors.ink }}>{w(`r_${i}`)}</Text>
               </Pressable>
             );
           })}
