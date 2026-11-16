@@ -69,6 +69,23 @@ def demo(request: Request, conn: Connection = Depends(get_conn)):
     return service.demo_sign_in(conn, request.headers.get("user-agent", ""))
 
 
+@router.get("/auth/demo-profiles")
+def demo_profiles(conn: Connection = Depends(get_conn)):
+    """Prototype: the demo people the mock Singpass screen offers."""
+    return {"profiles": service.demo_profiles(conn)}
+
+
+@router.post("/auth/demo-profile/{user_id}", response_model=SessionOut)
+def demo_profile(user_id: str, request: Request, conn: Connection = Depends(get_conn)):
+    """Prototype: sign in as one of the demo people."""
+    try:
+        return service.demo_sign_in_as(conn, user_id, request.headers.get("user-agent", ""))
+    except service.AuthError as e:
+        return _refuse(e)
+    except Exception:  # a malformed id
+        raise HTTPException(status_code=404, detail={"code": "not_found"})
+
+
 @router.get("/auth/providers", response_model=ProvidersOut)
 def auth_providers():
     return service.providers()

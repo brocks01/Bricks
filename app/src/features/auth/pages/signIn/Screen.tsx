@@ -1,105 +1,23 @@
-import { useEffect, useState } from 'react';
-import { Text, View } from 'react-native';
-import { GoogleButton, googleAvailable } from '../../../../components/GoogleButton';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
-import { useLanguage, useT } from '../../../../i18n';
-import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
+import { Image, Pressable, Text, View } from 'react-native';
+import { El, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
-import { errorWords } from '../../../../session/errors';
-import { googleSignIn, loadProviders, requestCode, startDemo, type Providers } from '../../../../session/store';
-import { colors, space, type } from '../../../../theme/tokens';
+import { colors, space } from '../../../../theme/tokens';
+import { Collage, Frame } from '../../../onboarding/kit';
 import { authSignIn as page } from './page';
 
-const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
+/** Sign in: one button, Continue with Singpass. For now it opens a mock Singpass screen that offers demo profiles. */
 export default function SignIn() {
   const w = usePageWords(page);
-  const t = useT();
   const go = useNavigate();
-  const lang = useLanguage();
-  const [email, setEmail] = useState('');
-  const [error, setError] = useState<string | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [providers, setProviders] = useState<Providers | null>(null);
-
-  useEffect(() => {
-    void loadProviders().then(setProviders);
-  }, []);
-
-  const send = async () => {
-    if (!EMAIL.test(email.trim())) return setError(t('common.error.invalidEmail'));
-    setError(null);
-    setBusy(true);
-    try {
-      await requestCode(email);
-      go('auth.verify');
-    } catch (e) {
-      const m = errorWords(e);
-      setError(t(m.key, m.vars));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  // Prototype: one tap makes a throwaway account with a random name and goes in (the app then moves on by itself).
-  const demo = async () => {
-    if (busy) return;
-    setBusy(true);
-    try { await startDemo(); } catch { setBusy(false); }
-  };
-  useAction(page, 'startDemo', () => void demo());
-  useField(page, 'email', email, (v) => setEmail(String(v)));
-  useAction(page, 'sendCode', send);
-  // What the agent sees before sign-in: the address the person typed and the ways in. It can explain
-  // them; the code that arrives by message is never shown to it (verify publishes only the address).
-  usePageData(page, {
-    values: [{ label: w('email'), value: email }],
-    images: [],
-    lists: [],
-    actions: [
-      { id: 'sendCode', label: w('sendCode'), run: () => void send() },
-      { id: 'google', label: w('google'), run: () => undefined },
-      { id: 'singpass', label: w('singpass'), run: () => undefined },
-      { id: 'digilocker', label: w('digilocker'), run: () => undefined },
-    ],
-  });
-
-  const onGoogle = async (idToken: string) => {
-    setBusy(true);
-    setError(null);
-    try {
-      await googleSignIn(idToken); // the gate in the root layout then opens the right page
-    } catch (e) {
-      const m = errorWords(e);
-      setError(m.key === 'common.error.generic' ? w('googleFailed') : t(m.key, m.vars));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const off = <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginBottom: space.sm }]}>{w('unavailable')}</Text>;
-  const showGoogle = providers?.google && googleAvailable;
-
   return (
-    <Screen title={w('heading')} back>
-      <El page={page} id="email">
-        <Field label={w('email')} value={email} onChangeText={setEmail} icon="mail-outline" keyboardType="email-address" autoCapitalize="none" error={null} />
-      </El>
-      <ErrorText>{error}</ErrorText>
-      <El page={page} id="sendCode"><Button label={w('sendCode')} onPress={() => void send()} disabled={busy} /></El>
-      <El page={page} id="startDemo"><Button kind="plain" icon="flash-outline" label={w('startDemo')} onPress={() => void demo()} disabled={busy} /></El>
-
-      <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginVertical: space.lg }]}>{w('or')}</Text>
-
-      <El page={page} id="google">
-        {showGoogle ? <GoogleButton locale={lang} onToken={(tok) => void onGoogle(tok)} onError={() => setError(w('googleFailed'))} /> : <View><Button kind="plain" icon="logo-google" label={w('google')} onPress={() => undefined} disabled />{off}</View>}
-      </El>
+    <Frame top={<Collage />} onBack={() => go('auth.who')} backLabel={w('o_back')} inlineTitle title={w('heading')}>
       <El page={page} id="singpass">
-        <View><Button kind="plain" icon="shield-checkmark-outline" label={w('singpass')} onPress={() => undefined} disabled={!providers?.singpass} />{providers?.singpass ? null : off}</View>
+        <Pressable onPress={() => go('auth.singpass')} accessibilityRole="button" accessibilityLabel={w('singpass')} style={{ minHeight: 78, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: space.md, borderRadius: 18, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
+          <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{w('continueWith')}</Text>
+          <Image source={require('../../../../../assets/brand/singpass.png')} accessibilityLabel="Singpass" resizeMode="contain" style={{ width: 128, height: 22 }} />
+        </Pressable>
       </El>
-      <El page={page} id="digilocker">
-        <View><Button kind="plain" icon="id-card-outline" label={w('digilocker')} onPress={() => undefined} disabled={!providers?.digilocker} />{providers?.digilocker ? null : off}</View>
-      </El>
-    </Screen>
+      <View style={{ height: space.lg }} />
+    </Frame>
   );
 }

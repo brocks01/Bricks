@@ -147,6 +147,41 @@ def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}
 
 
+DEMO_DOMAINS = ("@seed.wisdom.test", "@demo.wisdom.test")
+
+
+def demo_profiles(conn: Connection) -> list[dict]:
+    """PROTOTYPE ONLY: a handful of seeded people, one of each kind, for the mock Singpass login to offer. Stable: the same people every time."""
+    picks = [
+        ("60plus", "share", "aunty"), ("60plus", "share", "other"), ("60plus", "connect", "alone"), ("40to59", "care", ""), ("40to59", "help", ""), ("under40", "learn", ""),
+    ]
+    out, seen = [], set()
+    for band, role, _tag in picks:
+        row = conn.execute(
+            text(
+                "select u.id, u.display_name, u.age_band, u.area_name, u.language, p.roles, "
+                "(select count(*) from memberships m where m.user_id = u.id and m.status = 'active') as circles "
+                "from users u join profiles p on p.user_id = u.id "
+                "where u.email like '%@seed.wisdom.test' and u.age_band = :b and :r = any(p.roles) and u.id <> all(cast(:seen as uuid[])) "
+                "order by md5(u.email || :salt) limit 1"
+            ),
+            {"b": band, "r": role, "seen": list(seen), "salt": _tag},
+        ).first()
+        if row:
+            seen.add(str(row.id))
+            out.append({"id": str(row.id), "name": row.display_name, "age_band": row.age_band, "area": row.area_name, "language": row.language, "roles": list(row.roles or []), "circles": int(row.circles)})
+    return out
+
+
+def demo_sign_in_as(conn: Connection, user_id: str, user_agent: str = "") -> dict:
+    """PROTOTYPE ONLY: sign in as one of the seeded or demo people (the mock Singpass screen). Refuses anyone else."""
+    user = conn.execute(text("select * from users where id = cast(:i as uuid)"), {"i": user_id}).first()
+    if user is None or not any(str(user.email).endswith(d) for d in DEMO_DOMAINS) or user.status != "active":
+        raise AuthError("unauthorized", 401)
+    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False}
+
+
 def google_sign_in(conn: Connection, id_token: str, user_agent: str = "") -> dict:
     claims = verify_google_token(id_token)
     email = clean_email(claims["email"])

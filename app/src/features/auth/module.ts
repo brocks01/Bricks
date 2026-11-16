@@ -1,9 +1,9 @@
 import { defineModule } from '../../navigation/registry';
 import { signOut } from '../../session/store';
 import { authTextSize } from './pages/textSize/page';
+import { authSingpass } from './pages/singpass/page';
 import { authWho } from './pages/who/page';
 import { authSignIn } from './pages/signIn/page';
-import { authVerify } from './pages/verify/page';
 import { authWelcome } from './pages/welcome/page';
 
 defineModule({
@@ -11,7 +11,7 @@ defineModule({
   title: 'Sign in',
   summary: 'Signing in and out: email code, Google, Singpass (Singapore) and DigiLocker (India), and the first-time profile.',
   keywords: ['login', 'sign in', 'sign out', 'logout', 'account', 'register'],
-  pages: [authWelcome, authTextSize, authWho, authSignIn, authVerify],
+  pages: [authWelcome, authTextSize, authWho, authSignIn, authSingpass],
   skills: [
     {
       name: 'signOut',
