@@ -29,7 +29,7 @@ export const myReports = () => api<{ reports: Report[] }>('GET', '/v1/reports/mi
 export const adminReports = (status?: ReportStatus) =>
   api<{ reports: Report[] }>('GET', `/v1/admin/reports${status ? `?status=${status}` : ''}`).then((r) => r.reports);
 export const resolveReport = (id: string, action: ResolveAction) =>
-  api<{ id: string; status: string; action: ResolveAction; hidden: boolean; suspended: string | null }>('POST', `/v1/admin/reports/${id}/resolve`, { action });
+  api<{ id: string; status: string; action: ResolveAction; hidden: boolean; restored: boolean; suspended: string | null }>('POST', `/v1/admin/reports/${id}/resolve`, { action });
 export const blockPerson = (personId: string) => api<{ blocked: boolean; status: string }>('POST', '/v1/blocks', { person_id: personId });
 export const myBlocks = () => api<{ blocks: Blocked[] }>('GET', '/v1/blocks').then((r) => r.blocks);
 export const unblockPerson = (personId: string) => api<{ blocked: boolean; removed: boolean }>('DELETE', `/v1/blocks/${personId}`);
