@@ -92,13 +92,7 @@ app = FastAPI(title="Wisdom API", version="0.1.0", lifespan=lifespan)
 # addresses listed in CORS_ORIGINS (a comma list, for example the final domain). The API uses Authorization tokens, not cookies, so this is not a
 # cookie-theft door; the tokens still decide who is who.
 _extra = [o.strip().rstrip("/") for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=_extra,
-    allow_origin_regex=r"^https?://(localhost|127\.0\.0\.1|10\.\d+\.\d+\.\d+|192\.168\.\d+\.\d+|172\.(1[6-9]|2\d|3[01])\.\d+\.\d+)(:\d+)?$|^https://[a-z0-9-]+\.vercel\.app$",
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])  # prototype: any website may call the API (the API uses Authorization tokens, not cookies)
 app.include_router(identity_router)
 app.include_router(voice_router)
 app.include_router(agent_router)
