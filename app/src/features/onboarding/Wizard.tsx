@@ -15,6 +15,7 @@ import { usePageWords } from '../../kit';
 import { prefs, setPref, type TextSize } from '../../prefs/store';
 import { sessionStore } from '../../session/store';
 import { colors, radius, space, type } from '../../theme/tokens';
+import { Collage, Confetti } from './Collage';
 import { onboardingIndex as page } from './pages';
 import type { Who } from './who';
 
@@ -42,8 +43,8 @@ function Enter({ id, children }: { id: string; children: ReactNode }) {
   return <Animated.View style={{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) }] }}>{children}</Animated.View>;
 }
 
-function Frame({ id, title, hint, n, total, onBack, speak, say, primary, secondary, children, bare }: {
-  id: string; title?: string; hint?: string; n?: number; total?: number; onBack?: () => void; speak?: string; say?: boolean;
+function Frame({ id, title, hint, n, total, onBack, speak, say, primary, secondary, children, bare, top }: {
+  id: string; top?: ReactNode; title?: string; hint?: string; n?: number; total?: number; onBack?: () => void; speak?: string; say?: boolean;
   primary?: { label: string; onPress: () => void; disabled?: boolean }; secondary?: { label: string; onPress: () => void }; children: ReactNode; bare?: boolean;
 }) {
   const w = usePageWords(page);
@@ -83,6 +84,7 @@ function Frame({ id, title, hint, n, total, onBack, speak, say, primary, seconda
           </Pressable>
         ) : null}
         <Enter id={id}>
+          {top}
           {title ? <Text accessibilityRole="header" style={{ fontSize: 30, lineHeight: 36, fontWeight: '800', color: colors.ink, marginTop: bare ? 0 : space.sm }}>{title}</Text> : null}
           {hint ? <Text style={[type.body, { color: colors.muted, marginTop: space.sm }]}>{hint}</Text> : null}
           <View style={{ height: space.lg }} />
@@ -220,7 +222,7 @@ export function Wizard({ state, who, onWho, onState, finish, more }: {
   if (step === 'who') {
     const pick = (x: Who) => { onWho(x); setTimeout(advance, 220); };
     return (
-      <Frame {...common} title={w('who_myself') + ' / ' + w('who_family')} hint={w('who_intro')} speak={`${w('who_myself')}. ${w('who_family')}`} say>
+      <Frame {...common} top={<Collage />} title={w('who_intro')} speak={`${w('who_myself')}. ${w('who_family')}`} say>
         <Card icon="person-outline" title={w('who_myself')} line={w('who_myself_line')} on={who === 'myself'} onPress={() => pick('myself')} />
         <Card icon="people-outline" title={w('who_family')} line={w('who_family_line')} on={who === 'family'} onPress={() => pick('family')} />
         <Card icon="business-outline" title={w('who_community')} line={w('comingSoon')} onPress={() => undefined} disabled />
@@ -332,7 +334,7 @@ function Welcome({ name, finish, more }: { name: string; finish: () => Promise<v
   const [busy, setBusy] = useState(false);
   useEffect(() => { Animated.spring(pop, { toValue: 1, useNativeDriver: true, speed: 8, bounciness: 14 }).start(); }, [pop]);
   return (
-    <Frame id="welcome" bare speak={`${w('o_welcome', { name })}. ${w('o_welcome_l')}`}
+    <Frame id="welcome" bare top={<Confetti />} speak={`${w('o_welcome', { name })}. ${w('o_welcome_l')}`}
       primary={{ label: w('o_home'), onPress: () => { setBusy(true); void finish().finally(() => setBusy(false)); }, disabled: busy }} secondary={{ label: w('o_more'), onPress: more }}>
       <View style={{ alignItems: 'center', paddingTop: space.xl * 2 }}>
         <Animated.View style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pop }] }}>
