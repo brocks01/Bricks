@@ -13,10 +13,14 @@ import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, radius, space } from '../../../theme/tokens';
 import { EventCard, SOURCE_TAG } from '../EventCard';
+import { HomeCalendar, useHomeCalendar } from '../HomeCalendar';
+import { monthTitle } from '../month';
 import { homeIndex as page } from '../pages';
-import { whenWords } from '../when';
+import { dateWords, timeWords, whenWords } from '../when';
 
 const FIRST = 3; // how many upcoming events show before "Show all"
+const LIST_DAYS = 30; // the list shows a month ahead; the calendar looks three months ahead
+const CALENDAR_DAYS = 92;
 
 // Home: a greeting, "Your upcoming events" (from Communities, the Marketplace and Wisdom) and "Your calendar".
 // The reminder pop-ups live in the root layout; this page keeps telling the server it is open, once a minute.
@@ -32,7 +36,7 @@ export default function HomeIndex() {
   const [now, setNow] = useState(() => new Date());
 
   const load = useCallback(() => {
-    getHomeUpcoming(30)
+    getHomeUpcoming(CALENDAR_DAYS)
       .then((r) => { setEvents(r.events); setFailed(false); setNow(new Date()); })
       .catch(() => setFailed(true));
     getHomeSummary().then((s) => setHelp(s.help_alerts)).catch(() => undefined);
@@ -54,7 +58,9 @@ export default function HomeIndex() {
 
   const open = useCallback((e: HomeEvent) => { go(e.open_key, e.open_params); }, [go]);
   const lines = (e: HomeEvent) => [e.place, e.from_name ? w(e.source === 'wisdom' ? 'with_name' : 'from_name', { name: e.from_name }) : null].filter((x): x is string => !!x);
-  const list = events ?? [];
+  const soon = new Date(now.getTime() + LIST_DAYS * 86_400_000).toISOString();
+  const list = (events ?? []).filter((e) => e.starts_at <= soon);
+  const cal = useHomeCalendar(events, now);
   const shown = all ? list : list.slice(0, FIRST);
 
   useAction(page, 'showAll', () => setAll((a) => !a));
@@ -77,6 +83,12 @@ export default function HomeIndex() {
               detail: [whenWords(e.starts_at, now, lang), w(SOURCE_TAG[e.source].word), ...lines(e), e.going ? w('you_going') : ''].filter(Boolean).join(' · '),
               actions: [{ id: `event${i + 1}`, label: e.title, run: () => open(e) }],
             })),
+          }, {
+            label: `${w('calendar')}: ${monthTitle(cal.shown.year, cal.shown.month0, lang)}`,
+            items: cal.cells.flatMap((c) => (cal.days.get(c.key) ?? []).map((it) => ({
+              label: it.title,
+              detail: [dateWords(new Date(cal.shown.year, cal.shown.month0, c.day), now, lang), timeWords(new Date(it.at), lang), it.source === 'reminder' ? w('reminder') : w(`tag_${it.source}`), it.wasThere ? w('you_were_there') : it.going ? w('you_going') : ''].filter(Boolean).join(' · '),
+            }))),
           }],
           actions: [],
         }
@@ -137,6 +149,8 @@ export default function HomeIndex() {
           ) : null}
         </>
       )}
+
+      <HomeCalendar cal={cal} now={now} lang={lang} w={w} onOpen={(o) => go(o.key, o.params)} />
     </Screen>
   );
 }

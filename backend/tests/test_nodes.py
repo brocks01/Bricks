@@ -307,7 +307,7 @@ def test_going_alone_gives_no_leaf_and_a_check_in_gives_exactly_one():
     w = wisdom_of(member)
     assert w["leaves"] == 1 and len(w["events"]) == 1
     e = w["events"][0]
-    assert e["title"] == "Morning walk" and e["source"] == "community" and e["source_name"] == "Bishan Walkers" and e["at"] and e["id"]
+    assert e["title"] == "Morning walk" and e["source"] == "community" and e["source_name"] == "Bishan Walkers" and e["at"] and e["id"] and e["ref_id"] == a
     client.post(f"/v1/communities/activities/{a}/checkin", json={}, headers=member["h"])  # reported again, by the person
     client.post(f"/v1/communities/activities/{a}/checkin", json={"user_id": member["id"]}, headers=lead["h"])  # and by their lead
     assert wisdom_of(member)["leaves"] == 1

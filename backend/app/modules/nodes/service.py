@@ -456,12 +456,12 @@ def wisdom(conn: Connection, me: str, limit: int = 20, before: str | None = None
             where = " and (at, id) < (:at, cast(:id as uuid))"
         except ValueError:
             where = ""
-    rows = conn.execute(text(f"select id, title, at, source, source_name from wisdom_leaves where user_id = :u{where} order by at desc, id desc limit :l"), args).all()
+    rows = conn.execute(text(f"select id, title, at, source, source_name, ref_id from wisdom_leaves where user_id = :u{where} order by at desc, id desc limit :l"), args).all()
     more = len(rows) > limit
     rows = rows[:limit]
     return {
         "leaves": total,
-        "events": [{"id": str(r.id), "title": r.title, "at": r.at.isoformat(), "source": r.source, "source_name": r.source_name} for r in rows],
+        "events": [{"id": str(r.id), "title": r.title, "at": r.at.isoformat(), "source": r.source, "source_name": r.source_name, "ref_id": r.ref_id} for r in rows],
         "next_before": f"{rows[-1].at.isoformat()}~{rows[-1].id}" if more and rows else None,
     }
 
