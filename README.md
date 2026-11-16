@@ -14,6 +14,7 @@ Built for the Singapore–India Hackathon 2026 (raiSE, Social Innovation and Inc
 |---|---|
 
 | `app/` | the Expo app and website |
+
 | `backend/` | the Python API and database migrations |
 | `team-docs/` | the documentation (start at `team-docs/README.md`) |
 
