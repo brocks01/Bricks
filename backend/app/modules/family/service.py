@@ -34,7 +34,24 @@ def _now() -> datetime:
     return datetime.now(timezone.utc)
 
 
+def _is_uuid(value: str) -> bool:
+    import uuid as _uuid
+
+    try:
+        _uuid.UUID(str(value))
+        return True
+    except ValueError:
+        return False
+
+
+def _id_or_404(value: str) -> None:
+    """A malformed id is a thing that does not exist (a clean 404), never a database error."""
+    if not _is_uuid(value):
+        raise FamilyError("not_found", 404)
+
+
 def _member(conn: Connection, family_id: str, user_id: str):
+    _id_or_404(family_id)
     return conn.execute(
         text("select role from family_members where family_id = :f and user_id = :u and status = 'active'"),
         {"f": family_id, "u": user_id},
@@ -92,6 +109,7 @@ def create_family(conn: Connection, user_id: str, name: str) -> dict:
 
 
 def family_dict(conn: Connection, family_id: str, viewer_id: str) -> dict:
+    _id_or_404(family_id)
     f = conn.execute(text("select id, name, created_by, created_at from families where id = :f"), {"f": family_id}).first()
     if f is None:
         raise FamilyError("not_found", 404)
@@ -316,6 +334,8 @@ def grant(conn: Connection, user_id: str, helper_id: str, level: str) -> dict:
     """The person hands a helper access to THEIR OWN account. An assisted profile cannot grant: it has no say yet."""
     if user_id == helper_id:
         raise FamilyError("validation", 422, field="helper_id")
+    if not _is_uuid(helper_id):
+        raise FamilyError("validation", 422, field="helper_id")  # a malformed id is a bad input, never a database error
     if level not in LEVELS:
         raise FamilyError("validation", 422, field="level")
     if conn.execute(text("select login_kind from users where id = :u and status = 'active'"), {"u": user_id}).scalar() != "own":
@@ -377,6 +397,7 @@ def change_level(conn: Connection, delegation_id: str, actor_id: str, level: str
     """The supported person may change it either way; the helper may only LOWER their own access."""
     if level not in LEVELS:
         raise FamilyError("validation", 422, field="level")
+    _id_or_404(delegation_id)
     row = conn.execute(text("select * from delegations where id = :i for update"), {"i": delegation_id}).first()
     if row is None or row.status != "active":
         raise FamilyError("not_found", 404)
@@ -395,6 +416,7 @@ def change_level(conn: Connection, delegation_id: str, actor_id: str, level: str
 
 def revoke(conn: Connection, delegation_id: str, actor_id: str) -> None:
     """The supported person takes access away; the helper may also give it up themselves."""
+    _id_or_404(delegation_id)
     row = conn.execute(text("select * from delegations where id = :i for update"), {"i": delegation_id}).first()
     if row is None or row.status != "active":
         raise FamilyError("not_found", 404)
@@ -409,6 +431,8 @@ def acting(conn: Connection, helper_id: str, person_id: str) -> str:
     Re-checked on every acting request, so a change or a removal takes hold at once."""
     if helper_id == person_id:
         return "self"
+    _id_or_404(helper_id)
+    _id_or_404(person_id)
     row = conn.execute(
         text("select level from delegations where user_id = :u and helper_id = :h and status = 'active'"),
         {"u": person_id, "h": helper_id},
@@ -431,6 +455,7 @@ def acting(conn: Connection, helper_id: str, person_id: str) -> str:
 def start_claim(conn: Connection, family_id: str, helper_id: str, person_id: str) -> dict:
     """The helper asks for a claim code to SHOW to the person (who is with them). The code lets the PERSON
     take over - it never gives the helper anything they do not already have."""
+    _id_or_404(person_id)
     if _require_member(conn, family_id, helper_id) not in ("owner", "helper"):
         raise FamilyError("helper_only", 403)
     if _require_member(conn, family_id, person_id) is None:
