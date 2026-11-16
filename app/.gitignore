@@ -36,6 +36,10 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# browser tests (Quality area)
+test-results/
+playwright-report/
+
 # generated native folders
 /ios
 /android
