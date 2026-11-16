@@ -135,13 +135,34 @@ DEMO_FIRST = ["Lim", "Tan", "Ng", "Wong", "Chua", "Goh", "Teo", "Koh", "Rahmah",
 DEMO_LAST = ["Kok Leong", "Bee Choo", "binte Ismail", "bin Hamid", "Pillai", "Nair", "D'Cruz", "Pereira", "Subramaniam", "Hock Seng", "Mei Hwa", "Krishnan"]
 
 
+def _demo_name() -> str:
+    """A believable Singapore name for a new demo account, from the name pools in backend/seed_data/names.json (Chinese, Malay, Tamil, Eurasian), so the pieces always belong together."""
+    import json
+    import secrets
+    from pathlib import Path
+
+    try:
+        n = json.loads((Path(__file__).resolve().parents[3] / "seed_data" / "names.json").read_text(encoding="utf-8"))
+        group = secrets.choice(["chinese"] * 6 + ["malay"] * 2 + ["indian_tamil", "english_eurasian"])
+        g = n[group]
+        male = secrets.choice([True, False])
+        given = secrets.choice(g[f"elder_given_{'male' if male else 'female'}"])
+        if group == "chinese":
+            return f"{secrets.choice(g['surnames'])} {given}"
+        if group == "malay":
+            return f"{given} {'bin' if male else 'binte'} {secrets.choice(g['elder_given_male'])}"
+        return f"{given} {secrets.choice(g['surnames'])}"
+    except Exception:  # noqa: BLE001 - the name is only a starting point; the person edits it in the first question
+        return secrets.choice(["Lim Kok Leong", "Rahmah binte Ismail", "Subramaniam Pillai", "Chua Bee Choo", "Wong Siew Lan"])
+
+
 def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
     """PROTOTYPE ONLY: a throwaway account with a random name and a random address, signed in at once with no code. The address ends in @demo.wisdom.test
     so these accounts can always be told apart and removed. Used by the 'Start demo' button."""
     import secrets
 
     email = f"demo-{secrets.token_hex(4)}@demo.wisdom.test"
-    name = f"{secrets.choice(DEMO_FIRST)} {secrets.choice(DEMO_LAST)}"
+    name = _demo_name()
     user = conn.execute(text("insert into users (email, display_name) values (:e, :n) returning *"), {"e": email, "n": name}).one()
     access, refresh = _issue_session(conn, str(user.id), user_agent)
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}

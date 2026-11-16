@@ -9,6 +9,9 @@ const T: WordTable = {
   singpass: ['Continue with Singpass', 'Singpass के साथ जारी रखें', 'Singpass দিয়ে চালিয়ে যান', 'Singpass மூலம் தொடரவும்', '使用 Singpass 继续', 'Teruskan dengan Singpass'],
   sp_title: ['Log in with Singpass', 'Singpass से लॉग इन करें', 'Singpass দিয়ে লগ ইন করুন', 'Singpass மூலம் உள்நுழையுங்கள்', '使用 Singpass 登录', 'Log masuk dengan Singpass'],
   sp_demo: ['This is a demo. No real Singpass is contacted, so choose who to continue as.', 'यह एक डेमो है। असली Singpass से संपर्क नहीं होता, इसलिए चुनें कि किसके रूप में जारी रखें।', 'এটি একটি ডেমো। আসল Singpass-এর সঙ্গে যোগাযোগ হয় না, তাই কার হিসেবে চালিয়ে যাবেন বেছে নিন।', 'இது ஒரு டெமோ. உண்மையான Singpass தொடர்பு கொள்ளப்படாது, யாராகத் தொடர வேண்டும் என்பதைத் தேர்ந்தெடுக்கவும்.', '这是演示。不会联系真正的 Singpass，请选择以谁的身份继续。', 'Ini demo. Singpass sebenar tidak dihubungi, jadi pilih siapa untuk diteruskan.'],
+  sp_logging: ['Logging in with Singpass…', 'Singpass से लॉग इन हो रहा है…', 'Singpass দিয়ে লগ ইন হচ্ছে…', 'Singpass மூலம் உள்நுழைகிறது…', '正在通过 Singpass 登录…', 'Sedang log masuk dengan Singpass…'],
+  sp_demo_note: ['Demo: no real Singpass is contacted. A new account is made for you.', 'डेमो: असली Singpass से संपर्क नहीं होता। आपके लिए एक नया खाता बनता है।', 'ডেমো: আসল Singpass-এর সঙ্গে যোগাযোগ হয় না। আপনার জন্য একটি নতুন অ্যাকাউন্ট তৈরি হয়।', 'டெமோ: உண்மையான Singpass தொடர்பு கொள்ளப்படாது. உங்களுக்காக ஒரு புதிய கணக்கு உருவாகிறது.', '演示：不会联系真正的 Singpass，会为你创建一个新账户。', 'Demo: Singpass sebenar tidak dihubungi. Akaun baharu dibuat untuk anda.'],
+  sp_retry: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயற்சிக்கவும்', '重试', 'Cuba lagi'],
   sp_new: ['A new demo profile', 'एक नई डेमो प्रोफ़ाइल', 'একটি নতুন ডেমো প্রোফাইল', 'ஒரு புதிய டெமோ சுயவிவரம்', '新的演示档案', 'Profil demo baharu'],
   sp_new_l: ['Start fresh and go through the welcome screens.', 'नए सिरे से शुरू करें और स्वागत स्क्रीन देखें।', 'নতুন করে শুরু করুন ও স্বাগত পর্দাগুলি দেখুন।', 'புதிதாகத் தொடங்கி வரவேற்புத் திரைகளைப் பாருங்கள்.', '从头开始，体验欢迎页面。', 'Mula dari awal dan lihat skrin alu-aluan.'],
   sp_r_share: ['Shares what they know', 'जो जानते हैं, साझा करते हैं', 'যা জানেন তা ভাগ করেন', 'தெரிந்ததைப் பகிர்கிறார்', '分享自己的经验', 'Berkongsi apa yang diketahui'],
@@ -21,4 +24,4 @@ const T: WordTable = {
   sp_circles: ['{n} circles', '{n} समुदाय', '{n}টি কমিউনিটি', '{n} வட்டங்கள்', '{n} 个圈子', '{n} bulatan'],
 };
 export const signInStrings = pageWords({ ...WIZARD, ...T, failed: ONBOARDING.failed });
-export const singpassStrings = pageWords({ ...WIZARD, ...T, failed: ONBOARDING.failed, heading: T.sp_title, newProfile: T.sp_new });
+export const singpassStrings = pageWords({ ...WIZARD, ...T, failed: ONBOARDING.failed, heading: T.sp_title });
