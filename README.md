@@ -16,3 +16,4 @@ Built for the Singapore–India Hackathon 2026 (raiSE, Social Innovation and Inc
 
 ## Run it
 See `team-docs/03-technical/architecture.md`. In short: `python backend/run.py` for the API, and `cd app && EXPO_PUBLIC_API_URL=http://localhost:8000 npx expo start --web --port 3000` for the app. How we work together: `CONTRIBUTING.md`. Instructions for coding agents: `AGENTS.md`.
+
