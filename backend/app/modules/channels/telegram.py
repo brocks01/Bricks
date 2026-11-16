@@ -57,14 +57,62 @@ def send(chat_id: str, body: str) -> bool:
         return False
 
 
+MAX_VOICE_SECONDS = 120
+MAX_VOICE_BYTES = 5 * 1024 * 1024
+
+
+def _download(file_id: str) -> tuple[bytes, str] | None:
+    """One Telegram file: (bytes, mime guessed from the extension), or None. Telegram keeps files on its own server."""
+    try:
+        r = httpx.get(_url("getFile"), params={"file_id": file_id}, timeout=15)
+        if r.status_code != 200:
+            return None
+        path = (r.json().get("result") or {}).get("file_path") or ""
+        if not path:
+            return None
+        f = httpx.get(f"https://api.telegram.org/file/bot{token()}/{path}", timeout=30)
+        if f.status_code != 200 or not f.content:
+            return None
+        return f.content, {"oga": "audio/ogg", "ogg": "audio/ogg"}.get(path.rsplit(".", 1)[-1].lower(), "audio/mpeg")
+    except Exception:  # noqa: BLE001 - a file that will not come: the person is asked to try again
+        log.warning("telegram file download failed")
+        return None
+
+
+def voice_to_text(m: dict) -> str | None:
+    """A voice note or an audio file on a Telegram message becomes exactly what was said, or None when it cannot be used
+    (too long, too big, unreachable, or the listener did not answer)."""
+    from . import transcribe
+
+    v = m.get("voice") or m.get("audio") or {}
+    if (v.get("duration") or 0) > MAX_VOICE_SECONDS or (v.get("file_size") or 0) > MAX_VOICE_BYTES:
+        return None
+    got = _download(v.get("file_id") or "")
+    if not got:
+        return None
+    data, mime = got
+    return transcribe.transcribe(data, v.get("mime_type") or mime)
+
+
 def handle_update(update: dict) -> None:
-    """One Telegram update. Only private text chats are answered: a group must never be able to read a person's day."""
+    """One Telegram update. Only private chats are answered: a group must never be able to read a person's day.
+    A voice note or an audio file becomes text and is answered like typed text; anything else the person could say."""
     m = update.get("message") or {}
     chat = m.get("chat") or {}
-    if chat.get("type") != "private" or not m.get("text"):
+    if chat.get("type") != "private":
         return
     chat_id = str(chat["id"])
-    for line in core.handle("telegram", chat_id, m["text"]):
+    body = m.get("text")
+    if not body:
+        from . import transcribe
+
+        if not (m.get("voice") or m.get("audio")):
+            return
+        body = voice_to_text(m)
+        if not body:
+            send(chat_id, transcribe.CANNOT_HEAR)
+            return
+    for line in core.handle("telegram", chat_id, body):
         send(chat_id, line)
 
 

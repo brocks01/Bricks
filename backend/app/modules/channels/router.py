@@ -1,6 +1,9 @@
+import asyncio
 import hmac
+import logging
 import os
 
+import httpx
 from fastapi import APIRouter, Depends, Request, Response
 from fastapi.responses import JSONResponse
 from xml.sax.saxutils import escape
@@ -10,6 +13,7 @@ from ..voice import twilio as proto
 from ..voice.config import config
 from . import core, telegram
 
+log = logging.getLogger("channels.router")
 router = APIRouter(prefix="/v1/channels")
 
 
@@ -59,10 +63,34 @@ def link_code_for(channel: str, user_id: str = Depends(current_user_id)):
     return core.new_link_code(user_id, channel)
 
 
+def _twiml(lines: list[str]) -> Response:
+    return Response("<Response>" + "".join(f"<Message>{escape(x)}</Message>" for x in lines) + "</Response>", media_type="text/xml")
+
+
+def _voice_note(params: dict) -> str:
+    """The audio on a WhatsApp or SMS message becomes exactly what was said (Twilio keeps the file behind basic auth),
+    or "" when it cannot be used (too big, unreachable, or the listener did not answer)."""
+    from . import transcribe
+
+    url = params.get("MediaUrl0") or ""
+    cfg = config()
+    if not url or not (cfg.twilio_sid and cfg.twilio_token):
+        return ""
+    try:
+        r = httpx.get(url, auth=(cfg.twilio_sid, cfg.twilio_token), timeout=30)
+        if r.status_code != 200 or not r.content or len(r.content) > transcribe.MAX_BYTES:
+            return ""
+        return transcribe.transcribe(r.content, params.get("MediaContentType0") or "audio/ogg") or ""
+    except Exception:  # noqa: BLE001 - a file that will not come: the person is asked kindly to try again
+        log.warning("twilio media download failed")
+        return ""
+
+
 @router.post("/twilio/{kind}")
 async def twilio_message(kind: str, request: Request):
     """Twilio calls this for every WhatsApp or SMS message sent to our number (set it as the number's "when a message comes in" address:
-    VOICE_PUBLIC_URL + /v1/channels/twilio/whatsapp or /sms). The signature is checked; the answer is TwiML."""
+    VOICE_PUBLIC_URL + /v1/channels/twilio/whatsapp or /sms). The signature is checked; the answer is TwiML.
+    A voice note (an audio media file) becomes text and is answered like typed text."""
     if kind not in ("whatsapp", "sms"):
         return Response("not found", status_code=404)
     params = {k: str(v) for k, v in (await request.form()).items()}
@@ -73,10 +101,23 @@ async def twilio_message(kind: str, request: Request):
     number = params.get("From", "").removeprefix("whatsapp:").strip()
     if not number:
         return Response("<Response/>", media_type="text/xml")
-    import asyncio
+    body = params.get("Body", "")
+    try:
+        n_media = int(params.get("NumMedia") or 0)
+    except ValueError:
+        n_media = 0
+    if n_media > 0:
+        from . import transcribe
 
-    lines = await asyncio.to_thread(core.handle, kind, number, params.get("Body", ""))
-    return Response("<Response>" + "".join(f"<Message>{escape(x)}</Message>" for x in lines) + "</Response>", media_type="text/xml")
+        if str(params.get("MediaContentType0") or "").startswith("audio/"):
+            said = await asyncio.to_thread(_voice_note, params)
+            if not said:
+                return _twiml([transcribe.CANNOT_HEAR])
+            body = said
+        elif not body.strip():  # media we cannot listen to (a photo for now), and nothing typed: say so kindly
+            return _twiml([transcribe.CANNOT_HEAR])
+    lines = await asyncio.to_thread(core.handle, kind, number, body)
+    return _twiml(lines)
 
 
 inbox_router = APIRouter(prefix="/v1/notifications")

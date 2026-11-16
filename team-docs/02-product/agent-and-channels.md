@@ -43,3 +43,9 @@ In front of every channel, before the agent runs: a blocklist, a burst and an ho
 
 ## Persona rules (in `backend/app/modules/channels/persona.py`)
 Warm, patient, plain words, one easy question at a time, the person's language, never scolding. It says it is an AI. No diagnosis or medicine advice. Emergencies: 995 or 112. Telling family needs a clear yes. It gently notices loneliness and connects the person to people rather than replacing them.
+
+## Status (Doors area)
+- **Voice notes, built (16 Nov 2026).** A Telegram voice note or audio file (private chats only, up to 120 s and 5 MB) and an audio media file on WhatsApp or SMS (Twilio webhook, the file fetched with Twilio basic auth, up to 5 MB) become text through `channels/transcribe.py` — Gemini `generateContent` with inline audio, the same key and model fallback chain as the text agent, prompted to transcribe exactly in the speaker's language with no commentary. The transcript then follows the normal path: the same spam guard, the same quick commands, the same agent, the same memory. On any failure the person gets one kind line: "I could not hear that clearly. Could you say it again, or type it?" A photo (or any non-audio media) with nothing typed gets the same line. Replies stay text. Tests: `backend/tests/test_voice_notes.py`, mocked HTTP only. **Not live-tested:** no real Telegram bot token or Twilio sandbox message was used; limits are enforced before download on Telegram (duration and size known from the message) but by size only on Twilio (no duration given).
+- **Daily check-in:** next in order (table `daily_checkins`, migration `0090`, skills, one line in the outbox loop).
+- **WeChat adapter:** after the check-in. Signature and XML tests only; never live-tested.
+- Needs from other areas: none. One unrelated failure in the shared suite comes from the Communities area's in-progress migration `0040` (column `circle` not applied locally), not from Doors.
