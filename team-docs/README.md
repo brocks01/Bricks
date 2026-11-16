@@ -10,7 +10,6 @@
 5. `02-product/agent-and-channels.md`: the one agent on phone, Telegram, WhatsApp, SMS and the app; notifications; safety against spam.
 6. `02-product/impact-and-business.md`: what we measure, safety and privacy, the pilot, how it stays running.
 7. `03-technical/architecture.md`: modules, data, how to run it, environment names.
-8. `10-handoff/HANDOFF.md` and `PROGRESS.md`: where the work stands and what is next (coding agents read these first).
-9. `10-handoff/codex/README.md`: how work is split between the orchestrator and worker agents (Codex and others), with one brief per task.
+8. `04-build/areas.md`: **how we build**: the areas (Communities, Wisdom, Marketplace, Onboarding and profile, Doors, Safety and security, Quality), who owns which files, the rules for several sessions in one folder, the open tasks and the definition of done. Coding agents read this after the philosophy.
 
 The documentation from before the rewrite was removed; it is in git history.
