@@ -1,16 +1,20 @@
 // The short, step-by-step onboarding: one question per screen, big touch cards, a progress bar, "Read it out", "Say it instead".
 // Only what Wisdom needs to start is asked here (name, age, where, what brings you, what you enjoy, consent). Everything else stays in the database and is asked later.
 import { Ionicons } from '@expo/vector-icons';
+import { AudioModule, RecordingPresets, useAudioPlayer, useAudioRecorder } from 'expo-audio';
 import * as Speech from 'expo-speech';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { audioAvailable } from '../../agent/audio';
 import { startTalk } from '../../agent/live';
+import { api } from '../../api/client';
+import { uploadVoiceIntro } from '../../api/media';
 import { putOnboarding, skipOnboarding, type OnboardingState } from '../../api/wisdom';
 import { Button } from '../../components/ui';
 import { useStore } from '../../core/store';
-import { languageStore } from '../../i18n/store';
+import { LANGUAGES } from '../../i18n/languages';
+import { languageStore, setLanguage } from '../../i18n/store';
 import { usePageWords } from '../../kit';
 import { prefs, setPref, type TextSize } from '../../prefs/store';
 import { sessionStore } from '../../session/store';
@@ -159,7 +163,9 @@ function Tile({ label, icon, on, onPress }: { label: string; icon?: Icon; on: bo
 const grid = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: space.sm };
 
 // ---------- the flow ----------
-type StepId = 'who' | 'size' | 'name' | 'age' | 'where' | 'roles' | 'enjoy' | 'agree' | 'welcome';
+type StepId = 'lang' | 'who' | 'size' | 'name' | 'age' | 'where' | 'roles' | 'enjoy' | 'voice' | 'agree' | 'welcome';
+const LANG_KEY = 'wisdom.lang.asked';
+const VOICE_KEY = 'wisdom.voice.asked';
 const ans = (st: OnboardingState, sec: string, key: string): unknown => st.sections.find((s) => s.id === sec)?.questions.find((q) => q.key === key)?.answer;
 const SIZE_KEY = 'wisdom.size.asked';
 async function store() {
@@ -191,7 +197,10 @@ export function Wizard({ state, who, onWho, onState, finish, more }: {
     void (async () => {
       const asked = !!(await (await store())?.getItem(SIZE_KEY).catch(() => null));
       const secDone = (id: string) => state.sections.find((s) => s.id === id)?.done || state.sections.find((s) => s.id === id)?.skipped;
+      const langAsked = !!(await (await store())?.getItem(LANG_KEY).catch(() => null));
+      const voiceAsked = !!(await (await store())?.getItem(VOICE_KEY).catch(() => null));
       const p: StepId[] = [];
+      if (!langAsked) p.push('lang');
       if (who === null) p.push('who');
       if (!asked) p.push('size');
       if (!ans(state, 'basics', 'display_name')) p.push('name');
@@ -199,6 +208,7 @@ export function Wizard({ state, who, onWho, onState, finish, more }: {
       if (!ans(state, 'basics', 'country') || !ans(state, 'basics', 'area_name')) p.push('where');
       if (!state.roles?.length) p.push('roles');
       if (!secDone('interests')) p.push('enjoy');
+      if (!voiceAsked) p.push('voice');
       if (!secDone('consent')) p.push('agree');
       if (alive) setPlan(p);
     })();
@@ -219,10 +229,18 @@ export function Wizard({ state, who, onWho, onState, finish, more }: {
   const n = Math.min(i + 1, total);
   const common = { n, total, onBack: back, id: step };
 
+  if (step === 'lang') {
+    const done = async () => { try { await (await store())?.setItem(LANG_KEY, '1'); } catch { /* asked again next time */ } advance(); };
+    return <LangStep common={common} onNext={() => void done()} />;
+  }
+  if (step === 'voice') {
+    const done = async () => { try { await (await store())?.setItem(VOICE_KEY, '1'); } catch { /* asked again next time */ } advance(); };
+    return <VoiceStep common={common} onDone={() => void done()} />;
+  }
   if (step === 'who') {
     const pick = (x: Who) => { onWho(x); setTimeout(advance, 220); };
     return (
-      <Frame {...common} top={<Collage />} title={w('who_intro')} speak={`${w('who_myself')}. ${w('who_family')}`} say>
+      <Frame {...common} top={plan.includes('lang') ? undefined : <Collage />} title={w('who_intro')} speak={`${w('who_myself')}. ${w('who_family')}`} say>
         <Card icon="person-outline" title={w('who_myself')} line={w('who_myself_line')} on={who === 'myself'} onPress={() => pick('myself')} />
         <Card icon="people-outline" title={w('who_family')} line={w('who_family_line')} on={who === 'family'} onPress={() => pick('family')} />
         <Card icon="business-outline" title={w('who_community')} line={w('comingSoon')} onPress={() => undefined} disabled />
@@ -326,6 +344,96 @@ export function Wizard({ state, who, onWho, onState, finish, more }: {
     );
   }
   return <Welcome name={name.trim() || user?.display_name || ''} finish={finish} more={more} />;
+}
+
+// ---------- step: choose your language (big buttons, the app changes the moment one is tapped) ----------
+const LANG_LINES = ['Choose your language', 'अपनी भाषा चुनें', 'আপনার ভাষা বেছে নিন', 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', '请选择语言', 'Pilih bahasa anda'];
+type CommonProps = { n: number; total: number; onBack?: () => void; id: string };
+function LangStep({ common, onNext }: { common: CommonProps; onNext: () => void }) {
+  const w = usePageWords(page);
+  const { code } = useStore(languageStore);
+  return (
+    <Frame {...common} top={<Collage />} title={w('o_lang_t')} speak={LANGUAGES.map((l) => l.native).join('. ')} primary={{ label: w('o_next'), onPress: onNext }}>
+      <View style={{ marginTop: -space.sm, marginBottom: space.md }}>
+        {LANG_LINES.filter((_, i) => LANGUAGES[i].code !== code).map((t) => <Text key={t} style={[type.small, { color: colors.muted }]}>{t}</Text>)}
+      </View>
+      <View style={grid}>
+        {LANGUAGES.map((l) => <Tile key={l.code} label={l.native} on={code === l.code} onPress={() => void setLanguage(l.code)} />)}
+      </View>
+    </Frame>
+  );
+}
+
+// ---------- step: your voice (optional, ten seconds) ----------
+function VoiceStep({ common, onDone }: { common: CommonProps; onDone: () => void }) {
+  const w = usePageWords(page);
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const [uri, setUri] = useState<string | null>(null);
+  const [recording, setRecording] = useState(false);
+  const [seconds, setSeconds] = useState(0);
+  const [saving, setSaving] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+  const player = useAudioPlayer(uri);
+  useEffect(() => {
+    if (!recording) { setSeconds(0); return; }
+    const t = setInterval(() => setSeconds((s) => s + 1), 1000);
+    return () => clearInterval(t);
+  }, [recording]);
+  useEffect(() => {
+    if (recording && seconds >= 10) void stop();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seconds, recording]);
+  const start = async () => {
+    setMessage(null);
+    try {
+      const status = await AudioModule.requestRecordingPermissionsAsync();
+      if (!status.granted) { setMessage(w('voice_permission')); return; }
+      await AudioModule.setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record({ forDuration: 10 });
+      setUri(null);
+      setRecording(true);
+    } catch { setMessage(w('voice_permission')); }
+  };
+  const stop = async () => {
+    try { await recorder.stop(); } catch { /* already stopped */ }
+    setUri(recorder.uri ?? null);
+    setRecording(false);
+  };
+  const next = async () => {
+    if (uri && !saving) {
+      setSaving(true);
+      try {
+        const res = await uploadVoiceIntro(uri);
+        await api('PATCH', '/v1/me', { voice_intro_url: res.url } as never);
+      } catch { setMessage(w('voice_not_saved')); } finally { setSaving(false); }
+    }
+    onDone();
+  };
+  return (
+    <Frame {...common} title={w('voice_heading')} hint={w('voice_intro')} primary={{ label: saving ? w('voice_saving') : w('o_next'), onPress: () => void next(), disabled: saving || recording }} secondary={{ label: w('o_skip'), onPress: onDone }}>
+      <View style={{ alignItems: 'center', gap: space.md, paddingVertical: space.lg }}>
+        <Pressable onPress={() => void (recording ? stop() : start())} accessibilityRole="button" accessibilityLabel={recording ? w('voice_stop') : w('voice_record')}
+          style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: recording ? colors.danger : colors.accent, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name={recording ? 'stop' : 'mic'} size={48} color={colors.card} accessible={false} />
+        </Pressable>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: colors.ink }}>{recording ? String(10 - seconds) : uri ? w('voice_recorded') : w('voice_prompt')}</Text>
+        {uri && !recording ? (
+          <View style={{ flexDirection: 'row', gap: space.lg }}>
+            <Pressable onPress={() => { player.seekTo(0); player.play(); }} accessibilityRole="button" style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="play" size={22} color={colors.accent} accessible={false} />
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.accent }}>{w('voice_play')}</Text>
+            </Pressable>
+            <Pressable onPress={() => { setUri(null); setMessage(null); }} accessibilityRole="button" style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+              <Ionicons name="refresh" size={22} color={colors.muted} accessible={false} />
+              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.muted }}>{w('voice_again')}</Text>
+            </Pressable>
+          </View>
+        ) : null}
+        {message ? <Text style={{ color: colors.danger, fontSize: 16, textAlign: 'center' }}>{message}</Text> : null}
+      </View>
+    </Frame>
+  );
 }
 
 function Welcome({ name, finish, more }: { name: string; finish: () => Promise<void>; more: () => void }) {
