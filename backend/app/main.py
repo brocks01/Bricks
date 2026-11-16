@@ -53,37 +53,48 @@ def apply_migrations() -> list[str]:
             conn.execute(text("select pg_advisory_unlock(:k)"), {"k": MIGRATION_LOCK})
 
 
-@asynccontextmanager
-async def lifespan(_: FastAPI):
+async def _boot(tasks: list) -> None:
+    """Apply the migrations and start the background loops, in the BACKGROUND. The server itself starts at once and answers its health check even while the
+    database is busy: during a deploy the old instance still holds database connections (a hosted database allows few), so a new instance that insisted on
+    connecting first could never start, and the old one would never be replaced. Here it simply keeps trying, then carries on."""
     last: Exception | None = None
-    for _ in range(6):
+    for attempt in range(90):  # about a quarter of an hour
         try:
-            applied = apply_migrations()
+            applied = await asyncio.to_thread(apply_migrations)
             if applied:
                 print("migrations applied:", ", ".join(applied))
             break
         except Exception as e:  # noqa: BLE001 - any failure means the database is not ready yet
             last = e
-            await asyncio.sleep(5)
+            if attempt in (0, 6, 30, 80):
+                print("database not ready yet, still trying:", str(e).splitlines()[0][:180])
+            await asyncio.sleep(10)
     else:
-        raise RuntimeError(f"the database migrations did not apply: {last}")
+        print("the database migrations did not apply:", last)
+        return
     # The ONE background thing in the app: the reminder loop (calls, retries, reconciliation).
     # It checks REMINDER_LOOP=off on every tick, so tests can hold it still.
     from .modules.calendar import calls as calendar_calls
 
-    reminder_task = asyncio.create_task(calendar_calls.loop())
+    tasks.append(asyncio.create_task(calendar_calls.loop()))
     # The Telegram bot listens only when a token is set and no webhook is configured (TELEGRAM_MODE=webhook).
     from .modules.channels import outbox, telegram
 
-    outbox_task = asyncio.create_task(outbox.loop())  # nudges and queued messages (OUTBOX_LOOP=off holds it still)
-    chat_task = asyncio.create_task(telegram.poll_loop()) if telegram.enabled() and (os.environ.get("TELEGRAM_MODE") or "poll") == "poll" else None
+    tasks.append(asyncio.create_task(outbox.loop()))  # nudges and queued messages (OUTBOX_LOOP=off holds it still)
+    if telegram.enabled() and (os.environ.get("TELEGRAM_MODE") or "poll") == "poll":
+        tasks.append(asyncio.create_task(telegram.poll_loop()))
+
+
+@asynccontextmanager
+async def lifespan(_: FastAPI):
+    tasks: list = []
+    boot = asyncio.create_task(_boot(tasks))
     try:
         yield
     finally:
-        reminder_task.cancel()
-        outbox_task.cancel()
-        if chat_task:
-            chat_task.cancel()
+        boot.cancel()
+        for t in tasks:
+            t.cancel()
 
 
 app = FastAPI(title="Wisdom API", version="0.1.0", lifespan=lifespan)
@@ -121,6 +132,13 @@ app.include_router(insights_router)
 app.include_router(hosts_router)
 app.include_router(safety_router)
 app.include_router(profile_router)
+
+
+@app.get("/healthz")
+@app.head("/healthz")
+def healthz():
+    """Is the server up? Needs no database, so a deploy's health check passes even while the database is busy. Point Render's health check at this."""
+    return {"ok": True}
 
 
 @app.get("/v1/health")
