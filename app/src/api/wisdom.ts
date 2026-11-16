@@ -23,9 +23,9 @@ export const OFFER_KINDS: OfferKind[] = ['mentoring', 'workshop', 'freelance'];
 export const OFFER_MODES: OfferMode[] = ['volunteer', 'paid', 'either'];
 
 export interface Capsule { id: string; title: string; body: string; kind: CapsuleKind; tags: string[]; status: 'draft' | 'published'; by: string; mine: boolean; created_at: string }
-export interface Offer { id: string; title: string; about: string | null; kind: OfferKind; mode: OfferMode; domain: CapsuleKind | null; price_note: string | null; availability: string | null; status: string; by: string; mine: boolean; proof_field: string | null; proof_years: number | null; proof_where: string | null; topics: string[]; languages: string[]; sensitive: boolean; endorsements: number; sessions: number; area: string | null }
+export interface Offer { id: string; title: string; about: string | null; kind: OfferKind; mode: OfferMode; domain: CapsuleKind | null; price_note: string | null; availability: string | null; status: string; by: string; mine: boolean; proof_field: string | null; proof_years: number | null; proof_where: string | null; topics: string[]; languages: string[]; sensitive: boolean; endorsements: number; sessions: number; area: string | null; /** first name and the last name's initial, "Michael S." */ name?: string }
 export interface Request { id: string; topic: string; about: string | null; kind: 'learn' | 'support'; status: string; by: string; mine: boolean }
-export interface Connection { id: string; with: string; i_am: 'mentor' | 'learner'; about: string | null; message: string | null; status: 'pending' | 'accepted' | 'declined'; waiting_for_me: boolean; offer_id: string | null; sessions: number; endorsed: boolean; unread: number }
+export interface Connection { id: string; with: string; i_am: 'mentor' | 'learner'; about: string | null; message: string | null; status: 'pending' | 'accepted' | 'declined'; waiting_for_me: boolean; offer_id: string | null; sessions: number; endorsed: boolean; unread: number; /** a group asking together (null for one person) */ group_name?: string | null; learner_count?: number | null; /** what they want to learn */ topic?: string | null }
 export interface WisdomMessage { id: string; from: string; mine: boolean; body: string; at: string; read: boolean }
 export interface WisdomStats { calls: number; minutes: number; people_helped: number; mentors_learned_from: number }
 
@@ -40,7 +40,7 @@ export const getMyOffers = () => api<{ offers: Offer[] }>('GET', '/v1/wisdom/off
 export const createOffer = (b: { title: string; about?: string; kind: OfferKind; mode: OfferMode; availability?: string; domain?: CapsuleKind; price_note?: string; proof_field?: string; proof_years?: number; proof_where?: string; topics?: string[]; languages?: string[] }) => api<{ id: string }>('POST', '/v1/wisdom/offers', b);
 export const endorseOffer = (id: string, note?: string) => api<{ endorsed: boolean; endorsements: number }>('POST', `/v1/wisdom/offers/${id}/endorse`, { note });
 export const setOfferStatus = (id: string, status: 'active' | 'paused' | 'closed') => api<{ status: string }>('PATCH', `/v1/wisdom/offers/${id}`, { status });
-export const askOffer = (id: string, message?: string) => api<{ id: string }>('POST', `/v1/wisdom/offers/${id}/ask`, { message });
+export const askOffer = (id: string, message?: string, group?: { group_name: string; learner_count: number; topic?: string }) => api<{ id: string }>('POST', `/v1/wisdom/offers/${id}/ask`, { message, ...group });
 
 export const getRequests = (q = '', kind?: 'learn' | 'support') => api<{ requests: Request[] }>('GET', `/v1/wisdom/requests?q=${encodeURIComponent(q)}${kind ? `&kind=${kind}` : ''}`).then((r) => r.requests);
 export const getMyRequests = () => api<{ requests: Request[] }>('GET', '/v1/wisdom/requests/mine').then((r) => r.requests);
@@ -54,6 +54,23 @@ export const logSession = (id: string, minutes: number) => api<{ logged: number 
 export const getConnectionMessages = (cid: string) => api<{ messages: WisdomMessage[] }>('GET', `/v1/wisdom/connections/${cid}/messages`).then((r) => r.messages);
 export const sendConnectionMessage = (cid: string, body: string) => api<{ sent: boolean; to: string }>('POST', `/v1/wisdom/connections/${cid}/messages`, { body });
 export const getWisdomStats = () => api<WisdomStats>('GET', '/v1/wisdom/stats');
+
+// ---- Teach: the teaching profile, the sessions of an accepted introduction, and the learner's review ----
+export interface TeachingProfile { expertise: string | null; bio: string | null; days: string | null; start_time: string | null; end_time: string | null; saved: boolean }
+export type TeachingProfileBody = Partial<Pick<TeachingProfile, 'expertise' | 'bio' | 'days' | 'start_time' | 'end_time'>>;
+export interface WisdomSession {
+  id: string; connection_id: string; title: string; starts_at: string; minutes: number; place: string | null;
+  status: 'scheduled' | 'completed' | 'cancelled'; with_name: string; role: 'teacher' | 'learner';
+  group_name: string | null; learner_count: number | null; completed_at: string | null;
+  review: { score: number; note: string | null } | null; can_review: boolean;
+}
+export const getTeachingProfile = () => api<TeachingProfile>('GET', '/v1/wisdom/teaching-profile');
+export const saveTeachingProfile = (b: TeachingProfileBody) => api<TeachingProfile>('PATCH', '/v1/wisdom/teaching-profile', b);
+export const getSessions = (connectionId?: string) => api<{ sessions: WisdomSession[] }>('GET', `/v1/wisdom/sessions${connectionId ? `?connection_id=${connectionId}` : ''}`).then((r) => r.sessions);
+export const scheduleSession = (connectionId: string, b: { title: string; starts_at: string; minutes?: number; place?: string }) => api<WisdomSession>('POST', `/v1/wisdom/connections/${connectionId}/schedule`, b);
+export const rescheduleSession = (id: string, startsAt: string) => api<WisdomSession>('POST', `/v1/wisdom/sessions/${id}/reschedule`, { starts_at: startsAt });
+export const completeSession = (id: string) => api<WisdomSession>('POST', `/v1/wisdom/sessions/${id}/complete`);
+export const reviewSession = (id: string, score: number, note?: string) => api<WisdomSession>('POST', `/v1/wisdom/sessions/${id}/review`, { score, note });
 
 // ---- paid sessions: a person's own services by the hour, and the sessions other people offer (the server's market endpoints, unchanged) ----
 export type MarketCategory = 'crafts' | 'cooking' | 'teaching' | 'repair' | 'music' | 'wellness' | 'advice' | 'storytelling' | 'other';

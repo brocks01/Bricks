@@ -68,7 +68,7 @@ export default function WisdomIndex() {
   // mentors are searched only while that part is open, with the filters the person chose (a topic, a language, their own area)
   useEffect(() => {
     if (part !== 'mentors') return;
-    if (mentorNear === 'near_me' && !myArea) { setOffers([]); return; }
+    if (mentorNear === 'near_me' && !myArea) return; // nobody is near a person whose area is not known: see `shownOffers`
     let live = true;
     getOffers(mentorQ, undefined, {
       mode: mentorMode === 'all' ? undefined : mentorMode,
@@ -80,6 +80,8 @@ export default function WisdomIndex() {
       .catch(() => { if (live) setOffers([]); });
     return () => { live = false; };
   }, [part, mentorQ, mentorMode, mentorTopic, mentorLanguage, mentorNear, myArea]);
+
+  const shownOffers = mentorNear === 'near_me' && !myArea ? [] : offers;
 
   // paid sessions are searched only while that part is open, so opening Wisdom costs nothing extra
   useEffect(() => {
@@ -194,7 +196,7 @@ export default function WisdomIndex() {
           </El>
           {mentorNear === 'near_me' && !myArea ? <Notice text={w('needArea')} /> : null}
           <View style={{ height: space.md }} />
-          {offers === null ? null : offers.length === 0 ? <Empty text={w('noMentors')} /> : offers.map((o) => (
+          {shownOffers === null ? null : shownOffers.length === 0 ? <Empty text={w('noMentors')} /> : shownOffers.map((o) => (
             <Card key={o.id} title={o.title}>
               <Body>{`${o.by} · ${w(o.kind)} · ${modeWord(o.mode)}${o.price_note ? ' · ' + o.price_note : ''}${o.availability ? ' · ' + o.availability : ''}`}</Body>
               {o.proof_field || o.proof_years != null || o.proof_where ? (

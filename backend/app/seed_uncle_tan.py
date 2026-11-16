@@ -11,7 +11,7 @@ from datetime import date, time, timedelta
 from sqlalchemy import Connection, text
 
 GROUPS = ("Tampines Kampung Spirit", "Tai chi", "Block 123 Growers")
-ASKS = (
+ASKS = (  # what the earlier demo seeded; seed_wisdom_teach removes these so his Teach side shows exactly the revamp's invitations
     "Hello Uncle Tan, I am starting in tech sales next month. May I learn from your 40 years of experience?",
     "I want to move into sales and would love your career advice. Could we talk for half an hour?",
     "How did you handle difficult customers? I would like to learn how you did it.",
@@ -46,17 +46,10 @@ def seed_uncle(conn: Connection, user_id: str) -> None:
     conn.execute(text("insert into activity_participants (activity_id, user_id) select a.id, cast(:u as uuid) from activities a join communities c on c.id = a.community_id "
                       "where c.name = any(:g) and a.starts_at > now() and a.status = 'scheduled' and not exists (select 1 from activity_participants p where p.activity_id = a.id and p.user_id = cast(:u as uuid))"),
                  {**u, "g": list(GROUPS)})
-    # learners asking for his advice (waiting invitations), and one who has already learned from him
-    seed_people = conn.execute(text("select u.id from users u join profiles p on p.user_id = u.id where u.email like '%@seed.wisdom.test' and u.status = 'active' "
-                                    "order by not ('learn' = any(p.roles)), md5(u.email || 'tan') limit 5")).all()
-    for i, row in enumerate(seed_people[:4]):
-        done = i == 3
-        conn.execute(text("insert into wisdom_connections (mentor_id, learner_id, initiated_by, message, status, decided_at) select cast(:u as uuid), :l, :l, :m, :s, "
-                          "case when :s = 'accepted' then now() - interval '9 days' end where not exists (select 1 from wisdom_connections k where k.mentor_id = cast(:u as uuid) and k.learner_id = :l)"),
-                     {**u, "l": row.id, "m": ASKS[i], "s": "accepted" if done else "pending"})
-    conn.execute(text("insert into wisdom_sessions (id, connection_id, logged_by, minutes, occurred_at) select gen_random_uuid(), k.id, cast(:u as uuid), m.mins, now() - m.ago "
-                      "from wisdom_connections k, (values (30, interval '8 days'), (45, interval '2 days')) as m(mins, ago) where k.mentor_id = cast(:u as uuid) and k.status = 'accepted' "
-                      "and not exists (select 1 from wisdom_sessions s where s.connection_id = k.id)"), u)
+    # his Teach side (profile, invitations from Sarath and the SMU Students, the mentorship and its sessions) and the elders under Learn
+    from .seed_wisdom_teach import seed as seed_teach
+
+    seed_teach(conn, user_id)
     # he has asked a photography teacher to teach him
     conn.execute(text("insert into wisdom_connections (mentor_id, learner_id, initiated_by, offer_id, message, status) select o.user_id, cast(:u as uuid), cast(:u as uuid), o.id, "
                       "'Hello, I would like to learn digital photography. I am a beginner.', 'pending' from wisdom_offers o where o.status = 'active' and (o.title ilike '%photo%' or :n = '') "
@@ -90,7 +83,7 @@ def main(argv: list[str]) -> None:
     from .core.db import engine
 
     with engine().begin() as conn:
-        ids = [str(r.id) for r in conn.execute(text("select id from users where email like 'uncle-tan-%@demo.wisdom.test'")).all()]
+        ids = [str(r.id) for r in conn.execute(text("select id from users where email like 'uncle-tan-%@demo.wisdom.test' or email = 'uncle.tan@demo.wisdom.test'")).all()]
         for i in ids:
             seed_uncle(conn, i)
     print(f"filled {len(ids)} Uncle Tan accounts")

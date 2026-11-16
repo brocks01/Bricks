@@ -121,11 +121,12 @@ def _offer(r, me: str) -> dict:
     return {"id": str(r.id), "title": r.title, "about": r.about, "kind": r.kind, "mode": r.mode, "domain": r.domain, "price_note": r.price_note, "availability": r.availability, "status": r.status,
             "proof_field": r.proof_field, "proof_years": r.proof_years, "proof_where": r.proof_where, "topics": topics, "languages": list(r.languages or []),
             "sensitive": is_sensitive(topics), "endorsements": int(r.endorsement_count or 0), "sessions": int(r.session_count or 0), "area": r.area_name,
-            "by": r.first_name or "A friend", "mine": str(r.user_id) == me, "created_at": _iso(r.created_at)}
+            "by": r.first_name or "A friend", "name": r.short_name or r.first_name or "A friend", "mine": str(r.user_id) == me, "created_at": _iso(r.created_at)}
 
 
 # proof, topics and languages live on the offer; the counts come from the sessions and the thank-yous people left (counts and sessions, never star ratings).
 _OFF = ("select o.*, nullif(split_part(u.display_name, ' ', 1), '') as first_name, u.area_name, "
+        "case when strpos(trim(u.display_name), ' ') > 0 then split_part(trim(u.display_name), ' ', 1) || ' ' || upper(left(regexp_replace(trim(u.display_name), '^.* ', ''), 1)) || '.' end as short_name, "
         "(select count(*) from wisdom_endorsements e where e.offer_id = o.id) as endorsement_count, "
         "(select count(*) from wisdom_sessions s join wisdom_connections c on c.id = s.connection_id where c.offer_id = o.id) as session_count "
         "from wisdom_offers o join users u on u.id = o.user_id")
@@ -168,15 +169,18 @@ def set_offer_status(conn: Connection, me: str, offer_id: str, status: str) -> d
 def browse_offers(conn: Connection, me: str, q: str | None = None, kind: str | None = None, mode: str | None = None, limit: int = 30, domain: str | None = None,
                   topic: str | None = None, language: str | None = None, area: str | None = None) -> list[dict]:
     """Open offers from other people, for a learner. mode 'paid' also finds 'either'. domain: cultural, social or professional.
-    Discovery also filters by a topic (a life stage or a subject, a word inside the offer's topics), a language (a code or a name), and the mentor's area (the learner's city)."""
+    Discovery also filters by a topic (a life stage or a subject, a word inside the offer's topics; several words separated by commas find any of them),
+    a language (a code or a name), and the mentor's area (the learner's city). The search words also match the mentor's name, field and languages."""
     langs = _lang_filter(language)
+    words = [f"%{t.strip().lower()}%" for t in str(topic or "").split(",") if t.strip()]
     rows = conn.execute(text(_OFF + " where o.status = 'active' and o.user_id <> :u and (:k = '' or o.kind = :k) and (:m = '' or o.mode = :m or o.mode = 'either') and (:d = '' or o.domain = :d) "
-                             "and (:t = '' or exists (select 1 from unnest(o.topics) x where x like :tlike)) "
+                             "and (:t = '' or exists (select 1 from unnest(o.topics) x where x like any(cast(:tlike as text[])))) "
                              "and (:l = '' or exists (select 1 from unnest(o.languages) x where x = any(string_to_array(:l, ',')))) "
                              "and (:a = '' or lower(coalesce(u.area_name, '')) like :alike) "
-                             "and (not :hq or lower(o.title) like :q or lower(coalesce(o.about, '')) like :q or exists (select 1 from unnest(o.topics) x where x like :q)) order by o.created_at desc limit :n"),
+                             "and (not :hq or lower(o.title) like :q or lower(coalesce(o.about, '')) like :q or lower(coalesce(u.display_name, '')) like :q or lower(coalesce(o.proof_field, '')) like :q "
+                             "or exists (select 1 from unnest(o.topics) x where x like :q) or exists (select 1 from unnest(o.languages) x where lower(x) like :q)) order by o.created_at desc limit :n"),
                         {"u": me, "k": kind or "", "m": mode or "", "d": domain or "", "q": _like(q), "hq": bool((q or "").strip()),
-                         "t": (topic or "").strip().lower(), "tlike": f"%{(topic or '').strip().lower()}%",
+                         "t": ",".join(words), "tlike": words or ["%"],
                          "l": langs, "a": (area or "").strip(), "alike": f"%{(area or '').strip().lower()}%", "n": max(1, min(limit, 100))})
     return [_offer(r, me) for r in rows]
 
@@ -234,28 +238,51 @@ def _first(conn: Connection, user_id: str) -> str:
     return conn.execute(text("select coalesce(nullif(split_part(display_name, ' ', 1), ''), 'Someone') from users where id = :u"), {"u": user_id}).scalar() or "Someone"
 
 
-def _open(conn: Connection, mentor: str, learner: str, by: str, offer_id, request_id, message) -> dict:
+def _open(conn: Connection, mentor: str, learner: str, by: str, offer_id, request_id, message, group: dict | None = None) -> dict:
     if mentor == learner:
         raise WisdomError("not_yourself", 422)
     dup = conn.execute(text("select id from wisdom_connections where mentor_id = :m and learner_id = :l and status in ('pending', 'accepted') "
                             "and offer_id is not distinct from :o and request_id is not distinct from :r"), {"m": mentor, "l": learner, "o": offer_id, "r": request_id}).first()
     if dup:
         raise WisdomError("already_asked", 409)
-    r = conn.execute(text("insert into wisdom_connections (mentor_id, learner_id, initiated_by, offer_id, request_id, message) values (:m, :l, :b, :o, :r, :t) returning id"),
-                     {"m": mentor, "l": learner, "b": by, "o": offer_id, "r": request_id, "t": str(message or "").strip()[:500] or None}).one()
+    g = group or {}
+    r = conn.execute(text("insert into wisdom_connections (mentor_id, learner_id, initiated_by, offer_id, request_id, message, group_name, learner_count, topic) "
+                          "values (:m, :l, :b, :o, :r, :t, :g, :n, :tp) returning id"),
+                     {"m": mentor, "l": learner, "b": by, "o": offer_id, "r": request_id, "t": str(message or "").strip()[:500] or None,
+                      "g": g.get("group_name"), "n": g.get("learner_count"), "tp": g.get("topic")}).one()
     return {"id": str(r.id), "status": "pending"}
 
 
-def ask_offer(conn: Connection, me: str, offer_id: str, message: str | None = None) -> dict:
-    """A learner asks an offering mentor for guidance. The mentor decides."""
+def _group(group_name, learner_count, topic) -> dict:
+    """A group asking together (a class, a club): its name and how many learners, both or neither. And what they want to learn."""
+    name = str(group_name or "").strip()
+    tp = str(topic or "").strip()
+    if len(tp) > 120:
+        raise WisdomError("bad_topic", 422)
+    if not name and learner_count in (None, ""):
+        return {"topic": tp or None}
+    try:
+        n = int(learner_count)
+    except (TypeError, ValueError):
+        raise WisdomError("bad_group", 422) from None
+    if not 2 <= len(name) <= 80 or not 2 <= n <= 500:
+        raise WisdomError("bad_group", 422)
+    return {"group_name": name, "learner_count": n, "topic": tp or None}
+
+
+def ask_offer(conn: Connection, me: str, offer_id: str, message: str | None = None, group_name: str | None = None, learner_count: int | None = None,
+              topic: str | None = None) -> dict:
+    """A learner asks an offering mentor for guidance, alone or for a group (group_name and learner_count). The mentor decides."""
+    group = _group(group_name, learner_count, topic)
     if not onboarding.can_learn(conn, me):
         raise WisdomError("confirm_age_15", 403)
     o = conn.execute(text("select id, user_id, title from wisdom_offers where id = :o and status = 'active'"), {"o": offer_id}).first()
     if o is None:
         raise WisdomError("not_found", 404)
-    out = _open(conn, str(o.user_id), me, me, o.id, None, message)
+    out = _open(conn, str(o.user_id), me, me, o.id, None, message, group)
     onboarding.add_role(conn, me, "learn")
-    _tell(str(o.user_id), f"{_first(conn, me)} would like your guidance on “{o.title}”. Open Wisdom (or ask me: “who wants my help?”) to say yes or no.")
+    who = f"{group['group_name']} ({group['learner_count']} learners)" if group.get("group_name") else _first(conn, me)
+    _tell(str(o.user_id), f"{who} would like your guidance on “{o.title}”. Open Wisdom (or ask me: “who wants my help?”) to say yes or no.")
     return {**out, "to": _first(conn, str(o.user_id)), "about": o.title}
 
 
@@ -286,7 +313,8 @@ def my_connections(conn: Connection, me: str) -> list[dict]:
         other = str(r.learner_id) if str(r.mentor_id) == me else str(r.mentor_id)
         out.append({"id": str(r.id), "with": _first(conn, other), "i_am": "mentor" if str(r.mentor_id) == me else "learner", "about": r.offer_title or r.request_topic, "message": r.message,
                     "status": r.status, "waiting_for_me": r.status == "pending" and str(r.initiated_by) != me, "created_at": _iso(r.created_at),
-                    "offer_id": str(r.offer_id) if r.offer_id else None, "sessions": int(r.session_count or 0), "endorsed": bool(r.endorsed_by_me), "unread": int(r.unread_count or 0)})
+                    "offer_id": str(r.offer_id) if r.offer_id else None, "sessions": int(r.session_count or 0), "endorsed": bool(r.endorsed_by_me), "unread": int(r.unread_count or 0),
+                    "group_name": r.group_name, "learner_count": r.learner_count, "topic": r.topic or r.offer_title or r.request_topic})
     return out
 
 
@@ -381,3 +409,11 @@ def stats(conn: Connection, me: str) -> dict:
         "count(distinct case when c.mentor_id = :u then c.learner_id end) as helped, count(distinct case when c.learner_id = :u then c.mentor_id end) as learned_from "
         "from wisdom_sessions s join wisdom_connections c on c.id = s.connection_id where (c.mentor_id = :u or c.learner_id = :u) and s.occurred_at >= date_trunc('month', now())"), {"u": me}).one()
     return {"calls": row.calls, "minutes": int(row.minutes), "people_helped": row.helped, "mentors_learned_from": row.learned_from}
+
+
+def upcoming_sessions(conn: Connection, user_id: str, until):
+    """For Home (contract point 5): the person's scheduled Wisdom sessions until `until`, soonest first, each with id, title, starts_at, place,
+    with_name and role ('teacher' or 'learner'). The work is in teach.py."""
+    from . import teach
+
+    return teach.upcoming_sessions(conn, user_id, until)
