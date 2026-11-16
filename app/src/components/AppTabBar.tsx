@@ -12,16 +12,16 @@ import { colors } from '../theme/tokens';
 import { AgentOrb } from './AgentOrb';
 
 /**
- * The bottom bar. Wisdom is the round, raised button in the middle: it is the heart of the product (what a lifetime taught, passed on).
- * Communities is on its left (people near you, a reason to show up) and the Marketplace on its right (what experience and craft can earn, market days).
- * Which of the three a person sees is decided by the server's profile, never hard-coded here: a young learner sees Wisdom alone,
- * an elder who came to share sees Wisdom and the Marketplace, someone who came for company sees all three.
+ * The bottom bar: a soft floating pill. Market is on the left, Wisdom on the right, and Communities is the raised round button in the middle
+ * (people near you, a reason to show up). Which of the three a person sees is decided by the server's profile, never hard-coded here.
  * Today, health, family, notifications and chats are reached from the profile (the round avatar at the top right).
  * The agent is one small round button floating just above this bar (AgentOrb). It shows on every screen, signed in or not, including setup and onboarding.
  */
 const COMMUNITIES = 'connect.index';
 const WISDOM = 'wisdom.index';
 const MARKET = 'market.index';
+const BLUE = '#1B3FC9';
+const SLATE = '#3E4E68';
 // Which tab a page belongs to, so the pages behind a tab keep it lit. Profile pages (me, health, family, language, today) light none.
 const TAB_OF_MODULE: Record<string, string> = {
   connect: COMMUNITIES, community: COMMUNITIES, explore: COMMUNITIES,
@@ -59,39 +59,39 @@ export function AppTabBar() {
     );
   }
   const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
-  const centre = !prof.profile || showsWisdom(prof); // Wisdom appears when the person said yes to teaching or sharing; until the server has answered, show all three
-  const left = !prof.profile || shows(prof, 'community');
-  const right = !prof.profile || shows(prof, 'markets') || shows(prof, 'freelance');
+  const right = !prof.profile || showsWisdom(prof); // Wisdom appears when the person said yes to teaching or sharing; until the server has answered, show all three
+  const centre = !prof.profile || shows(prof, 'community');
+  const left = !prof.profile || shows(prof, 'markets') || shows(prof, 'freelance');
   const side = (key: string, icon: keyof typeof Ionicons.glyphMap) => {
     const on = lit === key;
     return (
       <Pressable onPress={() => go(key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ height: 66, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-        <Ionicons name={icon} size={24} color={on ? colors.leaf : '#5A6472'} />
-        <Text style={{ fontSize: 14, fontWeight: '600', color: on ? colors.leaf : '#5A6472' }}>{t(`${key}.tab`)}</Text>
+        <Ionicons name={icon} size={26} color={on ? BLUE : SLATE} />
+        <Text style={{ fontSize: 14, fontWeight: '700', color: on ? BLUE : SLATE }}>{t(`${key}.tab`)}</Text>
       </Pressable>
     );
   };
-  const wisdomOn = lit === WISDOM;
+  const communitiesOn = lit === COMMUNITIES;
   return (
-    <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', height: 82, borderTopWidth: 1, borderColor: colors.line }}>
-        <View style={{ flex: 1 }}>{left ? side(COMMUNITIES, 'people-outline') : null}</View>
-        <View style={{ width: centre ? 110 : 0, height: 82 }}>
+    <View style={{ backgroundColor: colors.bg, position: 'relative', zIndex: 5, paddingTop: 22 }}>
+      <View style={{ marginHorizontal: 14, marginBottom: 8, height: 72, borderRadius: 36, backgroundColor: '#F1F1F3', flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 }}>
+        <View style={{ flex: 1 }}>{left ? side(MARKET, 'storefront-outline') : null}</View>
+        <View style={{ width: centre ? 120 : 0, height: 72 }}>
           {centre ? (
             <Pressable
-              onPress={() => go(WISDOM)}
+              onPress={() => go(COMMUNITIES)}
               accessibilityRole="tab"
-              accessibilityState={{ selected: wisdomOn }}
-              style={{ position: 'absolute', left: 17, top: -22, width: 76, height: 76, borderRadius: 38, borderWidth: 4, borderColor: colors.card, backgroundColor: wisdomOn ? colors.leaf : '#3F7A5A', alignItems: 'center', justifyContent: 'center', gap: 2, shadowColor: colors.leaf, shadowOpacity: 0.32, shadowRadius: 14, shadowOffset: { width: 0, height: 4 }, elevation: 6 }}
+              accessibilityState={{ selected: communitiesOn }}
+              style={{ position: 'absolute', left: 6, top: -30, width: 108, height: 108, borderRadius: 54, backgroundColor: '#F4F4F6', alignItems: 'center', justifyContent: 'center', gap: 4, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 14, shadowOffset: { width: 0, height: 5 }, elevation: 8 }}
             >
-              <Ionicons name="leaf" size={26} color="#FFFFFF" />
-              <Text style={{ fontSize: 13, fontWeight: '700', color: '#FFFFFF' }}>{t(`${WISDOM}.tab`)}</Text>
+              <Ionicons name="people" size={34} color={communitiesOn ? BLUE : SLATE} />
+              <Text numberOfLines={1} style={{ fontSize: 13, fontWeight: '800', color: communitiesOn ? BLUE : SLATE }}>{t(`${COMMUNITIES}.tab`)}</Text>
             </Pressable>
           ) : null}
         </View>
-        <View style={{ flex: 1 }}>{right ? side(MARKET, 'storefront-outline') : null}</View>
+        <View style={{ flex: 1 }}>{right ? side(WISDOM, 'book-outline') : null}</View>
       </View>
-      <View style={{ height: insets.bottom, backgroundColor: colors.card }} />
+      <View style={{ height: insets.bottom, backgroundColor: colors.bg }} />
       <AgentOrb />
     </View>
   );

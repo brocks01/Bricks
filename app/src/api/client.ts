@@ -6,7 +6,9 @@
 export const PUBLIC_API_URL = 'https://bricks-o9gv.onrender.com';
 
 /** Where the API lives. Set EXPO_PUBLIC_API_URL to override. In Expo Go it is the computer running Expo; a release build uses the deployed API. */
+let useDeployed = false; // set once a development server turns out not to be running: from then on this run talks to the deployed backend
 export function apiBase(): string {
+  if (useDeployed) return PUBLIC_API_URL;
   // Loaded here (not at the top) so the plain-Node self-test can import the session without the phone libraries.
   /* eslint-disable @typescript-eslint/no-require-imports */
   const { Platform } = require('react-native') as typeof import('react-native');
@@ -45,9 +47,19 @@ async function once(method: string, path: string, body: unknown, auth: boolean):
   // helper's own; the server re-checks the live delegation on every request, so ending access takes hold at once.
   const onBehalf = auth ? hooks.getActiveProfile?.() ?? null : null;
   if (onBehalf && onBehalf !== '') headers['X-Bricks-On-Behalf'] = onBehalf;
+  const send = () => fetch(apiBase() + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   try {
-    return await fetch(apiBase() + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    return await send();
   } catch {
+    // The computer's own backend is not running (a phone testing against it, for instance): use the deployed one instead of failing every screen.
+    // One failed request is not enough (a single endpoint can fail while the server is fine): only switch when the server's own health check does not answer either.
+    if (apiBase() !== PUBLIC_API_URL) {
+      const up = await fetch(apiBase() + '/healthz').then((r) => r.ok).catch(() => false);
+      if (!up) {
+        useDeployed = true;
+        try { return await send(); } catch { /* fall through */ }
+      }
+    }
     throw new ApiError(0, 'network');
   }
 }

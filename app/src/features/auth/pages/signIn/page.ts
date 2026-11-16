@@ -6,11 +6,11 @@ export const authSignIn = definePage({
   module: 'auth',
   route: '/sign-in',
   bare: true,
-  summary: 'Sign in with Singpass (a demo for now: a mock Singpass screen offers demo profiles).',
-  keywords: ['login', 'sign in', 'singpass'],
+  summary: 'Verify identity with Singpass (a mock for now: it signs in Uncle Tan with what Singpass would know).',
+  keywords: ['login', 'sign in', 'singpass', 'verify'],
   elements: {
     heading: { kind: 'text' },
-    singpass: { kind: 'action', agent: 'human', summary: 'Continue with Singpass. Only the person can do this.' },
+    singpass: { kind: 'action', summary: 'Continue with Singpass (a mock for now: no real Singpass is contacted, so the agent may press it for the person).' },
   },
   strings: signInStrings,
 });

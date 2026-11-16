@@ -69,6 +69,18 @@ def demo(request: Request, conn: Connection = Depends(get_conn)):
     return service.demo_sign_in(conn, request.headers.get("user-agent", ""))
 
 
+@router.get("/auth/singpass-demo/profile")
+def singpass_demo_profile():
+    """Prototype: what the pretend Singpass page shows on its consent screen (what Singpass would share)."""
+    return service.UNCLE_TAN
+
+
+@router.post("/auth/singpass-demo")
+def singpass_demo(request: Request, conn: Connection = Depends(get_conn)):
+    """Prototype: the mock Singpass login. Returns a new session for Uncle Tan, with what Singpass would have told us."""
+    return service.singpass_demo(conn, request.headers.get("user-agent", ""))
+
+
 @router.get("/auth/demo-profiles")
 def demo_profiles(conn: Connection = Depends(get_conn)):
     """Prototype: the demo people the mock Singpass screen offers."""

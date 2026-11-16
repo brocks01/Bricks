@@ -1,7 +1,9 @@
 // The Communities tab, kept simple: a greeting, what is next with who is going, the groups you have joined, and one button to start another.
 import { useCallback, useEffect, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
+import { CoverPic } from '../../CoverPic';
 import { Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { languageStore } from '../../../../i18n/store';
@@ -75,8 +77,11 @@ export default function CommunitiesHome() {
     <Screen title="" hero={<Text accessibilityRole="header" style={{ fontSize: 20, fontWeight: '700', color: colors.muted, marginBottom: space.md }}>{greeting}</Text>}>
       {first ? (
         <View style={{ backgroundColor: colors.navy, borderRadius: radius.card, padding: space.lg, marginBottom: space.lg }}>
-          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.card }}>{first.title} {when(first.starts_at)}.</Text>
-          <Text style={{ fontSize: 16, color: '#D6DCE8', marginTop: 4 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
+            <View style={{ width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', backgroundColor: '#2B3D5C' }}><Ionicons name="calendar" size={26} color={colors.gold} accessible={false} /></View>
+            <Text style={{ flex: 1, fontSize: 22, fontWeight: '800', color: colors.card }}>{first.title} {when(first.starts_at)}.</Text>
+          </View>
+          <Text style={{ fontSize: 16, color: '#D6DCE8', marginTop: 8 }}>
             {w('c_going', { n: first.going_count })}.{first.going_names[0] ? ` ${w('c_waiting', { name: first.going_names[0] })}` : ''}
           </Text>
           <Pressable onPress={() => void toggleGoing(first)} accessibilityRole="button" style={{ alignSelf: 'flex-start', minHeight: 44, justifyContent: 'center', marginTop: space.md, paddingHorizontal: 18, borderRadius: radius.pill, backgroundColor: first.i_going ? colors.accentSoft : colors.gold }}>
@@ -104,15 +109,19 @@ export default function CommunitiesHome() {
         const place = a?.location || c.area_name || '';
         const schedule = a ? `${new Date(a.starts_at).toLocaleDateString(locale, { weekday: 'short' })} ${time(a.starts_at)}` : '';
         return (
-          <Pressable key={c.id} onPress={() => { go('community.home', { id: c.id }); }} accessibilityRole="button" style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.sm }}>
-            <Text style={{ fontSize: 19, fontWeight: '800', color: colors.navy }}>{c.name}</Text>
-            {place || schedule ? <Text style={[type.small, { color: colors.muted, marginTop: 2 }]}>{[place, schedule].filter(Boolean).join(' · ')}</Text> : null}
-            <Text style={{ fontSize: 15, fontWeight: '800', color: colors.accent, marginTop: 4 }}>{a ? w('c_going', { n: a.going_count }) : w('c_members', { n: c.member_count })} · {w('c_joined')}</Text>
+          <Pressable key={c.id} onPress={() => { go('community.home', { id: c.id }); }} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.sm, marginBottom: space.sm }}>
+            <CoverPic c={c} />
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontSize: 19, fontWeight: '800', color: colors.navy }}>{c.name}</Text>
+              {place || schedule ? <Text style={[type.small, { color: colors.muted, marginTop: 2 }]}>{[place, schedule].filter(Boolean).join(' · ')}</Text> : null}
+              <Text style={{ fontSize: 15, fontWeight: '800', color: colors.accent, marginTop: 4 }}>{a ? w('c_going', { n: a.going_count }) : w('c_members', { n: c.member_count })} · {w('c_joined')}</Text>
+            </View>
           </Pressable>
         );
       })}
 
-      <Pressable onPress={() => { go('connect.create'); }} accessibilityRole="button" style={{ minHeight: 52, alignItems: 'center', justifyContent: 'center', borderRadius: radius.button, backgroundColor: '#EDE6DA', marginTop: space.xs }}>
+      <Pressable onPress={() => { go('connect.create'); }} accessibilityRole="button" style={{ minHeight: 52, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', borderRadius: radius.button, backgroundColor: '#EDE6DA', marginTop: space.xs }}>
+        <Ionicons name="add-circle-outline" size={24} color={colors.navy} accessible={false} />
         <Text style={{ fontSize: 17, fontWeight: '800', color: colors.navy }}>{w('c_start')}</Text>
       </Pressable>
       <Pressable onPress={() => { go('connect.pick'); }} accessibilityRole="button" style={{ minHeight: 48, alignItems: 'center', justifyContent: 'center', marginTop: space.sm }}>

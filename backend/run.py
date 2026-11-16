@@ -29,6 +29,10 @@ elif len(sys.argv) > 1 and sys.argv[1] == "seed-wisdom-more":
     from app.seed_wisdom_more import main as seed_more_main
 
     seed_more_main(sys.argv[2:])
+elif len(sys.argv) > 1 and sys.argv[1] == "seed-uncle":
+    from app.seed_uncle_tan import main as seed_uncle_main
+
+    seed_uncle_main(sys.argv[2:])
 elif len(sys.argv) > 1 and sys.argv[1] == "showcase":
     from app.showcase import main as showcase_main
 

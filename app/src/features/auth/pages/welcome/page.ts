@@ -6,11 +6,11 @@ export const authWelcome = definePage({
   module: 'auth',
   route: '/welcome',
   bare: true,
-  summary: 'The first screen for someone who is not signed in: choose the language, then Next.',
-  keywords: ['start', 'welcome', 'begin', 'language'],
+  summary: 'The first screen for someone who is not signed in: Welcome to Interchange, with Get started.',
+  keywords: ['start', 'welcome', 'begin', 'get started'],
   elements: {
     heading: { kind: 'text' },
-    start: { kind: 'action', summary: 'Goes to the text size screen.' },
+    start: { kind: 'action', summary: 'Goes on to choosing the language.' },
   },
   strings: welcomeStrings,
 });

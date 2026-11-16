@@ -183,6 +183,18 @@ export async function startDemo(): Promise<void> {
   await updateProfile({ language: languageStore.get().code });
 }
 
+/** What the mock Singpass tells us about the person (the real one gives the same kind of facts). */
+export interface SingpassFacts { name: string; area: string; languages: string[]; nric: string }
+export const singpassFacts: { current: SingpassFacts | null } = { current: null };
+
+/** Prototype: the mock Singpass login. The server makes a new account for Uncle Tan with what Singpass would know already set; the app then asks the rest. */
+export async function startSingpass(): Promise<void> {
+  const t = await api<Tokens & { singpass: SingpassFacts }>('POST', '/v1/auth/singpass-demo', {}, { auth: false });
+  singpassFacts.current = t.singpass;
+  await accept(t);
+  await updateProfile({ language: languageStore.get().code });
+}
+
 export interface Providers {
   email: boolean;
   google: boolean;

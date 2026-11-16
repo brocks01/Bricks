@@ -1,9 +1,7 @@
-import { SuggestionsCard } from '../../SuggestionsCard';
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Image, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
-import { getStalls, type Stall } from '../../../../api/market';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -14,7 +12,7 @@ import { sessionStore } from '../../../../session/store';
 import { colors, radius, space, type } from '../../../../theme/tokens';
 import '../../../lead/leadWords'; // registers the words of the first-run page
 import '../../cardWords'; // registers the words of the cards
-import { CommunityCard, ListEntry, MarketDayCard } from '../../CommunityCards';
+import { ListEntry } from '../../CommunityCards';
 import { connectIndex as page } from './page';
 
 // The Communities tab, laid out like the owner's design: how many places are used, the next Market Day, one card per community (its next gathering and how many
@@ -24,18 +22,15 @@ export default function ConnectIndex() {
   const navigate = useNavigate();
   const t = useT();
   const lang = useLanguage();
-  const { status } = useStore(sessionStore);
+  const { status, user } = useStore(sessionStore);
   const [mine, setMine] = useState<MyCommunity[] | null>(null);
   const [soon, setSoon] = useState<Upcoming[]>([]);
-  const [stalls, setStalls] = useState<Stall[]>([]);
   useEffect(() => {
     if (status !== 'in') return; // wait until the saved sign-in has been checked, so the requests carry a token
     getMyCommunities().then(setMine).catch(() => setMine([]));
     getUpcoming(10)
       .then((l) => {
         setSoon(l);
-        const market = l.find((a) => a.category === 'Market');
-        if (market) getStalls(market.id).then((s) => setStalls(s.stalls)).catch(() => setStalls([]));
       })
       .catch(() => setSoon([]));
   }, [status]);
@@ -53,7 +48,6 @@ export default function ConnectIndex() {
 
   const used = mine?.length ?? 0;
   const full = used >= 3;
-  const market = soon.find((a) => a.category === 'Market');
   const nextOf = (cid: string) => soon.find((a) => a.community_id === cid);
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const empty = { backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.lg, alignItems: 'center', gap: space.sm } as const;
@@ -95,22 +89,44 @@ export default function ConnectIndex() {
         }
   );
 
+  const featured = soon[0];
+  const firstName = user?.display_name?.trim().split(/\s+/)[0];
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const sectionTitle = { fontSize: 27, fontWeight: '700' as const, color: colors.ink };
+
   return (
-    <Screen title={w('heading')} subtitle={mine ? (full ? w('full_note', { max: 3 }) : w('limitInfo', { n: used, max: 3 })) : undefined}>
-      <SuggestionsCard />
+    <Screen
+      title={w('heading')}
+      hero={<View style={{ paddingBottom: space.lg }}><Text style={{ fontSize: 32, lineHeight: 39, fontWeight: '700', color: colors.navy }} accessibilityRole="header">{firstName ? `${greeting}, ${firstName}` : greeting}</Text><Text style={{ fontSize: 20, color: colors.muted, marginTop: 2 }}>{w('heading')}</Text></View>}
+    >
       {mine === null ? <SkeletonList count={3} /> : null}
 
-      {mine && mine.length ? (
-        <View style={{ gap: space.lg }}>
-          {market ? <MarketDayCard act={market} stalls={stalls} lang={lang} t={t} onReserve={() => navigate('market.stall', { id: market.id })} /> : null}
-          {mine.map((c, i) => (
-            <El key={c.id} page={page} id={`community${i + 1}`}>
-              <CommunityCard c={c} next={nextOf(c.id)} i={i} lang={lang} t={t} onOpen={() => navigate('community.home', { id: c.id })} />
-            </El>
-          ))}
-          <Text style={[type.small, { color: '#5A6472', marginTop: -space.sm, marginHorizontal: 4 }]}>{t('cday.only_members')}</Text>
+      {featured ? <View style={{ marginBottom: space.xl }}>
+        <Text style={[type.small, { color: colors.accent, fontWeight: '700', marginBottom: space.sm }]}>{w('comingUp')}</Text>
+        <Pressable onPress={() => void toggle(featured)} accessibilityRole="button" style={{ borderRadius: radius.card, overflow: 'hidden', borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
+          <View style={{ flexDirection: 'row', minHeight: 156 }}>
+            {featured.image_url ? <Image source={{ uri: featured.image_url }} style={{ width: '42%', backgroundColor: colors.accentSoft }} resizeMode="cover" /> : <View style={{ width: '42%', backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="people-outline" size={50} color={colors.accent} /></View>}
+            <View style={{ flex: 1, padding: space.lg, justifyContent: 'center', gap: 4 }}>
+              <Text style={[type.small, { color: colors.accent, fontWeight: '700' }]}>{when(featured.starts_at)}</Text>
+              <Text style={{ fontSize: 23, lineHeight: 27, fontWeight: '700', color: colors.ink }}>{featured.title}</Text>
+              <Text style={[type.body, { color: colors.muted }]}>{featured.community_name}</Text>
+              {featured.location ? <Text style={[type.small, { color: colors.muted }]} numberOfLines={1}>{featured.location}</Text> : null}
+            </View>
+          </View>
+          <View style={{ flexDirection: 'row', borderTopWidth: 1, borderColor: colors.line }}>
+            <Pressable onPress={() => void toggle(featured)} style={{ flex: 1, minHeight: 54, alignItems: 'center', justifyContent: 'center', backgroundColor: featured.i_going ? colors.navy : colors.accent }}><Text style={{ fontSize: 18, fontWeight: '700', color: '#fff' }}>{featured.i_going ? w('rsvpGoing') : w('rsvpJoin')}</Text></Pressable>
+            <Pressable onPress={() => navigate('community.home', { id: featured.community_id })} style={{ flex: 1, minHeight: 54, alignItems: 'center', justifyContent: 'center' }}><Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink }}>{featured.going_count} {t('home.index.going_n', { n: featured.going_count })}</Text></Pressable>
+          </View>
+        </Pressable>
+      </View> : null}
+
+      {mine && mine.length ? <View style={{ marginBottom: space.xl }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: space.md }}><Text style={sectionTitle}>{w('mine')}</Text><Pressable onPress={() => navigate('connect.explore')}><Text style={{ color: colors.accent, fontSize: 17, fontWeight: '700' }}>{w('explore')} ›</Text></Pressable></View>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm }}>
+          {mine.slice(0, 4).map((c, i) => { const next = nextOf(c.id); return <El key={c.id} page={page} id={`community${i + 1}`}><Pressable onPress={() => navigate('community.home', { id: c.id })} accessibilityRole="button" style={{ width: '48%', minHeight: 150, padding: space.md, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card, justifyContent: 'space-between' }}><View style={{ flexDirection: 'row', gap: space.sm }}><View style={{ width: 42, height: 42, borderRadius: 14, backgroundColor: i % 2 ? '#FBEFD9' : '#E3F1E7', alignItems: 'center', justifyContent: 'center' }}><Ionicons name={i % 2 ? 'musical-notes-outline' : 'people-outline'} size={24} color={colors.accent} /></View><Text numberOfLines={2} style={{ flex: 1, fontSize: 18, lineHeight: 22, fontWeight: '700', color: colors.ink }}>{c.name}</Text></View><Text numberOfLines={1} style={[type.small, { color: colors.muted }]}>{next ? when(next.starts_at) : t('cday.none_planned')}</Text><Text style={[type.small, { color: '#276B1A', fontWeight: '700' }]}>✓ {t('common.members', { n: c.member_count })}</Text></Pressable></El>; })}
         </View>
-      ) : null}
+      </View> : null}
 
       {mine && !mine.length ? (
         <View style={empty}>
@@ -123,11 +139,11 @@ export default function ConnectIndex() {
         </View>
       ) : null}
 
-      {soon.length ? (
+      {soon.length > 1 ? (
         <View style={{ marginTop: space.xl, gap: 10 }}>
-          <El page={page} id="comingUp"><Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('cday.near')}</Text></El>
+          <El page={page} id="comingUp"><Text style={sectionTitle} accessibilityRole="header">{t('cday.near')}</Text></El>
           <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
-            {soon.slice(0, 6).map((e, i, all) => (
+            {soon.slice(1, 6).map((e, i, all) => (
               <View key={e.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: '#EDE6DA' }}>
                 <View style={{ flex: 1 }}>
                   <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink }}>{e.title}</Text>

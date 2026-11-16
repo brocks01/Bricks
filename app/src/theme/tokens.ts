@@ -1,19 +1,19 @@
-// Design tokens: white cards on a soft background, the brand's deep green and amber (from the logo: the elder and the younger person), large readable text.
+// Design tokens: white cards on a soft background, terracotta and deep navy from the design, warm paper, large readable text.
 export const colors = {
-  bg: '#F7F4EE', // warm paper
+  bg: '#FAF7F2', // warm paper
   card: '#FFFFFF',
   ink: '#111827',
-  muted: '#4A5361',
-  line: '#E2DACB', // warm hairline
-  accent: '#17684A', // the brand's deep green: the main button (white text on it passes contrast)
-  accentDark: '#0F4D37',
-  accentSoft: '#E3F1EA',
-  accentLine: '#B9D9C8',
-  navy: '#1B2B44', // header mark, profile circle, dark buttons
-  navySoft: '#E9EDF4',
-  gold: '#F2A31B', // the brand's amber: highlights and rings
-  leaf: '#17684A', // progress bars and the selected tab
-  bone: '#E4E9E5', // the loading skeletons (Skeleton.tsx)
+  muted: '#5A6472',
+  line: '#E6DFD4', // warm hairline
+  accent: '#B85028', // warm terracotta / rust CTA from mockup
+  accentDark: '#8F3B1A',
+  accentSoft: '#FAECE5',
+  accentLine: '#E8BEB0',
+  navy: '#1B2B44', // header mark, dark buttons, profile circle
+  navySoft: '#EAEFF5',
+  gold: '#D97706', // warm amber
+  leaf: '#B85028', // active tab color and primary indicators
+  bone: '#EAE5DB', // loading skeletons
   danger: '#E5372E',
   warn: '#8A5A00',
   warnSoft: '#FDF1D6',

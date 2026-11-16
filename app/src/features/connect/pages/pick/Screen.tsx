@@ -1,6 +1,7 @@
+import { CoverPic } from '../../CoverPic';
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
-import { Image, Pressable, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { exploreCommunities, joinOpenCommunity, type ExploreCommunity } from '../../../../api/communityRules';
 import { SkeletonList } from '../../../../components/Skeleton';
 import { Screen } from '../../../../components/ui';
@@ -68,11 +69,7 @@ export default function Pick() {
           return (
             <Pressable key={c.id} onPress={() => toggle(c.id)} accessibilityRole="checkbox" accessibilityState={{ checked: on }} accessibilityLabel={c.name}
               style={{ flexDirection: 'row', alignItems: 'center', gap: 14, padding: 12, borderRadius: 14, backgroundColor: colors.card, borderWidth: on ? 2 : 1, borderColor: on ? colors.navy : colors.line }}>
-              {c.cover_url ? (
-                <Image source={{ uri: c.cover_url }} accessibilityIgnoresInvertColors style={{ width: 76, height: 76, borderRadius: 10, backgroundColor: colors.accentSoft }} />
-              ) : (
-                <View style={{ width: 76, height: 76, borderRadius: 10, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}><Ionicons name="people" size={32} color={colors.accent} /></View>
-              )}
+              <CoverPic c={c} radius={10} />
               <View style={{ flex: 1, gap: 2 }}>
                 <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink }}>{c.name}</Text>
                 <Text style={{ fontSize: 16, color: '#4A5361' }} numberOfLines={2}>{[c.area_name, t('common.members', { n: c.member_count })].filter(Boolean).join(' · ')}</Text>

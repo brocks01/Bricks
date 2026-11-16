@@ -2,7 +2,7 @@ import { type WordTable } from '../../i18n/words';
 
 // Words for the simple Market Day home. Order: English, Hindi, Bengali, Tamil, Chinese, Malay. First drafts; native-speaker review needed.
 export const HOME_M: WordTable = {
-  m_title: ['Market Day', 'बाज़ार दिवस', 'বাজার দিবস', 'சந்தை நாள்', '市集日', 'Hari Pasar'],
+  m_title: ['Market', 'बाज़ार', 'বাজার', 'சந்தை', '集市', 'Pasar'],
   m_days: ['{n} days to go', '{n} दिन बाकी', '{n} দিন বাকি', '{n} நாட்கள் உள்ளன', '还有 {n} 天', '{n} hari lagi'],
   m_one_day: ['1 day to go', '1 दिन बाकी', '১ দিন বাকি', '1 நாள் உள்ளது', '还有 1 天', '1 hari lagi'],
   m_today: ['Today', 'आज', 'আজ', 'இன்று', '今天', 'Hari ini'],
@@ -18,5 +18,15 @@ export const HOME_M: WordTable = {
   m_stalls: ['Stalls', 'स्टॉल', 'স্টল', 'கடைகள்', '摊位', 'Gerai'],
   m_failed: ['Could not load the market day. Check your connection.', 'बाज़ार दिवस लोड नहीं हो सका। कनेक्शन जाँचें।', 'বাজার দিবস লোড করা যায়নি। সংযোগ পরীক্ষা করুন।', 'சந்தை நாளை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்க்கவும்.', '无法加载市集日，请检查网络。', 'Tidak dapat memuat hari pasar. Semak sambungan.'],
   m_retry: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயற்சிக்கவும்', '重试', 'Cuba lagi'],
-  m_more: ['More to do nearby', 'आसपास करने के लिए और', 'কাছাকাছি আরও কিছু করার', 'அருகில் செய்ய மேலும்', '附近更多活动', 'Lebih banyak aktiviti berdekatan'],
+  m_more: ['Search and explore more', 'खोजें और ज़्यादा देखें', 'খুঁজুন ও আরও দেখুন', 'தேடி மேலும் ஆராயுங்கள்', '搜索并探索更多', 'Cari dan teroka lagi'],
+  m_sub: ['Markets, gigs and things to do near you.', 'आपके आस-पास बाज़ार, काम और करने लायक चीज़ें।', 'আপনার কাছে বাজার, কাজ ও করার মতো কিছু।', 'உங்கள் அருகில் சந்தைகள், வேலைகள், செய்ய வேண்டியவை.', '你附近的集市、零工和活动。', 'Pasar, kerja dan aktiviti berhampiran anda.'],
+  m_near: ['Near you', 'आपके पास', 'আপনার কাছে', 'உங்கள் அருகில்', '你附近', 'Berhampiran anda'],
+  m_see: ['See', 'देखें', 'দেখুন', 'பார்', '查看', 'Lihat'],
+  m_list: ['List something on Market', 'बाज़ार में कुछ जोड़ें', 'বাজারে কিছু যোগ করুন', 'சந்தையில் ஏதாவது சேர்', '在集市发布内容', 'Senaraikan sesuatu di Pasar'],
+  m_list_sub: ['Offer a service, share a skill, or sell an item.', 'कोई सेवा दें, हुनर बाँटें या सामान बेचें।', 'একটি পরিষেবা দিন, দক্ষতা ভাগ করুন বা জিনিস বেচুন।', 'சேவை வழங்கு, திறமையைப் பகிர், அல்லது பொருள் விற்கவும்.', '提供服务、分享技能或出售物品。', 'Tawarkan perkhidmatan, kongsi kemahiran atau jual barang.'],
+  m_k_market_day: ['Market day', 'बाज़ार दिवस', 'বাজার দিবস', 'சந்தை நாள்', '市集日', 'Hari Pasar'],
+  m_k_volunteer: ['Volunteer', 'स्वयंसेवा', 'স্বেচ্ছাসেবা', 'தன்னார்வம்', '志愿服务', 'Sukarelawan'],
+  m_k_gig: ['Paid gig', 'सशुल्क काम', 'অর্থপ্রদত্ত কাজ', 'கட்டண வேலை', '有偿零工', 'Kerja bergaji'],
+  m_k_show: ['Show', 'शो', 'শো', 'நிகழ்ச்சி', '演出', 'Persembahan'],
+  m_k_activity: ['Activity', 'गतिविधि', 'কার্যক্রম', 'செயல்பாடு', '活动', 'Aktiviti'],
 };

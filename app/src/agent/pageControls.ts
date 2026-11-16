@@ -67,6 +67,11 @@ export async function fillElement(key: string, value: unknown, origin: Origin = 
   return { ok: true, summary: `Filled "${c.label}".` };
 }
 
+// Development only: lets a test drive the open page exactly as the agent's fill and press tools do (the browser console: window.__agent).
+if (typeof window !== 'undefined' && (globalThis as { __DEV__?: boolean }).__DEV__) {
+  (window as unknown as { __agent: unknown }).__agent = { list: () => [...controls.values()].map((c) => `${c.kind} ${c.key} | ${c.label}`), fill: (k: string, v: unknown) => fillElement(k, v), press: (k: string) => pressElement(k) };
+}
+
 export async function pressElement(key: string, origin: Origin = 'agent'): Promise<{ ok: boolean; summary: string }> {
   const c = controls.get(key);
   if (!c || c.kind !== 'action' || !c.run) return { ok: false, summary: `"${key}" is not a button on the open page. Call read to see what is here.` };

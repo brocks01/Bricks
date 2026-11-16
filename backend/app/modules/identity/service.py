@@ -168,6 +168,41 @@ def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}
 
 
+UNCLE_TAN = {"name": "Tan Boon Huat", "area": "Tampines", "languages": ["Mandarin", "English"], "nric": "S****123A"}
+
+
+def singpass_demo(conn: Connection, user_agent: str = "") -> dict:
+    """PROTOTYPE ONLY: the mock Singpass login. It stands in for what Singpass really gives (name, home area, age group) and makes a fresh account for
+    Uncle Tan with those already set, so the first questions only ask what Singpass cannot know. The address ends in @demo.wisdom.test like every demo account."""
+    import secrets
+
+    email = f"uncle-tan-{secrets.token_hex(4)}@demo.wisdom.test"
+    user = conn.execute(
+        text("insert into users (email, display_name, age_band, area_name, language, spoken_languages) values (:e, :n, '60plus', :a, 'en', :l) returning *"),
+        {"e": email, "n": UNCLE_TAN["name"], "a": UNCLE_TAN["area"], "l": UNCLE_TAN["languages"]},
+    ).one()
+    # Uncle Tan lives in Tampines, so he starts as a member of three active circles there (any area if Tampines has fewer): his Communities tab is not empty.
+    conn.execute(
+        text(
+            "insert into memberships (community_id, user_id) select c.id, :u from communities c where c.status = 'active' "
+            "order by (c.area_name ilike :a || '%') desc nulls last, (select count(*) from memberships m where m.community_id = c.id and m.status = 'active') desc limit 3 "
+            "on conflict (community_id, user_id) do nothing"
+        ),
+        {"u": str(user.id), "a": UNCLE_TAN["area"]},
+    )
+    try:
+        with conn.begin_nested():  # his groups, learners and market days; if anything is missing the login still works
+            from ...seed_uncle_tan import seed_uncle
+
+            seed_uncle(conn, str(user.id))
+    except Exception:
+        import logging
+
+        logging.getLogger("uvicorn.error").exception("Uncle Tan seed failed")
+    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True, "singpass": UNCLE_TAN}
+
+
 DEMO_DOMAINS = ("@seed.wisdom.test", "@demo.wisdom.test")
 
 

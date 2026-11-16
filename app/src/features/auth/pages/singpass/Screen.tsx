@@ -1,13 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { Image, Text, View } from 'react-native';
+import { ActivityIndicator, Image, Text, View } from 'react-native';
 import { usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
-import { startDemo } from '../../../../session/store';
-import { colors, space, type } from '../../../../theme/tokens';
-import { Frame } from '../../../onboarding/kit';
+import { startSingpass } from '../../../../session/store';
+import { Go, R, RefFrame } from '../../../onboarding/ref';
 import { authSingpass as page } from './page';
 
-/** A mock Singpass login. No real Singpass is contacted: it makes a brand-new account straight away and the app moves on to the first questions by itself. */
+/** The mock Singpass login. No real Singpass is contacted: the server makes Uncle Tan's account with what Singpass would know, and the app moves on by itself. */
 export default function SingpassMock() {
   const w = usePageWords(page);
   const go = useNavigate();
@@ -16,22 +15,22 @@ export default function SingpassMock() {
 
   const run = () => {
     setFailed(false);
-    startDemo().catch(() => setFailed(true)); // on success the app moves on by itself (AuthGate)
+    startSingpass().catch(() => setFailed(true)); // on success the app moves on by itself (AuthGate)
   };
   useEffect(() => {
     if (started.current) return;
     started.current = true;
     run();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <Frame onBack={() => go('auth.signIn')} backLabel={w('o_back')} primary={failed ? { label: w('sp_retry'), onPress: run } : undefined}>
-      <View style={{ alignItems: 'center', paddingTop: space.xl * 2, gap: space.lg }}>
+    <RefFrame at={2} onBack={() => go('auth.signIn')} backLabel={w('x_back')} bottom={failed ? <Go label={w('x_retry')} onPress={run} /> : undefined}>
+      <View style={{ alignItems: 'center', paddingTop: 80, gap: 18 }}>
         <Image source={require('../../../../../assets/brand/singpass.png')} accessibilityLabel="Singpass" resizeMode="contain" style={{ width: 220, height: 38 }} />
-        <Text accessibilityRole="header" style={{ fontSize: 22, fontWeight: '800', color: colors.ink, textAlign: 'center' }}>{failed ? w('failed') : w('sp_logging')}</Text>
-        <Text style={[type.body, { color: colors.muted, textAlign: 'center' }]}>{w('sp_demo_note')}</Text>
+        {failed ? null : <ActivityIndicator size="large" color={R.green} />}
+        <Text accessibilityRole="header" style={{ fontSize: 24, fontWeight: '800', color: R.ink, textAlign: 'center' }}>{failed ? w('x_failed') : w('x_logging')}</Text>
+        <Text style={{ fontSize: 16, color: R.muted, textAlign: 'center' }}>{w('x_demo')}</Text>
       </View>
-    </Frame>
+    </RefFrame>
   );
 }

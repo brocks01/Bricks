@@ -1,6 +1,7 @@
 import { pageWords } from '../../i18n/words';
 import { WIZARD } from './wizardWords';
 import { REF } from './referenceWords';
+import { FLOW } from './refWords';
 import { definePage } from '../../kit/page';
 import { ONBOARDING, START } from './words';
 
@@ -24,12 +25,11 @@ export const onboardingIndex = definePage({
   route: '/onboarding',
   requiresAuth: true,
   bare: true,
-  summary: 'Getting started, a few short screens: the name, where the person lives, what they enjoy, a short voice introduction, how to remind them, then welcome. The agent can read each screen, fill the name or area, pick an option and press Next or Skip.',
+  summary: 'Getting started after Singpass, three short screens: the assistant asks what the person did before retirement and what they enjoy, the profile to check and confirm (Looks right or Edit), then you are all set. The agent can read each screen, fill the name or area, pick an option and press Next or Skip.',
   keywords: ['onboarding', 'welcome', 'about you', 'setup', 'name', 'where do you live', 'interests'],
   elements: {
     heading: { kind: 'text', summary: 'The question on this screen.' },
-    name: { kind: 'field', type: 'string', summary: 'What to call the person (their name).' },
-    area: { kind: 'field', type: 'string', summary: 'The area or town where the person lives.' },
+    answer: { kind: 'field', type: 'string', summary: 'The answer to the assistant question (what the person did before retirement, then what they enjoy). The person may say or type it in any language.' },
   },
-  strings: pageWords({ ...ONBOARDING, ...WIZARD, ...REF, name: WIZARD.o_name_f, area: WIZARD.o_town_f }),
+  strings: pageWords({ ...ONBOARDING, ...WIZARD, ...REF, ...FLOW, answer: FLOW.x_type }),
 });

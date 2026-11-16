@@ -2,7 +2,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Share, Text, View } from 'react-native';
-import { askOffer, decideConnection, getConnections, getMyOffers, getMyRequests, getOffers, type Connection, type Offer, type Request } from '../../../api/wisdom';
+import { askOffer, decideConnection, getConnections, getMyOffers, getMyRequests, getOffers, getWisdomStats, type WisdomStats, type Connection, type Offer, type Request } from '../../../api/wisdom';
 import { Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { usePageData, usePageWords } from '../../../kit';
@@ -15,6 +15,7 @@ import { Conversation } from './Conversation';
 
 type Tab = 'learn' | 'teach';
 const BLUE = '#1F4E9E'; // Wisdom's colour in the deck
+const NAVY_DOT = '#1B2B44';
 const initial = (name: string) => name.trim().charAt(0).toUpperCase() || '?';
 const card = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md } as const;
 
@@ -39,10 +40,13 @@ export default function WisdomHome() {
   const [people, setPeople] = useState<Offer[] | null>(null);
   const [open, setOpen] = useState<Connection | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
+  const [stats, setStats] = useState<WisdomStats | null>(null);
+  const [later, setLater] = useState<string[]>([]);
 
   const load = useCallback(async () => {
     try {
       const [c, o, r] = await Promise.all([getConnections(), getMyOffers(), getMyRequests()]);
+      getWisdomStats().then(setStats).catch(() => undefined);
       setConns(c);
       setMine(o);
       setAsks(r.filter((x) => x.kind === 'learn'));
@@ -60,7 +64,7 @@ export default function WisdomHome() {
     return () => { live = false; };
   }, [tab]);
 
-  const invitations = (conns ?? []).filter((c) => c.i_am === 'mentor' && c.status === 'pending');
+  const invitations = (conns ?? []).filter((c) => c.i_am === 'mentor' && c.status === 'pending' && !later.includes(c.id));
   const learners = (conns ?? []).filter((c) => c.i_am === 'mentor' && c.status === 'accepted');
   const teachers = (conns ?? []).filter((c) => c.i_am === 'learner');
   const askedOffer = new Set(teachers.map((c) => c.offer_id).filter(Boolean));
@@ -81,12 +85,17 @@ export default function WisdomHome() {
     { id: 'learnTab', label: w('h_learn'), run: () => setTab('learn') },
     { id: 'teachTab', label: w('h_teach'), run: () => setTab('teach') },
     { id: 'edit', label: tab === 'learn' ? w('h_edit_learn') : w('h_edit_teach'), run: edit },
+    ...(tab === 'teach' ? [
+      { id: 'offerSession', label: w('h_offer_t'), run: edit },
+      { id: 'answerQuestion', label: w('h_answer_t'), run: () => { go('wisdom.more'); } },
+      { id: 'beAvailable', label: w('h_avail_t'), run: share },
+    ] : []),
     ...(tab === 'teach' && !invitations.length ? [{ id: 'shareProfile', label: w('h_share'), run: share }] : []),
-    ...(tab === 'teach' ? invitations.flatMap((c, k) => [{ id: `accept${k + 1}`, label: `${w('h_accept')}: ${c.with}`, run: () => void decide(c, true) }, { id: `decline${k + 1}`, label: `${w('h_notnow')}: ${c.with}`, run: () => void decide(c, false) }]) : []),
+    ...(tab === 'teach' ? invitations.flatMap((c, k) => [{ id: `accept${k + 1}`, label: `${w('h_book')}: ${c.with}`, run: () => void decide(c, true) }, { id: `decline${k + 1}`, label: `${w('h_later')}: ${c.with}`, run: () => setLater((l) => [...l, c.id]) }]) : []),
     ...(tab === 'learn' ? shown.filter((o) => !askedOffer.has(o.id)).slice(0, 8).map((o, k) => ({ id: `ask${k + 1}`, label: `${w('h_ask')}: ${o.by}, ${o.title}`, run: () => void ask(o) })) : []),
   ];
   usePageData(page, conns && tab ? {
-    values: [{ label: w('h_title'), value: tab === 'teach' ? (invitations.length ? w(invitations.length === 1 ? 'h_want_1' : 'h_want_n', { n: invitations.length }) : w('h_none')) : w('h_people') }],
+    values: [{ label: w('h_sessions'), value: String(stats?.calls ?? 0) }, { label: w('h_helped'), value: String(stats?.people_helped ?? 0) }, { label: w('h_title'), value: tab === 'teach' ? (invitations.length ? w(invitations.length === 1 ? 'h_want_1' : 'h_want_n', { n: invitations.length }) : w('h_none')) : w('h_people') }],
     images: [],
     lists: tab === 'teach'
       ? [{ label: w('h_pending'), items: invitations.map((c) => ({ label: c.with, detail: c.message ?? c.about ?? '' })) }]
@@ -98,7 +107,7 @@ export default function WisdomHome() {
   const learnLine = asks.length ? `${w('h_wants_learn')}: ${asks.map((r) => r.topic).join(', ')}` : w('h_add_learn');
 
   return (
-    <Screen title="" hero={<Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.navy }}>{w('h_title')}</Text>}>
+    <Screen title="" hero={<View><Text accessibilityRole="header" style={{ fontSize: 30, fontWeight: '800', color: BLUE }}>{w('h_title')}</Text><Text style={[type.body, { color: colors.muted, marginTop: 2 }]}>{w('h_sub')}</Text></View>}>
       {failed ? (
         <View style={[card, { marginBottom: space.md }]}>
           <Text style={[type.body, { color: colors.danger }]}>{w('h_failed')}</Text>
@@ -107,12 +116,13 @@ export default function WisdomHome() {
           </Pressable>
         </View>
       ) : null}
-      <View style={{ flexDirection: 'row', marginTop: space.sm, marginBottom: space.md, borderRadius: radius.pill, overflow: 'hidden', borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
-        {(['learn', 'teach'] as Tab[]).map((t) => {
+      <View style={{ flexDirection: 'row', marginTop: space.sm, marginBottom: space.lg, borderRadius: radius.pill, padding: 3, backgroundColor: '#EDEFF3' }}>
+        {(['teach', 'learn'] as Tab[]).map((t) => {
           const on = tab === t;
           return (
-            <Pressable key={t} onPress={() => setTab(t)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, minHeight: 46, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? BLUE : colors.card }}>
-              <Text style={{ fontSize: 17, fontWeight: '800', color: on ? colors.card : colors.ink }}>{w(`h_${t}`)}</Text>
+            <Pressable key={t} onPress={() => setTab(t)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, minHeight: 50, flexDirection: 'row', gap: 8, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: on ? BLUE : 'transparent' }}>
+              <Ionicons name={t === 'teach' ? 'people' : 'book-outline'} size={22} color={on ? colors.card : colors.ink} accessible={false} />
+              <Text style={{ fontSize: 17, fontWeight: '800', color: on ? colors.card : colors.ink }}>{w(t === 'teach' ? 'h_teach_l' : 'h_learn_l')}</Text>
             </Pressable>
           );
         })}
@@ -120,29 +130,48 @@ export default function WisdomHome() {
 
       {tab === 'teach' ? (
         <>
+          <Text style={{ fontSize: 26, fontWeight: '800', color: colors.ink }}>{w('h_sharing')}</Text>
+          <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('h_sharing_sub')}</Text>
+          <View style={{ flexDirection: 'row', gap: space.md, marginBottom: space.lg }}>
+            {([['videocam-outline', 'h_sessions', stats?.calls ?? 0], ['people-outline', 'h_helped', stats?.people_helped ?? 0]] as const).map(([icon, label, n]) => (
+              <View key={label} style={[card, { flex: 1, flexDirection: 'row', alignItems: 'center', gap: space.sm }]}>
+                <View style={{ width: 46, height: 46, borderRadius: 12, alignItems: 'center', justifyContent: 'center', backgroundColor: tints.sky }}>
+                  <Ionicons name={icon} size={24} color={BLUE} accessible={false} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{ fontSize: 14, color: colors.ink }}>{w(label)}</Text>
+                  <Text style={{ fontSize: 28, fontWeight: '800', color: colors.ink }}>{n}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
           {invitations.length ? (
             <>
-              <Text style={{ fontSize: 20, fontWeight: '800', color: colors.navy, marginBottom: space.sm }}>{w(invitations.length === 1 ? 'h_want_1' : 'h_want_n', { n: invitations.length })}</Text>
+              <Text style={{ fontSize: 22, fontWeight: '800', color: colors.ink, marginBottom: space.sm }}>{w('h_asked_title')}</Text>
               {invitations.map((c) => (
-                <View key={c.id} style={[card, { marginBottom: space.sm, opacity: busy === c.id ? 0.6 : 1 }]}>
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-                    <Avatar name={c.with} />
-                    <Text style={{ flex: 1, fontSize: 18, fontWeight: '800', color: colors.navy }}>{c.with}</Text>
+                <View key={c.id} style={[card, { marginBottom: space.md, borderColor: '#C9D6EE', opacity: busy === c.id ? 0.6 : 1 }]}>
+                  <View style={{ flexDirection: 'row', gap: space.md }}>
+                    <View style={{ width: 52, height: 52, borderRadius: 26, alignItems: 'center', justifyContent: 'center', backgroundColor: NAVY_DOT }}>
+                      <Text style={{ fontSize: 22, fontWeight: '800', color: colors.card }}>{initial(c.with)}</Text>
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <Text style={{ fontSize: 19, fontWeight: '800', color: colors.ink }}>{c.with}</Text>
+                      {c.message || c.about ? <View style={{ backgroundColor: '#F0F1F4', borderRadius: 12, padding: space.md, marginTop: space.sm }}><Text style={[type.body, { color: colors.ink }]}>“{c.message || c.about}”</Text></View> : null}
+                    </View>
                   </View>
-                  {c.message || c.about ? <Text style={[type.body, { color: colors.muted, marginTop: space.sm }]}>“{c.message || c.about}”</Text> : null}
-                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, marginTop: space.md }}>
-                    <Pressable onPress={() => void decide(c, true)} disabled={busy === c.id} accessibilityRole="button" style={{ minHeight: 46, justifyContent: 'center', paddingHorizontal: 22, borderRadius: radius.pill, backgroundColor: BLUE }}>
-                      <Text style={{ fontSize: 16, fontWeight: '800', color: colors.card }}>{w('h_accept')}</Text>
+                  <View style={{ flexDirection: 'row', gap: space.md, marginTop: space.md }}>
+                    <Pressable onPress={() => void decide(c, true)} disabled={busy === c.id} accessibilityRole="button" style={{ flex: 2, minHeight: 52, alignItems: 'center', justifyContent: 'center', borderRadius: radius.button, backgroundColor: BLUE }}>
+                      <Text style={{ fontSize: 17, fontWeight: '800', color: colors.card }}>{w('h_book')}</Text>
                     </Pressable>
-                    <Pressable onPress={() => void decide(c, false)} disabled={busy === c.id} accessibilityRole="button" style={{ minHeight: 46, justifyContent: 'center', paddingHorizontal: 8 }}>
-                      <Text style={{ fontSize: 16, fontWeight: '700', color: colors.muted }}>{w('h_notnow')}</Text>
+                    <Pressable onPress={() => setLater((l) => [...l, c.id])} disabled={busy === c.id} accessibilityRole="button" style={{ flex: 1, minHeight: 52, alignItems: 'center', justifyContent: 'center', borderRadius: radius.button, borderWidth: 1, borderColor: colors.line, backgroundColor: colors.card }}>
+                      <Text style={{ fontSize: 17, fontWeight: '800', color: colors.ink }}>{w('h_later')}</Text>
                     </Pressable>
                   </View>
                 </View>
               ))}
             </>
           ) : conns && !learners.length ? (
-            <View style={[card, { alignItems: 'center', paddingVertical: space.xl, gap: space.lg }]}>
+            <View style={[card, { alignItems: 'center', paddingVertical: space.xl, gap: space.lg, marginBottom: space.md }]}>
               <Text style={{ fontSize: 19, lineHeight: 27, fontWeight: '700', color: colors.ink, textAlign: 'center' }}>{w('h_none')}</Text>
               <Pressable onPress={share} accessibilityRole="button" style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: 10, paddingHorizontal: 24, borderRadius: radius.pill, backgroundColor: BLUE }}>
                 <Ionicons name="paper-plane-outline" size={20} color={colors.card} accessible={false} />
@@ -164,6 +193,16 @@ export default function WisdomHome() {
               {open && open.i_am === 'mentor' ? <Conversation c={open} onClose={() => setOpen(null)} onChanged={() => void load()} /> : null}
             </>
           ) : null}
+          <Text style={{ fontSize: 22, fontWeight: '800', color: colors.ink, marginTop: space.md, marginBottom: space.sm }}>{w('h_ways')}</Text>
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            {([['videocam-outline', 'h_offer_t', 'h_offer_s', '#E9F0FB', BLUE, edit], ['chatbubble-ellipses-outline', 'h_answer_t', 'h_answer_s', '#FCF4E2', BLUE, () => { go('wisdom.more'); }], ['people-circle-outline', 'h_avail_t', 'h_avail_s', '#EEEBFA', '#5B3FB8', share]] as const).map(([icon, t1, t2, bg, ic, run]) => (
+              <Pressable key={t1} onPress={run} accessibilityRole="button" style={{ flex: 1, alignItems: 'center', padding: space.sm, paddingVertical: space.md, borderRadius: radius.card, backgroundColor: bg }}>
+                <Ionicons name={icon} size={34} color={ic} accessible={false} />
+                <Text style={{ fontSize: 15, fontWeight: '800', color: colors.ink, textAlign: 'center', marginTop: 6 }}>{w(t1)}</Text>
+                <Text style={{ fontSize: 13, color: colors.muted, textAlign: 'center', marginTop: 2 }}>{w(t2)}</Text>
+              </Pressable>
+            ))}
+          </View>
         </>
       ) : null}
 

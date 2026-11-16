@@ -2,6 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Animated, Pressable, Text, View } from 'react-native';
 import { audioAvailable } from '../agent/audio';
+import { orbHidden } from '../agent/orbHidden';
 import { agentUi, clearNotice, end, startTalk } from '../agent/live';
 import { useStore } from '../core/store';
 import { useT } from '../i18n';
@@ -22,6 +23,7 @@ export function AgentOrb() {
   const t = useT();
   const { notice, phase, mic } = useStore(agentUi);
   const [toast, setToast] = useState(false);
+  const { hide } = useStore(orbHidden);
   const on = phase !== 'idle' && mic;
   useEffect(() => {
     if (!on) return;
@@ -38,6 +40,7 @@ export function AgentOrb() {
     const h = setTimeout(clearNotice, 7000); // the reason shows for a few seconds, then goes
     return () => clearTimeout(h);
   }, [notice]);
+  if (hide && phase === 'idle' && !notice) return null; // a screen with its own big mic shows only that one
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', left: 14, bottom: '100%', marginBottom: 12, alignItems: 'flex-start', gap: 8, zIndex: 40 }}>
       {notice ? <Text accessibilityLiveRegion="polite" style={{ maxWidth: 240, fontSize: 13, color: colors.danger, fontWeight: '600', textAlign: 'left', backgroundColor: colors.card, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6, overflow: 'hidden', borderWidth: 1, borderColor: colors.line }}>{t(`common.agent.${notice}`)}</Text> : null}

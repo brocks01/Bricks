@@ -347,7 +347,7 @@ def occurrences(conn: Connection, me: str, person_id: str | None, range_start: d
         text("select * from calendar_items where person_id = :p and status = 'active'"),
         {"p": pid},
     ).all()
-    names = _added_names(conn, {str(i.created_by): str(i.created_by) for i in items})
+    names = _added_names(conn, {str(i.created_by): str(i.created_by) for i in items if i.created_by})  # an item made by the system has no author
     marks = conn.execute(
         text("select item_id, occurs_at, status from calendar_marks where item_id = any(cast(:ids as uuid[])) and occurs_at >= :s and occurs_at < :e"),
         {"ids": [str(i.id) for i in items] or ["00000000-0000-0000-0000-000000000000"], "s": range_start, "e": range_end},
