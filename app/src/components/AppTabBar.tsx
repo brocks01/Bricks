@@ -36,6 +36,7 @@ export function AppTabBar() {
   const { status, user } = useStore(sessionStore);
   const prof = useStore(profileStore);
   const insets = useSafeAreaInsets();
+  const onboarding = current?.module === 'onboarding' || ['auth.welcome', 'auth.textSize', 'auth.who'].includes(current?.key ?? '');
   // The family list is refetched once on every sign-in, and again whenever the family screens change something.
   useEffect(() => {
     if (status === 'in') void loadFamilies().catch(() => undefined);
@@ -45,7 +46,7 @@ export function AppTabBar() {
     return (
       <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
         <View style={{ paddingBottom: insets.bottom }} />
-        <AgentOrb />
+        {onboarding ? null : <AgentOrb />}
       </View>
     );
   }
@@ -54,7 +55,7 @@ export function AppTabBar() {
     return (
       <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
         <View style={{ paddingBottom: insets.bottom }} />
-        <AgentOrb />
+        {onboarding ? null : <AgentOrb />}
       </View>
     );
   }

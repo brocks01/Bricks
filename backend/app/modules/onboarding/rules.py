@@ -54,8 +54,8 @@ SECTIONS = [
     {"id": "basics", "title": "About you", "required": True, "roles": None, "questions": [
         Q("display_name", "What should we call you?", "text", required=True),
         Q("language", "Which language do you want to use?", "choice", ["en", "hi", "bn", "ta", "zh", "ms"], required=True),
-        Q("age_band", "Which age group are you in?", "choice", ["under40", "40to59", "60plus"], required=True),
-        Q("country", "Which country are you in?", "choice", ["SG", "IN", "other"], required=True),
+        Q("age_band", "Which age group are you in?", "choice", ["under40", "40to59", "60plus"]),
+        Q("country", "Which country are you in?", "choice", ["SG", "IN", "other"]),
         Q("area_name", "Which area do you live in?", "text"),
         Q("spoken_languages", "Which languages do you speak?", "multi"),
         Q("gender", "Are you a man, a woman, another gender, or would you rather not say?", "choice", ["man", "woman", "other", "prefer_not_to_say"],

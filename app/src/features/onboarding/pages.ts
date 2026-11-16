@@ -1,5 +1,6 @@
 import { pageWords } from '../../i18n/words';
 import { WIZARD } from './wizardWords';
+import { REF } from './referenceWords';
 import { definePage } from '../../kit/page';
 import { ONBOARDING, START } from './words';
 
@@ -40,5 +41,5 @@ export const onboardingIndex = definePage({
     voiceNext: { kind: 'action', summary: 'Save the introduction (if any) and continue.' },
     voiceSkip: { kind: 'action', summary: 'Skip the introduction for now.' },
   },
-  strings: pageWords({ ...ONBOARDING, ...WIZARD }),
+  strings: pageWords({ ...ONBOARDING, ...WIZARD, ...REF }),
 });

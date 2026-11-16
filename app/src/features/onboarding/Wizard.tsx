@@ -1,371 +1,115 @@
-// The short, step-by-step onboarding: one question per screen, big touch cards, a progress bar, "Read it out", "Say it instead".
-// Only what Wisdom needs to start is asked here (name, age, where, what brings you, what you enjoy, consent). Everything else stays in the database and is asked later.
+// Onboarding after sign-in, screen for screen like the reference: name (step 1 of 3), where you live (2 of 3), what you enjoy (3 of 3), your voice,
+// how to remind you, welcome. Only these. Everything else Wisdom needs is asked later (by the agent or in the profile), never here.
 import { Ionicons } from '@expo/vector-icons';
 import { AudioModule, RecordingPresets, useAudioPlayer, useAudioRecorder } from 'expo-audio';
-import * as Speech from 'expo-speech';
-import { ReactNode, useEffect, useRef, useState } from 'react';
-import { Animated, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { audioAvailable } from '../../agent/audio';
-import { startTalk } from '../../agent/live';
+import { useEffect, useRef, useState } from 'react';
+import { Animated, Pressable, Text, TextInput, View } from 'react-native';
 import { api } from '../../api/client';
 import { uploadVoiceIntro } from '../../api/media';
 import { putOnboarding, skipOnboarding, type OnboardingState } from '../../api/wisdom';
-import { Button } from '../../components/ui';
 import { useStore } from '../../core/store';
-import { LANGUAGES } from '../../i18n/languages';
-import { languageStore, setLanguage } from '../../i18n/store';
 import { usePageWords } from '../../kit';
-import { prefs, setPref, type TextSize } from '../../prefs/store';
 import { sessionStore } from '../../session/store';
 import { colors, radius, space, type } from '../../theme/tokens';
-import { Collage, Confetti } from './Collage';
+import { Bar, Chip, Frame, Interest, ListCard, SayIt, grid, type Icon } from './kit';
 import { onboardingIndex as page } from './pages';
-import type { Who } from './who';
+import { whoStore } from './who';
 
-type Icon = keyof typeof Ionicons.glyphMap;
-const SPEECH_LANG: Record<string, string> = { en: 'en-GB', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-IN', zh: 'zh-CN', ms: 'ms-MY' };
-const ROLE_ICON: Record<string, Icon> = { connect: 'people-outline', share: 'bulb-outline', learn: 'school-outline', help: 'hand-left-outline', care: 'heart-outline' };
-const ROLES = ['connect', 'share', 'learn', 'help', 'care'];
+const TOWNS = ['Bishan', 'Toa Payoh', 'Ang Mo Kio', 'Tampines', 'Jurong West', 'Woodlands'];
 const INTERESTS: { key: string; icon: Icon }[] = [
-  { key: 'walking', icon: 'walk-outline' }, { key: 'taichi', icon: 'body-outline' }, { key: 'cooking', icon: 'restaurant-outline' }, { key: 'chess', icon: 'grid-outline' },
-  { key: 'music', icon: 'musical-notes-outline' }, { key: 'gardening', icon: 'flower-outline' }, { key: 'teaching', icon: 'school-outline' }, { key: 'tech', icon: 'phone-portrait-outline' },
+  { key: 'walking', icon: 'walk-outline' }, { key: 'taichi', icon: 'body-outline' }, { key: 'cooking', icon: 'restaurant-outline' }, { key: 'chess', icon: 'extension-puzzle-outline' },
+  { key: 'music', icon: 'musical-notes-outline' }, { key: 'gardening', icon: 'leaf-outline' }, { key: 'teaching', icon: 'school-outline' }, { key: 'tech', icon: 'laptop-outline' },
 ];
-const TOWNS: Record<string, string[]> = {
-  SG: ['Bishan', 'Toa Payoh', 'Ang Mo Kio', 'Tampines', 'Jurong West', 'Woodlands', 'Bedok', 'Yishun', 'Punggol', 'Clementi', 'Hougang', 'Sengkang', 'Queenstown', 'Geylang'],
-  IN: ['Delhi', 'Mumbai', 'Kolkata', 'Chennai', 'Patna', 'Bengaluru', 'Hyderabad', 'Lucknow'],
-  other: [],
-};
-
-// ---------- the frame every step sits in ----------
-function Enter({ id, children }: { id: string; children: ReactNode }) {
-  const v = useRef(new Animated.Value(0)).current;
-  useEffect(() => {
-    v.setValue(0);
-    Animated.timing(v, { toValue: 1, duration: 320, useNativeDriver: true }).start();
-  }, [id, v]);
-  return <Animated.View style={{ opacity: v, transform: [{ translateY: v.interpolate({ inputRange: [0, 1], outputRange: [16, 0] }) }] }}>{children}</Animated.View>;
-}
-
-function Frame({ id, title, hint, n, total, onBack, speak, say, primary, secondary, children, bare, top }: {
-  id: string; top?: ReactNode; title?: string; hint?: string; n?: number; total?: number; onBack?: () => void; speak?: string; say?: boolean;
-  primary?: { label: string; onPress: () => void; disabled?: boolean }; secondary?: { label: string; onPress: () => void }; children: ReactNode; bare?: boolean;
-}) {
-  const w = usePageWords(page);
-  const insets = useSafeAreaInsets();
-  const { code } = useStore(languageStore);
-  const grow = useRef(new Animated.Value(0)).current;
-  const [speaking, setSpeaking] = useState(false);
-  const frac = n && total ? n / total : 0;
-  useEffect(() => {
-    Animated.timing(grow, { toValue: frac, duration: 420, useNativeDriver: false }).start();
-  }, [frac, grow]);
-  useEffect(() => () => { void Speech.stop(); }, [id]);
-  const read = () => {
-    if (speaking) { void Speech.stop(); setSpeaking(false); return; }
-    setSpeaking(true);
-    Speech.speak([title, hint, speak].filter(Boolean).join('. '), { language: SPEECH_LANG[code] ?? 'en-GB', onDone: () => setSpeaking(false), onStopped: () => setSpeaking(false), onError: () => setSpeaking(false) });
-  };
-  return (
-    <View style={{ flex: 1, backgroundColor: colors.bg, paddingTop: insets.top }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: space.lg, paddingTop: space.md }}>
-        <Pressable onPress={read} accessibilityRole="button" accessibilityLabel={w('o_read')} style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, borderRadius: radius.pill, backgroundColor: speaking ? colors.accent : colors.card, borderWidth: 1, borderColor: speaking ? colors.accent : colors.line }}>
-          <Ionicons name={speaking ? 'stop-circle-outline' : 'volume-high-outline'} size={20} color={speaking ? colors.card : colors.ink} accessible={false} />
-          <Text style={{ fontSize: 15, fontWeight: '700', color: speaking ? colors.card : colors.ink }}>{w('o_read')}</Text>
-        </Pressable>
-        {n && total ? <Text style={[type.small, { color: colors.muted, fontWeight: '600' }]}>{w('o_stepof', { n, total })}</Text> : null}
-      </View>
-      {n && total ? (
-        <View style={{ height: 6, marginHorizontal: space.lg, marginTop: space.md, borderRadius: 3, backgroundColor: colors.line, overflow: 'hidden' }}>
-          <Animated.View style={{ height: 6, borderRadius: 3, backgroundColor: colors.accent, width: grow.interpolate({ inputRange: [0, 1], outputRange: ['0%', '100%'] }) }} />
-        </View>
-      ) : null}
-      <ScrollView style={{ flex: 1 }} keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} contentContainerStyle={{ padding: space.lg, paddingBottom: 220 }}>
-        {onBack ? (
-          <Pressable onPress={onBack} accessibilityRole="button" accessibilityLabel={w('o_back')} style={{ minHeight: 44, flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start', paddingRight: 14, marginBottom: space.sm }}>
-            <Ionicons name="chevron-back" size={22} color={colors.ink} accessible={false} />
-            <Text style={{ fontSize: 16, fontWeight: '700', color: colors.ink }}>{w('o_back')}</Text>
-          </Pressable>
-        ) : null}
-        <Enter id={id}>
-          {top}
-          {title ? <Text accessibilityRole="header" style={{ fontSize: 30, lineHeight: 36, fontWeight: '800', color: colors.ink, marginTop: bare ? 0 : space.sm }}>{title}</Text> : null}
-          {hint ? <Text style={[type.body, { color: colors.muted, marginTop: space.sm }]}>{hint}</Text> : null}
-          <View style={{ height: space.lg }} />
-          {children}
-        </Enter>
-      </ScrollView>
-      <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, paddingTop: space.md, paddingBottom: 66 + insets.bottom, gap: space.sm, backgroundColor: colors.bg }}>
-        {say ? (
-          <Pressable onPress={() => void startTalk({ mic: audioAvailable() })} accessibilityRole="button" accessibilityLabel={w('o_say')} style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 1.5, borderColor: colors.accentLine }}>
-            <Ionicons name="mic-outline" size={22} color={colors.accent} accessible={false} />
-            <Text style={{ fontSize: 17, fontWeight: '700', color: colors.accent }}>{w('o_say')}</Text>
-          </Pressable>
-        ) : null}
-        {primary ? <Button label={primary.label} onPress={primary.onPress} disabled={primary.disabled} icon="arrow-forward" /> : null}
-        {secondary ? <Button kind="plain" label={secondary.label} onPress={secondary.onPress} /> : null}
-      </View>
-    </View>
-  );
-}
-
-// ---------- the pieces ----------
-function Card({ icon, title, line, on, onPress, disabled }: { icon?: Icon; title: string; line?: string; on?: boolean; onPress: () => void; disabled?: boolean }) {
-  const s = useRef(new Animated.Value(1)).current;
-  const to = (v: number) => Animated.spring(s, { toValue: v, useNativeDriver: true, speed: 40, bounciness: 6 }).start();
-  return (
-    <Animated.View style={{ transform: [{ scale: s }], marginBottom: space.md, opacity: disabled ? 0.5 : 1 }}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => to(0.97)}
-        onPressOut={() => to(1)}
-        disabled={disabled}
-        accessibilityRole="radio"
-        accessibilityState={{ selected: !!on }}
-        style={{ minHeight: 84, flexDirection: 'row', alignItems: 'center', gap: space.md, padding: space.md, borderRadius: radius.card, backgroundColor: on ? colors.accentSoft : colors.card, borderWidth: 2, borderColor: on ? colors.accent : colors.line }}
-      >
-        {icon ? (
-          <View style={{ width: 52, height: 52, borderRadius: 14, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.accent : colors.accentSoft }}>
-            <Ionicons name={icon} size={28} color={on ? colors.card : colors.accent} accessible={false} />
-          </View>
-        ) : null}
-        <View style={{ flex: 1 }}>
-          <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{title}</Text>
-          {line ? <Text style={[type.small, { color: colors.muted, marginTop: 2 }]}>{line}</Text> : null}
-        </View>
-        <Ionicons name={on ? 'checkmark-circle' : 'ellipse-outline'} size={28} color={on ? colors.accent : colors.line} accessible={false} />
-      </Pressable>
-    </Animated.View>
-  );
-}
-
-function Tile({ label, icon, on, onPress }: { label: string; icon?: Icon; on: boolean; onPress: () => void }) {
-  const s = useRef(new Animated.Value(1)).current;
-  const to = (v: number) => Animated.spring(s, { toValue: v, useNativeDriver: true, speed: 40, bounciness: 8 }).start();
-  return (
-    <Animated.View style={{ flexBasis: '48%', flexGrow: 1, transform: [{ scale: s }] }}>
-      <Pressable
-        onPress={onPress}
-        onPressIn={() => to(0.95)}
-        onPressOut={() => to(1)}
-        accessibilityRole="checkbox"
-        accessibilityState={{ checked: on }}
-        style={{ minHeight: icon ? 84 : 60, paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: radius.card, alignItems: 'center', justifyContent: 'center', gap: 4, backgroundColor: on ? colors.accent : colors.card, borderWidth: 2, borderColor: on ? colors.accent : colors.line }}
-      >
-        {icon ? <Ionicons name={icon} size={28} color={on ? colors.card : colors.accent} accessible={false} /> : null}
-        <Text style={{ fontSize: 17, fontWeight: '700', color: on ? colors.card : colors.ink, textAlign: 'center' }}>{label}</Text>
-        {on ? <Ionicons name="checkmark-circle" size={18} color={colors.card} style={{ position: 'absolute', top: 8, right: 8 }} accessible={false} /> : null}
-      </Pressable>
-    </Animated.View>
-  );
-}
-
-const grid = { flexDirection: 'row' as const, flexWrap: 'wrap' as const, gap: space.sm };
-
-// ---------- the flow ----------
-type StepId = 'lang' | 'who' | 'size' | 'name' | 'age' | 'where' | 'roles' | 'enjoy' | 'voice' | 'agree' | 'welcome';
-const LANG_KEY = 'wisdom.lang.asked';
-const VOICE_KEY = 'wisdom.voice.asked';
+type StepId = 'name' | 'where' | 'enjoy' | 'voice' | 'reminders' | 'welcome';
+const ORDER: StepId[] = ['name', 'where', 'enjoy', 'voice', 'reminders', 'welcome'];
 const ans = (st: OnboardingState, sec: string, key: string): unknown => st.sections.find((s) => s.id === sec)?.questions.find((q) => q.key === key)?.answer;
-const SIZE_KEY = 'wisdom.size.asked';
-async function store() {
-  try { return (await import('@react-native-async-storage/async-storage')).default; } catch { return null; }
-}
 
-export function Wizard({ state, who, onWho, onState, finish, more }: {
-  state: OnboardingState; who: Who | null; onWho: (w: Who) => void; onState: (s: OnboardingState) => void; finish: () => Promise<void>; more: () => void;
-}) {
+export function Wizard({ state, onState, finish }: { state: OnboardingState; onState: (s: OnboardingState) => void; finish: () => Promise<void> }) {
   const w = usePageWords(page);
   const { user } = useStore(sessionStore);
-  const { textSize } = useStore(prefs);
-  const [plan, setPlan] = useState<StepId[] | null>(null);
   const [i, setI] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(String(ans(state, 'basics', 'display_name') ?? user?.display_name ?? ''));
-  const [age, setAge] = useState(String(ans(state, 'basics', 'age_band') ?? ''));
-  const [country, setCountry] = useState(String(ans(state, 'basics', 'country') ?? 'SG'));
   const [area, setArea] = useState(String(ans(state, 'basics', 'area_name') ?? ''));
   const [typed, setTyped] = useState(false);
-  const [roles, setRoles] = useState<string[]>(state.roles ?? []);
   const [likes, setLikes] = useState<string[]>(Array.isArray(ans(state, 'interests', 'interests')) ? (ans(state, 'interests', 'interests') as string[]) : []);
-  const [privacy, setPrivacy] = useState(ans(state, 'consent', 'privacy') === true);
-  const [terms, setTerms] = useState(ans(state, 'consent', 'terms') === true);
 
+  // What the person is here for is set quietly from "who is setting up" (the first screens), so no screen has to ask it.
   useEffect(() => {
-    let alive = true;
-    void (async () => {
-      const asked = !!(await (await store())?.getItem(SIZE_KEY).catch(() => null));
-      const secDone = (id: string) => state.sections.find((s) => s.id === id)?.done || state.sections.find((s) => s.id === id)?.skipped;
-      const langAsked = !!(await (await store())?.getItem(LANG_KEY).catch(() => null));
-      const voiceAsked = !!(await (await store())?.getItem(VOICE_KEY).catch(() => null));
-      const p: StepId[] = [];
-      if (!langAsked) p.push('lang');
-      if (who === null) p.push('who');
-      if (!asked) p.push('size');
-      if (!ans(state, 'basics', 'display_name')) p.push('name');
-      if (!ans(state, 'basics', 'age_band')) p.push('age');
-      if (!ans(state, 'basics', 'country') || !ans(state, 'basics', 'area_name')) p.push('where');
-      if (!state.roles?.length) p.push('roles');
-      if (!secDone('interests')) p.push('enjoy');
-      if (!voiceAsked) p.push('voice');
-      if (!secDone('consent')) p.push('agree');
-      if (alive) setPlan(p);
-    })();
-    return () => { alive = false; };
+    if (state.roles?.length) return;
+    const who = whoStore.get().who;
+    void putOnboarding('purpose', { roles: who === 'family' ? ['care'] : ['connect'] }).then(onState).catch(() => undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!plan) return <Frame id="load" bare>{null}</Frame>;
-  const total = plan.length;
-  const step: StepId = plan[i] ?? 'welcome';
-  const advance = () => { setError(null); setI((x) => x + 1); };
+  const step = ORDER[i];
+  const next = () => { setError(null); setI((x) => Math.min(x + 1, ORDER.length - 1)); };
   const back = i > 0 && step !== 'welcome' ? () => { setError(null); setI((x) => x - 1); } : undefined;
-  const run = async (fn: () => Promise<OnboardingState | void>, then?: () => void) => {
+  const run = async (fn: () => Promise<OnboardingState | void>) => {
     setBusy(true); setError(null);
-    try { const s = await fn(); if (s) onState(s); (then ?? advance)(); } catch { setError(w('failed')); } finally { setBusy(false); }
+    try { const s = await fn(); if (s) onState(s); next(); } catch { setError(w('failed')); } finally { setBusy(false); }
   };
-  const err = error ? <Text style={{ color: colors.danger, fontWeight: '600', marginBottom: space.sm }}>{error}</Text> : null;
-  const n = Math.min(i + 1, total);
-  const common = { n, total, onBack: back, id: step };
+  const err = error ? <Text style={{ color: colors.danger, fontWeight: '600', marginTop: space.sm }}>{error}</Text> : null;
+  const common = { onBack: back, backLabel: w('o_back') };
 
-  if (step === 'lang') {
-    const done = async () => { try { await (await store())?.setItem(LANG_KEY, '1'); } catch { /* asked again next time */ } advance(); };
-    return <LangStep common={common} onNext={() => void done()} />;
-  }
-  if (step === 'voice') {
-    const done = async () => { try { await (await store())?.setItem(VOICE_KEY, '1'); } catch { /* asked again next time */ } advance(); };
-    return <VoiceStep common={common} onDone={() => void done()} />;
-  }
-  if (step === 'who') {
-    const pick = (x: Who) => { onWho(x); setTimeout(advance, 220); };
-    return (
-      <Frame {...common} top={plan.includes('lang') ? undefined : <Collage />} title={w('who_intro')} speak={`${w('who_myself')}. ${w('who_family')}`} say>
-        <Card icon="person-outline" title={w('who_myself')} line={w('who_myself_line')} on={who === 'myself'} onPress={() => pick('myself')} />
-        <Card icon="people-outline" title={w('who_family')} line={w('who_family_line')} on={who === 'family'} onPress={() => pick('family')} />
-        <Card icon="business-outline" title={w('who_community')} line={w('comingSoon')} onPress={() => undefined} disabled />
-      </Frame>
-    );
-  }
-  if (step === 'size') {
-    const order: { v: TextSize; t: string; l: string }[] = [{ v: 'normal', t: 'o_size_small', l: 'o_size_small_l' }, { v: 'large', t: 'o_size_normal', l: 'o_size_normal_l' }, { v: 'larger', t: 'o_size_large', l: 'o_size_large_l' }];
-    const done = async () => { try { await (await store())?.setItem(SIZE_KEY, '1'); } catch { /* the device keeps asking next time */ } advance(); };
-    return (
-      <Frame {...common} title={w('o_size_t')} hint={w('o_size_h')} speak={order.map((o) => w(o.t)).join('. ')} primary={{ label: w('o_next'), onPress: () => void done() }}>
-        {order.map((o) => <Card key={o.v} title={w(o.t)} line={w(o.l)} on={textSize === o.v} onPress={() => setPref({ textSize: o.v })} />)}
-      </Frame>
-    );
-  }
   if (step === 'name') {
     return (
-      <Frame {...common} title={w('o_name_t')} hint={w('o_name_h')} say primary={{ label: w('o_next'), onPress: () => void run(() => putOnboarding('basics', { display_name: name.trim() })), disabled: busy || name.trim().length < 1 }}>
-        <TextInput
-          value={name}
-          onChangeText={setName}
-          onSubmitEditing={() => name.trim() && void run(() => putOnboarding('basics', { display_name: name.trim() }))}
-          placeholder={w('o_name_f')}
-          placeholderTextColor={colors.muted}
-          accessibilityLabel={w('o_name_f')}
-          autoCapitalize="words"
-          autoFocus
-          style={{ minHeight: 64, fontSize: 24, fontWeight: '600', color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 2, borderColor: name ? colors.accent : colors.line, outlineStyle: 'none' } as never}
-        />
-        {err}
-      </Frame>
-    );
-  }
-  if (step === 'age') {
-    const opts: [string, string, Icon][] = [['under40', 'o_age_u40', 'person-outline'], ['40to59', 'o_age_4059', 'person-outline'], ['60plus', 'o_age_60', 'person-outline']];
-    const pick = (v: string) => { setAge(v); void run(() => putOnboarding('basics', { age_band: v }), () => setTimeout(advance, 160)); };
-    return (
-      <Frame {...common} title={w('o_age_t')} speak={opts.map((o) => w(o[1])).join('. ')} say>
-        {opts.map(([v, k, ic]) => <Card key={v} icon={ic} title={w(k)} on={age === v} onPress={() => pick(v)} />)}
+      <Frame {...common} step={w('o_step3', { n: 1 })} title={w('o_name_t')} primary={{ label: w('o_next'), onPress: () => void run(() => putOnboarding('basics', { display_name: name.trim() })), disabled: busy || !name.trim() }}>
+        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink, marginBottom: space.sm }}>{w('o_name_f')}</Text>
+        <TextInput value={name} onChangeText={setName} onSubmitEditing={() => name.trim() && void run(() => putOnboarding('basics', { display_name: name.trim() }))} accessibilityLabel={w('o_name_f')} autoCapitalize="words"
+          style={{ minHeight: 60, fontSize: 22, fontWeight: '600', color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
+        <SayIt label={w('o_say')} />
         {err}
       </Frame>
     );
   }
   if (step === 'where') {
-    const countries: [string, string][] = [['SG', 'o_sg'], ['IN', 'o_in'], ['other', 'o_other']];
-    const save = () => run(() => putOnboarding('basics', { country, ...(area.trim() ? { area_name: area.trim() } : {}) }));
-    const towns = TOWNS[country] ?? [];
+    const save = () => run(() => (area.trim() ? putOnboarding('basics', { country: typed ? 'other' : 'SG', area_name: area.trim() }) : Promise.resolve()));
     return (
-      <Frame {...common} title={w('o_where_t')} hint={w('o_where_h')} say primary={{ label: w('o_next'), onPress: () => void save(), disabled: busy }} secondary={{ label: w('o_skip'), onPress: () => void run(() => putOnboarding('basics', { country })) }}>
-        <View style={{ flexDirection: 'row', gap: space.sm, marginBottom: space.md }}>
-          {countries.map(([c, k]) => {
-            const on = country === c;
-            return (
-              <Pressable key={c} onPress={() => { setCountry(c); setArea(''); setTyped(c === 'other'); }} accessibilityRole="radio" accessibilityState={{ selected: on }} style={{ flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: on ? colors.accent : colors.card, borderWidth: 1.5, borderColor: on ? colors.accent : colors.line }}>
-                <Text style={{ fontSize: 15, fontWeight: '700', color: on ? colors.card : colors.ink }}>{w(k)}</Text>
-              </Pressable>
-            );
-          })}
-        </View>
+      <Frame {...common} step={w('o_step3', { n: 2 })} title={w('o_where_t')} primary={{ label: w('o_next'), onPress: () => void save(), disabled: busy }}>
         <View style={grid}>
-          {towns.map((t) => <Tile key={t} label={t} on={area === t && !typed} onPress={() => { setArea(t); setTyped(false); }} />)}
-          {country !== 'other' ? <Tile label={w('o_other')} on={typed} onPress={() => { setTyped(true); setArea(''); }} /> : null}
+          {TOWNS.map((t) => <Chip key={t} label={t} on={area === t && !typed} onPress={() => { setArea(t); setTyped(false); }} />)}
+          <Chip full label={w('o_other')} on={typed} onPress={() => { setTyped(true); setArea(''); }} />
         </View>
-        {typed || country === 'other' ? (
+        {typed ? (
           <TextInput value={area} onChangeText={setArea} placeholder={w('o_town_f')} placeholderTextColor={colors.muted} accessibilityLabel={w('o_town_f')} autoFocus
-            style={{ marginTop: space.md, minHeight: 56, fontSize: 19, color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
+            style={{ marginTop: space.md, minHeight: 60, fontSize: 19, color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
         ) : null}
-        {err}
-      </Frame>
-    );
-  }
-  if (step === 'roles') {
-    const toggle = (r: string) => setRoles((l) => (l.includes(r) ? l.filter((x) => x !== r) : [...l, r]));
-    return (
-      <Frame {...common} title={w('o_roles_t')} hint={w('o_pick_many')} speak={ROLES.map((r) => w(`o_r_${r}`)).join('. ')} say primary={{ label: w('o_next'), onPress: () => void run(() => putOnboarding('purpose', { roles })), disabled: busy || roles.length === 0 }}>
-        {ROLES.map((r) => <Card key={r} icon={ROLE_ICON[r]} title={w(`o_r_${r}`)} on={roles.includes(r)} onPress={() => toggle(r)} />)}
+        <SayIt label={w('o_say')} />
         {err}
       </Frame>
     );
   }
   if (step === 'enjoy') {
     const toggle = (k: string) => setLikes((l) => (l.includes(k) ? l.filter((x) => x !== k) : [...l, k]));
+    const save = () => run(() => putOnboarding('interests', { interests: likes }));
     return (
-      <Frame {...common} title={w('o_enjoy_t')} hint={w('o_pick_many')} speak={INTERESTS.map((x) => w(`interest_${x.key}`)).join('. ')} say
-        primary={{ label: w('o_next'), onPress: () => void run(() => (likes.length ? putOnboarding('interests', { interests: likes }) : skipOnboarding('interests'))), disabled: busy }}
-        secondary={{ label: w('o_skip'), onPress: () => void run(() => skipOnboarding('interests')) }}>
-        <View style={grid}>{INTERESTS.map((x) => <Tile key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggle(x.key)} />)}</View>
+      <Frame {...common} step={w('o_step3', { n: 3 })} title={w('o_enjoy_t')} hint={w('o_pick_many')}
+        primary={likes.length ? { label: w('o_next'), onPress: () => void save(), disabled: busy } : undefined} secondary={likes.length ? undefined : { label: w('o_skip'), onPress: () => void run(() => skipOnboarding('interests')) }}>
+        <View style={grid}>{INTERESTS.map((x) => <Interest key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggle(x.key)} />)}</View>
+        <SayIt label={w('o_say')} />
         {err}
       </Frame>
     );
   }
-  if (step === 'agree') {
-    const both = privacy && terms;
+  if (step === 'voice') return <Voice common={common} onDone={next} />;
+  if (step === 'reminders') {
+    const pick = (c: string) => void run(() => putOnboarding('channels', { preferred_channel: c }));
     return (
-      <Frame {...common} title={w('o_agree_t')} hint={w('o_agree_h')} speak={`${w('o_agree_privacy')}. ${w('o_agree_terms')}`}
-        primary={{ label: w('o_next'), onPress: () => void run(() => putOnboarding('consent', { privacy: true, terms: true })), disabled: busy || !both }}>
-        <Card icon="shield-checkmark-outline" title={w('o_agree_privacy')} on={privacy} onPress={() => setPrivacy((v) => !v)} />
-        <Card icon="document-text-outline" title={w('o_agree_terms')} on={terms} onPress={() => setTerms((v) => !v)} />
+      <Frame {...common} title={w('o_rem_t')} secondary={{ label: w('o_later'), onPress: () => void run(() => skipOnboarding('channels')) }}>
+        <ListCard icon="notifications-outline" title={w('o_rem_app')} line={w('o_rem_app_l')} onPress={() => pick('app')} />
+        <ListCard icon="logo-whatsapp" title={w('o_rem_wa')} line={w('o_rem_wa_l')} onPress={() => pick('whatsapp')} />
+        <ListCard icon="call-outline" title={w('o_rem_call')} line={w('o_rem_call_l')} onPress={() => pick('call')} />
         {err}
       </Frame>
     );
   }
-  return <Welcome name={name.trim() || user?.display_name || ''} finish={finish} more={more} />;
+  return <Welcome name={name.trim() || user?.display_name || ''} finish={async () => { try { await putOnboarding('consent', { privacy: true, terms: true }); } catch { /* the server asks again at the next start */ } await finish(); }} />;
 }
 
-// ---------- step: choose your language (big buttons, the app changes the moment one is tapped) ----------
-const LANG_LINES = ['Choose your language', 'अपनी भाषा चुनें', 'আপনার ভাষা বেছে নিন', 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', '请选择语言', 'Pilih bahasa anda'];
-type CommonProps = { n: number; total: number; onBack?: () => void; id: string };
-function LangStep({ common, onNext }: { common: CommonProps; onNext: () => void }) {
-  const w = usePageWords(page);
-  const { code } = useStore(languageStore);
-  return (
-    <Frame {...common} top={<Collage />} title={w('o_lang_t')} speak={LANGUAGES.map((l) => l.native).join('. ')} primary={{ label: w('o_next'), onPress: onNext }}>
-      <View style={{ marginTop: -space.sm, marginBottom: space.md }}>
-        {LANG_LINES.filter((_, i) => LANGUAGES[i].code !== code).map((t) => <Text key={t} style={[type.small, { color: colors.muted }]}>{t}</Text>)}
-      </View>
-      <View style={grid}>
-        {LANGUAGES.map((l) => <Tile key={l.code} label={l.native} on={code === l.code} onPress={() => void setLanguage(l.code)} />)}
-      </View>
-    </Frame>
-  );
-}
-
-// ---------- step: your voice (optional, ten seconds) ----------
-function VoiceStep({ common, onDone }: { common: CommonProps; onDone: () => void }) {
+// ---------- your voice: record up to ten seconds, or skip ----------
+function Voice({ common, onDone }: { common: { onBack?: () => void; backLabel: string }; onDone: () => void }) {
   const w = usePageWords(page);
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [uri, setUri] = useState<string | null>(null);
@@ -400,7 +144,7 @@ function VoiceStep({ common, onDone }: { common: CommonProps; onDone: () => void
     setUri(recorder.uri ?? null);
     setRecording(false);
   };
-  const next = async () => {
+  const save = async () => {
     if (uri && !saving) {
       setSaving(true);
       try {
@@ -411,46 +155,39 @@ function VoiceStep({ common, onDone }: { common: CommonProps; onDone: () => void
     onDone();
   };
   return (
-    <Frame {...common} title={w('voice_heading')} hint={w('voice_intro')} primary={{ label: saving ? w('voice_saving') : w('o_next'), onPress: () => void next(), disabled: saving || recording }} secondary={{ label: w('o_skip'), onPress: onDone }}>
-      <View style={{ alignItems: 'center', gap: space.md, paddingVertical: space.lg }}>
-        <Pressable onPress={() => void (recording ? stop() : start())} accessibilityRole="button" accessibilityLabel={recording ? w('voice_stop') : w('voice_record')}
-          style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: recording ? colors.danger : colors.accent, alignItems: 'center', justifyContent: 'center' }}>
-          <Ionicons name={recording ? 'stop' : 'mic'} size={48} color={colors.card} accessible={false} />
-        </Pressable>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: colors.ink }}>{recording ? String(10 - seconds) : uri ? w('voice_recorded') : w('voice_prompt')}</Text>
-        {uri && !recording ? (
-          <View style={{ flexDirection: 'row', gap: space.lg }}>
-            <Pressable onPress={() => { player.seekTo(0); player.play(); }} accessibilityRole="button" style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Ionicons name="play" size={22} color={colors.accent} accessible={false} />
-              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.accent }}>{w('voice_play')}</Text>
-            </Pressable>
-            <Pressable onPress={() => { setUri(null); setMessage(null); }} accessibilityRole="button" style={{ minHeight: 48, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-              <Ionicons name="refresh" size={22} color={colors.muted} accessible={false} />
-              <Text style={{ fontSize: 17, fontWeight: '700', color: colors.muted }}>{w('voice_again')}</Text>
-            </Pressable>
-          </View>
-        ) : null}
-        {message ? <Text style={{ color: colors.danger, fontSize: 16, textAlign: 'center' }}>{message}</Text> : null}
+    <Frame {...common} inlineTitle title={w('o_voice_t')} primary={uri && !recording ? { label: saving ? w('voice_saving') : w('o_next'), onPress: () => void save(), disabled: saving } : undefined} secondary={uri && !recording ? undefined : { label: w('o_skip'), onPress: onDone }}>
+      <View style={{ padding: space.lg, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
+        <Text style={{ fontSize: 22, fontWeight: '800', color: colors.ink }}>{w('o_voice_card')}</Text>
+        <Text style={[type.body, { color: colors.muted, marginTop: space.sm }]}>{w('o_voice_ex')}</Text>
       </View>
+      <View style={{ height: space.md }} />
+      <Bar icon={recording ? 'stop' : 'mic-outline'} label={recording ? `${w('voice_stop')}  ${10 - seconds}` : uri ? w('voice_again') : w('voice_record')} onPress={() => void (recording ? stop() : start())} />
+      {uri && !recording ? (
+        <Pressable onPress={() => { player.seekTo(0); player.play(); }} accessibilityRole="button" style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: space.sm }}>
+          <Ionicons name="play" size={22} color={colors.accent} accessible={false} />
+          <Text style={{ fontSize: 18, fontWeight: '800', color: colors.accent }}>{w('voice_play')}</Text>
+        </Pressable>
+      ) : null}
+      <Text style={[type.body, { color: colors.muted, marginTop: space.md }]}>{message ?? w('o_voice_note')}</Text>
     </Frame>
   );
 }
 
-function Welcome({ name, finish, more }: { name: string; finish: () => Promise<void>; more: () => void }) {
+// ---------- welcome ----------
+function Welcome({ name, finish }: { name: string; finish: () => Promise<void> }) {
   const w = usePageWords(page);
-  const pop = useRef(new Animated.Value(0)).current;
+  const pop = useRef(new Animated.Value(0.6)).current;
   const [busy, setBusy] = useState(false);
-  useEffect(() => { Animated.spring(pop, { toValue: 1, useNativeDriver: true, speed: 8, bounciness: 14 }).start(); }, [pop]);
+  useEffect(() => { Animated.spring(pop, { toValue: 1, useNativeDriver: true, speed: 10, bounciness: 10 }).start(); }, [pop]);
   return (
-    <Frame id="welcome" bare top={<Confetti />} speak={`${w('o_welcome', { name })}. ${w('o_welcome_l')}`}
-      primary={{ label: w('o_home'), onPress: () => { setBusy(true); void finish().finally(() => setBusy(false)); }, disabled: busy }} secondary={{ label: w('o_more'), onPress: more }}>
+    <Frame primary={{ label: w('o_home'), icon: 'home-outline', onPress: () => { setBusy(true); void finish().finally(() => setBusy(false)); }, disabled: busy }}>
       <View style={{ alignItems: 'center', paddingTop: space.xl * 2 }}>
-        <Animated.View style={{ width: 120, height: 120, borderRadius: 60, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pop }] }}>
-          <Ionicons name="checkmark" size={72} color={colors.card} accessible={false} />
+        <Animated.View style={{ width: 104, height: 104, borderRadius: 52, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pop }] }}>
+          <Ionicons name="checkmark" size={64} color={colors.card} accessible={false} />
         </Animated.View>
         <Text accessibilityRole="header" style={{ fontSize: 32, fontWeight: '800', color: colors.ink, textAlign: 'center', marginTop: space.xl }}>{w('o_welcome', { name })}</Text>
-        <Text style={[type.body, { color: colors.muted, textAlign: 'center', marginTop: space.sm }]}>{w('o_welcome_l')}</Text>
-        <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginTop: space.md }]}>{w('o_later_note')}</Text>
+        <Text style={[type.body, { color: colors.muted, textAlign: 'center', marginTop: space.sm, fontSize: 19 }]}>{w('o_welcome_ref')}</Text>
+        <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginTop: space.xl }]}>{w('o_consent_note')}</Text>
       </View>
     </Frame>
   );

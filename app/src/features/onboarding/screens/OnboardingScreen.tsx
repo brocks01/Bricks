@@ -248,7 +248,6 @@ export default function OnboardingScreen() {
   const [values, setValues] = useState<Values>({});
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [longForm, setLongForm] = useState(false);
   const [whoReady, setWhoReady] = useState(false);
   const [whoChosen, setWhoChosen] = useState<Who | null>(null);
   const [voiceDone, setVoiceDone] = useState(false);
@@ -303,8 +302,8 @@ export default function OnboardingScreen() {
   if (!whoReady) return <Screen title={w('heading')} subtitle={w('loading')}><ErrorText>{error}</ErrorText></Screen>;
   if (!state) return <Screen title={w('heading')} subtitle={w('loading')}><ErrorText>{error}</ErrorText></Screen>;
   // The first time: a short, one-question-at-a-time flow. The rest is asked later ("Tell us a little more" opens the longer form below).
-  if (!state.completed && !longForm) {
-    return <Wizard state={state} who={whoChosen} onWho={(x) => { setWho(x); setWhoChosen(x); }} onState={open} finish={finish} more={() => setLongForm(true)} />;
+  if (!state.completed) {
+    return <Wizard state={state} onState={open} finish={finish} />;
   }
   if (whoChosen === null) {
     return <WhoStep w={w} onPicked={(who) => { setWho(who); setWhoChosen(who); }} />;

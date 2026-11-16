@@ -6,7 +6,7 @@ import { useLanguage, useT } from '../../../../i18n';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { errorWords } from '../../../../session/errors';
-import { googleSignIn, loadProviders, requestCode, type Providers } from '../../../../session/store';
+import { googleSignIn, loadProviders, requestCode, startDemo, type Providers } from '../../../../session/store';
 import { colors, space, type } from '../../../../theme/tokens';
 import { authSignIn as page } from './page';
 
@@ -41,6 +41,13 @@ export default function SignIn() {
     }
   };
 
+  // Prototype: one tap makes a throwaway account with a random name and goes in (the app then moves on by itself).
+  const demo = async () => {
+    if (busy) return;
+    setBusy(true);
+    try { await startDemo(); } catch { setBusy(false); }
+  };
+  useAction(page, 'startDemo', () => void demo());
   useField(page, 'email', email, (v) => setEmail(String(v)));
   useAction(page, 'sendCode', send);
   // What the agent sees before sign-in: the address the person typed and the ways in. It can explain
@@ -80,6 +87,7 @@ export default function SignIn() {
       </El>
       <ErrorText>{error}</ErrorText>
       <El page={page} id="sendCode"><Button label={w('sendCode')} onPress={() => void send()} disabled={busy} /></El>
+      <El page={page} id="startDemo"><Button kind="plain" icon="flash-outline" label={w('startDemo')} onPress={() => void demo()} disabled={busy} /></El>
 
       <Text style={[type.small, { color: colors.muted, textAlign: 'center', marginVertical: space.lg }]}>{w('or')}</Text>
 
