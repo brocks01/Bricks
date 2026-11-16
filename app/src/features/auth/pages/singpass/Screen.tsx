@@ -1,7 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
-import { El, usePageWords } from '../../../../kit';
+import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { loadDemoProfiles, signInAsDemo, startDemo, type DemoProfile } from '../../../../session/store';
 import { colors, radius, space, tints, type } from '../../../../theme/tokens';
@@ -33,6 +33,12 @@ export default function SingpassMock() {
     return [w(`sp_r_${role}`), p.age_band ? w(AGE[p.age_band] ?? 'o_age_60') : '', p.area ?? ''].filter(Boolean).join(' · ');
   };
 
+  usePageData(page, profiles ? {
+    values: [{ label: w('heading'), value: w('sp_demo') }],
+    images: [],
+    lists: [{ label: w('heading'), items: profiles.map((p, k) => ({ label: p.name, detail: blurb(p), actions: [{ id: `profile${k + 1}`, label: p.name, run: () => void enter(() => signInAsDemo(p.id)) }] })) }],
+    actions: [{ id: 'newProfile', label: w('sp_new'), run: () => void enter(startDemo) }],
+  } : null);
   return (
     <Frame onBack={() => go('auth.signIn')} backLabel={w('o_back')} top={
       <View style={{ alignItems: 'center', paddingVertical: space.lg }}>

@@ -2,7 +2,7 @@ import { Text, View } from 'react-native';
 import { useStore } from '../../../../core/store';
 import { LANGUAGES } from '../../../../i18n/languages';
 import { languageStore, setLanguage } from '../../../../i18n/store';
-import { useAction, usePageWords } from '../../../../kit';
+import { usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, space, type } from '../../../../theme/tokens';
 import { Chip, Collage, Frame, grid } from '../../../onboarding/kit';
@@ -15,7 +15,15 @@ export default function Welcome() {
   const w = usePageWords(page);
   const go = useNavigate();
   const { code } = useStore(languageStore);
-  useAction(page, 'start', () => go('auth.textSize'));
+  usePageData(page, {
+    values: [{ label: w('heading'), value: LANGUAGES.find((l) => l.code === code)?.native ?? '' }],
+    images: [],
+    lists: [],
+    actions: [
+      ...LANGUAGES.map((l) => ({ id: `lang${l.code.charAt(0).toUpperCase()}${l.code.slice(1)}`, label: l.native, run: () => { void setLanguage(l.code); } })),
+      { id: 'start', label: w('o_next'), run: () => { go('auth.textSize'); } },
+    ],
+  });
   return (
     <Frame top={<Collage />} primary={{ label: w('o_next'), onPress: () => go('auth.textSize') }}>
       <Text accessibilityRole="header" style={{ fontSize: 36, fontWeight: '800', color: colors.ink }}>Wisdom</Text>

@@ -39,7 +39,7 @@ export function Frame({ title, inlineTitle, step, hint, onBack, backLabel, prima
         {children}
       </ScrollView>
       {primary || secondary ? (
-        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, paddingTop: space.sm, paddingBottom: space.md + insets.bottom, gap: space.sm, backgroundColor: colors.bg }}>
+        <View pointerEvents="box-none" style={{ position: 'absolute', left: 0, right: 0, bottom: 0, paddingHorizontal: space.lg, paddingTop: space.sm, paddingBottom: 66 + insets.bottom, gap: space.sm, backgroundColor: colors.bg }}>
           {primary ? <Bar label={primary.label} icon={primary.icon} onPress={primary.onPress} disabled={primary.disabled} /> : null}
           {secondary ? <Bar light label={secondary.label} onPress={secondary.onPress} /> : null}
         </View>

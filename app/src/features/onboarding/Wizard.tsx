@@ -1,5 +1,7 @@
 // Onboarding after sign-in, screen for screen like the reference: name (step 1 of 3), where you live (2 of 3), what you enjoy (3 of 3), your voice,
 // how to remind you, welcome. Only these. Everything else Wisdom needs is asked later (by the agent or in the profile), never here.
+// Every step also publishes what it shows to the agent (usePageData / useField), so the floating mic can read the page, fill the name, pick an option
+// and press Next in any language, on the front end only, exactly as a person's own taps would.
 import { Ionicons } from '@expo/vector-icons';
 import { AudioModule, RecordingPresets, useAudioPlayer, useAudioRecorder } from 'expo-audio';
 import { useEffect, useRef, useState } from 'react';
@@ -8,10 +10,11 @@ import { api } from '../../api/client';
 import { uploadVoiceIntro } from '../../api/media';
 import { putOnboarding, skipOnboarding, type OnboardingState } from '../../api/wisdom';
 import { useStore } from '../../core/store';
-import { usePageWords } from '../../kit';
+import { useField, usePageData, usePageWords } from '../../kit';
+import type { PageDataAction } from '../../kit';
 import { sessionStore } from '../../session/store';
 import { colors, radius, space, type } from '../../theme/tokens';
-import { Bar, Chip, Frame, Interest, ListCard, SayIt, grid, type Icon } from './kit';
+import { Bar, Chip, Frame, Interest, ListCard, grid, type Icon } from './kit';
 import { onboardingIndex as page } from './pages';
 import { onboardingLocal } from './state';
 import { whoStore } from './who';
@@ -24,6 +27,7 @@ const INTERESTS: { key: string; icon: Icon }[] = [
 type StepId = 'name' | 'where' | 'enjoy' | 'voice' | 'reminders' | 'welcome';
 const ORDER: StepId[] = ['name', 'where', 'enjoy', 'voice', 'reminders', 'welcome'];
 const ans = (st: OnboardingState, sec: string, key: string): unknown => st.sections.find((s) => s.id === sec)?.questions.find((q) => q.key === key)?.answer;
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 export function Wizard({ state, onState, finish }: { state: OnboardingState; onState: (s: OnboardingState) => void; finish: () => Promise<void> }) {
   const w = usePageWords(page);
@@ -51,24 +55,64 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
     setBusy(true); setError(null);
     try { const s = await fn(); if (s) onState(s); next(); } catch { setError(w('failed')); } finally { setBusy(false); }
   };
+
+  // The one set of handlers: the buttons below and the agent both call exactly these.
+  const saveName = () => run(() => putOnboarding('basics', { display_name: name.trim() }));
+  const saveWhere = () => run(() => putOnboarding('basics', { country: typed ? 'other' : 'SG', ...(area.trim() ? { area_name: area.trim() } : {}) }));
+  const toggleLike = (k: string) => setLikes((l) => (l.includes(k) ? l.filter((x) => x !== k) : [...l, k]));
+  const saveLikes = () => run(() => putOnboarding('interests', { interests: likes }));
+  const skipLikes = () => run(() => skipOnboarding('interests'));
+  const pickRemind = (c: string) => run(() => putOnboarding('channels', { preferred_channel: c }));
+  const laterRemind = () => run(() => skipOnboarding('channels'));
+  const goBack = back ? () => back() : undefined;
+
+  // What the agent can read and press on this step.
+  const nextAction = (run_: () => void): PageDataAction => ({ id: 'next', label: w('o_next'), run: run_ });
+  const stepActions: PageDataAction[] =
+    step === 'name' ? [nextAction(() => name.trim() && void saveName())]
+    : step === 'where' ? [
+        ...TOWNS.map((t, k) => ({ id: `town${k + 1}`, label: t, run: () => { setArea(t); setTyped(false); } })),
+        { id: 'townOther', label: w('o_other'), run: () => { setTyped(true); setArea(''); } },
+        nextAction(() => void saveWhere()),
+      ]
+    : step === 'enjoy' ? [
+        ...INTERESTS.map((x) => ({ id: `like${cap(x.key)}`, label: `${w(`interest_${x.key}`)}${likes.includes(x.key) ? ' ✓' : ''}`, run: () => toggleLike(x.key) })),
+        likes.length ? nextAction(() => void saveLikes()) : { id: 'skip', label: w('o_skip'), run: () => void skipLikes() },
+      ]
+    : step === 'reminders' ? [
+        { id: 'remindApp', label: w('o_rem_app'), run: () => void pickRemind('app') },
+        { id: 'remindWhatsapp', label: w('o_rem_wa'), run: () => void pickRemind('whatsapp') },
+        { id: 'remindCall', label: w('o_rem_call'), run: () => void pickRemind('call') },
+        { id: 'later', label: w('o_later'), run: () => void laterRemind() },
+      ]
+    : [];
+  const title: Record<StepId, string> = { name: w('o_name_t'), where: w('o_where_t'), enjoy: w('o_enjoy_t'), voice: w('o_voice_t'), reminders: w('o_rem_t'), welcome: w('o_welcome', { name }) };
+  const valueNow = step === 'name' ? name : step === 'where' ? area : step === 'enjoy' ? likes.map((k) => w(`interest_${k}`)).join(', ') : '';
+  usePageData(page, step === 'voice' || step === 'welcome' ? null : {
+    values: [{ label: title[step], value: valueNow }, ...(goBack ? [] : [])],
+    images: [],
+    lists: [],
+    actions: [...stepActions, ...(goBack ? [{ id: 'back', label: w('o_back'), run: goBack }] : [])],
+  });
+  useField(page, 'name', name, (v) => setName(String(v)));
+  useField(page, 'area', area, (v) => { setArea(String(v)); setTyped(true); });
+
   const err = error ? <Text style={{ color: colors.danger, fontWeight: '600', marginTop: space.sm }}>{error}</Text> : null;
   const common = { onBack: back, backLabel: w('o_back') };
 
   if (step === 'name') {
     return (
-      <Frame {...common} step={w('o_step3', { n: 1 })} title={w('o_name_t')} primary={{ label: w('o_next'), onPress: () => void run(() => putOnboarding('basics', { display_name: name.trim() })), disabled: busy || !name.trim() }}>
+      <Frame {...common} step={w('o_step3', { n: 1 })} title={w('o_name_t')} primary={{ label: w('o_next'), onPress: () => void saveName(), disabled: busy || !name.trim() }}>
         <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink, marginBottom: space.sm }}>{w('o_name_f')}</Text>
-        <TextInput value={name} onChangeText={setName} onSubmitEditing={() => name.trim() && void run(() => putOnboarding('basics', { display_name: name.trim() }))} accessibilityLabel={w('o_name_f')} autoCapitalize="words"
+        <TextInput value={name} onChangeText={setName} onSubmitEditing={() => name.trim() && void saveName()} accessibilityLabel={w('o_name_f')} autoCapitalize="words"
           style={{ minHeight: 60, fontSize: 22, fontWeight: '600', color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
-        <SayIt label={w('o_say')} />
         {err}
       </Frame>
     );
   }
   if (step === 'where') {
-    const save = () => run(() => putOnboarding('basics', { country: typed ? 'other' : 'SG', ...(area.trim() ? { area_name: area.trim() } : {}) }));
     return (
-      <Frame {...common} step={w('o_step3', { n: 2 })} title={w('o_where_t')} primary={{ label: w('o_next'), onPress: () => void save(), disabled: busy }}>
+      <Frame {...common} step={w('o_step3', { n: 2 })} title={w('o_where_t')} primary={{ label: w('o_next'), onPress: () => void saveWhere(), disabled: busy }}>
         <View style={grid}>
           {TOWNS.map((t) => <Chip key={t} label={t} on={area === t && !typed} onPress={() => { setArea(t); setTyped(false); }} />)}
           <Chip full label={w('o_other')} on={typed} onPress={() => { setTyped(true); setArea(''); }} />
@@ -77,31 +121,26 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
           <TextInput value={area} onChangeText={setArea} placeholder={w('o_town_f')} placeholderTextColor={colors.muted} accessibilityLabel={w('o_town_f')} autoFocus
             style={{ marginTop: space.md, minHeight: 60, fontSize: 19, color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
         ) : null}
-        <SayIt label={w('o_say')} />
         {err}
       </Frame>
     );
   }
   if (step === 'enjoy') {
-    const toggle = (k: string) => setLikes((l) => (l.includes(k) ? l.filter((x) => x !== k) : [...l, k]));
-    const save = () => run(() => putOnboarding('interests', { interests: likes }));
     return (
       <Frame {...common} step={w('o_step3', { n: 3 })} title={w('o_enjoy_t')} hint={w('o_pick_many')}
-        primary={likes.length ? { label: w('o_next'), onPress: () => void save(), disabled: busy } : undefined} secondary={likes.length ? undefined : { label: w('o_skip'), onPress: () => void run(() => skipOnboarding('interests')) }}>
-        <View style={grid}>{INTERESTS.map((x) => <Interest key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggle(x.key)} />)}</View>
-        <SayIt label={w('o_say')} />
+        primary={likes.length ? { label: w('o_next'), onPress: () => void saveLikes(), disabled: busy } : undefined} secondary={likes.length ? undefined : { label: w('o_skip'), onPress: () => void skipLikes() }}>
+        <View style={grid}>{INTERESTS.map((x) => <Interest key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggleLike(x.key)} />)}</View>
         {err}
       </Frame>
     );
   }
   if (step === 'voice') return <Voice common={common} onDone={next} />;
   if (step === 'reminders') {
-    const pick = (c: string) => void run(() => putOnboarding('channels', { preferred_channel: c }));
     return (
-      <Frame {...common} title={w('o_rem_t')} secondary={{ label: w('o_later'), onPress: () => void run(() => skipOnboarding('channels')) }}>
-        <ListCard icon="notifications-outline" title={w('o_rem_app')} line={w('o_rem_app_l')} onPress={() => pick('app')} />
-        <ListCard icon="logo-whatsapp" title={w('o_rem_wa')} line={w('o_rem_wa_l')} onPress={() => pick('whatsapp')} />
-        <ListCard icon="call-outline" title={w('o_rem_call')} line={w('o_rem_call_l')} onPress={() => pick('call')} />
+      <Frame {...common} title={w('o_rem_t')} secondary={{ label: w('o_later'), onPress: () => void laterRemind() }}>
+        <ListCard icon="notifications-outline" title={w('o_rem_app')} line={w('o_rem_app_l')} onPress={() => void pickRemind('app')} />
+        <ListCard icon="logo-whatsapp" title={w('o_rem_wa')} line={w('o_rem_wa_l')} onPress={() => void pickRemind('whatsapp')} />
+        <ListCard icon="call-outline" title={w('o_rem_call')} line={w('o_rem_call_l')} onPress={() => void pickRemind('call')} />
         {err}
       </Frame>
     );
@@ -155,6 +194,16 @@ function Voice({ common, onDone }: { common: { onBack?: () => void; backLabel: s
     }
     onDone();
   };
+  usePageData(page, {
+    values: [{ label: w('o_voice_t'), value: recording ? String(10 - seconds) : uri ? w('voice_recorded') : '' }],
+    images: [],
+    lists: [],
+    actions: [
+      { id: 'record', label: recording ? w('voice_stop') : uri ? w('voice_again') : w('voice_record'), run: () => void (recording ? stop() : start()) },
+      uri && !recording ? { id: 'next', label: w('o_next'), run: () => void save() } : { id: 'skip', label: w('o_skip'), run: onDone },
+      ...(common.onBack ? [{ id: 'back', label: w('o_back'), run: common.onBack }] : []),
+    ],
+  });
   return (
     <Frame {...common} inlineTitle title={w('o_voice_t')} primary={uri && !recording ? { label: saving ? w('voice_saving') : w('o_next'), onPress: () => void save(), disabled: saving } : undefined} secondary={uri && !recording ? undefined : { label: w('o_skip'), onPress: onDone }}>
       <View style={{ padding: space.lg, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
@@ -180,8 +229,10 @@ function Welcome({ name, finish }: { name: string; finish: () => Promise<void> }
   const pop = useRef(new Animated.Value(0.6)).current;
   const [busy, setBusy] = useState(false);
   useEffect(() => { Animated.spring(pop, { toValue: 1, useNativeDriver: true, speed: 10, bounciness: 10 }).start(); }, [pop]);
+  const home = () => { if (busy) return; setBusy(true); void finish().finally(() => setBusy(false)); };
+  usePageData(page, { values: [{ label: w('o_welcome', { name }), value: w('o_welcome_ref') }], images: [], lists: [], actions: [{ id: 'goHome', label: w('o_home'), run: home }] });
   return (
-    <Frame primary={{ label: w('o_home'), icon: 'home-outline', onPress: () => { setBusy(true); void finish().finally(() => setBusy(false)); }, disabled: busy }}>
+    <Frame primary={{ label: w('o_home'), icon: 'home-outline', onPress: home, disabled: busy }}>
       <View style={{ alignItems: 'center', paddingTop: space.xl * 2 }}>
         <Animated.View style={{ width: 104, height: 104, borderRadius: 52, backgroundColor: colors.accent, alignItems: 'center', justifyContent: 'center', transform: [{ scale: pop }] }}>
           <Ionicons name="checkmark" size={64} color={colors.card} accessible={false} />
