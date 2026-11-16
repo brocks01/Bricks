@@ -102,6 +102,11 @@ export const RV: WordTable = {
   left: ['You left {name}', 'आपने {name} छोड़ दिया', 'আপনি {name} ছেড়েছেন', 'நீங்கள் {name} ஐ விட்டீர்கள்', '您已退出{name}', 'Anda telah meninggalkan {name}'],
   last_lead: ['You are the only leader. Hand the role to someone first.', 'आप अकेले प्रमुख हैं। पहले यह भूमिका किसी और को दें।', 'আপনিই একমাত্র লিড। আগে অন্য কাউকে দায়িত্ব দিন।', 'நீங்கள் மட்டுமே தலைவர். முதலில் வேறொருவரிடம் பொறுப்பைக் கொடுங்கள்.', '您是唯一的负责人，请先把职务交给别人。', 'Anda satu-satunya ketua. Serahkan peranan kepada orang lain dahulu.'],
 
+  here_later: ["You can say I'm here from an hour before it starts.", 'शुरू होने से एक घंटा पहले से आप "मैं यहाँ हूँ" कह सकते हैं।', 'শুরুর এক ঘণ্টা আগে থেকে "আমি এখানে" বলতে পারবেন।', 'தொடங்குவதற்கு ஒரு மணி நேரம் முன்பிலிருந்து "நான் இங்கே இருக்கிறேன்" சொல்லலாம்.', '活动开始前一小时起，您就可以点“我到了”。', 'Anda boleh tekan "Saya di sini" sejam sebelum ia bermula.'],
+  report_title: ['Why are you reporting this group?', 'आप इस समूह की रिपोर्ट क्यों कर रहे हैं?', 'আপনি কেন এই গ্রুপের বিরুদ্ধে রিপোর্ট করছেন?', 'இந்தக் குழுவைப் பற்றி ஏன் புகார் செய்கிறீர்கள்?', '您为什么要举报这个小组？', 'Mengapa anda melaporkan kumpulan ini?'],
+  cancel: ['Cancel', 'रद्द करें', 'বাতিল', 'ரத்து செய்', '取消', 'Batal'],
+  close: ['Close', 'बंद करें', 'বন্ধ করুন', 'மூடு', '关闭', 'Tutup'],
+
   // the leader's details
   details_title: ['Group details', 'समूह का विवरण', 'গ্রুপের বিবরণ', 'குழு விவரங்கள்', '小组资料', 'Butiran kumpulan'],
   details_address: ['Where the group usually meets', 'समूह आमतौर पर कहाँ मिलता है', 'গ্রুপ সাধারণত কোথায় মেলে', 'குழு வழக்கமாகச் சந்திக்கும் இடம்', '小组通常在哪里聚会', 'Tempat kumpulan biasanya berjumpa'],

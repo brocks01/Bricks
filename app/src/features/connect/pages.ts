@@ -2,7 +2,7 @@ import { definePage } from '../../kit/page';
 import { mergeStrings, pageWords } from '../../i18n/words';
 import { EXPLORE_ALIASES, R, REQUEST_ALIASES, REVIEW_ALIASES } from './rulesWords';
 import { strings } from './startStrings';
-import { L } from '../lead/leadWords';
+import '../lead/leadWords'; // registers the lead words other connect pages use
 import { RV } from './revampWords';
 
 // Join a community with an invite code, explore the others, or ask to start one. Reached from the Community tab.

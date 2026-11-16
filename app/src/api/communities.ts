@@ -72,6 +72,8 @@ export interface CommunityActivity {
   status: string;
   going_count: number;
   i_going: boolean;
+  /** Checked in ("I'm here") at this gathering: the person showed up. */
+  i_attended?: boolean;
   repeat: 'daily' | 'weekdays' | 'weekly' | 'monthly' | null;
 }
 export type ActivityWhen = 'upcoming' | 'mine' | 'past';

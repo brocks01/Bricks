@@ -151,3 +151,17 @@ def test_the_card_has_the_next_event_and_a_member_sees_faces():
     stranger = person()  # someone who is not in it sees the leader's first name, never the members
     seen = client.get(f"/v1/communities/{cid}/about", headers=stranger["h"]).json()
     assert seen["community"]["faces"] == [] and seen["community"]["leader"] == "Meena" and seen["events"][0]["title"] == "Walk round the park"
+
+
+def test_a_gathering_says_when_i_checked_in():
+    from datetime import datetime, timedelta, timezone
+
+    tag, lead = uuid.uuid4().hex[:8], person()
+    cid = community(lead, f"Here Now {tag}")
+    start = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+    aid = client.post(f"/v1/communities/{cid}/activities", json={"title": "Tai chi now", "starts_at": start}, headers=lead["h"]).json()["id"]
+    before = client.get(f"/v1/communities/{cid}/activities?when=upcoming", headers=lead["h"]).json()["activities"]
+    assert [a["i_attended"] for a in before if a["id"] == aid] == [False]
+    assert client.post(f"/v1/communities/activities/{aid}/checkin", json={}, headers=lead["h"]).status_code == 200
+    after = client.get(f"/v1/communities/{cid}/activities?when=upcoming", headers=lead["h"]).json()["activities"]
+    assert [a["i_attended"] for a in after if a["id"] == aid] == [True]

@@ -60,7 +60,7 @@ export default function CommunitiesHome() {
   const [used, setUsed] = useState(0);
   const [failed, setFailed] = useState(false);
   const [q, setQ] = useState('');
-  const [found, setFound] = useState<Card[] | null>(null);
+  const [results, setResults] = useState<{ q: string; list: Card[] } | null>(null);
   const searchSeq = useRef(0);
   useField(page, 'search', q, (v) => setQ(String(v ?? '')));
 
@@ -81,7 +81,7 @@ export default function CommunitiesHome() {
   // search as the person types, after a short pause; the results replace the two lists
   useEffect(() => {
     const text = q.trim();
-    if (!text) { setFound(null); return; }
+    if (!text) return;
     const mySeq = ++searchSeq.current;
     const timer = setTimeout(() => {
       recommendedCommunities(text, 20)
@@ -89,19 +89,20 @@ export default function CommunitiesHome() {
           if (mySeq !== searchSeq.current) return;
           // my own communities match too: search them here, so a person can find their own group by typing its name
           const own = (mine ?? []).filter((c) => [c.name, c.area_name, c.address, c.description].some((x) => (x ?? '').toLowerCase().includes(text.toLowerCase())));
-          setFound([...own, ...r.communities]);
+          setResults({ q: text, list: [...own, ...r.communities] });
         })
-        .catch(() => { if (mySeq === searchSeq.current) setFound([]); });
+        .catch(() => { if (mySeq === searchSeq.current) setResults({ q: text, list: [] }); });
     }, 300);
     return () => clearTimeout(timer);
   }, [q, mine]);
 
+  const found = results && results.q === q.trim() ? results.list : null;
   const card = (c: Card) => (
     <CommunityCard key={c.id} c={c}
       onOpen={() => go('community.home', { id: c.id })}
       onEvents={() => go('community.events', { id: c.id })}
       onJoin={() => void joiner.join(c)}
-      onAddWhatsapp={c.can_manage ? () => go('community.home', { id: c.id, details: '1' }) : undefined} />
+      onAddWhatsapp={c.can_manage ? () => go('community.home', { id: c.id }) : undefined} />
   );
 
   const actions: PageDataAction[] = [
