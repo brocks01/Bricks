@@ -1,4 +1,5 @@
 import { api } from './client';
+import type { Audience, Circle } from './communityRules';
 
 export interface MyCommunity {
   id: string;
@@ -39,7 +40,7 @@ export const getUpcoming = (limit = 3) => api<{ activities: Upcoming[] }>('GET',
 export const setGoing = (activityId: string, going: boolean) => api<{ going: boolean; going_count: number }>('POST', `/v1/communities/activities/${activityId}/going`, { going });
 
 export interface CommunityDetail {
-  community: { id: string; name: string; kind: string; description: string | null; area_name: string | null; privacy: string; logo_url: string | null; cover_url: string | null; member_count: number; is_demo: boolean; invite_code: string | null; signature_product: string | null; meeting: string | null };
+  community: { id: string; name: string; kind: string; description: string | null; area_name: string | null; privacy: string; logo_url: string | null; cover_url: string | null; member_count: number; is_demo: boolean; invite_code: string | null; signature_product: string | null; meeting: string | null; circle: Circle; audience: Audience; source: 'people' | 'imported'; host_name: string | null };
   my_role: string;
   can_manage: boolean;
   /** Family members who are in this community and chose to let their family see it. */

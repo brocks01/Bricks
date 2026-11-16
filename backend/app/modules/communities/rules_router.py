@@ -23,6 +23,8 @@ class RequestIn(BaseModel):
     why: str | None = Field(default=None, max_length=1000)
     product: str | None = Field(default=None, max_length=80)
     meeting: str | None = Field(default=None, max_length=200)
+    circle: Literal["origin", "faith", "place", "life", "interest"] = "life"
+    audience: Literal["all", "men", "women"] = "all"
 
 
 class DecideIn(BaseModel):

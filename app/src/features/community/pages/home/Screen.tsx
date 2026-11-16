@@ -6,6 +6,7 @@ import { Image, Pressable, Text, View } from 'react-native';
 import { getCommunity, setGoing, type CommunityDetail } from '../../../../api/communities';
 import { ApiError } from '../../../../api/client';
 import { leaveCommunity, shareWithFamily } from '../../../../api/communityRules';
+import { Pill } from '../../../../components/blocks';
 import { SkeletonPage } from '../../../../components/Skeleton';
 import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -99,6 +100,8 @@ export default function CommunityHome() {
         values: [
           { label: w('heading'), value: data.community.name },
           { label: w('people'), value: t('common.members', { n: data.community.member_count }) },
+          { label: t('rules.circle_ask'), value: t(`rules.circle_${data.community.circle}`) },
+          { label: t('rules.audience_ask'), value: data.community.audience === 'men' ? t('rules.audience_men') : data.community.audience === 'women' ? t('rules.audience_women') : t('rules.audience_all') },
         ],
         images: data.community.cover_url ? [{ uri: data.community.cover_url, alt: data.community.name }] : [],
         lists: [
@@ -161,6 +164,13 @@ export default function CommunityHome() {
             <Text style={[type.small, { color: c.cover_url ? '#FFFFFF' : colors.muted }]}>{[c.area_name, t('common.members', { n: c.member_count })].filter(Boolean).join(' · ')}</Text>
           </View>
         </View>
+      </View>
+
+      {/* Who this circle is for, what brings it together, and (for one brought in from a host) where it came from. */}
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, marginBottom: space.md }}>
+        <Pill text={c.audience === 'men' ? t('rules.audience_men') : c.audience === 'women' ? t('rules.audience_women') : t('rules.audience_all')} />
+        <Text style={[type.small, { color: colors.muted }]}>{t(`rules.circle_${c.circle}`)}</Text>
+        {c.source === 'imported' && c.host_name ? <Text style={[type.small, { color: colors.muted }]}>{t('rules.brought_in', { host: c.host_name })}</Text> : null}
       </View>
 
       <View style={{ flexDirection: 'row', gap: space.sm }}>

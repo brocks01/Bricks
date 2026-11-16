@@ -95,13 +95,16 @@ def detail(conn: Connection, user_id: str, community_id: str) -> dict:
         text("select id, kind, title, description, contact, created_at from opportunities where community_id = :c and status = 'open' order by created_at desc limit 5"),
         {"c": community_id}).all()
     member_count = conn.execute(text("select count(*) from memberships where community_id = :c and status = 'active'"), {"c": community_id}).scalar_one()
+    host_name = conn.execute(text("select name from hosts where id = :h"), {"h": c.host_id}).scalar() if c.host_id else None
     from . import rules
     fam = rules.family_here(conn, user_id, [community_id])[community_id]
     iso = lambda d: d.isoformat() if d else None  # noqa: E731
     return {
         "community": {"id": str(c.id), "name": c.name, "kind": c.kind, "description": c.description, "area_name": c.area_name, "privacy": c.privacy,
                       "logo_url": c.logo_url, "cover_url": c.cover_url, "member_count": member_count, "is_demo": c.is_demo,
-                      "invite_code": c.invite_code if can_manage else None, "signature_product": c.signature_product, "meeting": c.meeting},
+                      "invite_code": c.invite_code if can_manage else None, "signature_product": c.signature_product, "meeting": c.meeting,
+                      # the circle's feeling, its audience and where it came from, so the home screen can say them in words
+                      "circle": c.circle, "audience": c.audience, "source": c.source, "host_name": host_name},
         "my_role": role,
         "can_manage": can_manage,
         "family_here": fam,

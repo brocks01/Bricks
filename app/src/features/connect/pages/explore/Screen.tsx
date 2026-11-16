@@ -4,14 +4,17 @@ import { useCallback, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
 import { exploreCommunities, joinOpenCommunity, leaveCommunity, type ExploreCommunity, type Limits } from '../../../../api/communityRules';
-import { Empty, ListRow, Notice, Pill } from '../../../../components/blocks';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { putOnboarding } from '../../../../api/wisdom';
+import { Empty, Notice } from '../../../../components/blocks';
+import { ErrorText, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useT } from '../../../../i18n';
 import { El, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, size, space, type } from '../../../../theme/tokens';
+import { ExploreCard } from '../../ExploreCard';
+import { GenderAsk } from '../../GenderAsk';
 import { connectExplore as page } from '../../pages';
 
 export default function Explore() {
@@ -24,6 +27,9 @@ export default function Explore() {
   const [limits, setLimits] = useState<Limits | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
+  // A circle for men only or women only asks the person once, kindly, before letting them in (see GenderAsk).
+  const [ask, setAsk] = useState<ExploreCommunity | null>(null);
+  const [answering, setAnswering] = useState(false);
 
   const load = useCallback(() => {
     exploreCommunities(q).then((r) => { setList(r.communities); setLimits(r.limits); }).catch(() => setError(w('err_failed')));
@@ -36,7 +42,14 @@ export default function Explore() {
 
   const refuse = (e: unknown) => {
     const code = e instanceof ApiError ? e.code : '';
-    setError(code === 'community_limit' ? w('err_limit') : code === 'invite_only' ? w('err_invite') : code === 'last_lead' ? w('err_last_lead') : w('err_failed'));
+    setError(
+      code === 'community_limit' ? w('err_limit')
+        : code === 'invite_only' ? w('err_invite')
+          : code === 'last_lead' ? w('err_last_lead')
+            // never blaming: the circle is for a group of people, and there are open ones for everyone
+            : code === 'audience_men' ? w('err_aud_men')
+              : code === 'audience_women' ? w('err_aud_women')
+                : w('err_failed'));
   };
   const join = async (c: ExploreCommunity) => {
     setError(null);
@@ -44,10 +57,31 @@ export default function Explore() {
     try {
       await joinOpenCommunity(c.id);
       setNote(w('joined_ok', { name: c.name }));
+      setAsk(null);
       load();
     } catch (e) {
-      refuse(e);
+      if (e instanceof ApiError && e.code === 'gender_needed') setAsk(c); // ask once, then save and retry
+      else { setAsk(null); refuse(e); } // one clear message, never two open at once
     }
+  };
+  const answer = async (g: 'man' | 'woman') => {
+    if (!ask || answering) return;
+    setAnswering(true);
+    setError(null);
+    try {
+      await putOnboarding('basics', { gender: g }); // their own answer, saved once
+    } catch {
+      setAsk(null);
+      setError(w('err_failed'));
+      setAnswering(false);
+      return;
+    }
+    await join(ask);
+    setAnswering(false);
+  };
+  const skipAsk = () => {
+    setAsk(null);
+    setNote(w('gender_declined'));
   };
   const leave = async (c: ExploreCommunity) => {
     setError(null);
@@ -87,6 +121,7 @@ export default function Explore() {
   );
 
   const full = !!limits && limits.left === 0;
+  const why = ask ? (ask.audience === 'women' ? w('gender_why_women', { name: ask.name }) : ask.audience === 'men' ? w('gender_why_men', { name: ask.name }) : w('gender_why_any')) : '';
   return (
     <Screen back title={w('heading')} subtitle={w('intro_explore')}>
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: radius.button, paddingHorizontal: space.md, marginBottom: space.md }}>
@@ -102,30 +137,20 @@ export default function Explore() {
       <ErrorText>{error}</ErrorText>
       {note ? <Notice text={note} /> : null}
 
+      {ask ? <GenderAsk why={why} w={w} busy={answering} onPick={(g) => void answer(g)} onSkip={skipAsk} /> : null}
+
       {list && list.length === 0 ? <Empty text={w('no_results')} /> : null}
       {(list ?? []).map((c, i) => (
-        <ListRow
+        <ExploreCard
           key={c.id}
-          icon="people-outline"
+          c={c}
           i={i}
-          title={c.name}
-          sub={`${t('common.members', { n: c.member_count })}${c.area_name ? ' · ' + c.area_name : ''}${c.family_here.length ? ' · ' + w('family_here_n', { n: c.family_here.length }) : ''}`}
-          onPress={c.joined ? () => navigate('community.home', { id: c.id }) : undefined}
-          rightIsButton
-          right={
-            c.joined ? (
-              <View style={{ alignItems: 'flex-end', gap: space.xs }}>
-                <Pill text={w('joined_c')} />
-                <Text accessibilityRole="button" onPress={() => void leave(c)} style={[type.small, { color: colors.danger, fontWeight: '700', paddingVertical: space.xs }]}>{w('leave_c')}</Text>
-              </View>
-            ) : c.can_join ? (
-              <View style={{ minWidth: 88 }}><Button label={w('join_c')} onPress={() => void join(c)} /></View>
-            ) : c.privacy === 'invite' ? (
-              <View style={{ maxWidth: 140 }}><Text style={[type.small, { color: colors.muted }]}>{w('invite_only')}</Text></View>
-            ) : full ? (
-              <View style={{ maxWidth: 110 }}><Text style={[type.small, { color: colors.warn, fontWeight: '700' }]}>{w('leave_first')}</Text></View>
-            ) : null
-          }
+          w={w}
+          t={t}
+          full={full}
+          onOpen={c.joined ? () => navigate('community.home', { id: c.id }) : undefined}
+          onJoin={() => void join(c)}
+          onLeave={() => void leave(c)}
         />
       ))}
     </Screen>

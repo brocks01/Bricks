@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { type CommunityKind } from '../../../../api/communities';
 import { ApiError } from '../../../../api/client';
-import { createFromRequest, getExperience, getMyRequests, requestCommunity, type CommunityRequest, type Experience } from '../../../../api/communityRules';
+import { createFromRequest, getExperience, getMyRequests, requestCommunity, type Audience, type Circle, type CommunityRequest, type Experience } from '../../../../api/communityRules';
 import { Bar, Notice, Panel, Pill, Section } from '../../../../components/blocks';
 import { Button, ErrorText, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
@@ -16,6 +16,8 @@ import { RequestWizard, type RequestDraft } from '../../RequestWizard';
 import { connectCreate as page } from '../../pages';
 
 const KINDS: CommunityKind[] = ['apartment', 'block', 'neighbourhood', 'club', 'other'];
+const CIRCLES: Circle[] = ['origin', 'faith', 'place', 'life', 'interest'];
+const AUDIENCES: Audience[] = ['all', 'men', 'women'];
 
 // Ask to start a community. Communities are few and curated: a person with a little experience sends a request, the Wisdom team approves it, and then the person creates it here.
 export default function CreateCommunity() {
@@ -30,6 +32,8 @@ export default function CreateCommunity() {
   const [area, setArea] = useState('');
   const [about, setAbout] = useState('');
   const [why, setWhy] = useState('');
+  const [circle, setCircle] = useState<Circle>('life');
+  const [audience, setAudience] = useState<Audience>('all');
   const [error, setError] = useState<string | null>(null);
   const [note, setNote] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -54,7 +58,7 @@ export default function CreateCommunity() {
     try {
       const k = draft?.kind ?? kind;
       const a = (draft?.area ?? area).trim();
-      await requestCommunity({ name: n, kind: k, ...(a ? { area_name: a } : {}), ...(about.trim() ? { description: about.trim() } : {}), ...(why.trim() ? { why: why.trim() } : {}), ...(draft?.product.trim() ? { product: draft.product.trim() } : {}), ...(draft?.meeting.trim() ? { meeting: draft.meeting.trim() } : {}) });
+      await requestCommunity({ name: n, kind: k, circle: draft?.circle ?? circle, audience: draft?.audience ?? audience, ...(a ? { area_name: a } : {}), ...(about.trim() ? { description: about.trim() } : {}), ...(why.trim() ? { why: why.trim() } : {}), ...(draft?.product.trim() ? { product: draft.product.trim() } : {}), ...(draft?.meeting.trim() ? { meeting: draft.meeting.trim() } : {}) });
       setNote(w('req_sent'));
       load();
     } catch (e) {
@@ -79,6 +83,8 @@ export default function CreateCommunity() {
   useField(page, 'area', area, (v) => setArea(String(v)));
   useField(page, 'about', about, (v) => setAbout(String(v)));
   useField(page, 'why', why, (v) => setWhy(String(v)));
+  useField(page, 'circle', circle, (v) => setCircle(CIRCLES.includes(v as Circle) ? (v as Circle) : 'life'));
+  useField(page, 'audience', audience, (v) => setAudience(AUDIENCES.includes(v as Audience) ? (v as Audience) : 'all'));
   useAction(page, 'createButton', send);
   useAction(page, 'reviewLink', () => go('connect.review'));
 
@@ -114,6 +120,7 @@ export default function CreateCommunity() {
           {(reqs ?? []).map((r) => (
             <Panel key={r.id} tone={r.status === 'approved' ? 'soft' : undefined}>
               <Text style={[type.h2, { color: colors.ink }]}>{r.name}</Text>
+              <Text style={[type.small, { color: colors.muted, marginBottom: space.xs }]}>{w(`circle_${r.circle}`)} · {w(`audience_${r.audience}`)}</Text>
               <View style={{ marginVertical: space.xs }}><Pill text={stWord(r.status)} tone={r.status === 'declined' ? 'warn' : r.status === 'pending' ? 'quiet' : 'soft'} /></View>
               {r.note ? <Text style={[type.small, { color: colors.muted }]}>{r.note}</Text> : null}
               {r.status === 'approved' ? <View style={{ marginTop: space.sm }}><Button label={w('create_now')} icon="checkmark" onPress={() => void make(r)} /></View> : null}

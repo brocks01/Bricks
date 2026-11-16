@@ -34,6 +34,8 @@ export const connectCreate = definePage({
     area: { kind: 'field', type: 'string', summary: 'The area or address it covers.' },
     about: { kind: 'field', type: 'string', summary: 'What the people will do together.' },
     why: { kind: 'field', type: 'string', summary: 'Why it would thrive and who would come.' },
+    circle: { kind: 'choice', type: 'string', options: ['origin', 'faith', 'place', 'life', 'interest'], summary: 'What brings the circle together: where we are from, what we keep, where we live, who we were or are, or something we enjoy.' },
+    audience: { kind: 'choice', type: 'string', options: ['all', 'men', 'women'], summary: 'Who the circle is for: everyone, men only or women only. Never guessed from the person; they choose.' },
     createButton: { kind: 'action', agent: 'confirm', summary: 'Send the request to the Wisdom team. Needs approval.' },
     reviewLink: { kind: 'action', summary: 'For the Wisdom team only: open the list of requests waiting for a decision.' },
   },

@@ -48,7 +48,7 @@ export default function Review() {
               label: w('heading'),
               items: rows.map((r, i) => ({
                 label: r.name,
-                detail: `${w('from_name', { name: r.by })}${r.area_name ? ' · ' + r.area_name : ''}`,
+                detail: `${w('from_name', { name: r.by })}${r.area_name ? ' · ' + r.area_name : ''} · ${w(`circle_${r.circle}`)} · ${w(`audience_${r.audience}`)}`,
                 actions: [
                   { id: `approve${i + 1}`, label: w('approve'), agent: 'human' as const, run: () => decide(r, true) },
                   { id: `decline${i + 1}`, label: w('decline'), agent: 'human' as const, run: () => decide(r, false) },
@@ -68,6 +68,7 @@ export default function Review() {
         <Panel key={r.id}>
           <Text style={[type.h2, { color: colors.ink }]}>{r.name}</Text>
           <Text style={[type.small, { color: colors.muted, marginVertical: space.xs }]}>{w('from_name', { name: r.by })} · {w(`k_${r.kind}`)}{r.area_name ? ` · ${r.area_name}` : ''}</Text>
+          <Text style={[type.small, { color: colors.muted }]}>{w(`circle_${r.circle}`)} · {w(`audience_${r.audience}`)}</Text>
           {r.description ? <Text style={[type.body, { color: colors.ink }]}>{r.description}</Text> : null}
           {r.why ? <Text style={[type.body, { color: colors.ink, marginTop: space.xs }]}>{r.why}</Text> : null}
           <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.md }}>

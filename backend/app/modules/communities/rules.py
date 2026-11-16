@@ -110,17 +110,17 @@ def explore(conn: Connection, user_id: str, q: str = "", limit: int = 30) -> dic
     like = f"%{q.strip().lower()}%"
     has_q = bool(q.strip())
     rows = conn.execute(
-        text("select c.id, c.name, c.kind, c.area_name, c.description, c.privacy, c.logo_url, c.cover_url, c.icon, c.audience, c.circle, c.source, "
+        text("select c.id, c.name, c.kind, c.area_name, c.description, c.privacy, c.logo_url, c.cover_url, c.icon, c.audience, c.circle, c.source, h.name as host_name, "
              "(select count(*) from memberships m where m.community_id = c.id and m.status = 'active') as member_count, "
              "exists (select 1 from memberships m where m.community_id = c.id and m.user_id = :u and m.status = 'active') as joined "
-             "from communities c where c.status = 'active' and (not :hasq or lower(c.name) like :q or lower(coalesce(c.area_name, '')) like :q or lower(coalesce(c.description, '')) like :q) "
+             "from communities c left join hosts h on h.id = c.host_id where c.status = 'active' and (not :hasq or lower(c.name) like :q or lower(coalesce(c.area_name, '')) like :q or lower(coalesce(c.description, '')) like :q) "
              "order by member_count desc, c.name limit :n"),
         {"u": user_id, "q": like, "hasq": has_q, "n": max(1, min(limit, 100))}).all()
     fam = family_here(conn, user_id, [str(r.id) for r in rows])
     lim = limits(conn, user_id)
     return {
         "limits": lim,
-        "communities": [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "privacy": r.privacy, "icon": r.icon, "audience": r.audience, "circle": r.circle, "source": r.source,
+        "communities": [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "privacy": r.privacy, "icon": r.icon, "audience": r.audience, "circle": r.circle, "source": r.source, "host_name": r.host_name,
                          "logo_url": r.logo_url, "cover_url": r.cover_url, "member_count": r.member_count, "joined": r.joined,
                          "family_here": fam[str(r.id)], "can_join": (not r.joined) and r.privacy == "open" and lim["left"] > 0} for r in rows],
     }
@@ -147,14 +147,14 @@ def request_create(conn: Connection, user_id: str, data: dict) -> dict:
     if conn.execute(text("select 1 from community_requests where user_id = :u and status in ('pending', 'approved')"), {"u": user_id}).first():
         raise CommunityError("already_open", 409)
     r = conn.execute(
-        text("insert into community_requests (user_id, name, kind, area_name, description, why, product, meeting) values (:u, :n, :k, :a, :d, :w, :p, :m) returning id"),
-        {"u": user_id, "n": data["name"].strip(), "k": data.get("kind") or "neighbourhood", "a": data.get("area_name"), "d": data.get("description"), "w": data.get("why"), "p": (data.get("product") or "").strip() or None, "m": (data.get("meeting") or "").strip() or None}).one()
+        text("insert into community_requests (user_id, name, kind, area_name, description, why, product, meeting, circle, audience) values (:u, :n, :k, :a, :d, :w, :p, :m, :c, :aud) returning id"),
+        {"u": user_id, "n": data["name"].strip(), "k": data.get("kind") or "neighbourhood", "a": data.get("area_name"), "d": data.get("description"), "w": data.get("why"), "p": (data.get("product") or "").strip() or None, "m": (data.get("meeting") or "").strip() or None, "c": data.get("circle") or "life", "aud": data.get("audience") or "all"}).one()
     return {"id": str(r.id), "status": "pending"}
 
 
 def my_requests(conn: Connection, user_id: str) -> list[dict]:
-    rows = conn.execute(text("select id, name, kind, area_name, status, note, community_id, created_at from community_requests where user_id = :u order by created_at desc limit 10"), {"u": user_id}).all()
-    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "status": r.status, "note": r.note, "community_id": str(r.community_id) if r.community_id else None,
+    rows = conn.execute(text("select id, name, kind, area_name, circle, audience, status, note, community_id, created_at from community_requests where user_id = :u order by created_at desc limit 10"), {"u": user_id}).all()
+    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "circle": r.circle, "audience": r.audience, "status": r.status, "note": r.note, "community_id": str(r.community_id) if r.community_id else None,
              "created_at": r.created_at.isoformat()} for r in rows]
 
 
@@ -162,8 +162,8 @@ def review_list(conn: Connection, admin_id: str) -> list[dict]:
     if not is_admin(conn, admin_id):
         raise CommunityError("not_admin", 403)
     rows = conn.execute(
-        text("select r.id, r.name, r.kind, r.area_name, r.description, r.why, r.product, r.meeting, r.created_at, u.display_name, u.email from community_requests r join users u on u.id = r.user_id where r.status = 'pending' order by r.created_at")).all()
-    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "why": r.why, "product": r.product, "meeting": r.meeting, "by": r.display_name or r.email,
+        text("select r.id, r.name, r.kind, r.area_name, r.description, r.why, r.product, r.meeting, r.circle, r.audience, r.created_at, u.display_name, u.email from community_requests r join users u on u.id = r.user_id where r.status = 'pending' order by r.created_at")).all()
+    return [{"id": str(r.id), "name": r.name, "kind": r.kind, "area_name": r.area_name, "description": r.description, "why": r.why, "product": r.product, "meeting": r.meeting, "circle": r.circle, "audience": r.audience, "by": r.display_name or r.email,
              "created_at": r.created_at.isoformat()} for r in rows]
 
 
@@ -187,7 +187,7 @@ def create_from_request(conn: Connection, user_id: str, request_id: str) -> dict
         raise CommunityError("not_approved", 403)
     check_slot(conn, user_id, "00000000-0000-0000-0000-000000000000")  # the lead takes one of their three places
     from .service import create as make
-    out = make(conn, user_id, {"name": r.name, "kind": r.kind, "description": r.description, "area_name": r.area_name, "privacy": "open"})
+    out = make(conn, user_id, {"name": r.name, "kind": r.kind, "description": r.description, "area_name": r.area_name, "privacy": "open", "circle": r.circle, "audience": r.audience})
     conn.execute(text("update community_requests set status = 'used', community_id = :c where id = :r"), {"c": out["id"], "r": request_id})
     if r.product or r.meeting:
         conn.execute(text("update communities set signature_product = :p, signature_since = case when :p is null then null else current_date end, meeting = :m where id = :c"), {"p": r.product, "m": r.meeting, "c": out["id"]})

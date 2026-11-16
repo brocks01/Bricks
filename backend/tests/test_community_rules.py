@@ -22,16 +22,23 @@ def cleanup():
         for e in EMAILS:
             conn.execute(text("delete from community_requests where user_id in (select id from users where email = :e)"), {"e": e})
             conn.execute(text("delete from communities where created_by in (select id from users where email = :e)"), {"e": e})
+            conn.execute(text("delete from hosts where created_by in (select id from users where email = :e)"), {"e": e})
             conn.execute(text("delete from users where email = :e"), {"e": e})
             conn.execute(text("delete from login_codes where email = :e"), {"e": e})
 
 
-def person() -> dict:
+def person(gender: str | None = None, admin: bool = False) -> dict:
     email = f"test-{uuid.uuid4().hex[:10]}@example.com"
     EMAILS.append(email)
     code = client.post("/v1/auth/request-code", json={"email": email}).json()["dev_code"]
     s = client.post("/v1/auth/verify-code", json={"email": email, "code": code}).json()
-    return {"h": {"Authorization": f"Bearer {s['access_token']}"}, "id": s["user"]["id"], "email": email}
+    h = {"Authorization": f"Bearer {s['access_token']}"}
+    if gender:  # the person's own answer, saved exactly as the app saves it
+        client.put("/v1/onboarding/basics", json={"answers": {"gender": gender}}, headers=h)
+    if admin:
+        with engine().begin() as conn:
+            conn.execute(text("update users set is_platform_admin = true where id = :u"), {"u": s["user"]["id"]})
+    return {"h": h, "id": s["user"]["id"], "email": email}
 
 
 def make(lead: dict, name: str = "Rules Heights", privacy: str = "open") -> str:
@@ -152,3 +159,40 @@ def test_a_new_community_is_a_request_the_platform_approves(monkeypatch):
     assert client.post(f"/v1/communities/requests/{rid2}/create", headers=other["h"]).status_code == 403
     # platform admins may create directly
     assert client.post("/v1/communities", json={"name": "Admin Made"}, headers=other["h"]).status_code == 200
+
+
+def test_the_feeling_and_the_audience_travel_with_a_request_and_are_shown_on_the_circle():
+    """What the person chose when asking (the circle's feeling and who it is for) reaches the reviewer and then the community, which shows both."""
+    admin = person(admin=True)
+    body = {"name": "Chhath Group Singapore", "kind": "club", "area_name": "Little India", "circle": "faith", "audience": "women"}
+    rid = client.post("/v1/communities/requests", json=body, headers=admin["h"]).json()["id"]
+    row = next(q for q in client.get("/v1/communities/requests/review", headers=admin["h"]).json()["requests"] if q["id"] == rid)
+    assert row["circle"] == "faith" and row["audience"] == "women"
+    mine = client.get("/v1/communities/requests/mine", headers=admin["h"]).json()["requests"][0]
+    assert mine["circle"] == "faith" and mine["audience"] == "women"
+    assert client.post(f"/v1/communities/requests/{rid}/decide", json={"approve": True}, headers=admin["h"]).status_code == 200
+    cid = client.post(f"/v1/communities/requests/{rid}/create", headers=admin["h"]).json()["id"]
+    home = client.get(f"/v1/communities/{cid}", headers=admin["h"]).json()["community"]
+    assert home["circle"] == "faith" and home["audience"] == "women" and home["source"] == "people" and home["host_name"] is None
+    found = [c for c in client.get("/v1/communities/explore", params={"q": "Chhath Group"}, headers=admin["h"]).json()["communities"] if c["id"] == cid]
+    assert found and found[0]["circle"] == "faith" and found[0]["audience"] == "women" and found[0]["host_name"] is None
+    # a circle brought in from a host says the host's name, on explore and at home
+    hid = client.post("/v1/hosts", json={"name": "Tampines Active Ageing Centre", "kind": "aac", "area_name": "Tampines"}, headers=admin["h"]).json()["id"]
+    brought = client.post("/v1/communities/import", json={"host_id": hid, "external_ref": "tp-morning-walkers", "name": "Morning Walkers at Tampines", "circle": "place", "audience": "all"}, headers=admin["h"]).json()
+    ex = [c for c in client.get("/v1/communities/explore", params={"q": "Morning Walkers"}, headers=admin["h"]).json()["communities"] if c["id"] == brought["id"]][0]
+    assert ex["source"] == "imported" and ex["host_name"] == "Tampines Active Ageing Centre"
+    home2 = client.get(f"/v1/communities/{brought['id']}", headers=admin["h"]).json()["community"]
+    assert home2["source"] == "imported" and home2["host_name"] == "Tampines Active Ageing Centre"
+
+
+def test_a_gendered_circle_asks_on_the_invite_code_path_too():
+    """Joining with a code obeys the same rule as joining from explore: the person is asked once, never guessed at."""
+    admin = person(admin=True)
+    cid = client.post("/v1/communities", json={"name": "Bihari Men Singapore", "circle": "origin", "audience": "men", "privacy": "invite"}, headers=admin["h"]).json()["id"]
+    code = client.get(f"/v1/communities/{cid}", headers=admin["h"]).json()["community"]["invite_code"]
+    stranger, woman, man = person(), person(gender="woman"), person(gender="man")
+    unknown = client.post("/v1/communities/join", json={"code": code}, headers=stranger["h"])
+    assert unknown.status_code == 409 and unknown.json()["detail"]["code"] == "gender_needed"
+    wrong = client.post("/v1/communities/join", json={"code": code}, headers=woman["h"])
+    assert wrong.status_code == 403 and wrong.json()["detail"]["code"] == "audience_men"
+    assert client.post("/v1/communities/join", json={"code": code}, headers=man["h"]).json()["id"] == cid
