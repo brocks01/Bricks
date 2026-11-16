@@ -15,3 +15,4 @@ import './market/module';
 import './onboarding/module';
 import './wisdom/module';
 import './channels/module';
+import './safety/module';

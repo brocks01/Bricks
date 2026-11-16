@@ -23,7 +23,7 @@ const throws = (fn: () => unknown) => { try { fn(); return false; } catch { retu
 const signedOut = { isAuthenticated: false };
 
 // the tree
-check('sixteen modules', allModules().length === 16, String(allModules().length));
+check('seventeen modules', allModules().length === 17, String(allModules().length));
 check('grow has six pages, each needs sign-in', allPages().filter((p) => p.module === 'grow').length === 6 && allPages().filter((p) => p.module === 'grow').every((p) => !!p.requiresAuth));
 check('grow pages have a heading in all six languages', allPages().filter((p) => p.module === 'grow' && p.key !== 'grow.index').every((p) => Object.values(p.strings).length === 6 && Object.values(p.strings).every((w) => !!(w as Record<string, string>).heading)));
 check('explore has five pages', allPages().filter((p) => p.module === 'explore').length === 5);
@@ -31,6 +31,14 @@ check('explore item page takes an id and needs sign-in', (() => { const p = allP
 check('grow home declares its six cards', ['health', 'activity', 'aspirations', 'explore', 'progress', 'contributions'].every((id) => !!allPages().find((x) => x.key === 'grow.index')?.elements[id]));
 check('every explore category and format has words in all six languages', (() => { const ids = ['digital_skills', 'health_awareness', 'everyday_life', 'hobbies', 'culture', 'knowledge', 'guide', 'video', 'interactive', 'story', 'audio', 'activity', 'easy', 'medium']; const lines = ids.filter((i) => i.indexOf('_') > 0 && i !== 'digital_skills' || i === 'digital_skills').map((i) => i + '_line'); const st = allPages().find((x) => x.key === 'explore.home')!.strings; return Object.values(st).length === 6 && Object.values(st).every((words) => [...ids, ...lines.filter((l) => l in (st.en ?? {}))].every((k) => !!(words as Record<string, string>)[k])); })());
 check('three tabs: Communities, Wisdom and the Marketplace (Today is reached from the profile); Health is not a tab', tabPages().map((p) => p.key).join(',') === 'connect.index,wisdom.index,market.index', tabPages().map((p) => p.key).join(','));
+// the paid sessions (services by the hour) moved from the Marketplace tab into Wisdom
+check('wisdom has a Paid sessions part with its own pages', (() => {
+  const idx = allPages().find((x) => x.key === 'wisdom.index');
+  return !!idx && (idx.elements.section.options ?? []).includes('paid') && !!idx.elements.serviceSearch && !!idx.elements.serviceKind && !!idx.elements.myServices && !!idx.elements.offerService
+    && ['wisdom.service', 'wisdom.serviceOffer', 'wisdom.myServices'].every((k) => allPages().find((x) => x.key === k)?.module === 'wisdom');
+})());
+check('the marketplace tab keeps only opportunities near the person', allPages().filter((p) => p.module === 'market').every((p) => ['market.index', 'market.day', 'market.stall'].includes(p.key)), allPages().filter((p) => p.module === 'market').map((p) => p.key).join(','));
+check('the moved service pages open at their new addresses', pageForPath('/wisdom/service/abc')?.key === 'wisdom.service' && pageForPath('/wisdom/service-offer')?.key === 'wisdom.serviceOffer' && pageForPath('/wisdom/services')?.key === 'wisdom.myServices');
 check('calendar has four pages, each needs sign-in', allPages().filter((p) => p.module === 'calendar').length === 4 && allPages().filter((p) => p.module === 'calendar').every((p) => !!p.requiresAuth));
 check('the medicine form always carries the not-medical-advice note', !!allPages().find((x) => x.key === 'calendar.new')?.elements.notMedical);
 check('the plan page takes an id and needs sign-in', (() => { const p = allPages().find((x) => x.key === 'calendar.item'); return !!p && p.route === '/calendar/item/[id]' && !!p.requiresAuth && p.params?.[0] === 'id'; })());
