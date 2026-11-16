@@ -8,12 +8,12 @@ import { useEffect, useRef, useState } from 'react';
 import { Animated, Pressable, Text, TextInput, View } from 'react-native';
 import { api } from '../../api/client';
 import { uploadVoiceIntro } from '../../api/media';
-import { putOnboarding, skipOnboarding, type OnboardingState } from '../../api/wisdom';
+import { createOffer, putOnboarding, skipOnboarding, type CapsuleKind, type OnboardingState } from '../../api/wisdom';
 import { useStore } from '../../core/store';
 import { useField, usePageData, usePageWords } from '../../kit';
 import type { PageDataAction } from '../../kit';
 import { sessionStore } from '../../session/store';
-import { colors, radius, space, type } from '../../theme/tokens';
+import { colors, radius, space, tints, type } from '../../theme/tokens';
 import { Bar, Chip, Frame, Interest, ListCard, grid, type Icon } from './kit';
 import { onboardingIndex as page } from './pages';
 import { onboardingLocal } from './state';
@@ -24,8 +24,12 @@ const INTERESTS: { key: string; icon: Icon }[] = [
   { key: 'walking', icon: 'walk-outline' }, { key: 'taichi', icon: 'body-outline' }, { key: 'cooking', icon: 'restaurant-outline' }, { key: 'chess', icon: 'extension-puzzle-outline' },
   { key: 'music', icon: 'musical-notes-outline' }, { key: 'gardening', icon: 'leaf-outline' }, { key: 'teaching', icon: 'school-outline' }, { key: 'tech', icon: 'laptop-outline' },
 ];
-type StepId = 'name' | 'where' | 'enjoy' | 'voice' | 'reminders' | 'welcome';
-const ORDER: StepId[] = ['name', 'where', 'enjoy', 'voice', 'reminders', 'welcome'];
+type StepId = 'name' | 'where' | 'enjoy' | 'teach' | 'skills' | 'voice' | 'reminders' | 'welcome';
+const ORDER: StepId[] = ['name', 'where', 'enjoy', 'teach', 'skills', 'voice', 'reminders', 'welcome'];
+type Level = 'basic' | 'skilled' | 'expert';
+const LEVELS: Level[] = ['basic', 'skilled', 'expert'];
+// which of the three kinds of experience each interest belongs to (the Wisdom page groups by these)
+const DOMAIN: Record<string, CapsuleKind> = { walking: 'social', taichi: 'social', cooking: 'cultural', chess: 'social', music: 'cultural', gardening: 'social', teaching: 'professional', tech: 'professional' };
 const ans = (st: OnboardingState, sec: string, key: string): unknown => st.sections.find((s) => s.id === sec)?.questions.find((q) => q.key === key)?.answer;
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -38,6 +42,8 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   const [name, setName] = useState(String(ans(state, 'basics', 'display_name') ?? user?.display_name ?? ''));
   const [area, setArea] = useState(String(ans(state, 'basics', 'area_name') ?? ''));
   const [typed, setTyped] = useState(false);
+  const [share, setShare] = useState<boolean | null>(null); // would you like to teach or share? yes opens the Wisdom tab, no keeps it communities-only
+  const [skills, setSkills] = useState<Record<string, Level>>({});
   const [likes, setLikes] = useState<string[]>(Array.isArray(ans(state, 'interests', 'interests')) ? (ans(state, 'interests', 'interests') as string[]) : []);
 
   // What the person is here for is set quietly from "who is setting up" (the first screens), so no screen has to ask it.
@@ -50,7 +56,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
 
   const step = ORDER[i];
   const next = () => { setError(null); setI((x) => Math.min(x + 1, ORDER.length - 1)); };
-  const back = i > 0 && step !== 'welcome' ? () => { setError(null); setI((x) => x - 1); } : undefined;
+  const back = i > 0 && step !== 'welcome' ? () => { setError(null); setI((x) => (ORDER[x] === 'voice' && share === false ? ORDER.indexOf('teach') : x - 1)); } : undefined;
   const run = async (fn: () => Promise<OnboardingState | void>) => {
     setBusy(true); setError(null);
     try { const s = await fn(); if (s) onState(s); next(); } catch { setError(w('failed')); } finally { setBusy(false); }
@@ -64,6 +70,20 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   const skipLikes = () => run(() => skipOnboarding('interests'));
   const pickRemind = (c: string) => run(() => putOnboarding('channels', { preferred_channel: c }));
   const laterRemind = () => run(() => skipOnboarding('channels'));
+  const chooseShare = (yes: boolean) => {
+    setShare(yes);
+    setError(null);
+    if (yes) setSkills((s) => (Object.keys(s).length ? s : Object.fromEntries(likes.map((k) => [k, 'skilled' as Level]))));
+    setI(ORDER.indexOf(yes ? 'skills' : 'voice'));
+  };
+  const toggleSkill = (k: string) => setSkills((s) => { const n = { ...s }; if (n[k]) delete n[k]; else n[k] = 'skilled'; return n; });
+  const setLevel = (k: string, lv: Level) => setSkills((s) => ({ ...s, [k]: lv }));
+  // Each skill becomes a teaching offer, which is also what turns the Wisdom tab on for this person.
+  const saveSkills = () => run(async () => {
+    for (const [k, lv] of Object.entries(skills)) {
+      try { await createOffer({ title: w(`interest_${k}`), about: w(`o_lvl_${lv}`), kind: 'workshop', mode: 'volunteer', domain: DOMAIN[k], proof_field: w(`interest_${k}`), topics: [k] }); } catch { /* one skill failing does not stop the rest */ }
+    }
+  });
   const goBack = back ? () => back() : undefined;
 
   // What the agent can read and press on this step.
@@ -79,6 +99,15 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
         ...INTERESTS.map((x) => ({ id: `like${cap(x.key)}`, label: `${w(`interest_${x.key}`)}${likes.includes(x.key) ? ' ✓' : ''}`, run: () => toggleLike(x.key) })),
         likes.length ? nextAction(() => void saveLikes()) : { id: 'skip', label: w('o_skip'), run: () => void skipLikes() },
       ]
+    : step === 'teach' ? [
+        { id: 'teachYes', label: w('o_teach_yes'), run: () => chooseShare(true) },
+        { id: 'teachNo', label: w('o_teach_no'), run: () => chooseShare(false) },
+      ]
+    : step === 'skills' ? [
+        ...INTERESTS.map((x) => ({ id: `skill${cap(x.key)}`, label: `${w(`interest_${x.key}`)}${skills[x.key] ? ' ✓' : ''}`, run: () => toggleSkill(x.key) })),
+        ...Object.keys(skills).flatMap((k) => LEVELS.map((lv) => ({ id: `level${cap(k)}${cap(lv)}`, label: `${w(`interest_${k}`)}: ${w(`o_lvl_${lv}`)}`, run: () => setLevel(k, lv) }))),
+        ...(Object.keys(skills).length ? [nextAction(() => void saveSkills())] : []),
+      ]
     : step === 'reminders' ? [
         { id: 'remindApp', label: w('o_rem_app'), run: () => void pickRemind('app') },
         { id: 'remindWhatsapp', label: w('o_rem_wa'), run: () => void pickRemind('whatsapp') },
@@ -86,7 +115,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
         { id: 'later', label: w('o_later'), run: () => void laterRemind() },
       ]
     : [];
-  const title: Record<StepId, string> = { name: w('o_name_t'), where: w('o_where_t'), enjoy: w('o_enjoy_t'), voice: w('o_voice_t'), reminders: w('o_rem_t'), welcome: w('o_welcome', { name }) };
+  const title: Record<StepId, string> = { name: w('o_name_t'), where: w('o_where_t'), enjoy: w('o_enjoy_t'), teach: w('o_teach_t'), skills: w('o_skills_t'), voice: w('o_voice_t'), reminders: w('o_rem_t'), welcome: w('o_welcome', { name }) };
   const valueNow = step === 'name' ? name : step === 'where' ? area : step === 'enjoy' ? likes.map((k) => w(`interest_${k}`)).join(', ') : '';
   usePageData(page, step === 'voice' || step === 'welcome' ? null : {
     values: [{ label: title[step], value: valueNow }, ...(goBack ? [] : [])],
@@ -130,6 +159,48 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
       <Frame {...common} step={w('o_step3', { n: 3 })} title={w('o_enjoy_t')} hint={w('o_pick_many')}
         primary={likes.length ? { label: w('o_next'), onPress: () => void saveLikes(), disabled: busy } : undefined} secondary={likes.length ? undefined : { label: w('o_skip'), onPress: () => void skipLikes() }}>
         <View style={grid}>{INTERESTS.map((x) => <Interest key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggleLike(x.key)} />)}</View>
+        {err}
+      </Frame>
+    );
+  }
+  if (step === 'teach') {
+    return (
+      <Frame {...common} title={w('o_teach_t')}>
+        <ListCard icon="school-outline" title={w('o_teach_yes')} line={w('o_teach_yes_l')} onPress={() => chooseShare(true)} />
+        <ListCard icon="people-outline" title={w('o_teach_no')} line={w('o_teach_no_l')} onPress={() => chooseShare(false)} />
+      </Frame>
+    );
+  }
+  if (step === 'skills') {
+    const chosen = Object.keys(skills);
+    return (
+      <Frame {...common} title={w('o_skills_t')} hint={w('o_skills_h')} primary={{ label: w('o_next'), onPress: () => void saveSkills(), disabled: busy || !chosen.length }}>
+        {INTERESTS.map((x) => {
+          const on = !!skills[x.key];
+          return (
+            <View key={x.key} style={{ marginBottom: space.sm, borderRadius: radius.card, backgroundColor: on ? colors.accentSoft : colors.card, borderWidth: on ? 2 : 1, borderColor: on ? colors.accent : colors.line, padding: space.sm }}>
+              <Pressable onPress={() => toggleSkill(x.key)} accessibilityRole="checkbox" accessibilityState={{ checked: on }} style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
+                <View style={{ width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.accent : tints.green }}>
+                  <Ionicons name={x.icon} size={22} color={on ? colors.card : colors.ink} accessible={false} />
+                </View>
+                <Text style={{ flex: 1, fontSize: 18, fontWeight: '700', color: colors.ink }}>{w(`interest_${x.key}`)}</Text>
+                <Ionicons name={on ? 'checkmark-circle' : 'ellipse-outline'} size={26} color={on ? colors.accent : colors.line} accessible={false} />
+              </Pressable>
+              {on ? (
+                <View style={{ flexDirection: 'row', gap: 6, marginTop: space.xs }}>
+                  {LEVELS.map((lv) => {
+                    const sel = skills[x.key] === lv;
+                    return (
+                      <Pressable key={lv} onPress={() => setLevel(x.key, lv)} accessibilityRole="radio" accessibilityState={{ selected: sel }} style={{ flex: 1, minHeight: 42, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: sel ? colors.accent : colors.card, borderWidth: 1, borderColor: sel ? colors.accent : colors.line }}>
+                        <Text style={{ fontSize: 14, fontWeight: '800', color: sel ? colors.card : colors.ink }}>{w(`o_lvl_${lv}`)}</Text>
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              ) : null}
+            </View>
+          );
+        })}
         {err}
       </Frame>
     );

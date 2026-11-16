@@ -59,9 +59,9 @@ export function AppTabBar() {
     );
   }
   const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
-  const centre = true; // for now every person sees all three tabs, Wisdom in the centre; specialised views come later
-  const left = true;
-  const right = true;
+  const centre = !prof.profile || showsWisdom(prof); // Wisdom appears when the person said yes to teaching or sharing; until the server has answered, show all three
+  const left = !prof.profile || shows(prof, 'community');
+  const right = !prof.profile || shows(prof, 'markets') || shows(prof, 'freelance');
   const side = (key: string, icon: keyof typeof Ionicons.glyphMap) => {
     const on = lit === key;
     return (
