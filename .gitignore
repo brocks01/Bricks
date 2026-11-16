@@ -19,3 +19,6 @@ Thumbs.db
 CLAUDE.md
 *.err
 *.out
+
+# Map pictures cached by the API (backend/app/modules/geo)
+.cache/
