@@ -11,6 +11,7 @@ Built for the Singapore–India Hackathon 2026 (raiSE, Social Innovation and Inc
 | Folder | What it holds |'
 
 
+
 |---|---|
 
 | `app/` | the Expo app and website |
