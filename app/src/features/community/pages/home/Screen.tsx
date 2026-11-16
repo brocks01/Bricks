@@ -278,12 +278,12 @@ export default function CommunityHome() {
       <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.lg }}>
         {member ? (
           <>
-            {c.whatsapp_url ? <El page={page} id="whatsapp"><Action tone="whatsapp" icon="logo-whatsapp" label={t('rv.whatsapp')} onPress={whatsapp} /></El>
+            {c.whatsapp_url ? <View style={{ flex: 1 }}><El page={page} id="whatsapp"><Action tone="whatsapp" icon="logo-whatsapp" label={t('rv.whatsapp')} onPress={whatsapp} /></El></View>
               : canManage ? <Action tone="outline" icon="logo-whatsapp" label={t('rv.add_whatsapp')} onPress={() => setEditing(true)} /> : null}
-            <El page={page} id="more"><Action tone="outline" icon="ellipsis-horizontal" label={t('rv.more')} onPress={() => setSheet('more')} /></El>
+            <View style={{ flex: 1 }}><El page={page} id="more"><Action tone="outline" icon="ellipsis-horizontal" label={t('rv.more')} onPress={() => setSheet('more')} /></El></View>
           </>
         ) : (
-          <El page={page} id="join"><Action tone="navy" icon="add-circle-outline" label={t('rv.join')} onPress={() => void joiner.join(c)} /></El>
+          <View style={{ flex: 1 }}><El page={page} id="join"><Action tone="navy" icon="add-circle-outline" label={t('rv.join')} onPress={() => void joiner.join(c)} /></El></View>
         )}
       </View>
       {joiner.askNode ? <View style={{ marginTop: space.md }}>{joiner.askNode}</View> : null}
@@ -382,7 +382,7 @@ export default function CommunityHome() {
       <Sheet open={sheet === 'more'} onClose={() => setSheet(null)} title={c.name}>
         <Action tone="outline" icon="share-outline" label={t('rv.share_invite')} onPress={() => { setSheet(null); go('community.invite', { id: cid }); }} />
         <Action tone="outline" icon="flag-outline" label={t('rv.report')} onPress={() => setSheet('report')} />
-        <El page={page} id="leave"><Action tone="danger" icon="exit-outline" label={t('rv.leave')} onPress={() => setSheet('leave')} /></El>
+        <View><El page={page} id="leave"><Action tone="danger" icon="exit-outline" label={t('rv.leave')} onPress={() => setSheet('leave')} /></El></View>
       </Sheet>
       <Sheet open={sheet === 'leave'} onClose={() => setSheet(null)} title={t('rv.leave_title', { name: c.name })}>
         <Text style={{ fontSize: 18, lineHeight: 26, color: colors.ink }}>{t('rv.leave_body')}</Text>

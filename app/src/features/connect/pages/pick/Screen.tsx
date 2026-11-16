@@ -73,10 +73,11 @@ export default function Pick() {
     <Screen title={w('heading')} hero={
       <View style={{ marginBottom: space.lg }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md, flexWrap: 'wrap' }}>
-          <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink }}>{w('heading')}</Text>
+          <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink }}>{room > 0 && room < 3 ? t('rv.pick_up_to', { n: room }) : w('heading')}</Text>
           <Text accessibilityLiveRegion="polite" style={{ fontSize: 18, fontWeight: '700', color: colors.navy }}>{t('rv.pick_count', { n: chosen.length, max: room })}</Text>
         </View>
         <Text style={{ fontSize: 18, lineHeight: 26, color: colors.ink, marginTop: space.sm }}>{t('rv.pick_sub')}</Text>
+        {room > 0 && room < 3 ? <Text style={{ fontSize: 17, lineHeight: 24, color: colors.navy, marginTop: space.xs }}>{t('rv.pick_room', { used: 3 - room, n: room })}</Text> : null}
       </View>
     }>
       {list === null ? <SkeletonList count={3} /> : null}

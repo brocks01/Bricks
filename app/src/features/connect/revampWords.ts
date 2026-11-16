@@ -44,6 +44,8 @@ export const RV: WordTable = {
 
   // choosing up to three (first run)
   pick_title: ['Choose up to 3', 'अधिकतम 3 चुनें', 'সর্বোচ্চ ৩টি বেছে নিন', '3 வரை தேர்ந்தெடுங்கள்', '最多选择 3 个', 'Pilih sehingga 3'],
+  pick_up_to: ['Choose up to {n}', 'अधिकतम {n} चुनें', 'সর্বোচ্চ {n}টি বেছে নিন', '{n} வரை தேர்ந்தெடுங்கள்', '最多选择 {n} 个', 'Pilih sehingga {n}'],
+  pick_room: ['You are in {used} already, so you can choose {n} more.', 'आप पहले से {used} में हैं, इसलिए {n} और चुन सकते हैं।', 'আপনি ইতিমধ্যে {used}টিতে আছেন, তাই আরও {n}টি বেছে নিতে পারেন।', 'நீங்கள் ஏற்கனவே {used} இல் உள்ளீர்கள், எனவே இன்னும் {n} தேர்ந்தெடுக்கலாம்.', '您已加入 {used} 个，还可以再选 {n} 个。', 'Anda sudah dalam {used}, jadi anda boleh pilih {n} lagi.'],
   pick_sub: ['Communities near you that share what you enjoy.', 'आपके पास के समुदाय जिन्हें वही पसंद है जो आपको।', 'আপনার কাছের কমিউনিটি, যাদের পছন্দ আপনার মতো।', 'உங்களுக்குப் பிடித்ததைப் பகிரும் அருகிலுள்ள சமூகங்கள்.', '您附近、与您爱好相同的社区。', 'Komuniti berhampiran yang berkongsi minat anda.'],
   pick_count: ['{n} of {max} chosen', '{max} में से {n} चुने', '{max}টির মধ্যে {n}টি বেছে নেওয়া', '{max} இல் {n} தேர்ந்தெடுக்கப்பட்டது', '已选 {n} / {max}', '{n} daripada {max} dipilih'],
   pick_full: ['You can be in 3 communities. Leave one later to join another.', 'आप 3 समुदायों में रह सकते हैं। दूसरा जुड़ने के लिए बाद में एक छोड़ें।', 'আপনি ৩টি কমিউনিটিতে থাকতে পারেন। অন্যটিতে যোগ দিতে পরে একটি ছাড়ুন।', 'நீங்கள் 3 சமூகங்களில் இருக்கலாம். வேறொன்றில் சேர பின்னர் ஒன்றை விடுங்கள்.', '您最多可加入 3 个社区。以后退出一个即可加入另一个。', 'Anda boleh berada dalam 3 komuniti. Tinggalkan satu kemudian untuk menyertai yang lain.'],

@@ -73,9 +73,10 @@ export function CommunityCard({ c, onOpen, onEvents, onJoin, onAddWhatsapp, chos
               <Text style={{ fontSize: 15, fontWeight: '700', color: colors.navy }}>{t(c.audience === 'men' ? 'rv.men_only' : 'rv.women_only')}</Text>
             </View>
           ) : null}
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' }}>
-            {c.faces.length ? <Faces names={c.faces.map((f) => f.name)} /> : <Ionicons name="people" size={20} color={colors.muted} />}
-            <Text style={{ flexShrink: 1, fontSize: 17, color: colors.ink }}>{people}</Text>
+          {c.faces.length ? <Faces names={c.faces.map((f) => f.name)} /> : null}
+          <View style={{ flexDirection: 'row', alignItems: 'flex-start', gap: 6 }}>
+            <Ionicons name="people-outline" size={20} color={colors.muted} style={{ marginTop: 2 }} />
+            <Text style={{ flex: 1, fontSize: 17, lineHeight: 24, color: colors.ink }}>{people}</Text>
           </View>
           <View style={{ flexDirection: 'row', gap: 6, alignItems: 'flex-start' }}>
             <Ionicons name="calendar-outline" size={20} color={colors.muted} style={{ marginTop: 2 }} />
