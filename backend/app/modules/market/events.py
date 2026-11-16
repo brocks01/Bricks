@@ -153,13 +153,21 @@ EVENT_KINDS = ("market_day", "volunteer", "gig", "show", "activity")
 
 
 def create_event(conn: Connection, me: str, data: dict) -> dict:
-    """An opportunity near people (a market day, a volunteering slot, a paid gig, a show, an activity), hosted by someone (an Active Ageing Centre, a mall, a community centre) or ours.
-    Once, or repeating weekly or monthly. With a host and an external reference it is an import: the same one updates in place. Platform admins only for now."""
-    from .. import recurrence
+    """An opportunity near people, made by a platform admin (`POST /v1/market/events`). The host's own owners and editors use
+    `hosts.service.create_event` instead; both call the same `make_event`, so the fields and the validation are identical."""
     from ..communities import rules as comm_rules
 
     if not comm_rules.is_admin(conn, me):
         raise MarketError("not_allowed", 403)
+    return make_event(conn, me, data)
+
+
+def make_event(conn: Connection, me: str, data: dict) -> dict:
+    """Make an opportunity (a market day, a volunteering slot, a paid gig, a show, an activity), hosted by someone or ours.
+    Once, or repeating weekly or monthly. With a host and an external reference it is an import: the same one updates in place.
+    No permission check here: the caller (a platform admin, or a member of that one host) has already decided who may make it."""
+    from .. import recurrence
+
     kind = data.get("kind") or "market_day"
     intents = list(dict.fromkeys(data.get("intents") or ["earn", "enjoy"]))
     if kind not in EVENT_KINDS or not intents or any(i not in INTENTS for i in intents):
@@ -195,11 +203,18 @@ def create_event(conn: Connection, me: str, data: dict) -> dict:
 
 
 def end_series(conn: Connection, me: str, event_id: str) -> dict:
-    from .. import recurrence
+    """Stop a repeating market day (platform admins only); a host's own people use `hosts.end_series`."""
     from ..communities import rules as comm_rules
 
     if not comm_rules.is_admin(conn, me):
         raise MarketError("not_allowed", 403)
+    return end_series_for(conn, event_id)
+
+
+def end_series_for(conn: Connection, event_id: str) -> dict:
+    """The shared end of a series. The caller has already decided who may end it (a platform admin, or a member of that event's host)."""
+    from .. import recurrence
+
     sid = conn.execute(text("select series_id from market_events where id = :e"), {"e": _uuid(event_id)}).scalar()
     if sid is None:
         raise MarketError("not_found", 404)
