@@ -1,4 +1,5 @@
 """Wisdom: stories kept in a person's own words (private until shared), offers to teach, requests to learn, and introductions that the OTHER side decides."""
+import json
 import uuid
 
 import pytest
@@ -131,6 +132,17 @@ def test_a_young_learner_must_say_they_are_15_or_older_before_asking_anyone():
     assert client.post(f"/v1/wisdom/offers/{oid}/ask", json={}, headers=kid["h"]).status_code == 201
 
 
+def test_paid_sessions_are_offered_to_learners_and_givers_without_changing_what_they_see_first():
+    """The paid services listing lives in the Wisdom tab: everyone gets the "paid" part, and the part a person opens first never changes."""
+    people = [person("Meena Iyer"), person("Rajan Pillai"), person("Aarav Nair"), person("Priya Nair")]
+    shapes = [(["learn"], ["stories", "mentors", "paid"], "stories"), (["share"], ["mine", "learners", "paid"], "mine"),
+              (["share", "learn"], ["stories", "mentors", "mine", "paid"], "stories"), (["connect"], ["stories", "paid"], "stories")]
+    for p, (roles, parts, first) in zip(people, shapes):
+        client.put("/v1/onboarding/purpose", json={"answers": {"roles": roles}}, headers=p["h"])
+        w = client.get("/v1/profile", headers=p["h"]).json()["wisdom"]
+        assert w == {"parts": parts, "default": first}
+
+
 def test_sessions_add_up_to_calls_and_people_helped_this_month():
     mentor, learner = person("Kavita Rao"), person("Zara Khan")
     oid = client.post("/v1/wisdom/offers", json={"title": "Interview practice"}, headers=mentor["h"]).json()["id"]
@@ -143,3 +155,77 @@ def test_sessions_add_up_to_calls_and_people_helped_this_month():
     assert client.get("/v1/wisdom/stats", headers=mentor["h"]).json() == {"calls": 2, "minutes": 50, "people_helped": 1, "mentors_learned_from": 0}
     assert client.get("/v1/wisdom/stats", headers=learner["h"]).json()["mentors_learned_from"] == 1
     assert skill(mentor, "my_wisdom")["this_month"]["calls"] == 2
+
+
+def test_an_offer_carries_the_mentors_proof_and_a_learner_searches_by_topic_language_and_city():
+    mentor, learner = person("Kavita Rao"), person("Dev Patel")
+    client.patch("/v1/me", json={"area_name": "Tampines"}, headers=mentor["h"])
+    client.patch("/v1/me", json={"area_name": "Bedok"}, headers=learner["h"])
+    oid = client.post("/v1/wisdom/offers", json={"title": "Talk through your first pregnancy", "kind": "mentoring", "mode": "either", "proof_field": "Midwifery",
+                                                  "proof_years": 30, "proof_where": "Kandang Kerbau Hospital", "topics": ["pregnancy", "first job"], "languages": ["Tamil", "English"]},
+                      headers=mentor["h"]).json()["id"]
+    o = next(x for x in client.get("/v1/wisdom/offers", headers=learner["h"]).json()["offers"] if x["id"] == oid)
+    assert (o["proof_field"], o["proof_years"], o["proof_where"]) == ("Midwifery", 30, "Kandang Kerbau Hospital")
+    assert o["topics"] == ["pregnancy", "first job"] and o["languages"] == ["tamil", "english"]
+    assert o["sensitive"] is True and o["endorsements"] == 0 and o["sessions"] == 0 and "rating" not in o  # counts and sessions, never stars
+    # discovery: by topic, by a language (a code or a name), and by the mentor's area (so a learner can search their own city)
+    assert oid in [x["id"] for x in client.get("/v1/wisdom/offers", params={"topic": "first job"}, headers=learner["h"]).json()["offers"]]
+    assert oid in [x["id"] for x in client.get("/v1/wisdom/offers", params={"language": "ta"}, headers=learner["h"]).json()["offers"]]
+    assert oid in [x["id"] for x in client.get("/v1/wisdom/offers", params={"language": "Tamil"}, headers=learner["h"]).json()["offers"]]
+    assert oid in [x["id"] for x in client.get("/v1/wisdom/offers", params={"area": "Tampines"}, headers=learner["h"]).json()["offers"]]
+    assert oid not in [x["id"] for x in client.get("/v1/wisdom/offers", params={"topic": "gardening"}, headers=learner["h"]).json()["offers"]]
+    assert oid not in [x["id"] for x in client.get("/v1/wisdom/offers", params={"language": "French"}, headers=learner["h"]).json()["offers"]]
+    assert oid not in [x["id"] for x in client.get("/v1/wisdom/offers", params={"area": "Jurong"}, headers=learner["h"]).json()["offers"]]
+    plain = client.post("/v1/wisdom/offers", json={"title": "Start a small kueh business", "topics": ["cooking", "small business"]}, headers=mentor["h"]).json()["id"]
+    assert next(x for x in client.get("/v1/wisdom/offers", headers=learner["h"]).json()["offers"] if x["id"] == plain)["sensitive"] is False
+    assert client.post("/v1/wisdom/offers", json={"title": "Bad years", "proof_years": 99}, headers=mentor["h"]).status_code == 422
+
+
+def test_a_learner_thanks_a_mentor_only_after_a_session_and_only_once():
+    mentor, learner = person("Kavita Rao"), person("Zara Khan")
+    oid = client.post("/v1/wisdom/offers", json={"title": "Interview practice", "mode": "volunteer"}, headers=mentor["h"]).json()["id"]
+    assert client.post(f"/v1/wisdom/offers/{oid}/endorse", json={"note": "So kind"}, headers=learner["h"]).json()["detail"]["code"] == "needs_session"
+    assert client.post(f"/v1/wisdom/offers/{oid}/endorse", json={}, headers=mentor["h"]).json()["detail"]["code"] == "not_your_offer"
+    cid = client.post(f"/v1/wisdom/offers/{oid}/ask", json={}, headers=learner["h"]).json()["id"]
+    client.post(f"/v1/wisdom/connections/{cid}/decide", json={"accept": True}, headers=mentor["h"])
+    client.post(f"/v1/wisdom/connections/{cid}/sessions", json={"minutes": 30}, headers=mentor["h"])
+    said = client.post(f"/v1/wisdom/offers/{oid}/endorse", json={"note": "She listened and helped"}, headers=learner["h"])
+    assert said.status_code == 201 and said.json()["endorsements"] == 1
+    assert client.post(f"/v1/wisdom/offers/{oid}/endorse", json={}, headers=learner["h"]).status_code == 409  # one per learner and offer
+    o = next(x for x in client.get("/v1/wisdom/offers", headers=learner["h"]).json()["offers"] if x["id"] == oid)
+    assert o["endorsements"] == 1 and o["sessions"] == 1 and "rating" not in o
+
+
+def test_the_first_conversation_is_short_and_never_shares_a_phone_number_or_an_email():
+    mentor, learner = person("Hari Menon"), person("Tia Lim", band="under40")
+    client.patch("/v1/me", json={"phone": "+6598765432"}, headers=mentor["h"])
+    oid = client.post("/v1/wisdom/offers", json={"title": "Teach bicycle repair"}, headers=mentor["h"]).json()["id"]
+    cid = client.post(f"/v1/wisdom/offers/{oid}/ask", json={"message": "Could you teach me on a Saturday?"}, headers=learner["h"]).json()["id"]
+    early = client.post(f"/v1/wisdom/connections/{cid}/messages", json={"body": "hello"}, headers=learner["h"])
+    assert early.json()["detail"]["code"] == "not_accepted"  # the conversation starts only when both sides said yes
+    client.post(f"/v1/wisdom/connections/{cid}/decide", json={"accept": True}, headers=mentor["h"])
+    assert client.post(f"/v1/wisdom/connections/{cid}/messages", json={"body": "x" * 501}, headers=learner["h"]).status_code == 422  # short on purpose
+    sent = client.post(f"/v1/wisdom/connections/{cid}/messages", json={"body": "Thank you. Shall we meet at the library?"}, headers=learner["h"])
+    assert sent.status_code == 201 and sent.json()["to"] == "Hari"
+    blob = json.dumps(client.get(f"/v1/wisdom/connections/{cid}/messages", headers=mentor["h"]).json())
+    assert "Thank you. Shall we meet at the library?" in blob and "Menon" not in blob and "+6598765432" not in blob and learner["h"]["Authorization"] not in blob
+    assert json.dumps(client.get(f"/v1/wisdom/connections/{cid}/messages", headers=learner["h"]).json()).count("Tia") == 1  # first names only, both sides
+    assert client.get(f"/v1/wisdom/connections/{cid}/messages", headers=person("Asha Nair")["h"]).json()["detail"]["code"] == "not_found"  # not a third person's business
+    client.post(f"/v1/wisdom/connections/{cid}/close", headers=mentor["h"])  # either side can close it
+    assert client.post(f"/v1/wisdom/connections/{cid}/messages", json={"body": "one more"}, headers=learner["h"]).json()["detail"]["code"] == "not_found"
+
+
+def test_the_agent_reads_and_sends_the_conversation_without_marking_it_read():
+    mentor, learner = person("Hari Menon"), person("Tia Lim", band="under40")
+    oid = client.post("/v1/wisdom/offers", json={"title": "Teach bicycle repair"}, headers=mentor["h"]).json()["id"]
+    cid = client.post(f"/v1/wisdom/offers/{oid}/ask", json={}, headers=learner["h"]).json()["id"]
+    client.post(f"/v1/wisdom/connections/{cid}/decide", json={"accept": True}, headers=mentor["h"])
+    assert skill(mentor, "my_conversations")["conversations"] == [] or skill(mentor, "my_conversations")["conversations"][0]["last"] is None
+    said = skill(learner, "send_wisdom_message", who="hari", message="Thank you, I will bring a notebook", confirmed=True)
+    assert said["sent_to"] == "Hari"
+    assert skill(learner, "send_wisdom_message", who="hari", message="again", confirmed=False)["error"] == "needs_confirmation"
+    convos = skill(mentor, "my_conversations")["conversations"]
+    assert convos[0]["with"] == "Tia" and convos[0]["last"] == "Thank you, I will bring a notebook" and convos[0]["unread"] == 1
+    assert skill(mentor, "my_conversations")["conversations"][0]["unread"] == 1  # listing a conversation never marks it read
+    client.get(f"/v1/wisdom/connections/{cid}/messages", headers=mentor["h"])
+    assert skill(mentor, "my_conversations")["conversations"][0]["unread"] == 0  # opening the thread does

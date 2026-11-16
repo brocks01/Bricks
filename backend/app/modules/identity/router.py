@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends, Header, HTTPException, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy import Connection
@@ -23,6 +25,12 @@ def _on_this_computer(request: Request) -> bool:
     return not (request.headers.get("x-forwarded-for") or request.headers.get("forwarded"))
 
 
+def _demo_otp() -> bool:
+    """DEMO_SIGNIN_OTP (name in .env.example, never a value in git): a demo deployment shows the one-time code on the sign-in screen,
+    so a visitor can type any address and continue without opening a mailbox. Default off - the real email still goes out either way."""
+    return (os.environ.get("DEMO_SIGNIN_OTP") or "").strip().lower() in ("1", "true", "yes", "on")
+
+
 def current_user_id(authorization: str | None = Header(default=None)) -> str:
     """Stateless check: signature, expiry and claims, then the in-memory logged-out list and "changed at". `token_expired` makes the app refresh once and retry."""
     token = (authorization or "").removeprefix("Bearer ").strip()
@@ -41,7 +49,10 @@ def request_code(body: RequestCodeIn, request: Request, conn: Connection = Depen
         code, expires_in = service.request_code(conn, body.email)
     except service.AuthError as e:
         return _refuse(e)
-    return CodeSentOut(sent=True, expires_in=expires_in, dev_code=code if get_settings().is_dev and _on_this_computer(request) else None)
+    # The code goes back to the screen when this is a demo deployment (DEMO_SIGNIN_OTP) or when we are reached directly from this
+    # computer in development. The real email is sent either way; the rate limits and the single use of a code are unchanged.
+    show = _demo_otp() or (get_settings().is_dev and _on_this_computer(request))
+    return CodeSentOut(sent=True, expires_in=expires_in, dev_code=code if show else None)
 
 
 @router.post("/auth/verify-code", response_model=SessionOut)

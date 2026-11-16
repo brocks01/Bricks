@@ -1,7 +1,7 @@
 import { ApiError } from '../../api/client';
-import type { MarketCategory, MarketTier } from '../../api/market';
+import type { MarketCategory, MarketTier } from '../../api/wisdom';
 
-// Shared by the Marketplace screens: icons for kinds of service, a money format, and the server's refusals turned into the word that says it.
+// Shared by the stall screens: the server's refusals turned into the word that says it. (The paid-session screens have their own copy in wisdom/serviceUi.ts.)
 export const CATEGORY_ICON: Record<MarketCategory, 'color-palette-outline' | 'restaurant-outline' | 'school-outline' | 'construct-outline' | 'musical-notes-outline' | 'fitness-outline' | 'chatbubbles-outline' | 'book-outline' | 'sparkles-outline'> = {
   crafts: 'color-palette-outline',
   cooking: 'restaurant-outline',

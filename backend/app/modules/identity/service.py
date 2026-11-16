@@ -9,7 +9,7 @@ from ...core.config import get_settings
 MAX_ATTEMPTS = 5
 MAX_CODES_PER_HOUR = 5
 MIN_SECONDS_BETWEEN_CODES = 30
-PROFILE_COLUMNS = ("display_name", "language", "age_band", "phone", "area_name", "tz_offset_min", "spoken_languages", "comm_language")
+PROFILE_COLUMNS = ("display_name", "language", "age_band", "phone", "area_name", "tz_offset_min", "spoken_languages", "comm_language", "interests", "voice_intro_url")
 
 
 class AuthError(Exception):
@@ -40,6 +40,8 @@ def user_dict(row) -> dict:
         "tz_offset_min": row.tz_offset_min,
         "spoken_languages": list(row.spoken_languages or []),
         "comm_language": row.comm_language,
+        "interests": list(row.interests or []),
+        "voice_intro_url": row.voice_intro_url,
         "login_kind": row.login_kind,
         "profile_complete": bool(row.display_name and row.display_name.strip()),
     }
@@ -196,8 +198,10 @@ def update_profile(conn: Connection, user_id: str, fields: dict) -> dict:
             raise AuthError("validation", 422, field="display_name")
     if "spoken_languages" in fields and fields["spoken_languages"] is None:
         fields["spoken_languages"] = []  # the column is never null: no languages set
+    if "interests" in fields and fields["interests"] is None:
+        fields["interests"] = []  # likewise: no interests chosen rather than "unknown"
     if fields:
-        sets = ", ".join(f"{k} = cast(:{k} as text[])" if k == "spoken_languages" else f"{k} = :{k}" for k in fields)
+        sets = ", ".join(f"{k} = cast(:{k} as text[])" if k in ("spoken_languages", "interests") else f"{k} = :{k}" for k in fields)
         row = conn.execute(text(f"update users set {sets}, updated_at = now() where id = :u returning *"), {**fields, "u": user_id}).one()
     else:
         row = get_user(conn, user_id)

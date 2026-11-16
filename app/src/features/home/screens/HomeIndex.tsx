@@ -250,7 +250,7 @@ export default function HomeIndex() {
           <ListRow icon="people-outline" i={0} title={w('communities_used', { n: sum?.communities.used ?? 0, max: sum?.communities.max ?? 3 })} onPress={() => navigate('connect.index')} right={<Ionicons name="chevron-forward" size={size.icon.md} color={colors.muted} />} />
         </El>
         <El page={page} id="openMarket">
-          <ListRow icon="storefront-outline" i={1} title={sum && sum.market.waiting_for_me > 0 ? w('market_waiting', { n: sum.market.waiting_for_me }) : w('market_none')} onPress={() => navigate(sum && sum.market.waiting_for_me > 0 ? 'market.mine' : 'market.index')} right={<Ionicons name="chevron-forward" size={size.icon.md} color={colors.muted} />} />
+          <ListRow icon="storefront-outline" i={1} title={sum && sum.market.waiting_for_me > 0 ? w('market_waiting', { n: sum.market.waiting_for_me }) : w('market_none')} onPress={() => navigate(sum && sum.market.waiting_for_me > 0 ? 'wisdom.myServices' : 'market.index')} right={<Ionicons name="chevron-forward" size={size.icon.md} color={colors.muted} />} />
         </El>
       </Section>
 

@@ -1,8 +1,10 @@
 import { pageWords } from '../../i18n/words';
 import { definePage } from '../../kit/page';
-import { ASK, INDEX, OFFER, STORY, SUPPORT } from './words';
+import { ASK, INDEX, OFFER, SERVICES, STORY, SUPPORT } from './words';
 
 const base = { module: 'wisdom', requiresAuth: true } as const;
+// The words of a paid session, with the element ids of the moved screens pointed at the word that says them.
+const serviceWords = (heading: string, aliases: Record<string, string>) => pageWords(SERVICES, { ...aliases, heading });
 
 export const wisdomIndex = definePage({
   ...base,
@@ -10,16 +12,33 @@ export const wisdomIndex = definePage({
   route: '/wisdom',
   tab: 2,
   icon: 'leaf',
-  summary: 'Wisdom: where experience is passed between generations. Read shared stories, find a mentor, see what people want to learn, and manage your own stories, offers, requests and introductions.',
-  keywords: ['wisdom', 'stories', 'mentor', 'learn', 'teach', 'advice', 'experience', 'generations'],
+  summary: 'Wisdom: where experience is passed between generations. Read shared stories, find a mentor, see what people want to learn, book a paid session or offer your own, and manage your own stories, offers, requests, services and introductions.',
+  keywords: ['wisdom', 'stories', 'mentor', 'learn', 'teach', 'advice', 'experience', 'generations', 'paid', 'session', 'service'],
   elements: {
     heading: { kind: 'text', summary: 'Wisdom.' },
-    section: { kind: 'choice', type: 'string', options: ['stories', 'mentors', 'learners', 'mine'], summary: 'Which part of Wisdom is open: stories, mentors, people who want to learn, or mine.' },
+    section: { kind: 'choice', type: 'string', options: ['stories', 'mentors', 'learners', 'mine', 'paid'], summary: 'Which part of Wisdom is open: stories, mentors, people who want to learn, mine, or paid sessions.' },
     story: { kind: 'action', summary: 'Open the form to keep a story, skill or lesson.' },
     offer: { kind: 'action', summary: 'Open the form to offer to teach or help.' },
     ask: { kind: 'action', summary: 'Open the form to say what you want to learn.' },
+    serviceSearch: { kind: 'field', type: 'string', summary: 'Type to search paid sessions by words in the title, description or area.' },
+    serviceKind: { kind: 'choice', type: 'string', options: ['all', 'crafts', 'cooking', 'teaching', 'repair', 'music', 'wellness', 'advice', 'storytelling', 'other'], summary: 'Filter paid sessions by kind of service.' },
+    offerService: { kind: 'action', summary: 'Open the form to offer a service of your own by the hour.' },
+    myServices: { kind: 'action', summary: 'Open your own services and the booking requests waiting for your answer.' },
+    mentorSearch: { kind: 'field', type: 'string', summary: 'Type to search mentors by a word in what they offer.' },
+    mentorMode: { kind: 'choice', type: 'string', options: ['all', 'volunteer', 'paid'], summary: 'Only free offers, only paid ones, or either.' },
+    mentorTopic: { kind: 'field', type: 'string', summary: 'A life stage or a subject to look for, for example pregnancy or first job.' },
+    mentorLanguage: { kind: 'field', type: 'string', summary: 'A language the mentor can talk in, for example Tamil.' },
+    mentorNear: { kind: 'choice', type: 'string', options: ['anywhere', 'near_me'], summary: 'Anywhere, or only mentors in the person own area.' },
+    threadMessage: { kind: 'field', type: 'string', summary: 'A short message to the other side of the conversation (up to 500 characters).' },
+    sendThread: { kind: 'action', agent: 'confirm', summary: 'Send the message. It reaches them on the channel they prefer. Needs approval.' },
+    endorseNote: { kind: 'field', type: 'string', summary: 'A few kind words for the mentor, after a session.' },
+    endorse: { kind: 'action', summary: 'Thank the mentor for this offer (only after a logged session, once).' },
   },
-  strings: pageWords(INDEX),
+  strings: pageWords(INDEX, {
+    serviceSearch: 'searchServices', serviceKind: 'kindOfService', offerService: 'offer_service', myServices: 'my_market',
+    mentorSearch: 'searchMentors', mentorMode: 'modeLabel', mentorTopic: 'topicLabel', mentorLanguage: 'languageLabel', mentorNear: 'whereLabel',
+    threadMessage: 'messagePlaceholder', sendThread: 'send', endorseNote: 'thankNote', endorse: 'thankYou',
+  }),
 });
 
 export const wisdomStory = definePage({
@@ -83,4 +102,65 @@ export const wisdomSupport = definePage({
     save: { kind: 'action', summary: 'Post it.' },
   },
   strings: pageWords(SUPPORT),
+});
+
+// ---- paid sessions: the services listing, moved here from the Marketplace tab ----
+export const wisdomService = definePage({
+  ...base,
+  key: 'wisdom.service',
+  route: '/wisdom/service/[id]',
+  params: ['id'],
+  summary: 'One paid session: who offers it, their experience and proof, what people say, and a form to book it (for yourself or, as a community leader, for your community). Payment is direct between the two people; we never hold money.',
+  keywords: ['paid', 'session', 'service', 'book', 'hire', 'endorse', 'thank'],
+  elements: {
+    heading: { kind: 'text', summary: 'The service.' },
+    date: { kind: 'field', type: 'string', summary: 'The day to book, as 2026-11-20.' },
+    time: { kind: 'field', type: 'string', summary: 'The start time, as 10:30.' },
+    hours: { kind: 'field', type: 'number', summary: 'How many hours.' },
+    note: { kind: 'field', type: 'string', summary: 'A note for the provider.' },
+    forWhom: { kind: 'field', type: 'string', summary: 'Who it is for: "me", or the id of a community the person leads.' },
+    sendRequest: { kind: 'action', agent: 'confirm', summary: 'Send the booking request. Needs approval.' },
+    endorseNote: { kind: 'field', type: 'string', summary: 'A few kind words for the provider.' },
+    endorse: { kind: 'action', summary: 'Say thank you to the provider (only after the service happened).' },
+    pause: { kind: 'action', agent: 'confirm', summary: 'Pause or show again the person\'s own service.' },
+    removeListing: { kind: 'action', agent: 'confirm', summary: 'Remove the person\'s own service.' },
+  },
+  strings: serviceWords('h_listing', {
+    date: 'f_date', time: 'f_time', hours: 'f_hours', note: 'f_note', forWhom: 'book_for_me', sendRequest: 'send_request',
+    endorseNote: 'endorse_note', endorse: 'endorse_btn', pause: 'pause_listing', removeListing: 'remove_listing',
+  }),
+});
+
+export const wisdomServiceOffer = definePage({
+  ...base,
+  key: 'wisdom.serviceOffer',
+  route: '/wisdom/service-offer',
+  summary: 'A form to offer a service: what it is, the kind, how complex, years of experience, proof of work, the price per hour (or free) and the area. Shows a draft pay guide.',
+  keywords: ['offer', 'service', 'list', 'price', 'experience', 'proof', 'paid'],
+  elements: {
+    heading: { kind: 'text', summary: 'Offer a service.' },
+    title: { kind: 'field', type: 'string', required: true, summary: 'What the person offers, for example "Kueh making lesson".' },
+    category: { kind: 'choice', type: 'string', options: ['crafts', 'cooking', 'teaching', 'repair', 'music', 'wellness', 'advice', 'storytelling', 'other'], summary: 'The kind of service.' },
+    tier: { kind: 'choice', type: 'string', options: ['basic', 'skilled', 'expert'], summary: 'How complex the work is: basic, skilled or expert.' },
+    years: { kind: 'field', type: 'number', summary: 'Years of experience.' },
+    description: { kind: 'field', type: 'string', summary: 'A few words about the service.' },
+    proof: { kind: 'field', type: 'string', summary: 'Proof of work in their own words: where they worked, what they made, how long.' },
+    rate: { kind: 'field', type: 'number', summary: 'Price per hour in Singapore dollars; empty means free.' },
+    area: { kind: 'field', type: 'string', summary: 'The area where they offer it.' },
+    publish: { kind: 'action', agent: 'confirm', summary: 'Publish the service so others can book it. Needs approval.' },
+  },
+  strings: serviceWords('h_offer', {
+    title: 'f_title', category: 'f_category', tier: 'f_tier', years: 'f_years', description: 'f_desc',
+    proof: 'f_proof', rate: 'f_rate', area: 'f_area', publish: 'save_listing',
+  }),
+});
+
+export const wisdomMyServices = definePage({
+  ...base,
+  key: 'wisdom.myServices',
+  route: '/wisdom/services',
+  summary: 'The person\'s own services, the booking requests waiting for their answer, and the services they booked.',
+  keywords: ['bookings', 'requests', 'my services', 'accept', 'decline', 'paid'],
+  elements: { heading: { kind: 'text', summary: 'My services and bookings.' } },
+  strings: serviceWords('h_mine', {}),
 });

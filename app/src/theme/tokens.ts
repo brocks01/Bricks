@@ -13,6 +13,7 @@ export const colors = {
   navySoft: '#E9EDF4',
   gold: '#F2A31B', // the brand's amber: highlights and rings
   leaf: '#17684A', // progress bars and the selected tab
+  bone: '#E4E9E5', // the loading skeletons (Skeleton.tsx)
   danger: '#E5372E',
   warn: '#8A5A00',
   warnSoft: '#FDF1D6',

@@ -26,6 +26,19 @@ class OfferIn(BaseModel):
     kind: str = "mentoring"
     mode: str = "volunteer"
     availability: str | None = None
+    proof_field: str | None = None
+    proof_years: int | None = None
+    proof_where: str | None = None
+    topics: list[str] = Field(default_factory=list)
+    languages: list[str] = Field(default_factory=list)
+
+
+class NoteIn(BaseModel):
+    note: str | None = None
+
+
+class MessageIn(BaseModel):
+    body: str
 
 
 class StatusIn(BaseModel):
@@ -92,9 +105,10 @@ def remove_capsule(capsule_id: str, user_id: str = Depends(current_user_id), con
 
 # ---- offers ----
 @router.get("/offers")
-def browse_offers(q: str | None = None, kind: str | None = None, mode: str | None = None, domain: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
-    """What experienced people offer. kind=freelance is the paid-work list."""
-    return {"offers": service.browse_offers(conn, user_id, q, kind, mode, 30, domain)}
+def browse_offers(q: str | None = None, kind: str | None = None, mode: str | None = None, domain: str | None = None, topic: str | None = None,
+                 language: str | None = None, area: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """What experienced people offer. kind=freelance is the paid-work list; topic, language and area narrow the search further (area is the mentor's area, so a learner can search their own city)."""
+    return {"offers": service.browse_offers(conn, user_id, q, kind, mode, 30, domain, topic, language, area)}
 
 
 @router.get("/offers/mine")
@@ -105,6 +119,12 @@ def my_offers(user_id: str = Depends(current_user_id), conn: Connection = Depend
 @router.post("/offers", status_code=201)
 def create_offer(body: OfferIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return _go(service.create_offer, conn, user_id, body.model_dump())
+
+
+@router.post("/offers/{offer_id}/endorse", status_code=201)
+def endorse(offer_id: str, body: NoteIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A learner says thank you: only after a session they had with that mentor, once per offer. Counts, never stars."""
+    return _go(service.endorse_offer, conn, user_id, offer_id, body.note)
 
 
 @router.patch("/offers/{offer_id}")
@@ -158,6 +178,18 @@ def decide(connection_id: str, body: DecideIn, user_id: str = Depends(current_us
 @router.post("/connections/{connection_id}/close")
 def close(connection_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return _go(service.close_connection, conn, user_id, connection_id)
+
+
+@router.get("/connections/{connection_id}/messages")
+def messages(connection_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The first conversation: the messages of one accepted introduction, oldest first. First names only, never a phone number or an email."""
+    return {"messages": service.thread(conn, user_id, connection_id)}
+
+
+@router.post("/connections/{connection_id}/messages", status_code=201)
+def send(connection_id: str, body: MessageIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """One short message to the other side. It goes out through the outbox to their preferred channel, never at night."""
+    return _go(service.send_message, conn, user_id, connection_id, body.body)
 
 
 @router.post("/connections/{connection_id}/sessions", status_code=201)

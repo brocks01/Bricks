@@ -8,7 +8,7 @@ export type TextSize = 'normal' | 'large' | 'larger';
 export const ZOOM: Record<TextSize, number> = { normal: 1, large: 1.12, larger: 1.25 };
 export interface Prefs { textSize: TextSize; readAloud: boolean }
 
-export const prefs = createStore<Prefs>({ textSize: 'normal', readAloud: false });
+export const prefs = createStore<Prefs>({ textSize: 'large', readAloud: false });
 const KEY = 'bricks.prefs';
 
 async function storage() {

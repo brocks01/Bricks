@@ -45,6 +45,14 @@ class ProfilePatch(BaseModel):
     tz_offset_min: int | None = Field(default=None, ge=-840, le=840)  # minutes east of UTC, from the phone
     spoken_languages: list[str] | None = Field(default=None, max_length=23)  # languages the person speaks (see core/languages.py)
     comm_language: str | None = Field(default=None, max_length=8)  # the one they prefer to talk in
+    voice_intro_url: str | None = Field(default=None, max_length=400)  # the ten-second "about me" clip they recorded (an https address)
+
+    @field_validator("voice_intro_url")
+    @classmethod
+    def _voice(cls, v):
+        if v is not None and not v.startswith("https://"):
+            raise ValueError("must be an https address")
+        return v
 
     @field_validator("spoken_languages")
     @classmethod
@@ -63,6 +71,8 @@ class UserOut(BaseModel):
     tz_offset_min: int | None = None
     spoken_languages: list[str] = []
     comm_language: str | None = None
+    interests: list[str] = []  # the fixed interest keys the person chose in onboarding (walking, taichi, ...)
+    voice_intro_url: str | None = None  # their ten-second "about me" clip, when they recorded one
     id: str
     email: str | None
     display_name: str | None

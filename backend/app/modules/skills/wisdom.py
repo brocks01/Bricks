@@ -59,12 +59,16 @@ def browse_wisdom(conn, me, args):
     return {"stories": [{"title": c["title"], "by": c["by"], "kind": c["kind"], "text": c["body"][:600]} for c in w.library(conn, me, args.get("search"), args.get("kind") or None, 5)]}
 
 
-@skill("offer_to_teach", "Offer to teach", "Put up what the person can offer: mentoring, a workshop, or paid freelance work, with whether it is free, paid or either, and when they are free. Younger people can then ask them for guidance.",
+@skill("offer_to_teach", "Offer to teach", "Put up what the person can offer: mentoring, a workshop, or paid freelance work, with whether it is free, paid or either, and when they are free. Younger people can then ask them for guidance. "
+       "Their proof makes it trustworthy: the field they worked in, the years, where.",
        {"title": S("What they offer, for example 'Teach the basics of accounting'"), "about": S("A sentence or two about it (optional)"), "kind": S("mentoring, workshop or freelance", enum=list(w.OFFER_KINDS)),
         "mode": S("volunteer, paid or either", enum=list(w.MODES)), "availability": S("When they are free, in words (optional)"), "domain": S("cultural, social or professional (optional)", enum=list(w.CAPSULE_KINDS)),
-        "price_note": S("If paid, a short price note such as '$30 an hour, first call free' (optional)")}, ["title"])
+        "price_note": S("If paid, a short price note such as '$30 an hour, first call free' (optional)"),
+        "proof_field": S("The field they worked in, for example 'ship engineering' (optional)"), "proof_years": S("Years in that field (optional)"),
+        "proof_where": S("Where they worked or lived it, for example 'Hijaz Shipyard, Singapore' (optional)"),
+        "topics": S("Life stage or subject tags, comma separated, for example 'pregnancy, first job' (optional)"), "languages": S("Languages they can talk in, comma separated, for example 'Tamil, English' (optional)")}, ["title"])
 def offer_to_teach(conn, me, args):
-    r = _do(w.create_offer, conn, me, {k: args.get(k) for k in ("title", "about", "kind", "mode", "availability", "domain", "price_note") if args.get(k)})
+    r = _do(w.create_offer, conn, me, {k: args.get(k) for k in ("title", "about", "kind", "mode", "availability", "domain", "price_note", "proof_field", "proof_years", "proof_where", "topics", "languages") if args.get(k)})
     return {"offered": str(args["title"])[:120], "status": r["status"]}
 
 
@@ -75,11 +79,17 @@ def pause_offer(conn, me, args):
     return {"stopped": o["title"], "closed": args.get("close") is True}
 
 
-@skill("find_a_mentor", "Find a mentor", "Look for experienced people who offer to teach or do something, by a word, a kind (mentoring, workshop, freelance) or free or paid. Use it for 'who can teach me accounting', 'I need someone to help with my business plan'.",
-       {"search": S("What they want to learn (optional)"), "kind": S("mentoring, workshop or freelance (optional)", enum=list(w.OFFER_KINDS)), "mode": S("volunteer or paid (optional)", enum=["volunteer", "paid"]), "domain": S("cultural, social or professional (optional)", enum=list(w.CAPSULE_KINDS))}, risk="read")
+@skill("find_a_mentor", "Find a mentor", "Look for experienced people who offer to teach or do something, by a word, a kind (mentoring, workshop, freelance), free or paid, a domain, a topic (a life stage or subject such as pregnancy or first job), "
+       "a language they can talk in, or a place (their area, so a learner can search their own city). Use it for 'who can teach me accounting', 'is anyone near me who speaks Tamil'.",
+       {"search": S("What they want to learn (optional)"), "kind": S("mentoring, workshop or freelance (optional)", enum=list(w.OFFER_KINDS)), "mode": S("volunteer or paid (optional)", enum=["volunteer", "paid"]),
+        "domain": S("cultural, social or professional (optional)", enum=list(w.CAPSULE_KINDS)), "topic": S("A life stage or subject, for example 'pregnancy' or 'first job' (optional)"),
+        "language": S("A language they can talk in, for example 'Tamil' (optional)"), "area": S("A place to search near, for example 'Tampines' (optional)")}, risk="read")
 def find_a_mentor(conn, me, args):
-    return {"offers": [{"title": o["title"], "by": o["by"], "kind": o["kind"], "mode": o["mode"], "when": o["availability"], "about": (o["about"] or "")[:160]}
-                       for o in w.browse_offers(conn, me, args.get("search"), args.get("kind") or None, args.get("mode") or None, 6, args.get("domain") or None)]}
+    return {"offers": [{"title": o["title"], "by": o["by"], "kind": o["kind"], "mode": o["mode"], "when": o["availability"], "about": (o["about"] or "")[:160],
+                        "proof": " ".join(x for x in (o["proof_field"], f"{o['proof_years']} years" if o["proof_years"] is not None else "", o["proof_where"]) if x),
+                        "topics": o["topics"], "languages": o["languages"], "sensitive": o["sensitive"], "endorsements": o["endorsements"], "sessions": o["sessions"]}
+                       for o in w.browse_offers(conn, me, args.get("search"), args.get("kind") or None, args.get("mode") or None, 6, args.get("domain") or None,
+                                                args.get("topic"), args.get("language"), args.get("area"))]}
 
 
 @skill("ask_for_guidance", "Ask a mentor", "Ask one of the offers found by find_a_mentor for guidance, with a short message. This sends a note to that person, so ask the learner to confirm first, "
@@ -146,3 +156,26 @@ def ask_for_help(conn, me, args):
        {"search": S("A word to look for (optional)")}, risk="read")
 def who_needs_help(conn, me, args):
     return {"requests": [{"topic": r["topic"], "by": r["by"], "about": (r["about"] or "")[:160]} for r in w.open_requests(conn, me, args.get("search"), 30, "support")[:6]]}
+
+
+@skill("my_conversations", "My conversations", "The conversations the person is having in Wisdom: who they were introduced to, what it is about, the last thing said and how many are unread. "
+       "Use it for 'who am I talking to', 'what did Priya say', 'did they answer me'. Reading this never marks anything as read.", risk="read")
+def my_conversations(conn, me, args):
+    out = []
+    for c in w.my_connections(conn, me):
+        if c["status"] != "accepted":
+            continue
+        msgs = w.thread(conn, me, c["id"], mark_read=False)
+        out.append({"with": c["with"], "about": c["about"], "last": (msgs[-1]["body"][:200] if msgs else None),
+                    "last_from": (msgs[-1]["from"] if msgs else None), "unread": sum(1 for m in msgs if not m["mine"] and not m["read"])})
+    return {"conversations": out}
+
+
+@skill("send_wisdom_message", "Send a Wisdom message", "Write a short message to the person the person was introduced to in Wisdom (only after both sides said yes). It reaches them on the channel they prefer. "
+       "Ask what to say and write it in their own words, then call with confirmed true only after they said yes. Never include a phone number or an email address.",
+       {"who": S("The other person or the topic, in words"), "message": S("What to send, in their words, a few sentences at most"), "confirmed": B("true only after the person said yes")}, ["who", "message"], risk="confirm")
+def send_wisdom_message(conn, me, args):
+    mine = [c for c in w.my_connections(conn, me) if c["status"] == "accepted"]
+    c = pick(mine, args.get("who"), lambda r: f"{r['with']} {r['about']}", "conversation")
+    out = _do(w.send_message, conn, me, c["id"], args.get("message"))
+    return {"sent_to": out["to"]}

@@ -9,7 +9,7 @@ import { colors, radius, space } from '../theme/tokens';
 //   <SkeletonPage banner />            a whole page: optional banner picture, a title row, a row of tiles, then cards
 // Everything pulses together, so a page that is loading looks calm, not broken.
 
-const BONE = '#E4E9E5';
+const BONE = colors.bone;
 
 function usePulse() {
   const v = useState(() => new Animated.Value(0.55))[0];

@@ -45,7 +45,7 @@ def ids(state):
 def test_a_new_person_starts_with_the_required_parts_only():
     _, h = person()
     st = client.get("/v1/onboarding", headers=h).json()
-    assert ids(st) == ["basics", "purpose", "consent", "channels", "rhythm", "wellbeing"] and st["completed"] is False
+    assert ids(st) == ["basics", "purpose", "interests", "consent", "channels", "belonging", "rhythm", "wellbeing"] and st["completed"] is False
     assert st["next"]["id"] == "basics" and st["next"]["required"] is True
 
 

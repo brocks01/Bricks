@@ -7,6 +7,7 @@ import { AgentProvider, ApprovalBanner } from '../agent';
 import { AppTabBar } from '../components/AppTabBar';
 import { AuthGate } from '../components/AuthGate';
 import { PhoneFrame } from '../components/PhoneFrame';
+import { SplashIntro } from '../components/SplashIntro';
 import { ReminderPopups } from '../features/home/ReminderPopups';
 import { LanguageProvider } from '../i18n';
 import { loadPrefs } from '../prefs/store';
@@ -36,6 +37,7 @@ export default function RootLayout() {
               </View>
             </AuthGate>
             <AppTabBar />
+            <SplashIntro />
           </PhoneFrame>
         </AgentProvider>
       </NavigationProvider>

@@ -17,18 +17,19 @@ def my_profile(conn, me, args):
     return service.profile(conn, me)
 
 
-@skill("onboarding_next", "What to ask next", "The next part of the person's setup and its questions that are still unanswered. Ask them in your own words, one at a time, never as a form. "
-       "Returns done when nothing is left.", risk="read")
+@skill("onboarding_next", "What to ask next", "The next part of the person's setup and the questions in it that are still unanswered (each carries `why`, the honest reason it is asked, when there is one). "
+       "Ask ONE question now, in your own words, and wait for their answer; save each answer as they give it with save_answer. Never read out the list, never mention more than one question, never make it sound like a form. "
+       "Only the parts marked needed must be done; every other part is optional - they can skip it (skip_section) or leave it for later. Returns done when nothing is left.", risk="read")
 def onboarding_next(conn, me, args):
     nxt = service.state(conn, me)["next"]
     if not nxt:
         return {"done": True}
-    todo = [{"field": q["key"], "ask": q["label"], "kind": q["kind"], "options": q["options"], "needed": q["required"]} for q in nxt["questions"] if q["answer"] in (None, [])]
+    todo = [{"field": q["key"], "ask": q["label"], "kind": q["kind"], "options": q["options"], "needed": q["required"], "why": q.get("why")} for q in nxt["questions"] if q["answer"] in (None, [])]
     return {"section": nxt["id"], "title": nxt["title"], "required": nxt["required"], "questions": todo}
 
 
 @skill("save_answer", "Save an answer", "Save one thing the person told you for their setup, for example section basics, field display_name, value 'Meena'. Lists are comma separated "
-       "(roles: connect, share, learn, help, care). Consent has its own skill. Use the field names that onboarding_next gave you.",
+       "(roles: connect, share, learn, help, care). Consent has its own skill. Use the field names that onboarding_next gave you, and save each answer right after they give it, before asking the next thing.",
        {"section": S("The section id from onboarding_next"), "field": S("The field name"), "value": S("What the person said, in a few words")}, ["section", "field", "value"])
 def save_answer(conn, me, args):
     section, field = str(args["section"]).strip(), str(args["field"]).strip()
@@ -49,7 +50,7 @@ def give_consent(conn, me, args):
     return {"consented": which, "setup_finished": st["completed"]}
 
 
-@skill("skip_section", "Skip an optional part", "The person would rather not answer an optional part of their setup now. Needed parts cannot be skipped.",
+@skill("skip_section", "Skip an optional part", "The person would rather not answer an optional part of their setup now, or would rather do it later. Skipping is always fine: say so kindly and call this. Needed parts cannot be skipped.",
        {"section": S("The section id from onboarding_next")}, ["section"])
 def skip_section(conn, me, args):
     st = _guard(lambda: service.skip(conn, me, str(args["section"]).strip()))

@@ -1,60 +1,11 @@
 import type { PageStrings } from '../../../../navigation/types';
 
-// First drafts by an AI assistant; native-speaker review needed for hi, bn, ta, zh, ms.
-// The language NAMES on the chips are in their own scripts (see i18n/spoken.ts) and are not translated.
+// First drafts; native-speaker review needed for hi, bn, ta, zh, ms.
 export const strings: PageStrings = {
-  en: {
-    heading: 'Languages I speak',
-    intro: 'Tell Wisdom which languages you talk in. Wisdom answers only in these languages, and asks you to repeat when it does not catch what you said.',
-    spoken: 'Languages I speak',
-    spokenHint: 'Tap the languages you speak. For example English, Hindi, Bhojpuri.',
-    commLanguage: 'I prefer to talk in',
-    save: 'Save',
-    saved: 'Saved.',
-  },
-  hi: {
-    heading: 'मैं जिन भाषाओं में बोलता/बोलती हूँ',
-    intro: 'बताइए आप किन भाषाओं में बात करते हैं। Wisdom सिर्फ़ इन्हीं भाषाओं में जवाब देता है, और सुन न पाए तो दोबारा पूछता है।',
-    spoken: 'मैं जिन भाषाओं में बोलता/बोलती हूँ',
-    spokenHint: 'जो भाषाएँ आप बोलते हैं उन पर टैप करें। जैसे अंग्रेज़ी, हिन्दी, भोजपुरी।',
-    commLanguage: 'मैं इस भाषा में बात करना पसंद करता/करती हूँ',
-    save: 'सहेजें',
-    saved: 'सहेज गया।',
-  },
-  bn: {
-    heading: 'আমি যে ভাষায় কথা বলি',
-    intro: 'বলুন আপনি কোন ভাষায় কথা বলেন। Wisdom শুধু এই ভাষাগুলোতে উত্তর দেবে, আর বুঝতে না পারলে আবার বলতে বলবে।',
-    spoken: 'আমি যে ভাষায় কথা বলি',
-    spokenHint: 'আপনি যে ভাষাগুলো বলেন সেগুলোতে ট্যাপ করুন। যেমন ইংরেজি, হিন্দি, ভোজপুরি।',
-    commLanguage: 'আমি এই ভাষায় কথা বলতে চাই',
-    save: 'সংরক্ষণ করুন',
-    saved: 'সংরক্ষিত হয়েছে।',
-  },
-  ta: {
-    heading: 'நான் பேசும் மொழிகள்',
-    intro: 'நீங்கள் எந்த மொழிகளில் பேசுகிறீர்கள் என்று சொல்லுங்கள். Wisdom இந்த மொழிகளில் மட்டுமே பதிலளிக்கும், புரியாவிட்டால் மீண்டும் கேட்கும்.',
-    spoken: 'நான் பேசும் மொழிகள்',
-    spokenHint: 'நீங்கள் பேசும் மொழிகளைத் தட்டவும். எடுத்துக்காட்டாக ஆங்கிலம், இந்தி, போஜ்புரி.',
-    commLanguage: 'நான் இந்த மொழியில் பேச விரும்புகிறேன்',
-    save: 'சேமி',
-    saved: 'சேமிக்கப்பட்டது.',
-  },
-  zh: {
-    heading: '我会说的语言',
-    intro: '告诉 Wisdom 你会说什么语言。Wisdom 只会用这些语言回答；没听清时会请你再说一遍。',
-    spoken: '我会说的语言',
-    spokenHint: '点选你会说的语言，例如英语、印地语、博杰普尔语。',
-    commLanguage: '我更喜欢用这种语言交谈',
-    save: '保存',
-    saved: '已保存。',
-  },
-  ms: {
-    heading: 'Bahasa yang saya bercakap',
-    intro: 'Beritahu Wisdom bahasa apa yang anda cakap. Wisdom akan menjawab dalam bahasa ini sahaja, dan akan minta anda ulang jika tidak faham.',
-    spoken: 'Bahasa yang saya bercakap',
-    spokenHint: 'Ketik bahasa yang anda cakap. Contohnya English, Hindi, Bhojpuri.',
-    commLanguage: 'Saya lebih suka bercakap dalam',
-    save: 'Simpan',
-    saved: 'Disimpan.',
-  },
+  en: { heading: 'Choose languages you speak', intro: 'Tick all the languages you talk in. Wisdom answers only in those.', spoken: 'Languages I speak', spokenHint: 'Tick all that apply.', save: 'Save', saved: 'Saved', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
+  hi: { heading: 'जो भाषाएँ आप बोलते हैं', intro: 'जो भाषाएँ आप बोलते हैं, उन्हें चुनें। Wisdom सिर्फ़ उन्हीं में जवाब देगा।', spoken: 'मेरी भाषाएँ', spokenHint: 'जितनी लागू हों, चुनें।', save: 'सहेजें', saved: 'सहेजा गया', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
+  bn: { heading: 'যে ভাষাগুলি আপনি বলেন', intro: 'যে ভাষাগুলি আপনি বলেন, সেগুলি বেছে নিন। Wisdom শুধু সেগুলিতেই উত্তর দেবে।', spoken: 'আমার ভাষা', spokenHint: 'যতগুলি প্রযোজ্য, বেছে নিন।', save: 'সংরক্ষণ', saved: 'সংরক্ষিত', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
+  ta: { heading: 'நீங்கள் பேசும் மொழிகள்', intro: 'நீங்கள் பேசும் மொழிகளைத் தேர்ந்தெடுக்கவும். Wisdom அவற்றில் மட்டுமே பதிலளிக்கும்.', spoken: 'என் மொழிகள்', spokenHint: 'பொருந்துவதைத் தேர்ந்தெடுக்கவும்.', save: 'சேமி', saved: 'சேமிக்கப்பட்டது', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
+  zh: { heading: '你說的語言', intro: '選擇你說的語言。Wisdom 只會用這些語言回答。', spoken: '我会说的语言', spokenHint: '全部选择。', save: '保存', saved: '已保存', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
+  ms: { heading: 'Bahasa yang anda cakap', intro: 'Pilih bahasa yang anda cakap. Wisdom hanya menjawab dalam bahasa itu.', spoken: 'Bahasa saya', spokenHint: 'Pilih semua yang berkenaan.', save: 'Simpan', saved: 'Disimpan', speakEn: 'English', speakHi: 'हिन्दी', speakBn: 'বাংলা', speakTa: 'தமிழ்', speakTe: 'తెలుగు', speakMr: 'मराठी', speakGu: 'ગુજરાતી', speakKn: 'ಕನ್ನಡ', speakMl: 'മലയാളം', speakPa: 'ਪੰਜਾਬੀ', speakUr: 'اردو', speakOr: 'ଓଡ଼ିଆ', speakAs: 'অসমীয়া', speakBho: 'भोजपुरी', speakMai: 'मैथिली', speakNe: 'नेपाली', speakKok: 'कोंकणी', speakZh: '中文', speakYue: '粵語', speakNan: '閩南語', speakTeo: '潮州话', speakMs: 'Bahasa Melayu', speakId: 'Bahasa Indonesia' },
 };

@@ -1,7 +1,7 @@
 """Onboarding: the one place that knows which step a person is on. The app, the agent on a phone call and the chat all call these functions, so a person can
 start on a call and finish in the app. A section can be answered in any order and in parts; only the required ones (about you, what you want, consent) must be done."""
 import json
-from datetime import date
+from datetime import date, time
 
 from sqlalchemy import Connection, text
 
@@ -53,7 +53,9 @@ def state(conn: Connection, me: str) -> dict:
     answers = _prefilled(conn, me, row.answers or {})
     sections = [_view(s, answers) for s in rules.applicable(roles)]
     todo = [s for s in sections if not s["done"] and not s["skipped"]]
-    nxt = next((s for s in todo if s["required"]), None) or (todo[0] if todo else None)
+    # One order, the order the parts are listed in (about you, what you want here, what you enjoy...): the person walks through
+    # them in the shape the product designed. The needed parts still cannot be skipped, and nothing optional blocks finishing.
+    nxt = todo[0] if todo else None
     return {"completed": row.completed_at is not None, "roles": roles, "sections": sections, "next": nxt}
 
 
@@ -73,6 +75,9 @@ def answer(conn: Connection, me: str, section_id: str, values: dict) -> dict:
     for key, value in values.items():
         if key not in questions:
             raise OnboardingError("unknown_question", f"There is no question called {key}.")
+        if value is None and not questions[key]["required"]:
+            cleaned[key] = None  # null takes an optional answer back off (for example the quiet hours they set earlier)
+            continue
         cleaned[key] = rules.clean(questions[key], value)
     answers = dict(row.answers or {})
     mine = {k: v for k, v in (answers.get(section_id) or {}).items() if k != rules.SKIPPED}
@@ -131,12 +136,13 @@ def _finish_if_ready(conn: Connection, me: str) -> dict:
 def profile(conn: Connection, me: str) -> dict:
     """What every screen and every channel asks first: who is this person to Wisdom, and what should they see."""
     st = state(conn, me)
-    u = conn.execute(text("select display_name, age_band from users where id = :u"), {"u": me}).one()
+    u = conn.execute(text("select display_name, age_band, interests, voice_intro_url from users where id = :u"), {"u": me}).one()
     chosen = bool(st["roles"])
     roles = st["roles"] if chosen else rules.default_roles(u.age_band)
     nxt = st["next"]
     return {"name": u.display_name, "roles": roles, "roles_chosen": chosen, "surfaces": rules.surfaces(roles), "focus": rules.focus(roles),
             "wisdom": {"parts": rules.wisdom_parts(roles), "default": rules.wisdom_default(roles)}, "onboarded": st["completed"],
+            "interests": list(u.interests or []), "voice_intro": u.voice_intro_url,
             "next": {"id": nxt["id"], "title": nxt["title"], "required": nxt["required"]} if nxt else None}
 
 
@@ -149,18 +155,36 @@ def can_learn(conn: Connection, me: str) -> bool:
     return (a.get("learn") or {}).get("age_15_plus") is True
 
 
+def rank_circles(conn: Connection, me: str, circles: list[dict]) -> list[dict]:
+    """Rank circles for THIS person using only the belonging answers they chose to give (never inferred, never shown outside a circle).
+    Any area calls this with its own circle dicts (circle, name, area_name, description) and gets the same dicts back, best fit first."""
+    row = _row(conn, me)
+    return rules.rank_circles(dict((row.answers or {}).get("belonging") or {}), circles)
+
+
+def quiet_hours(conn: Connection, me: str) -> tuple[time, time] | None:
+    """This person's own quiet hours (their answers in the "How to reach you" part), or None when they have set none and WISDOM_QUIET applies.
+    Whoever sends to a person calls this before the environment default, so a person who prefers 13:00 to 15:00 is not disturbed then either."""
+    c = dict((_row(conn, me).answers or {}).get("channels") or {})
+    try:
+        return time.fromisoformat(str(c["quiet_from"])), time.fromisoformat(str(c["quiet_to"]))
+    except (KeyError, ValueError):
+        return None
+
+
 def hint(conn: Connection, me: str) -> str:
-    """One line for the agent's context: what this person is here for, and what to ask next (gently, one thing at a time)."""
+    """One short line per thing the agent should know (the memory keeps only the first 380 characters, so the first conversation comes first).
+    The voice of it: a friend asking, one thing at a time - never a form, never a list of questions."""
     p = profile(conn, me)
     out = []
     if not p["name"] and not p["roles_chosen"]:
         out.append("They have only just arrived and you have never spoken: welcome them warmly, say in one sentence who you are, and ask what to call them.")
     if p["roles_chosen"]:
         out.append("They are here to: " + ", ".join(rules.ROLE_WORDS[r] for r in p["roles"]) + ".")
+    if p["next"]:
+        out.append(f"Their setup is not finished: ask ONE question now, in your own words, save each answer as it comes, never a list. Next: {p['next']['title']}"
+                   + (" (needed)." if p["next"]["required"] else " (optional; they can skip it)."))
     check = wellbeing.due(conn, me)
     if check and (p["onboarded"] or check != "baseline"):
-        out.append("A short, kind check on how connected they feel is due (three questions); ask it gently when it fits, with onboarding_next or wellbeing_check.")
-    if p["next"]:
-        out.append(f"Their setup is not finished. Next to learn, naturally and one question at a time, never like a form: {p['next']['title']}"
-                   + (" (needed first)." if p["next"]["required"] else " (optional, skip if they would rather not)."))
+        out.append("A kind check on how connected they feel is due; ask it gently when it fits.")
     return " ".join(out)

@@ -1,11 +1,10 @@
 import { ReactNode, useEffect } from 'react';
 import { View } from 'react-native';
-import { SkeletonPage } from './Skeleton';
+import { AppLoading } from './AppLoading';
 import { useStore } from '../core/store';
 import { clearProfile, firstTab, loadProfile, profileStore } from '../features/onboarding/state';
 import { useCurrentPage, useNavigate } from '../navigation';
 import { bootSession, sessionStore } from '../session/store';
-import { colors, space } from '../theme/tokens';
 
 /**
  * Starts the session once, then keeps the person on the right side of the door:
@@ -46,8 +45,8 @@ export function AuthGate({ children }: { children: ReactNode }) {
     <View style={{ flex: 1 }}>
       {children}
       {status === 'loading' ? (
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, backgroundColor: colors.bg, padding: space.lg, paddingTop: space.xl * 2 }}>
-          <SkeletonPage cards={3} />
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+          <AppLoading />
         </View>
       ) : null}
     </View>

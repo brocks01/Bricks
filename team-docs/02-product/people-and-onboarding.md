@@ -48,4 +48,25 @@ Answers already given in the app's first setup (name, age group, area, languages
 Health: only simple access questions, nothing diagnostic. Helper verification (young people who help in person) is a later, careful build; the first build is phone-only. Rules and data are in `backend/app/modules/onboarding` (`rules.py` is the data; `service.py` the logic; `wellbeing.py` the check).
 
 ## Belonging questions (planned, opt-in)
-Communities is built on identity and shared life (see `communities.md`), so onboarding will also ask, **only if the person wishes and never inferred**: where they are from (state, city, village, language), what they keep (festivals, faith, traditions), where they live now, and which groups of people they belong with (family, old colleagues, a neighbourhood). These answers pick the circles offered and are never shown outside a circle. Not built yet.
+Communities is built on identity and shared life (see `communities.md`), so onboarding will also ask, **only if the person wishes and never inferred**: where they are from (state, city, village, language), what they keep (festivals, faith, traditions), where they live now, and which groups of people they belong with (family, old colleagues, a neighbourhood). These answers pick the circles offered and are never shown outside a circle. The first part of this is now built (see Status below).
+
+## Status (updated 16 Nov 2026)
+
+Built in the Onboarding and profile area:
+- Belonging questions: optional `belonging` section (where I am from, what I keep, where I live now), opt-in, never inferred, never shown outside a circle; `rules.rank_circles` and `service.rank_circles` for other areas to rank circles by fit; tests pass.
+- Gender question: clear, kind, with the honest reason (men-only and women-only circles), skippable; `why` field on questions, shown in the app and the agent skill.
+- Profile settings: per-person quiet hours (`quiet_from`, `quiet_to` in the channels section) plus `service.quiet_hours(conn, me)`; preferred channel already worked; app settings row for preferred channel, quiet hours and clearing them; the daily check-in switch calls `set_daily_checkin`/`stop_daily_checkin` via `/v1/skills` and shows state from `GET /v1/onboarding/checkin`.
+- Agent's onboarding polished: one question at a time, only the three needed parts, every optional part skippable, warmer `hint()` within the memory's 380 characters.
+- Interests step: optional `interests` section with the fixed keys (walking, taichi, cooking, chess, music, gardening, teaching, tech), saved on the account and readable from `GET /v1/me` and `GET /v1/profile`; the app shows it as big tiles, two per row.
+- Languages in full words: app-language cards and the 23 spoken languages as big cards, two per row; every option and button declared in `definePage`.
+- "Who is setting up?" screen near the start (Myself / My family / My community or centre, the last disabled with "Coming soon"); choice on the device; `who: family` goes to `family.create` at the end. No Help button added.
+- Ten-second voice intro: optional step with record / stop / play / record again, next and skip; upload through `/v1/media/upload` (sound now accepted, kind `voice_intro`, 503 is not blocking); address stored on the account (`voice_intro_url`).
+- OTP shown on screen for a demo deployment: `DEMO_SIGNIN_OTP` (name added to `.env.example`, default off); the code is returned and shown at the top of the verify screen, ready to fill, with the real email still sent and all rate limits unchanged.
+- Text size: Small / Normal / Large in Settings (the row was already there).
+- Welcome at the end of onboarding opens `connect.pick` when it has open communities to join, otherwise the person's first tab.
+
+Needs from Doors: read the person's own quiet hours (`service.quiet_hours`) in `channels/outbox.py` `next_ok_time`, falling back to `WISDOM_QUIET`; a `my_checkin` skill or a field on `/v1/me` would let the Settings switch show the truth for a person who turned the check-in on from a call (the switch currently reads the row directly).
+
+Needs from Wisdom: `Question` in `app/src/api/wisdom.ts` has a `why?: string` added locally via a cast; a real field there would be tidier.
+
+Migrations: `0100_profile_interests_voice.sql` (users.interests, users.voice_intro_url, media_assets kind). Tests: `test_onboarding*.py` pass; app tsc, selftest and expo lint to be confirmed.

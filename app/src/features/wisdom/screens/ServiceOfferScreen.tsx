@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
-import { createListing, getGuide, CATEGORIES, TIERS, type Guide, type MarketCategory, type MarketTier } from '../../../api/market';
+import { CATEGORIES, createListing, getGuide, TIERS, type Guide, type MarketCategory, type MarketTier } from '../../../api/wisdom';
 import { Notice } from '../../../components/blocks';
 import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
-import { marketOffer as page } from '../pages';
-import { categoryWord, money, refusalWord, tierWord } from '../ui';
+import { wisdomServiceOffer as page } from '../pages';
+import { categoryWord, money, refusalWord, tierWord } from '../serviceUi';
 
-export default function OfferScreen() {
+/** Offer a service by the hour. Moved here from the Marketplace tab; the server's endpoints did not change. */
+export default function ServiceOfferScreen() {
   const w = usePageWords(page);
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
@@ -46,7 +47,7 @@ export default function OfferScreen() {
         rate_per_hour: rate.trim() ? num(rate) : null,
         area_name: area.trim() || undefined,
       });
-      navigate('market.listing', { id: r.id });
+      navigate('wisdom.service', { id: r.id });
     } catch (e) {
       setError(w(refusalWord(e)));
     } finally {
@@ -80,6 +81,7 @@ export default function OfferScreen() {
       <El page={page} id="proof"><Field label={w('f_proof')} value={proof} onChangeText={setProof} placeholder={w('f_proof_hint')} maxLength={1000} /></El>
       <El page={page} id="rate"><Field label={w('f_rate')} value={rate} onChangeText={setRate} keyboardType="numeric" maxLength={6} placeholder={guide ? money(guide.low) : undefined} /></El>
       <El page={page} id="area"><Field label={w('f_area')} value={area} onChangeText={setArea} maxLength={120} /></El>
+      <Notice text={w('adviceNote')} icon="information-circle-outline" />
       <El page={page} id="publish"><Button label={w('save_listing')} icon="checkmark" disabled={busy} onPress={publish} /></El>
     </Screen>
   );

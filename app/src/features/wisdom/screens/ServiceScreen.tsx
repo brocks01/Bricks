@@ -2,7 +2,7 @@ import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../api/communities';
-import { archiveListing, bookListing, endorseListing, getListing, updateListing, type ListingDetail } from '../../../api/market';
+import { archiveListing, bookListing, endorseListing, getListing, updateListing, type ListingDetail } from '../../../api/wisdom';
 import { Empty, Notice, Panel, Pill, Section } from '../../../components/blocks';
 import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
@@ -10,8 +10,8 @@ import { El, useAction, useField, usePageData, usePageWords } from '../../../kit
 import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, space, type } from '../../../theme/tokens';
-import { marketListing as page } from '../pages';
-import { categoryWord, money, refusalWord, tierWord } from '../ui';
+import { wisdomService as page } from '../pages';
+import { categoryWord, money, refusalWord, tierWord } from '../serviceUi';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 const tomorrow = () => {
@@ -19,7 +19,8 @@ const tomorrow = () => {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 };
 
-export default function ListingScreen() {
+/** One paid session: proof, what people say, and a booking form. Moved here from the Marketplace tab. */
+export default function ServiceScreen() {
   const w = usePageWords(page);
   const navigate = useNavigate();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -81,7 +82,7 @@ export default function ListingScreen() {
   const remove = async () => {
     if (!l) return;
     await archiveListing(l.id).catch(() => setError(w('failed')));
-    navigate('market.mine');
+    navigate('wisdom.myServices');
   };
 
   useField(page, 'date', date, (v) => setDate(String(v)));
@@ -127,6 +128,7 @@ export default function ListingScreen() {
       <Text style={[type.h2, { color: colors.accent, marginVertical: space.sm }]}>{l.rate_per_hour ? w('per_hour', { price: money(l.rate_per_hour, l.currency) }) : w('free')}</Text>
       {l.description ? <Text style={[type.body, { color: colors.ink }]}>{l.description}</Text> : null}
       {l.area_name ? <Text style={[type.small, { color: colors.muted, marginTop: space.xs }]}>{l.area_name}</Text> : null}
+      <Notice text={w('adviceNote')} icon="information-circle-outline" />
 
       {l.proof_text ? (
         <Section title={w('proof_title')}>

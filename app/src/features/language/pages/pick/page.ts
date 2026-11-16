@@ -11,6 +11,7 @@ export const languagePick = definePage({
   elements: {
     heading: { kind: 'text' },
     language: { kind: 'choice', type: 'string', required: true, options: LANGUAGES.map((l) => l.code), summary: 'The app language: en, hi, bn, ta, zh or ms.' },
+    done: { kind: 'action', summary: 'Save the language choice and go back.' },
   },
   strings,
 });

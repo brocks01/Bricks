@@ -173,11 +173,11 @@ def test_wisdom_parts_follow_what_the_person_came_to_do():
         return client.get("/v1/profile", headers=p["h"]).json()
 
     s = roles(server, ["help"])
-    assert s["focus"] == "serve" and s["wisdom"] == {"parts": ["mine", "learners"], "default": "mine"}
+    assert s["focus"] == "serve" and s["wisdom"] == {"parts": ["mine", "learners", "paid"], "default": "mine"}
     assert "community" not in s["surfaces"] and "wisdom_help" in s["surfaces"]
     l = roles(learner, ["learn"])
-    assert l["focus"] == "learn" and l["wisdom"] == {"parts": ["stories", "mentors"], "default": "stories"}
+    assert l["focus"] == "learn" and l["wisdom"] == {"parts": ["stories", "mentors", "paid"], "default": "stories"}
     b = roles(both, ["share", "learn"])
-    assert b["focus"] == "both" and b["wisdom"]["parts"] == ["stories", "mentors", "mine"] and b["wisdom"]["default"] == "stories"
+    assert b["focus"] == "both" and b["wisdom"]["parts"] == ["stories", "mentors", "mine", "paid"] and b["wisdom"]["default"] == "stories"
     c = roles(person("Priya Nair"), ["connect"])
-    assert c["focus"] == "connect" and c["wisdom"] == {"parts": ["stories"], "default": "stories"} and "community" in c["surfaces"]
+    assert c["focus"] == "connect" and c["wisdom"] == {"parts": ["stories", "paid"], "default": "stories"} and "community" in c["surfaces"]

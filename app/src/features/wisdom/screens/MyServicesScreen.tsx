@@ -1,7 +1,7 @@
 import { useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
-import { cancelBooking, completeBooking, decideBooking, getBookings, getListings, type Booking, type Listing } from '../../../api/market';
+import { cancelBooking, completeBooking, decideBooking, getBookings, getListings, type Booking, type Listing } from '../../../api/wisdom';
 import { Empty, ListRow, Panel, Pill, Section } from '../../../components/blocks';
 import { Button, ErrorText, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
@@ -10,10 +10,11 @@ import { usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { sessionStore } from '../../../session/store';
 import { colors, space, type } from '../../../theme/tokens';
-import { marketMine as page } from '../pages';
-import { CATEGORY_ICON, money } from '../ui';
+import { wisdomMyServices as page } from '../pages';
+import { CATEGORY_ICON, money } from '../serviceUi';
 
-export default function MineScreen() {
+/** The person's own services and the booking requests on them, and what they booked. Moved here from the Marketplace tab. */
+export default function MyServicesScreen() {
   const w = usePageWords(page);
   const lang = useLanguage();
   const navigate = useNavigate();
@@ -93,7 +94,7 @@ export default function MineScreen() {
         ) : null}
         {b.role === 'provider' && b.status === 'accepted' && past(b.starts_at) ? <Button label={w('mark_done')} onPress={() => act(() => completeBooking(b.id))} /> : null}
         {(b.status === 'requested' || b.status === 'accepted') && !(b.role === 'provider' && b.status === 'requested') ? <Button label={w('cancel')} kind="plain" onPress={() => act(() => cancelBooking(b.id))} /> : null}
-        {b.role === 'requester' && b.status === 'done' ? <Button label={w('endorse_btn')} kind="plain" onPress={() => navigate('market.listing', { id: b.listing_id })} /> : null}
+        {b.role === 'requester' && b.status === 'done' ? <Button label={w('endorse_btn')} kind="plain" onPress={() => navigate('wisdom.service', { id: b.listing_id })} /> : null}
       </View>
     </Panel>
   );
@@ -107,10 +108,10 @@ export default function MineScreen() {
       <Section title={w('my_bookings')}>
         {outgoing.length === 0 ? <Empty text={w('no_bookings')} /> : outgoing.map(bookingCard)}
       </Section>
-      <Section title={w('my_listings')} action={w('offer_service')} onAction={() => navigate('market.offer')}>
+      <Section title={w('my_listings')} action={w('offer_service')} onAction={() => navigate('wisdom.serviceOffer')}>
         {(listings ?? []).length === 0 ? <Empty text={w('no_listings')} /> : null}
         {(listings ?? []).map((l, i) => (
-          <ListRow key={l.id} icon={CATEGORY_ICON[l.category]} i={i} title={l.title} sub={l.status === 'paused' ? w('unpause_listing') : `${w('years_exp', { n: l.experience_years })}`} onPress={() => navigate('market.listing', { id: l.id })} />
+          <ListRow key={l.id} icon={CATEGORY_ICON[l.category]} i={i} title={l.title} sub={l.status === 'paused' ? w('unpause_listing') : `${w('years_exp', { n: l.experience_years })}`} onPress={() => navigate('wisdom.service', { id: l.id })} />
         ))}
       </Section>
     </Screen>

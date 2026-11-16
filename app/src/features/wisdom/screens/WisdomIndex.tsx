@@ -1,27 +1,31 @@
 import { useFocusEffect } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ApiError } from '../../../api/client';
 import {
-  answerRequest, askOffer, CAPSULE_KINDS, closeRequest, decideConnection, getConnections, getLibrary, getMyCapsules, getMyOffers, getMyRequests, getOffers, getRequests, getWisdomStats, logSession, putOnboarding,
-  setOfferStatus, shareCapsule, type Capsule, type Connection, type Offer, type Request, type WisdomStats,
+  answerRequest, askOffer, CAPSULE_KINDS, CATEGORIES, closeRequest, decideConnection, getConnections, getLibrary, getMyCapsules, getMyOffers, getMyRequests, getListings, getOffers, getRequests, getWisdomStats, logSession, putOnboarding,
+  setOfferStatus, shareCapsule, type Capsule, type Connection, type Listing, type Offer, type Request, type WisdomStats,
 } from '../../../api/wisdom';
 import { ChipRow, Empty, Figure, ListRow, Notice, Pill, Section } from '../../../components/blocks';
 import { Body, Button, Card, Field, Screen } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
-import { colors, space } from '../../../theme/tokens';
+import { sessionStore } from '../../../session/store';
+import { colors, space, type } from '../../../theme/tokens';
 import { profileStore } from '../../onboarding/state';
 import { wisdomIndex as page } from '../pages';
+import { CATEGORY_ICON, categoryWord, money, tierWord } from '../serviceUi';
+import { Conversation } from './Conversation';
 
-type Part = 'stories' | 'mentors' | 'learners' | 'mine';
+type Part = 'stories' | 'mentors' | 'learners' | 'mine' | 'paid';
 type Target = { kind: 'offer' | 'request'; id: string; name: string } | null;
 
 export default function WisdomIndex() {
   const w = usePageWords(page);
   const go = useNavigate();
   const { profile } = useStore(profileStore);
+  const { user } = useStore(sessionStore);
   const helpOnly = !!profile?.roles.includes('help') && !profile.roles.includes('share'); // the next generation sees who needs a hand; elders see who wants to learn
   const parts: Part[] = (profile?.wisdom.parts as Part[] | undefined) ?? ['stories', 'mentors', 'learners', 'mine'];
   const [part, setPart] = useState<Part>((profile?.wisdom.default as Part | undefined) ?? 'stories');
@@ -39,10 +43,19 @@ export default function WisdomIndex() {
   const [needAge, setNeedAge] = useState(false);
   const [minutes, setMinutes] = useState('30');
   const [kind, setKind] = useState<string>('all');
+  const [serviceQ, setServiceQ] = useState('');
+  const [serviceKind, setServiceKind] = useState('all');
+  const [listings, setListings] = useState<Listing[] | null>(null);
+  const [mentorQ, setMentorQ] = useState('');
+  const [mentorMode, setMentorMode] = useState('all');
+  const [mentorTopic, setMentorTopic] = useState('');
+  const [mentorLanguage, setMentorLanguage] = useState('');
+  const [mentorNear, setMentorNear] = useState('anywhere');
+  const [openThread, setOpenThread] = useState<Connection | null>(null);
+  const myArea = (user?.area_name ?? '').trim();
 
   const load = useCallback(() => {
     getLibrary().then(setLibrary).catch(() => setLibrary([]));
-    getOffers().then(setOffers).catch(() => setOffers([]));
     getRequests('', helpOnly ? 'support' : 'learn').then(setRequests).catch(() => setRequests([]));
     getMyCapsules().then(setMineCaps).catch(() => undefined);
     getMyOffers().then(setMineOffers).catch(() => undefined);
@@ -52,10 +65,45 @@ export default function WisdomIndex() {
   }, [helpOnly]);
   useFocusEffect(useCallback(() => { load(); }, [load]));
 
+  // mentors are searched only while that part is open, with the filters the person chose (a topic, a language, their own area)
+  useEffect(() => {
+    if (part !== 'mentors') return;
+    if (mentorNear === 'near_me' && !myArea) { setOffers([]); return; }
+    let live = true;
+    getOffers(mentorQ, undefined, {
+      mode: mentorMode === 'all' ? undefined : mentorMode,
+      topic: mentorTopic.trim() || undefined,
+      language: mentorLanguage.trim() || undefined,
+      area: mentorNear === 'near_me' ? myArea : undefined,
+    })
+      .then((r) => { if (live) setOffers(r); })
+      .catch(() => { if (live) setOffers([]); });
+    return () => { live = false; };
+  }, [part, mentorQ, mentorMode, mentorTopic, mentorLanguage, mentorNear, myArea]);
+
+  // paid sessions are searched only while that part is open, so opening Wisdom costs nothing extra
+  useEffect(() => {
+    if (part !== 'paid') return;
+    let live = true;
+    getListings(serviceQ, serviceKind === 'all' ? undefined : serviceKind)
+      .then((r) => { if (live) setListings(r); })
+      .catch(() => { if (live) setListings([]); });
+    return () => { live = false; };
+  }, [part, serviceQ, serviceKind]);
+
   useField(page, 'section', part, (v) => setPart(String(v) as Part));
   useAction(page, 'story', () => go('wisdom.story'));
   useAction(page, 'offer', () => go('wisdom.offer'));
   useAction(page, 'ask', () => go('wisdom.ask'));
+  useField(page, 'serviceSearch', serviceQ, (v) => setServiceQ(String(v)));
+  useField(page, 'serviceKind', serviceKind, (v) => setServiceKind(String(v)));
+  useAction(page, 'offerService', () => go('wisdom.serviceOffer'));
+  useAction(page, 'myServices', () => go('wisdom.myServices'));
+  useField(page, 'mentorSearch', mentorQ, (v) => setMentorQ(String(v)));
+  useField(page, 'mentorMode', mentorMode, (v) => setMentorMode(String(v)));
+  useField(page, 'mentorTopic', mentorTopic, (v) => setMentorTopic(String(v)));
+  useField(page, 'mentorLanguage', mentorLanguage, (v) => setMentorLanguage(String(v)));
+  useField(page, 'mentorNear', mentorNear, (v) => setMentorNear(String(v)));
 
   const waiting = conns.filter((c) => c.waiting_for_me);
   const fail = (e: unknown) => {
@@ -108,7 +156,7 @@ export default function WisdomIndex() {
       {waiting.length ? <Notice text={waiting.length === 1 ? w('waitingOne') : w('waiting', { n: waiting.length })} icon="notifications-outline" /> : null}
       {note ? <Notice text={note} /> : null}
       <El page={page} id="section">
-        <ChipRow<Part> options={parts.map((p) => ({ value: p, label: p === 'learners' && profile?.focus === 'serve' ? w('needHelp') : w(p) }))} value={part} onChange={setPart} />
+        <ChipRow<Part> options={parts.map((p) => ({ value: p, label: p === 'paid' ? w('paidSessions') : p === 'learners' && profile?.focus === 'serve' ? w('needHelp') : w(p) }))} value={part} onChange={setPart} />
       </El>
       <View style={{ height: space.md }} />
 
@@ -133,12 +181,38 @@ export default function WisdomIndex() {
 
       {part === 'mentors' ? (
         <>
+          <El page={page} id="mentorSearch"><Field label={w('searchMentors')} value={mentorQ} onChangeText={setMentorQ} maxLength={80} /></El>
+          <El page={page} id="mentorMode">
+            <ChipRow options={[{ value: 'all', label: w('all') }, { value: 'volunteer', label: w('free') }, { value: 'paid', label: w('paid') }]} value={mentorMode} onChange={setMentorMode} />
+          </El>
+          <View style={{ flexDirection: 'row', gap: space.sm }}>
+            <View style={{ flex: 1 }}><El page={page} id="mentorTopic"><Field label={w('topicLabel')} value={mentorTopic} onChangeText={setMentorTopic} maxLength={40} /></El></View>
+            <View style={{ flex: 1 }}><El page={page} id="mentorLanguage"><Field label={w('languageLabel')} value={mentorLanguage} onChangeText={setMentorLanguage} maxLength={30} /></El></View>
+          </View>
+          <El page={page} id="mentorNear">
+            <ChipRow options={[{ value: 'anywhere', label: w('anywhere') }, { value: 'near_me', label: w('nearMe') }]} value={mentorNear} onChange={setMentorNear} />
+          </El>
+          {mentorNear === 'near_me' && !myArea ? <Notice text={w('needArea')} /> : null}
+          <View style={{ height: space.md }} />
           {offers === null ? null : offers.length === 0 ? <Empty text={w('noMentors')} /> : offers.map((o) => (
-            <View key={o.id}>
-              <ListRow icon="school-outline" title={o.title} sub={`${o.by} · ${w(o.kind)} · ${modeWord(o.mode)}${o.price_note ? ' · ' + o.price_note : ''}${o.availability ? ' · ' + o.availability : ''}`}
-                right={<Text style={{ color: colors.accent, fontWeight: '700' }}>{w('askGuidance')}</Text>} onPress={() => { setTarget({ kind: 'offer', id: o.id, name: o.by }); setNote(null); }} />
-              {target?.kind === 'offer' && target.id === o.id ? composer : null}
-            </View>
+            <Card key={o.id} title={o.title}>
+              <Body>{`${o.by} · ${w(o.kind)} · ${modeWord(o.mode)}${o.price_note ? ' · ' + o.price_note : ''}${o.availability ? ' · ' + o.availability : ''}`}</Body>
+              {o.proof_field || o.proof_years != null || o.proof_where ? (
+                <Text style={[type.small, { color: colors.muted, marginTop: space.xs }]}>{w('proofLabel')}: {[o.proof_field, o.proof_years != null ? w('years_exp', { n: o.proof_years }) : '', o.proof_where].filter(Boolean).join(' · ')}</Text>
+              ) : null}
+              <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.sm, flexWrap: 'wrap' }}>
+                <Pill text={w('endorsements_n', { n: o.endorsements })} tone="quiet" />
+                <Pill text={w('sessions_n', { n: o.sessions })} tone="quiet" />
+                {o.topics.slice(0, 3).map((t) => <Pill key={t} text={t} tone="quiet" />)}
+                {o.languages.slice(0, 3).map((l) => <Pill key={l} text={l} tone="quiet" />)}
+                {o.area ? <Pill text={o.area} tone="quiet" /> : null}
+              </View>
+              {o.sensitive ? <View style={{ marginTop: space.sm }}><Notice text={w('adviceNote')} tone="warn" icon="alert-circle-outline" /></View> : null}
+              <View style={{ marginTop: space.sm }}>
+                <Button label={w('askGuidance')} onPress={() => { setTarget({ kind: 'offer', id: o.id, name: o.by }); setNote(null); }} />
+                {target?.kind === 'offer' && target.id === o.id ? composer : null}
+              </View>
+            </Card>
           ))}
         </>
       ) : null}
@@ -212,6 +286,45 @@ export default function WisdomIndex() {
               <ListRow key={r.id} icon="help-buoy-outline" title={r.topic} right={<Text style={{ color: colors.accent, fontWeight: '700' }}>{w('close')}</Text>} onPress={() => closeRequest(r.id).then(load).catch(() => setNote(w('failed')))} />
             ))}
           </Section>
+        </>
+      ) : null}
+
+      {part === 'paid' ? (
+        <>
+          <Notice text={w('adviceNote')} icon="information-circle-outline" />
+          <El page={page} id="serviceSearch">
+            <Field label={w('searchServices')} value={serviceQ} onChangeText={setServiceQ} maxLength={80} />
+          </El>
+          <El page={page} id="serviceKind">
+            <ChipRow options={['all', ...CATEGORIES].map((c) => ({ value: c, label: c === 'all' ? w('all') : w(categoryWord(c as never)) }))} value={serviceKind} onChange={setServiceKind} />
+          </El>
+          {profile?.roles.includes('share') ? (
+            <View style={{ flexDirection: 'row', gap: space.sm, marginTop: space.md }}>
+              <View style={{ flex: 1 }}>
+                <El page={page} id="offerService"><Button label={w('offer_service')} icon="add" onPress={() => go('wisdom.serviceOffer')} /></El>
+              </View>
+              <View style={{ flex: 1 }}>
+                <El page={page} id="myServices"><Button kind="plain" label={w('my_market')} onPress={() => go('wisdom.myServices')} /></El>
+              </View>
+            </View>
+          ) : null}
+          <View style={{ height: space.md }} />
+          {listings === null ? null : listings.length === 0 ? <Empty text={w('noServices')} /> : listings.map((l) => (
+            <ListRow
+              key={l.id}
+              icon={CATEGORY_ICON[l.category]}
+              title={l.title}
+              sub={`${w('by_owner', { name: l.owner_name || '—' })} · ${w('years_exp', { n: l.experience_years })}`}
+              onPress={() => go('wisdom.service', { id: l.id })}
+              right={
+                <View style={{ alignItems: 'flex-end', gap: space.xs }}>
+                  <Text style={{ color: colors.accent, fontWeight: '800' }}>{l.rate_per_hour ? money(l.rate_per_hour, l.currency) : w('free')}</Text>
+                  <Pill text={w(tierWord(l.tier))} tone="quiet" />
+                  {l.verified ? <Pill text={w('verified')} /> : l.endorsements ? <Pill text={w('endorsed_n', { n: l.endorsements })} /> : null}
+                </View>
+              }
+            />
+          ))}
         </>
       ) : null}
     </Screen>

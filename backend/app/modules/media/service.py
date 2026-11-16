@@ -1,8 +1,8 @@
-"""Media: one small module for pictures. Uploads go to Cloudinary (signed upload over its REST API, no SDK); we keep a row per picture.
+"""Media: one small module for pictures, plus the one kind of sound the voice intro needs. Uploads go to Cloudinary (signed upload over its REST API, no SDK); we keep a row per picture.
 
 Settings (backend/.env, never committed): CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, CLOUDINARY_API_SECRET, or the single CLOUDINARY_URL
-(cloudinary://<key>:<secret>@<cloud>). Without them uploads answer 503 "media_off". Rules: images only (jpeg, png, webp), 5 MB at most,
-the real file type is checked from the bytes, never from the name the caller sent.
+(cloudinary://<key>:<secret>@<cloud>). Without them uploads answer 503 "media_off". Rules: images only (jpeg, png, webp), and the
+voice_intro sound (m4a, webm, ogg, wav, mp3), 5 MB at most; the real file type is checked from the bytes, never from the name the caller sent.
 This is deliberately basic. A fuller media system (private files, video, other providers) comes later behind the same two functions."""
 import hashlib
 import os
@@ -14,7 +14,8 @@ import httpx
 from sqlalchemy import Connection, text
 
 MAX_BYTES = 5 * 1024 * 1024
-KINDS = ("avatar", "community_logo", "community_cover", "activity_image", "announcement_image", "other")
+KINDS = ("avatar", "community_logo", "community_cover", "activity_image", "announcement_image", "voice_intro", "other")
+AUDIO_KINDS = ("voice_intro",)  # these go to Cloudinary as video (its resource type for sound), everything else as image
 
 
 class MediaError(Exception):
@@ -47,6 +48,22 @@ def sniff(data: bytes) -> str | None:
     return None
 
 
+def sniff_audio(data: bytes) -> str | None:
+    """The real sound type from the first bytes, or None. What the phone records (m4a) and what the browser
+    records through MediaRecorder (webm), plus ogg, wav and mp3."""
+    if len(data) > 12 and data[4:8] == b"ftyp":
+        return "m4a"  # MP4/M4A: expo-audio on Android and iOS
+    if data[:4] == b"\x1a\x45\xdf\xa3":
+        return "webm"  # EBML: MediaRecorder on the web
+    if data[:4] == b"OggS":
+        return "ogg"
+    if data[:4] == b"RIFF" and data[8:12] == b"WAVE":
+        return "wav"
+    if data[:3] == b"ID3" or (len(data) > 1 and data[:1] == b"\xff" and (data[1] & 0xE0) == 0xE0):
+        return "mp3"
+    return None
+
+
 def _sign(params: dict, secret: str) -> str:
     to_sign = "&".join(f"{k}={params[k]}" for k in sorted(params) if params[k] not in (None, ""))
     return hashlib.sha1((to_sign + secret).encode()).hexdigest()
@@ -60,12 +77,14 @@ def upload(conn: Connection, owner_id: str, kind: str, data: bytes) -> dict:
         raise MediaError("bad_kind")
     if not data or len(data) > MAX_BYTES:
         raise MediaError("too_big" if data else "empty", 413 if data else 400)
-    if not sniff(data):
-        raise MediaError("not_an_image", 415)
+    sound = kind in AUDIO_KINDS
+    if (sound and not sniff_audio(data)) or (not sound and not sniff(data)):
+        raise MediaError("not_an_image" if not sound else "not_a_sound", 415)
     params = {"folder": f"wisdom/{kind}", "timestamp": int(time.time())}
     try:
         r = httpx.post(
-            f"https://api.cloudinary.com/v1_1/{s['cloud']}/image/upload",
+            # Cloudinary keeps sound under its "video" resource type; pictures go to "image".
+            f"https://api.cloudinary.com/v1_1/{s['cloud']}/{'video' if sound else 'image'}/upload",
             data={**params, "api_key": s["key"], "signature": _sign(params, s["secret"])},
             files={"file": ("upload", data)},
             timeout=30,

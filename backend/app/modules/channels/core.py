@@ -180,6 +180,9 @@ def handle(channel: str, external_id: str, body: str) -> list[str]:
                 return [not_linked(channel)]
             if new:
                 return [_welcome(uid, channel)]
+        from . import checkins
+
+        checkins.reply_seen(uid)  # any word from the person on any channel: they are not silent (the daily check-in counts)
         cmd = ALIASES.get(low.strip("/ .!"), low.split("@")[0])
         if cmd == "/help":
             return [HELP]

@@ -3,7 +3,10 @@ import { useEffect, useState } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../../api/communities';
 import { getCard, type HealthCard } from '../../../../api/health';
-import { Row, Screen } from '../../../../components/ui';
+import { Row, Screen, Field, Button } from '../../../../components/ui';
+import { ChipRow } from '../../../../components/blocks';
+import { getOnboarding, putOnboarding } from '../../../../api/wisdom';
+import { api } from '../../../../api/client';
 import { useStore } from '../../../../core/store';
 import { LANGUAGES, useLanguage, useT } from '../../../../i18n';
 import { El, useAction, usePageWords } from '../../../../kit';
@@ -180,18 +183,104 @@ export default function Me() {
 
 function Settings({ t, go, language }: { t: (k: string) => string; go: (k: string) => void; language: string }) {
   const { textSize, readAloud } = useStore(prefs);
-  const sizes: { id: TextSize; label: string; fs: number }[] = [
-    { id: 'normal', label: t('prof.size_normal'), fs: 15 },
-    { id: 'large', label: t('prof.size_large'), fs: 17 },
-    { id: 'larger', label: t('prof.size_larger'), fs: 20 },
+  const [reachChannel, setReachChannel] = useState<string | null>(null);
+  const [quietFrom, setQuietFrom] = useState('');
+  const [quietTo, setQuietTo] = useState('');
+  const [reachBusy, setReachBusy] = useState(false);
+  const [reachMsg, setReachMsg] = useState<string | null>(null);
+  const [checkinOn, setCheckinOn] = useState<boolean | null>(null);
+  const [checkinTime, setCheckinTime] = useState('09:00');
+  const [checkinFamily, setCheckinFamily] = useState<'no' | 'yes'>('no');
+  const [checkinMsg, setCheckinMsg] = useState<string | null>(null);
+  const w = usePageWords(page);
+  useEffect(() => {
+    getOnboarding().then((st) => {
+      const c = st.sections.find((s) => s.id === 'channels');
+      const a: Record<string, unknown> = {};
+      (c?.questions ?? []).forEach((q: any) => { if (q.answer != null) a[q.key] = q.answer; });
+      if (typeof a.preferred_channel === 'string') setReachChannel(a.preferred_channel as string);
+      if (typeof a.quiet_from === 'string') setQuietFrom(a.quiet_from as string);
+      if (typeof a.quiet_to === 'string') setQuietTo(a.quiet_to as string);
+    }).catch(() => undefined);
+    api('GET', '/v1/onboarding/checkin').then((r: any) => { setCheckinOn(!!r.enabled); if (r.time) setCheckinTime(r.time); setCheckinFamily(r.family_notify ? 'yes' : 'no'); }).catch(() => setCheckinOn(false));
+  }, []);
+  const saveReach = async () => {
+    setReachBusy(true); setReachMsg(null);
+    try {
+      const answers: Record<string, unknown> = {};
+      if (reachChannel) answers.preferred_channel = reachChannel;
+      if (quietFrom.trim() && quietTo.trim()) { answers.quiet_from = quietFrom.trim(); answers.quiet_to = quietTo.trim(); }
+      else if (!quietFrom.trim() && !quietTo.trim()) { answers.quiet_from = null; answers.quiet_to = null; }
+      else { setReachMsg(w('quietFrom')); setReachBusy(false); return; }
+      await putOnboarding('channels', answers);
+      setReachMsg(w('saved') || 'Saved');
+    } catch { setReachMsg(w('failed') || 'Could not save'); }
+    finally { setReachBusy(false); }
+  };
+  const toggleCheckin = async (on: boolean) => {
+    setCheckinMsg(null);
+    try {
+      if (on) {
+        const r: any = await api('POST', '/v1/skills/set_daily_checkin', { args: { time: checkinTime, family_notify: checkinFamily === 'yes', confirmed: true } });
+        if (r?.error) { setCheckinMsg(w('checkinFailed') || 'Could not save'); return; }
+        setCheckinOn(true);
+      } else {
+        await api('POST', '/v1/skills/stop_daily_checkin', { args: {} });
+        setCheckinOn(false);
+      }
+    } catch { setCheckinMsg(w('checkinFailed') || 'Could not save'); }
+  };
+  const sizes2: { id: TextSize; label: string; fs: number }[] = [
+    { id: 'normal', label: 'Small', fs: 15 },
+    { id: 'large', label: 'Normal', fs: 17 },
+    { id: 'larger', label: 'Large', fs: 20 },
   ];
   return (
     <View style={{ gap: 12 }}>
       <View style={box}>
         <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE, gap: 10 }}>
+          <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{w('reachChannel')}</Text>
+          <ChipRow options={[{ value: 'call', label: t('prof.ch_call') || 'Phone call' }, { value: 'whatsapp', label: t('prof.ch_whatsapp') || 'WhatsApp' }, { value: 'telegram', label: t('prof.ch_telegram') || 'Telegram' }, { value: 'sms', label: t('prof.ch_sms') || 'Text message' }, { value: 'app', label: t('prof.ch_app') || 'The app' }]} value={reachChannel ?? ''} onChange={setReachChannel} />
+        </View>
+        <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE, gap: 10 }}>
+          <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{w('quietFrom')} – {w('quietTo')}</Text>
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            <View style={{ flex: 1 }}><Field label={w('quietFrom')} value={quietFrom} onChangeText={setQuietFrom} placeholder="21:00" /></View>
+            <View style={{ flex: 1 }}><Field label={w('quietTo')} value={quietTo} onChangeText={setQuietTo} placeholder="08:00" /></View>
+          </View>
+          <Pressable onPress={() => { setQuietFrom(''); setQuietTo(''); }}><Text style={{ fontSize: 14, color: colors.accent }}>{w('quietClear')}</Text></Pressable>
+        </View>
+        <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE }}>
+          <Button label={reachBusy ? '…' : w('reachSave')} onPress={() => void saveReach()} disabled={reachBusy} />
+          {reachMsg ? <Text style={{ fontSize: 14, color: colors.muted, marginTop: 4 }}>{reachMsg}</Text> : null}
+        </View>
+        <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE, gap: 10 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <View style={{ flex: 1 }}>
+              <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{w('checkinSwitch')}</Text>
+              <Text style={{ fontSize: 14, color: '#4A5361' }}>{w('checkinNote') || 'Wisdom asks one gentle question each day.'}</Text>
+            </View>
+            <Pressable onPress={() => void toggleCheckin(!(checkinOn === true))} accessibilityRole="switch" accessibilityState={{ checked: checkinOn === true }} style={{ width: 52, height: 30, borderRadius: 999, padding: 3, backgroundColor: checkinOn === true ? colors.navy : '#CFC6B6', justifyContent: 'center', alignItems: checkinOn === true ? 'flex-end' : 'flex-start' }}>
+              <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFFFFF' }} />
+            </Pressable>
+          </View>
+          {checkinOn === true ? (
+            <View style={{ gap: 8 }}>
+              <Text style={{ fontSize: 14, color: '#4A5361' }}>{w('checkinTime')}</Text>
+              <ChipRow options={['07:00','08:00','09:00','10:00','12:00','18:00','19:00','20:00'].map((v) => ({ value: v, label: v }))} value={checkinTime} onChange={setCheckinTime} />
+              <Text style={{ fontSize: 14, color: '#4A5361' }}>{w('checkinFamily')}</Text>
+              <ChipRow options={[{ value: 'no', label: w('checkinFamilyNo') || 'No' }, { value: 'yes', label: w('checkinFamilyYes') || 'Yes, tell my family' }]} value={checkinFamily} onChange={(v) => setCheckinFamily(v as 'no' | 'yes')} />
+            </View>
+          ) : null}
+          {checkinMsg ? <Text style={{ fontSize: 14, color: colors.danger, marginTop: 4 }}>{checkinMsg}</Text> : null}
+        </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE }}></View>
+      </View>
+      <View style={box}>
+        <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE, gap: 10 }}>
           <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{t('prof.text_size')}</Text>
           <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 8 }}>
-            {sizes.map((s) => (
+            {sizes2.map((s) => (
               <Pressable key={s.id} onPress={() => setPref({ textSize: s.id })} accessibilityRole="radio" accessibilityState={{ checked: textSize === s.id }} style={{ flex: 1, minHeight: 46, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: textSize === s.id ? colors.navy : '#FFFFFF', borderWidth: 1, borderColor: textSize === s.id ? colors.navy : '#CFC6B6' }}>
                 <Text style={{ fontSize: s.fs, fontWeight: '600', color: textSize === s.id ? '#FFFFFF' : colors.ink }}>{s.label}</Text>
               </Pressable>
