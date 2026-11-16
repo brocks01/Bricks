@@ -23,13 +23,22 @@ Root: `../01-philosophy/philosophy.md` (principles 9 and 10: safe by design, hon
 **Holes found and fixed (16 Nov 2026):**
 1. `family/service.py`: a malformed family, delegation or person id reached a UUID column and answered a 500 database error (`GET /v1/families/not-a-uuid`, delegation change and revoke, a malformed `X-Bricks-On-Behalf` header, `POST /v1/delegations` with a bad helper id, claim-code requests). Now every malformed id answers a clean 404 (or 422 where the API already speaks of validation), never a crash.
 
+**Task 2 (reports, blocks, admin review) built, 16 Nov 2026:** migration `0080_safety_reports_blocks.sql` (tables `reports` and `blocks`, a reversible `suspended` status for `users`, and a `hidden_at` column on capsules, offers, requests, communities and market events); the new module `backend/app/modules/safety/` (`POST /v1/reports`, `GET /v1/reports/mine`, `GET /v1/admin/reports`, `POST /v1/admin/reports/{id}/resolve` with `dismiss|hide|suspend`, `POST|GET /v1/blocks`, `DELETE /v1/blocks/{person_id}`); three different reporters hide a thing by themselves and every platform admin is told through the outbox — hiding takes effect at once through each table's own status word, and dismissing the last report restores the thing; skills `report_something` (safe) and `block_person` (confirm, by name inside a shared circle or family). In the app: the `safety` module with four pages in six languages — report (reasons in plain words, calm thanks), block (quiet, undoable), my reports and blocked people, and the admins-only review screen with the three actions. Tests in `backend/tests/test_safety.py`.
+
+**Needs from Wisdom and Communities:** a "Report" action on a story, an offer, a request and a community, and a "Block this person" action on an introduction, opening `safety.report` (with `kind` and `id`) and `safety.block` (with `id`) — the safety pages exist at `/safety/report` and `/safety/block` and only their buttons are missing from those screens (those files belong to those areas). Enforcement of blocks and hidden items in `wisdom.library`, `browse_offers`, `open_requests`, the introduction opener and member lists stays task 3, by agreement, and waits for those areas to report done.
+
+**Needs from the owner:** `02-product/impact-and-business.md` still says "reporting of stories ... not built yet"; reporting, blocking and admin review now exist (see above).
+
 **Choices made:**
-- The Twilio chat and voice webhooks check the signature only when `VOICE_PROVIDER=twilio`; the mock provider (a local test stand-in) accepts unsigned requests so tests can fake the phone network. Production must set `VOICE_PROVIDER=twilio`; noted as a deployment rule below.
+- The Twilio chat and voice webhooks check the signature only when `VOICE_PROVIDER=twilio`; the mock provider (a local test stand-in) accepts unsigned requests so tests can fake the phone network. Production must set `VOICE_PROVIDER=twilio` (see the pilot rules below).
 - The calendar answers 403 for another person's item rather than 404: it refuses without confirming the item exists. Tests accept both.
+- Hiding sets the row's own `hidden_at` AND flips its status with each table's existing words (`published→removed`, `active→closed`, `open→closed`, `active→archived`, `scheduled→cancelled`), so a hidden thing leaves every public list at once through the filter each area already has — with no edit to their files. Dismissing the last report about it restores it (`restored: true`). The remaining lists ("mine" views) filter `hidden_at is null` in task 3.
 
 **Rules for a live pilot** (must all be true): `VOICE_PROVIDER=twilio`, `TELEGRAM_WEBHOOK_SECRET` set, `VOICE_ADMIN_KEY` set, `WISDOM_OPEN_SIGNUP` closed except through an invited contact, `JWT_SECRET` set and private, `.env` never committed.
 
-**Not built yet (open tasks, in order):** reports, blocks and admin review (task 2); the same enforcement hooked into `wisdom.library`, `browse_offers`, `open_requests`, the introduction opener and member lists once the other areas report done (task 3).
+**Not built yet (open task 3, in order):** enforcement of blocks and hidden items inside `wisdom.library`, `browse_offers`, `open_requests`, the introduction opener and member lists with minimal edits, plus security tests for those modules (including host-scoped access) — only after Wisdom, Communities and Marketplace report done in their Status sections.
+
+**Known app lint note:** `app/src/components/SplashIntro.tsx` (brand splash, not a Safety file) fails `npx expo lint` with a refs-in-render error; every Safety file is clean.
 
 ## Where the rules live
 - Every rule is a service function (`backend/app/modules/<area>/service.py`), never a router: the app, the chat and the phone call all go through the same check.
