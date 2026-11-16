@@ -1,0 +1,21 @@
+{
+  "_about": "Singapore towns (for areas and service boundaries), the real language mix of people (for spoken sets and agent talk), and the six app languages. Sources: Singapore Dept of Statistics profile (approximate shares), operator pages.",
+  "towns": ["Ang Mo Kio", "Bedok", "Bishan", "Bukit Batok", "Bukit Merah", "Bukit Panjang", "Bukit Timah", "Central Area", "Choa Chu Kang", "Clementi", "Geylang", "Hougang", "Jurong East", "Jurong West", "Kallang", "Marina Bay", "Pasir Ris", "Punggol", "Queenstown", "Rochor", "Sembawang", "Sengkang", "Serangoon", "Simei", "Tampines", "Tanjong Pagar", "Toa Payoh", "Woodlands", "Yishun"],
+  "town_notes": {
+    "heartland_elders": "Most seeded elders live in HDB heartland towns: Ang Mo Kio, Toa Payoh, Bedok, Tampines, Hougang, Yishun, Jurong West, Bukit Merah",
+    "service_boundary": "Each AAC serves one or two towns - a person joins the centre nearest their estate",
+    "new_towns": "Punggol, Sengkang, Bukit Panjang have newer centres with younger-old residents (50s-60s)"
+  },
+  "languages_of_people": [
+    {"group": "Chinese elders (60+)", "mother_tongues": ["Hokkien", "Teochew", "Mandarin", "Cantonese", "Hainanese"], "app_language": "zh", "spoken_set": ["zh", "en"], "note": "many rural-heritage elders speak dialect at home; Mandarin is the bridge language"},
+    {"group": "Chinese middle-aged", "mother_tongues": ["Mandarin", "English"], "app_language": "zh or en", "spoken_set": ["zh", "en"]},
+    {"group": "Malay elders", "mother_tongues": ["Malay", "Javanese (some)"], "app_language": "ms", "spoken_set": ["ms", "en"], "note": "Bahasa Melayu is both home language and national language"},
+    {"group": "Indian Tamil elders", "mother_tongues": ["Tamil", "English"], "app_language": "ta", "spoken_set": ["ta", "en"]},
+    {"group": "Indian north-heritage (Hindi/Bengali)", "mother_tongues": ["Hindi", "Bengali", "Bhojpuri", "Urdu"], "app_language": "hi", "spoken_set": ["hi", "bn", "bho", "ur", "en"], "note": "includes long-settled families and newer migrants"},
+    {"group": "Young learners (15-39)", "mother_tongues": ["English", "Mandarin/Malay/Tamil as second"], "app_language": "en", "spoken_set": ["en", "zh", "ms", "ta"]},
+    {"group": "Korean cluster", "mother_tongues": ["Korean"], "app_language": "en", "spoken_set": ["en", "ko"], "note": "ko is not one of the six app languages yet - talk in English unless extended"}
+  ],
+  "app_languages_six": ["en", "hi", "bn", "ta", "zh", "ms"],
+  "spoken_language_codes_23": ["en", "hi", "bn", "ta", "te", "mr", "gu", "kn", "ml", "pa", "ur", "or", "as", "bho", "mai", "ne", "kok", "zh", "yue", "nan", "teo", "ms", "id"],
+  "notes": "The six app languages cover Singapore's main groups (English, Hindi, Bengali, Tamil, Chinese, Malay). Dialect and Korean speakers talk in the closest supported language - the agent asks, never guesses."
+}

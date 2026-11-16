@@ -1,0 +1,50 @@
+{
+  "_about": "How people actually join Singapore Active Ageing Centres and what they get after joining - gathered from operator FAQ pages (THK, REACH, KWSH, PCF, TOUCH, Allkin, MWS) and MOH/PA (Nov 2026). This is the real join flow the Wisdom seed should mirror.",
+  "join_flow": [
+    {"step": 1, "what": "Walk in or call the nearest centre", "detail": "MWS: 'Walk to your nearest Active Ageing Centre and sign up for any activity or programme. Or call them to enquire.'"},
+    {"step": 2, "what": "Eligibility checked", "detail": "Age 60+, Singapore Citizen or PR, reside within the centre's service boundary (some centres accept neighbours regardless). Free of charge (KWSH states explicitly)."},
+    {"step": 3, "what": "Register interest / membership", "detail": "PCF: register your interest, the team shares activities, understands your interests, guides you through membership. Enrolment subject to vacancies."},
+    {"step": 4, "what": "Referral route (for vulnerable seniors)", "detail": "Family, hospital discharge, or a community partner refers; the centre follows up (KWSH 'Social Connector' registers seniors for prescribed Healthier SG activities)."},
+    {"step": 5, "what": "Start joining activities", "detail": "Drop in for whatever is on that day; book recurring classes; choose interest groups at your own comfort level ('We welcome seniors to join and explore activities at their own comfort level' - PCF)."}
+  ],
+  "eligibility_summary": "60+, Singapore Citizen or PR, lives in the centre's boundary; free; no medical diagnosis needed; the centre is a drop-in social space first.",
+  "after_joining_person_sees": [
+    "A weekly and monthly activity schedule on the wall (and by phone/WhatsApp) - exercise classes with fixed times, games, festivals",
+    "Interest groups they can pick: music, handicraft, exercises, gardening (Lions Befrienders list)",
+    "Befriending: regular home visits or phone calls if they are homebound or alone",
+    "Learning: smartphone/tablet classes, language classes, health talks",
+    "Ways to give back: volunteer at the centre, deliver meals, read letters, become a Silver Guardian, micro-jobs in the estate",
+    "Communal meals and makan sessions, monthly birthdays, festive celebrations and outings",
+    "Referrals to care services, grants, Healthier SG plans - the centre is the doorway to the wider system",
+    "Their own regular seat: the same class, the same kakis, the same time every week (this is what keeps engagement high)"
+  ],
+  "engagement_mechanics_real": {
+    "fixed_rituals": "Weekly classes at fixed times (taichi 9:15am, line dance 9am) become habits; missed days are noticed by friends and staff",
+    "social_pressure_kind": "Buddy systems, kaki groups, 'kopi kakis' coffee corners",
+    "recognition": "Birthday celebrations, volunteer appreciation, students-to-teachers stories",
+    "homebound_inclusion": "House visits, phone calls, AAS alert monitoring - nobody disappears",
+    "men_specific": "REACH 'Uncle Time' men-only programme; PA brings men in through work/fish/kopi angles",
+    "intergenerational": "Preschool co-location (Kampung Admiralty), youth volunteers, Silver Guardians matched near home"
+  },
+  "figures_for_realism": {
+    "seniors_living_alone_sg": "122,000 by 2030 (PA)",
+    "population_65_plus_sg": "about 1 in 5 today, rising",
+    "silver_guardians": "400+ volunteers now, target 2,400 by 2028 (MOH/AIC)",
+    "kampung_admiralty": "190+ community activities since 2017, 200+ senior volunteers",
+    "pa_wellness": "Wellness Programme benefited 500,000+ seniors since 2008; 200+ RCs run Wellness Time"
+  },
+  "source_urls": [
+    "mws.sg/active-ageing-centres/",
+    "thkmc.org.sg/for-the-seniors/thk-active-ageing-centres",
+    "reach.org.sg/services/senior-service/active-ageing",
+    "touch.org.sg/get-assistance/seniors/active-ageing-activities.html",
+    "pcfsparklecare.org.sg/services/active-ageing-programme",
+    "kwsh.org.sg/care-services/active-ageing-centres",
+    "lionsbefrienders.org.sg/activeageingcentre",
+    "allkin.org.sg/services/active-ageing-centres",
+    "pa.gov.sg/our-programmes/active-ageing",
+    "pa.gov.sg/our-programmes/neighbourhood-kakis",
+    "moh.gov.sg (Age Well Neighbourhoods, Silver Guardian speech)",
+    "ntuchealth.sg (Kampung Admiralty, AAC schedules)"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "_about": "Person shapes for the 1,000-person Singapore seed: who they are, what they came to do, how engaged they run. Distributions are a starting point for the owner to adjust. Every shape gets real activities, real places and real-looking data from the other files here.",
+  "total": 1000,
+  "age_bands": {"under40": "12%", "40to59": "28%", "60plus": "60%"},
+  "engagement_tiers": {
+    "very_high": "Daily or several times a week: centre regulars, volunteers, gardeners, choir/karaoke, leaders. ~250 people. They run streaks, host events, answer each other.",
+    "high": "Weekly classes and gatherings, replies to check-ins, goes to market days. ~350 people.",
+    "steady": "Comes monthly, reads nudges, occasionally shares a story. ~250 people.",
+    "gentle": "New or quiet: opened an account, one interest, low activity - exactly who the daily check-in reaches out to. ~150 people."
+  },
+  "roles_mix": {
+    "connect": "stay connected and active - most of the 60+ band",
+    "share": "share what they know - retired professionals, aunties who cook, uncles who fix",
+    "learn": "learners 15+: students, career-changers, expecting parents",
+    "help": "young helpers, Silver-Guardian types",
+    "care": "family members looking after a parent"
+  },
+  "shapes": [
+    {"id": "retired_regular", "who": "62, retired engineer, first year at home", "comes_to": ["connect"], "seed": "joins the neighbourhood taichi class 4 days a week, volunteers at the centre, one Wisdom offer on '30 years in engineering - how to start'"},
+    {"id": "aunty_cook", "who": "68, retired homemaker, Chinese/Malay/Tamil", "comes_to": ["connect", "share"], "seed": "kuih/cooking circle leader, monthly cooking demo at the AAC, keeps a cultural story capsule, market-day stall on festival weekends"},
+    {"id": "quiet_widow", "who": "75, lives alone, gentle tier", "comes_to": ["connect"], "seed": "daily check-in enabled, one befriending phone call a week, daughter in the family ring with consent"},
+    {"id": "men_kaki", "who": "65, retired bus uncle", "comes_to": ["connect"], "seed": "Uncle Time men-only group, kopi corner, chess, occasional fishing outing"},
+    {"id": "active_volunteer", "who": "58, still working part-time", "comes_to": ["help", "connect"], "seed": "Silver Guardian at a centre, delivers meals, drives a neighbour to appointments"},
+    {"id": "student_learner", "who": "21, polytechnic student", "comes_to": ["learn"], "seed": "asks mentors about first job/interviews, supports an elder with phone setup in return"},
+    {"id": "career_switcher", "who": "29, wants to start a business", "comes_to": ["learn"], "seed": "asks a retired hawker about stall economics, attends a Wisdom session, gives tech help back"},
+    {"id": "expecting_parent", "who": "30, expecting", "comes_to": ["learn"], "seed": "asks a social-domain elder about parenting in Singapore, shares back practical support"},
+    {"id": "helper_daughter", "who": "45, daughter in the same estate", "comes_to": ["care"], "seed": "family ring with consent, sees mum's day only when mum agrees, books mum's market-day stall"},
+    {"id": "far_from_home", "who": "52, from Bihar, working in Singapore, Chhath away from family", "comes_to": ["connect"], "seed": "origin circle (Bihari in Singapore), festival blessing from afar, language hi/bho"},
+    {"id": "centre_leader", "who": "60, retired teacher", "starts": ["share", "connect"], "seed": "leads an interest circle, creates the weekly gathering, imports her existing AAC group"},
+    {"id": "young_helper_teen", "who": "16, volunteer", "comes_to": ["help"], "seed": "15+ confirmed, helps with smartphones, intergenerational events"},
+    {"id": "homebound_elder", "who": "82, homebound", "comes_to": ["connect"], "seed": "check-in daily, befriending calls, voice notes to the circle, family notified only when silent 3 days"},
+    {"id": "new_migrant_worker", "who": "38, caregiver by trade", "comes_to": ["help", "connect"], "seed": "bengali/hindi speaker, volunteers at centre, learns digital skills"},
+    {"id": "korean_expatriate", "who": "41, Korean family in Singapore", "comes_to": ["connect"], "seed": "Korean-dance class at the AAC, English talk, small cluster of 8-15 people"}
+  ],
+  "family_and_channels": {
+    "family": "about 40% have a family ring (helper daughter/son, assisted profile for a parent); the rest solo",
+    "channels": "50% app only, 25% also Telegram, 15% WhatsApp/SMS, 10% voice-call first (no app at all)",
+    "checkin": "daily check-in enabled for ~200 gentle/quiet people, local times 08:00-20:30, family_notify only for those who agreed"
+  },
+  "seed_density_rules": [
+    "Each town with a real centre gets 20-60 people; centres are the anchor for circles and market days",
+    "Every very-high-engagement person belongs to at least one circle AND does one volunteering thing",
+    "Circles: 40-60 total - mix of origin, faith/festival, place, life and interest feelings; some imported from the AACs above, some started by people; men-only and women-only circles included",
+    "Wisdom: 120-180 elders with capsules (cultural/social/professional), ~80 offers (mix free/paid), ~200 learner requests, ~60 introductions in progress, ~40 logged sessions",
+    "Marketplace: 8-12 hosts (real AACs + malls), 40-60 opportunities (market days, volunteering, gigs, shows), 10 market days with stalls",
+    "History matters: 6-12 months of gatherings, streaks, check-ins, conversations - a matured system, not a fresh one"
+  ]
+}

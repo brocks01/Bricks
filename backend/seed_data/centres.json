@@ -1,0 +1,977 @@
+{
+  "_about": "Real Active Ageing Centres and senior organisations in Singapore, gathered from operator websites and MOH/PA pages (Nov 2026). Public contact details as published. Use as hosts, imported circles and marketplace venues in the Wisdom seed. source = where it came from. Updated: TOUCH/KWSH/REACH addresses filled from operator directories; more real centres added (Lions Befrienders, Sunlove, Muhammadiyah, Chong Hua Tong, TOUCH Tampines).",
+  "operators": [
+    {
+      "id": "mws",
+      "name": "Methodist Welfare Services",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "slec",
+      "name": "St Luke's ElderCare",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "thk",
+      "name": "Thye Hua Kwan Moral Charities",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "allkin",
+      "name": "Allkin Singapore",
+      "kind": "charity",
+      "region": "north-east"
+    },
+    {
+      "id": "feiyue",
+      "name": "Fei Yue Community Services",
+      "kind": "charity",
+      "region": "north/south/west"
+    },
+    {
+      "id": "pcf",
+      "name": "PCF Sparkle Care",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "awwa",
+      "name": "AWWA",
+      "kind": "charity",
+      "region": "central-north"
+    },
+    {
+      "id": "reach",
+      "name": "REACH Community Services",
+      "kind": "charity",
+      "region": "west"
+    },
+    {
+      "id": "touch",
+      "name": "TOUCH Community Services",
+      "kind": "charity",
+      "region": "central/north"
+    },
+    {
+      "id": "kwsh",
+      "name": "Kwong Wai Shiu Hospital",
+      "kind": "charity",
+      "region": "central"
+    },
+    {
+      "id": "ntuch",
+      "name": "NTUC Health",
+      "kind": "social enterprise",
+      "region": "islandwide"
+    },
+    {
+      "id": "carecorner",
+      "name": "Care Corner",
+      "kind": "charity",
+      "region": "central"
+    },
+    {
+      "id": "pa",
+      "name": "People's Association (RCs, CCs, SCECs)",
+      "kind": "government",
+      "region": "islandwide"
+    },
+    {
+      "id": "precious",
+      "name": "Precious Active Ageing Centre",
+      "kind": "charity",
+      "region": "west"
+    },
+    {
+      "id": "4s",
+      "name": "4S (Sathya Sai Social Service)",
+      "kind": "charity",
+      "region": "east"
+    },
+    {
+      "id": "adventist",
+      "name": "Adventist Home for the Elders",
+      "kind": "faith-based",
+      "region": "west/central"
+    },
+    {
+      "id": "activeglobal",
+      "name": "Active Global Specialised Caregivers",
+      "kind": "private",
+      "region": "north-east/south"
+    },
+    {
+      "id": "lions",
+      "name": "Lions Befrienders",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "sunlove",
+      "name": "Sunlove",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "muhammadiyah",
+      "name": "Muhammadiyah",
+      "kind": "charity",
+      "region": "islandwide"
+    },
+    {
+      "id": "chonghuatong",
+      "name": "Chong Hua Tong",
+      "kind": "charity",
+      "region": "islandwide"
+    }
+  ],
+  "centres": [
+    {
+      "name": "MWS Charis ACE Active Ageing Centre - Geylang East",
+      "operator": "mws",
+      "town": "Geylang",
+      "address": "Blk 125 Geylang East Ave 1, #01-05, Singapore 381125",
+      "tel": "6842 0497",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Active Ageing Centre - Fernvale Rivergrove",
+      "operator": "mws",
+      "town": "Sengkang",
+      "address": "Blk 473A Fernvale Street #01-17 Singapore 791473",
+      "tel": "6481 7395",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Active Ageing Centre - Golden Lily@Pasir Ris",
+      "operator": "mws",
+      "town": "Pasir Ris",
+      "address": "Blk 212A Pasir Ris St 21 #01-616 Singapore 511212",
+      "tel": "6214 0119",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Active Ageing Centre - GreenTops@Sims Place",
+      "operator": "mws",
+      "town": "Geylang",
+      "address": "Blk 63 Sims Place #01-227 Singapore 380063",
+      "tel": "6747 1786",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Wesley Active Ageing Centre - Jalan Berseh",
+      "operator": "mws",
+      "town": "Rochor",
+      "address": "Blk 25 Jalan Berseh #01-142 Singapore 200025",
+      "tel": "6298 0194",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Active Ageing Centre - Kebun Baru",
+      "operator": "mws",
+      "town": "Ang Mo Kio",
+      "address": "Blk 180 Ang Mo Kio Ave 5 #01-2980 Singapore 560180",
+      "tel": "6238 4136",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "MWS Active Ageing Centre - Teck Ghee Vista",
+      "operator": "mws",
+      "town": "Ang Mo Kio",
+      "address": "Blk 307D Ang Mo Kio Ave 1 #01-01 Singapore 564307",
+      "tel": "6684 0341",
+      "hours": "Weekdays 9am-12pm, 1:30pm-5pm",
+      "source": "mws.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Anchorvale",
+      "operator": "slec",
+      "town": "Sengkang",
+      "address": "Blk 353 Anchorvale Lane #01-01, Singapore 540353",
+      "tel": "6950 1900",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Ayer Rajah",
+      "operator": "slec",
+      "town": "Clementi",
+      "address": "150A Pandan Gardens #01-01, Singapore 609342",
+      "tel": "6262 1501",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Bishan",
+      "operator": "slec",
+      "town": "Bishan",
+      "address": "Blk 152B Bishan Street 11, #01-271, Singapore 572152",
+      "tel": "6027 5324",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Changkat",
+      "operator": "slec",
+      "town": "Tampines",
+      "address": "Blk 350 Tampines Street 33, #01-438, Singapore 520350",
+      "tel": "6789 9956",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Chong Pang",
+      "operator": "slec",
+      "town": "Yishun",
+      "address": "Blk 115 Yishun Ring Road, #01-495, Singapore 760115",
+      "tel": "6481 5708",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Clementi",
+      "operator": "slec",
+      "town": "Clementi",
+      "address": "Blk 602, Clementi West Street 1, #01-25, Singapore 120602",
+      "tel": "6872 2210",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Golden Years",
+      "operator": "slec",
+      "town": "Hougang",
+      "address": "Blk 831, Hougang Central, #01-502, Singapore 530831",
+      "tel": "6386 2273",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Hougang",
+      "operator": "slec",
+      "town": "Hougang",
+      "address": "Blk 126, Hougang Avenue 1, #01-1506, Singapore 530126",
+      "tel": "6382 2366",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre @ Jurong East",
+      "operator": "slec",
+      "town": "Jurong East",
+      "address": "Blk 207, Jurong East Street 21, Singapore 600207",
+      "tel": "9746 3101",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Nee Soon Central",
+      "operator": "slec",
+      "town": "Yishun",
+      "address": "Blk 765, Yishun Street 72, #01-366, Singapore 760765",
+      "tel": "6759 9053",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Nee Soon East",
+      "operator": "slec",
+      "town": "Yishun",
+      "address": "Blk 260, Yishun Street 22, #01-87, Singapore 760260",
+      "tel": "6481 5903",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Northshore",
+      "operator": "slec",
+      "town": "Punggol",
+      "address": "Blk 417 Northshore Drive, #01-03, Singapore 820417",
+      "tel": "8685 0772",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "SLEC Active Ageing Centre (Care) @ Teck Whye Vista",
+      "operator": "slec",
+      "town": "Choa Chu Kang",
+      "address": "Blk 153, Jalan Teck Whye, #02-151, Singapore 680153",
+      "tel": "6031 0352",
+      "hours": "Weekdays 9am-5pm",
+      "source": "slec.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ AMK 208",
+      "operator": "thk",
+      "town": "Ang Mo Kio",
+      "address": "Blk 208 Ang Mo Kio Ave 1 #01-1019, Singapore 560208",
+      "tel": "6456 2611",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ AMK 257",
+      "operator": "thk",
+      "town": "Ang Mo Kio",
+      "address": "Blk 257 Ang Mo Kio Ave 4 #01-67, Singapore 560257",
+      "tel": "6459 9139",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ AMK 645",
+      "operator": "thk",
+      "town": "Ang Mo Kio",
+      "address": "Blk 645 Ang Mo Kio Ave 6 #01-4937, Singapore 560645",
+      "tel": "6554 7298",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Bedok",
+      "operator": "thk",
+      "town": "Bedok",
+      "address": "Blk 12 Bedok South Ave 2 #01-610, Singapore 460012",
+      "tel": "6242 2483",
+      "hours": "Daily 6am-10pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Beo Crescent",
+      "operator": "thk",
+      "town": "Bukit Merah",
+      "address": "Blk 44 Beo Crescent #01-67, Singapore 160044",
+      "tel": "6376 3023",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Boon Lay",
+      "operator": "thk",
+      "town": "Jurong West",
+      "address": "Blk 190 Boon Lay Drive #01-242, Singapore 640190",
+      "tel": "6264 6065",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Bukit Batok",
+      "operator": "thk",
+      "town": "Bukit Batok",
+      "address": "Blk 235 Bukit Batok East Ave 5 #01-21, Singapore 650235",
+      "tel": "6566 5303",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Bukit Merah View",
+      "operator": "thk",
+      "town": "Bukit Merah",
+      "address": "Blk 118 Bukit Merah View #02-101, Singapore 150118",
+      "tel": "6276 4761",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Cassia",
+      "operator": "thk",
+      "town": "Pasir Ris",
+      "address": "Blk 52 Cassia Crescent #01-155, Singapore 390052",
+      "tel": "6917 0162",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Chong Pang",
+      "operator": "thk",
+      "town": "Yishun",
+      "address": "Blk 131 Yishun Street 11 #01-237, Singapore 760131",
+      "tel": "8855 4834",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Fengshan 101",
+      "operator": "thk",
+      "town": "Bedok",
+      "address": "Blk 101 Bedok North Avenue 4 #01-1958, Singapore 460101",
+      "tel": "6208 2653",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Fengshan 114",
+      "operator": "thk",
+      "town": "Bedok",
+      "address": "Blk 114 Bedok North Street 2 #01-240, Singapore 460114",
+      "tel": "6245 6993",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Indus 79",
+      "operator": "thk",
+      "town": "Bukit Merah",
+      "address": "Blk 79 Indus Road #01-451, Singapore 161079",
+      "tel": "6276 3283",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Kaki Bukit",
+      "operator": "thk",
+      "town": "Bedok",
+      "address": "Blk 509B Bedok North Street 3 #02-157, Singapore 462509",
+      "tel": "6241 6691",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ MacPherson",
+      "operator": "thk",
+      "town": "MacPherson",
+      "address": "Blk 90 Pipit Road #01-103, Singapore 370090",
+      "tel": "6745 6696",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Taman Jurong",
+      "operator": "thk",
+      "town": "Jurong West",
+      "address": "Blk 337 Tah Ching Road #01-01, Singapore 610337",
+      "tel": "6795 1185",
+      "hours": "Mon/Thu 8:30am-8pm, Tue/Wed/Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre @ Telok Blangah Crescent",
+      "operator": "thk",
+      "town": "Telok Blangah",
+      "address": "Blk 3 Telok Blangah Crescent #01-504, Singapore 090003",
+      "tel": "6276 1216",
+      "hours": "Mon-Fri 8:30am-5:30pm, Sat 8:30am-12:30pm",
+      "source": "thkmc.org.sg"
+    },
+    {
+      "name": "THK Active Ageing Centre (Bedok) @ Bedok North Road",
+      "operator": "thk",
+      "town": "Bedok",
+      "address": "Blk 429 Bedok North Road #01-01, Singapore 460429",
+      "hours": "Mon-Fri 8:30am-5:30pm",
+      "source": "moh.gov.sg (Age Well Neighbourhood)"
+    },
+    {
+      "name": "Active Ageing Centre @ Ang Mo Kio 420",
+      "operator": "allkin",
+      "town": "Ang Mo Kio",
+      "address": "420 Ang Mo Kio Avenue 10, #01-1143, Singapore 560420",
+      "tel": "6038 4300",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Ang Mo Kio 469",
+      "operator": "allkin",
+      "town": "Ang Mo Kio",
+      "address": "469 Ang Mo Kio Avenue 10, #01-940, Singapore 560469",
+      "tel": "6038 4310",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Ang Mo Kio 510",
+      "operator": "allkin",
+      "town": "Ang Mo Kio",
+      "address": "510 Ang Mo Kio Avenue 8, #01-2556, Singapore 560510",
+      "tel": "6038 4380",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Sin Ming 25",
+      "operator": "allkin",
+      "town": "Bishan",
+      "address": "25 Sin Ming Road, #01-88, Singapore 570025",
+      "tel": "6038 4320",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Sin Ming 410",
+      "operator": "allkin",
+      "town": "Bishan",
+      "address": "410 Sin Ming Avenue, #01-119, Singapore 570410",
+      "tel": "6038 4330",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Sengkang 182",
+      "operator": "allkin",
+      "town": "Sengkang",
+      "address": "182 Rivervale Crescent, #01-311, Singapore 540182",
+      "tel": "6038 4340",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Sengkang 139",
+      "operator": "allkin",
+      "town": "Sengkang",
+      "address": "Blk 139 Rivervale Street, #01-764, Singapore 540139",
+      "tel": "6038 4390",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Punggol 206A",
+      "operator": "allkin",
+      "town": "Punggol",
+      "address": "206A Punggol Place, #01-2030, Singapore 821206",
+      "tel": "6038 4350",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Punggol 677B",
+      "operator": "allkin",
+      "town": "Punggol",
+      "address": "677B Punggol Drive, #01-774, Singapore 822677",
+      "tel": "6038 4370",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Active Ageing Centre @ Pasir Ris 476A",
+      "operator": "allkin",
+      "town": "Pasir Ris",
+      "address": "476A Pasir Ris Drive 6, #01-618, Singapore 511476",
+      "tel": "6038 4360",
+      "source": "allkin.org.sg"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Hougang)",
+      "operator": "feiyue",
+      "town": "Hougang",
+      "address": "Blk 174A Hougang Avenue 1 #01-1505 Singapore 531174",
+      "tel": "6538 0234",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Hougang Dewcourt)",
+      "operator": "feiyue",
+      "town": "Hougang",
+      "address": "Blk 376C Hougang Street 32 #01-32 Singapore 533376",
+      "tel": "6202 4699",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Buangkok Green)",
+      "operator": "feiyue",
+      "town": "Sengkang",
+      "address": "Blk 582A Buangkok Green #02-540 Singapore 531582",
+      "tel": "6914 2166",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Serangoon)",
+      "operator": "feiyue",
+      "town": "Serangoon",
+      "address": "Blk 223A Serangoon Ave 4 #01-217 Singapore 551223",
+      "tel": "6345 6567",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Holland Close)",
+      "operator": "feiyue",
+      "town": "Queenstown",
+      "address": "Blk 1 Holland Close #02-115 Singapore 271001",
+      "tel": "6774 4044",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Commonwealth)",
+      "operator": "feiyue",
+      "town": "Queenstown",
+      "address": "Blk 107 Commonwealth Crescent #01-230 Singapore 140107",
+      "tel": "6471 2022",
+      "hours": "Mon-Fri 2pm-5:30pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Fajar)",
+      "operator": "feiyue",
+      "town": "Bukit Panjang",
+      "address": "Blk 406 Fajar Road #01-295 Singapore 670406",
+      "tel": "6370 4162",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Bukit Batok)",
+      "operator": "feiyue",
+      "town": "Bukit Batok",
+      "address": "Blk 183 Bukit Batok West Ave 8 #01-101 Singapore 650183",
+      "tel": "6561 4404",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Teck Whye)",
+      "operator": "feiyue",
+      "town": "Choa Chu Kang",
+      "address": "Blk 9 Teck Whye Lane #01-268 Singapore 680009",
+      "tel": "6893 6606",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Senja)",
+      "operator": "feiyue",
+      "town": "Bukit Panjang",
+      "address": "Blk 634B Senja Road #02-227 Singapore 672634",
+      "tel": "6351 9555",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "Fei Yue Active Ageing Centre (Limbang)",
+      "operator": "feiyue",
+      "town": "Bukit Batok",
+      "address": "Blk 536 Choa Chu Kang Street 51 #01-142 Singapore 680536",
+      "tel": "6659 0616",
+      "hours": "Mon-Fri 9:30am-6pm",
+      "source": "fycs.org"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Yew Tee",
+      "operator": "pcf",
+      "town": "Choa Chu Kang",
+      "address": "Blk 625 Choa Chu Kang Street 62 #01-206 Singapore 680625",
+      "tel": "8020 3305",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Boon Lay",
+      "operator": "pcf",
+      "town": "Jurong West",
+      "address": "Blk 631 Jurong West Street 65 #01-260 Singapore 640631",
+      "tel": "6951 9615",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Tampines 813",
+      "operator": "pcf",
+      "town": "Tampines",
+      "address": "Blk 813 Tampines Street 81 #01-548 Singapore 520813",
+      "tel": "6610 8673",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Tampines 922",
+      "operator": "pcf",
+      "town": "Tampines",
+      "address": "Blk 922 Tampines Street 91 #01-217 Singapore 520922",
+      "tel": "9177 9016",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Simei 107",
+      "operator": "pcf",
+      "town": "Simei",
+      "address": "Blk 107 Simei Street 1 #01-838 Singapore 520107",
+      "tel": "6612 6125",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Tanjong Pagar",
+      "operator": "pcf",
+      "town": "Tanjong Pagar",
+      "address": "Blk 4 Tanjong Pagar Plz, Resident's Corner Singapore 081004",
+      "tel": "8095 1139",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Braddell Heights",
+      "operator": "pcf",
+      "town": "Serangoon",
+      "address": "Blk 319 Serangoon Avenue 2 #01-348 Singapore 550319",
+      "tel": "6962 9783",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "PCF Sparkle Care Active Ageing @ Eunos",
+      "operator": "pcf",
+      "town": "Eunos",
+      "address": "Blk 657 Jalan Tenaga #01-122 Singapore 410657",
+      "hours": "Mon-Fri 9am-6pm",
+      "source": "pcfsparklecare.org.sg"
+    },
+    {
+      "name": "AWWA Active Ageing Centre (Kebun Baru)",
+      "operator": "awwa",
+      "town": "Ang Mo Kio",
+      "address": "Block 123 Ang Mo Kio Ave 6, #01-4011, Singapore 560123",
+      "tel": "6511 6690",
+      "source": "kebunbaru.pa.gov.sg"
+    },
+    {
+      "name": "REACH Active Ageing Centre @ Jalan Membina",
+      "operator": "reach",
+      "town": "Bukit Merah",
+      "address": "Jalan Membina, Singapore",
+      "source": "reach.org.sg"
+    },
+    {
+      "name": "REACH Active Ageing Centre @ Bukit Gombak Vista",
+      "operator": "reach",
+      "town": "Bukit Batok",
+      "address": "Bukit Gombak Vista, Singapore",
+      "source": "reach.org.sg"
+    },
+    {
+      "name": "REACH Active Ageing Centre @ Bukit Batok",
+      "operator": "reach",
+      "town": "Bukit Batok",
+      "address": "Bukit Batok, Singapore",
+      "source": "reach.org.sg"
+    },
+    {
+      "name": "TOUCHpoint@AMK 433",
+      "operator": "touch",
+      "town": "Ang Mo Kio",
+      "address": "Blk 433 Ang Mo Kio Ave 10 #01-1415 Singapore 560433",
+      "source": "TOUCH annual report 2025 directory",
+      "tel": "6804 6568"
+    },
+    {
+      "name": "TOUCHpoint@Geylang Bahru",
+      "operator": "touch",
+      "town": "Geylang Bahru",
+      "address": "Blk 61 & 62 Geylang Bahru #01-3293 Singapore 330061",
+      "source": "TOUCH annual report 2025 directory",
+      "tel": "6297 5818"
+    },
+    {
+      "name": "TOUCHpoint@Sembawang 335",
+      "operator": "touch",
+      "town": "Sembawang",
+      "address": "Blk 335 Sembawang Close, Singapore",
+      "source": "TOUCH annual report 2025 directory"
+    },
+    {
+      "name": "TOUCHpoint@Yishun 148",
+      "operator": "touch",
+      "town": "Yishun",
+      "address": "Blk 148 Yishun, Singapore (third Yishun site, opened Sep 2026)",
+      "source": "TOUCH annual report 2025 directory"
+    },
+    {
+      "name": "TOUCHpoint@Yishun 162",
+      "operator": "touch",
+      "town": "Yishun",
+      "address": "Blk 162 Yishun Street 11 #01-270 Singapore 760162",
+      "source": "TOUCH annual report 2025 directory",
+      "tel": "6257 0540"
+    },
+    {
+      "name": "TOUCHpoint@Yishun 436",
+      "operator": "touch",
+      "town": "Yishun",
+      "address": "Blk 436 Yishun Avenue 11 #01-224 Singapore 760436",
+      "source": "TOUCH annual report 2025 directory",
+      "tel": "6481 4158"
+    },
+    {
+      "name": "TOUCHpoint@Wellington 513",
+      "operator": "touch",
+      "town": "Kallang",
+      "address": "Blk 513 Wellington Circle #01-34 Singapore 750513",
+      "source": "TOUCH annual report 2025 directory",
+      "tel": "6481 8232"
+    },
+    {
+      "name": "KWSH Active Ageing Centre @ St George",
+      "operator": "kwsh",
+      "town": "Kallang",
+      "address": "25 St George's Lane, Singapore 320025",
+      "hours": "Mon-Fri 7am-7pm",
+      "source": "kwsh.org.sg"
+    },
+    {
+      "name": "KWSH Active Ageing Centre @ Jalan Besar",
+      "operator": "kwsh",
+      "town": "Rochor",
+      "address": "69 Jellicoe Road, #02-01, Jalan Besar Community Club, Singapore 208737",
+      "source": "kwsh.org.sg"
+    },
+    {
+      "name": "KWSH Active Ageing Centre @ Potong Pasir",
+      "operator": "kwsh",
+      "town": "Potong Pasir",
+      "address": "Potong Pasir, Singapore",
+      "source": "kwsh.org.sg"
+    },
+    {
+      "name": "KWSH Active Ageing Centre @ McNair",
+      "operator": "kwsh",
+      "town": "Kallang",
+      "address": "McNair, Singapore",
+      "source": "kwsh.org.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Pioneer)",
+      "operator": "ntuch",
+      "town": "Jurong West",
+      "address": "662A Jurong West St 64 #01-328 Singapore 641662",
+      "tel": "6715 6750",
+      "source": "ntuchealth.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Taman Jurong)",
+      "operator": "ntuch",
+      "town": "Jurong West",
+      "address": "118A Corporation Drive S611118",
+      "tel": "6261 6563",
+      "source": "ntuchealth.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Care) - Kampung Admiralty",
+      "operator": "ntuch",
+      "town": "Woodlands",
+      "address": "Kampung Admiralty, 1 Woodlands Square, Singapore (AAC inside the integrated development)",
+      "source": "ntuchealth.sg / pmo.gov.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Bukit Merah View)",
+      "operator": "ntuch",
+      "town": "Bukit Merah",
+      "address": "Blk 117 Bukit Merah View #01-205 Singapore 151117",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Bukit Merah)",
+      "operator": "ntuch",
+      "town": "Bukit Merah",
+      "address": "Blk 117 Jalan Bukit Merah #01-1683 Singapore 160117",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "NTUC Health Active Ageing Centre (Bukit Panjang)",
+      "operator": "ntuch",
+      "town": "Bukit Panjang",
+      "address": "2 Bukit Panjang Ring Road #02-06 Singapore 679947",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "Care Corner Active Ageing Centre (Care) TP131",
+      "operator": "carecorner",
+      "town": "Toa Payoh",
+      "address": "Block 131 Lorong 1 Toa Payoh #01-01 Singapore 310131",
+      "source": "moh.gov.sg (Age Well Neighbourhood, operating Jan 2026)"
+    },
+    {
+      "name": "Care Corner Active Ageing Centre TP170",
+      "operator": "carecorner",
+      "town": "Toa Payoh",
+      "address": "Block 170 Lorong 1 Toa Payoh #01-1102 Singapore 310170",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "Care Corner Active Ageing Centre TP261A",
+      "operator": "carecorner",
+      "town": "Toa Payoh",
+      "address": "Block 261A Toa Payoh East #01-03 Singapore 311261",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "Precious Active Ageing Centre (Fajar Spring)",
+      "operator": "precious",
+      "town": "Bukit Panjang",
+      "address": "Blk 454 Fajar Road #01-582 Singapore 670454",
+      "source": "moh.gov.sg"
+    },
+    {
+      "name": "4S Active Ageing Centre",
+      "operator": "4s",
+      "town": "Changi",
+      "address": "Changi, Singapore",
+      "source": "autumnbridge.sg (Communities of Care pilot, digital clinics)"
+    },
+    {
+      "name": "Adventist Active Centre",
+      "operator": "adventist",
+      "town": "west/central",
+      "address": "Serves 477 HDB Studio Apartments, Singapore",
+      "source": "autumnbridge.sg"
+    },
+    {
+      "name": "Esther AAC",
+      "operator": "ntuch",
+      "town": "Singapore",
+      "address": "Singapore",
+      "source": "moh.gov.sg speech (Silver Guardians: cooking demos, kuih-making by a senior cook)"
+    },
+    {
+      "name": "TOUCHpoint@Tampines 285",
+      "operator": "touch",
+      "town": "Tampines",
+      "address": "Blk 285 Tampines, Singapore (opened 28 Mar 2026)",
+      "source": "TOUCH annual report 2025"
+    },
+    {
+      "name": "Lions Befrienders Active Ageing Centre @ Ang Mo Kio 318",
+      "operator": "lions",
+      "town": "Ang Mo Kio",
+      "address": "Blk 318 Ang Mo Kio Ave 1 #01-1453 Singapore 560321",
+      "source": "NHG Community Health Post list"
+    },
+    {
+      "name": "Sunlove Active Ageing Centre (Care) @ Ang Mo Kio",
+      "operator": "sunlove",
+      "town": "Ang Mo Kio",
+      "address": "Blk 557 Ang Mo Kio Ave 10 Singapore 560557",
+      "source": "NHG Community Health Post list"
+    },
+    {
+      "name": "Muhammadiyah Active Ageing Centre",
+      "operator": "muhammadiyah",
+      "town": "Yishun",
+      "address": "Blk 701B Yishun Ave 5 Golden Palms #02-612 Singapore 762701",
+      "source": "NHG Community Health Post list"
+    },
+    {
+      "name": "Jalan Besar Active Ageing Centre",
+      "operator": "reach",
+      "town": "Rochor",
+      "address": "Blk 811 French Road #01-112 Singapore 200811",
+      "source": "NHG Community Health Post list"
+    },
+    {
+      "name": "Chong Hua Tong Active Ageing Centre",
+      "operator": "chonghuatong",
+      "town": "Rochor",
+      "address": "Blk 47 Owen Road #01-251 Singapore 210047",
+      "source": "NHG Community Health Post list"
+    }
+  ],
+  "facts": {
+    "eligibility": "Typically: age 60+, Singapore Citizen or PR, reside within the centre's service boundary; free to join (KWSH states no fee).",
+    "scale": "Singapore is building towards an Active Ageing Centre in every town (MOH/AIC direction); operators run dozens each (THK 18+, Fei Yue 16, SLEC 15+, Allkin 10).",
+    "age_well_neighbourhoods": "New integrated models: Toa Payoh, Bedok, Bukit Panjang, Tiong Bahru-Redhill (MOH, 2026) - centres co-located with clinics, gardens, preschools.",
+    "flagship": "Kampung Admiralty (Woodlands): AAC co-located with a preschool and hawker centre; 190+ community activities since 2017, 200+ senior volunteers."
+  }
+}

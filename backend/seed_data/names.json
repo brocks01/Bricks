@@ -1,0 +1,67 @@
+{
+  "_about": "Realistic name pools for the 1,000-person Singapore seed. Common Singapore names by community - Chinese, Malay, Indian (Tamil + north Indian), English/Eurasian, plus a small Korean community pool. Compose as 'surname + given' (Chinese, Korean), 'given + binti/bin + father' (Malay), 'given + father + surname' or 'Mr/Mrs surname' (Indian). All are common real names; no real person's details.",
+  "chinese": {
+    "share_of_pop": "about 74% of Singapore",
+    "surnames": ["Tan", "Lim", "Lee", "Ng", "Teo", "Chua", "Koh", "Chan", "Wong", "Sim", "Goh", "Yeo", "Toh", "Cheng", "Yap", "Ho", "Low", "Kwek", "Heng", "Ong", "Foo", "Cheong", "Pang", "Tay", "Yee"],
+    "elder_given_male": ["Ah Huat", "Ah Kow", "Seng Choon", "Hock Chye", "Boon Seng", "Kian Wah", "Chin Leong", "Meng Kee", "Hwee Keng", "Yew Ming", "Swee Goh", "Tiong Hai", "Kok Wah", "Soon Nam", "Khee Seng"],
+    "elder_given_female": ["Siew Chin", "Bee Lan", "Choo Peng", "Geok Choo", "Kim Lian", "Hwee Noi", "Yeok Har", "Poh Choo", "Swee Neo", "Ai Lian", "Huat Neo", "Keng Choo", "Yin Fong", "Lian Hua", "Chwee Keng"],
+    "middle_given_male": ["Wei Ming", "Jun Hao", "Zhi Wei", "Kai Wen", "Jian Hui", "Rui Feng", "De Ming", "Hao Ran", "Yi Jie", "Ming Zhe"],
+    "middle_given_female": ["Xiu Ying", "Li Hua", "Mei Ling", "Xiao Yan", "Jia Hui", "Shu Ting", "Hui Min", "Ya Ling", "Qian Hui", "Ruo Xi"],
+    "young_given_male": ["Ethan", "Jayden", "Ryan", "Marcus", "Aiden", "Elijah", "Dylan", "Isaac"],
+    "young_given_female": ["Chloe", "Alicia", "Zoe", "Rachel", "Elaine", "Jasmine", "Naomi", "Hannah"]
+  },
+  "malay": {
+    "share_of_pop": "about 13% of Singapore",
+    "surnames_note": "Malay names use bin/binti (son/daughter of) rather than family surnames",
+    "elder_given_male": ["Mohamed", "Ahmad", "Sulaiman", "Ismail", "Rahmat", "Kassim", "Yusof", "Hassan", "Daud", "Ali"],
+    "elder_given_female": ["Siti", "Aminah", "Rahmah", "Khatijah", "Zainab", "Maryam", "Halimah", "Rosnah", "Fatimah", "Sa'adiah"],
+    "middle_given_male": ["Faisal", "Hafiz", "Azlan", "Nurul (male rare)", "Ridzwan", "Farid", "Zulkifli", "Irfan", "Amir", "Syafiq"],
+    "middle_given_female": ["Nurul", "Siti Aishah", "Faridah", "Nadia", "Aisyah", "Zulaikha", "Hidayah", "Syafiqah", "Nurul Ain", "Mardhiah"],
+    "young_given_male": ["Adam", "Rayyan", "Danish", "Aqil", "Imran", "Haziq", "Zufri", "Ilyas"],
+    "young_given_female": ["Alya", "Nurin", "Sofia", "Aisyah", "Deanna", "Maira", "Husna", "Zara"],
+    "style": "Full form: Nurul Aisyah binti Mohamed; short form used daily: Siti, Aisyah, Faisal"
+  },
+  "indian_tamil": {
+    "share_note": "Tamil is the largest Indian mother tongue in Singapore",
+    "surnames": ["Raman", "Krishnan", "Murugesan", "Suppiah", "Balakrishnan", "Nadarajah", "Sundram", "Velu", "Chelliah", "Ganesan", "Perumal", "Tangavelu", "Naidu", "Pillai", "Govindasamy"],
+    "elder_given_male": ["Rajiah", "Muthu", "Sinniah", "Krishnan", "Subramaniam", "Thangamani", "Palani", "Velappa", "Sundaram", "Ganesan"],
+    "elder_given_female": ["Lakshmi", "Devi", "Kamala", "Selvi", "Mangala", "Padmini", "Geetha", "Rani", "Sarojini", "Vasanthi"],
+    "middle_given_male": ["Suresh", "Rajesh", "Kumar", "Anand", "Vijay", "Prakash", "Naveen", "Karthik", "Senthil", "Arul"],
+    "middle_given_female": ["Priya", "Divya", "Kavitha", "Sunita", "Meena", "Deepa", "Shanthi", "Revathi", "Latha", "Nithya"],
+    "young_given_male": ["Arun", "Hari", "Jayan", "Nikhil", "Rohan", "Vikram", "Ashwin", "Kavin"],
+    "young_given_female": ["Anjali", "Kavya", "Priyanka", "Shreya", "Nisha", "Thiviya", "Sharanya", "Diya"]
+  },
+  "indian_north": {
+    "share_note": "Hindi/Bengali/Uru-speaking community: includes newer migrants and long-settled families",
+    "surnames": ["Sharma", "Verma", "Gupta", "Singh", "Kaur", "Das", "Banerjee", "Iyer", "Menon", "Chatterjee"],
+    "elder_given_male": ["Ram", "Shyam", "Mohan", "Bhaskar", "Nath", "Sudhir", "Ashok"],
+    "elder_given_female": ["Sita", "Gita", "Nirmala", "Sushila", "Rekha", "Asha", "Mala"],
+    "middle_given_male": ["Ravi", "Sunil", "Deepak", "Amit", "Sandeep", "Vikas", "Rahul"],
+    "middle_given_female": ["Anita", "Sunita", "Pooja", "Ritu", "Manju", "Seema", "Kajal"],
+    "young_given_male": ["Aarav", "Vihaan", "Kabir", "Ishaan", "Reyansh"],
+    "young_given_female": ["Aanya", "Diya", "Myra", "Saanvi", "Riya"]
+  },
+  "english_eurasian": {
+    "share_note": "English-speaking families of any race, plus Eurasian families",
+    "surnames": ["Sebastian", "D'Souza", "Fernandez", "Rodrigues", "Tan (english-first)", "Wong", "Lee", "Goh", "Kumar", "Nair"],
+    "elder_given_male": ["John", "George", "William", "David", "Robert", "Thomas", "Peter"],
+    "elder_given_female": ["Mary", "Margaret", "Rose", "Grace", "Theresa", "Anna", "Patricia"],
+    "middle_given_male": ["Daniel", "Nicholas", "Jonathan", "Christopher", "Matthew", "Andrew", "Kevin"],
+    "middle_given_female": ["Sarah", "Jennifer", "Michelle", "Catherine", "Laura", "Nicole", "Vanessa"],
+    "young_given_male": ["Liam", "Noah", "Ethan", "Lucas", "Jayden"],
+    "young_given_female": ["Chloe", "Emma", "Mia", "Sofia", "Isla"]
+  },
+  "korean": {
+    "share_note": "Small but real Korean community in Singapore (expat families, students, workers); AACs also run Korean-dance classes (Lions Befrienders)",
+    "surnames": ["Kim", "Lee", "Park", "Choi", "Jung", "Kang", "Cho", "Yoon", "Jang", "Han"],
+    "given_male": ["Min-jun", "Ji-hoon", "Seo-jun", "Do-yun", "Ju-won", "Sang-woo", "Hyun-woo", "Jae-sung"],
+    "given_female": ["Seo-yeon", "Ji-woo", "Ha-eun", "Ye-jin", "Soo-jin", "Min-ji", "Eun-ji", "Hye-jin"],
+    "style": "Family name first: Kim Min-jun"
+  },
+  "how_to_use": {
+    "mix": "Chinese ~74%, Malay ~13%, Indian ~9%, others ~4% of 1000 people; add a Korean cluster of 8-15 if wanted",
+    "elder_vs_young": "60+ elders get the elder given-names; 40-59 get middle names; 15-39 learners get young names",
+    "titles": "Elders are addressed by first name or Aunty/Uncle + first name in speech (never 'test person')",
+    "emails_for_seed": "compose as name + year, e.g. siewchin1952@example.com style - only for the demo database"
+  }
+}

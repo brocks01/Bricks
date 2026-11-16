@@ -1,0 +1,43 @@
+{
+  "_about": "Real funding, partners and scale figures for Singapore Active Ageing Centres, gathered from MOH, MND, AIC and operator pages (Nov 2026). Use for realism in the seed: who funds the centres, who partners with them, and how big the sector really is.",
+  "government_funding": {
+    "age_well_sg": "National programme led by MOH + MND + MOT (launched Nov 2023). Budget 2024 set aside S$3.5 billion over a decade.",
+    "aac_programming": "MOH dedicates about S$800 million from FY2024 to FY2028 to resource Active Ageing Centres - wider programmes including communal dining and frailty programmes.",
+    "aac_infrastructure": "A further S$140 million from FY2025 to FY2027 lets 100+ existing AACs expand or refurbish.",
+    "yearly_disbursement": "About S$100 million disbursed to over 200 AACs in one financial year, up from S$60 million to 157 AACs the year before (MOH, May 2024).",
+    "administered_by": "Funding is administered by AIC (Agency for Integrated Care), output- and outcome-based, with a small quantum for Ground-Up Initiatives (GUIs).",
+    "aac_it_grant": "Up to S$33,000 per centre for an Age-Well-SG-compatible IT system (set-up + first year).",
+    "age_well_kakis": "MOH/AIC grant programme running 1 Aug 2026 - 31 Jul 2028: funds AACs and community-care providers to offer 'community tasks' (event support, activity support, Meals-on-Wheels help, escorting seniors to appointments). One task approx 1 hour. Funding capped at parent-organisation level per AAC onboarded.",
+    "smf_atf": "Seniors' Mobility and Enabling Fund and Assistive Technology Fund subsidise mobility devices for seniors (announced at TOUCH)."
+  },
+  "partners_and_funders_real": [
+    {"partner": "Health Promotion Board (HPB)", "what": "supplements AAC programming with national wellness campaigns, resources and trainers (e.g. the exercise trainers at REACH AACs); Silver Strength / Movement for Health initiatives"},
+    {"partner": "DBS Foundation", "what": "S$1.5 million over 4.5 years for 'DBS Foundation x TOUCH SWCAP' - five wellness domains (physical, emotional, social, financial, spiritual); DBS employee volunteers run digital and financial literacy workshops; 700 Wellness Motivators to support 500 at-risk seniors, 120 befrienders for 200 socially isolated seniors"},
+    {"partner": "Healthier SG / healthcare clusters (NHG, NUHS, SingHealth)", "what": "Regional Health Managers, community health posts inside AACs (e.g. every fortnight at listed centres), 'Nourish and Thrive' nutrition programme by NUHS at Boon Lay AAC, Yishun Health activities at TOUCH Yishun"},
+    {"partner": "National Healthcare Group (NHG)", "what": "'Eat, Chat, Bond' sessions with healthcare leaders at TOUCH centres; community nurse posts"},
+    {"partner": "People's Association / Residents' Networks", "what": "AACs tap RN common spaces (coffeeshops, parks, pavilions, residents' corners) to engage seniors closer to home; Wellness Time @ RC at 200+ RCs"},
+    {"partner": "CapitaLand Hope Foundation", "what": "supports 'Caring Neighbours' volunteering at TOUCHpoint@Yishun 162"},
+    {"partner": "Majurity Trust ('Silver is Gold' Fund)", "what": "dementia-friendly community walkathons with TOUCH and Ang Mo Kio Partners' Network"},
+    {"partner": "Silver Generation Ambassadors (AIC)", "what": "outreach volunteers who know the seniors in the estate, focus on those at risk of social isolation"},
+    {"partner": "Thye Hua Kwan + DBS", "what": "'Silver Hands' digital matching platform for community tasks"},
+    {"partner": "Synapxe", "what": "Age Well SG national IT programme; AAC IT grants only fund ASG-compatible systems"}
+  ],
+  "sector_scale_real": {
+    "aac_count": "60 (2021) -> 119 (2023) -> 208 (May 2024) -> 223 (Apr 2025); direction is an AAC in every town, reaching 80% of seniors",
+    "seniors_engaged_per_year": "about 17,000 (FY21) -> more than 49,000 (FY22) taking part in AAC activities",
+    "target": "AAC 2.0 aims to engage 80% of Singapore's senior population",
+    "service_boundary_rule": "Each AAC has a designated service boundary, but MOH policy expects centres to serve seniors from outside it too (funding accounts for it)",
+    "cost_to_senior": "Activities largely free; a fee may apply for selected activities or outings (AIC)",
+    "eligibility": "Seniors 60+, Singapore Citizen or PR regardless of housing and income",
+    "touch_scale": "TOUCH AACs served some 6,200 seniors in FY2025; its three Yishun sites support about 1,900; Meals-on-Wheels delivered 545,480 meals to about 1,630 homebound seniors in 2024",
+    "site_conversion": "AIC seeks partners with suitable sites: 200-800 sqm, near residential areas and transport (the 'land' side - centres are converting existing HDB/community spaces)"
+  },
+  "how_this_shows_in_the_seed": [
+    "Centres carry a 'partners' line (HPB trainer, NUHS nutrition, DBS literacy workshop) - the real mix",
+    "A few centres are mid-refurbish (the S$140M programme) - closures and reopening dates make history feel live",
+    "Funding events: grant renewals, a new site opened (like TOUCH Tampines 285 in Mar 2026), an AWK community-tasks batch",
+    "Seniors volunteer through funded roles: Silver Guardian, Neighbourhood Kakis, community task (1 hour), meal delivery",
+    "Nobody in the seed ever pays the platform; centre fees are a few dollars for selected activities - real, small, direct"
+  ],
+  "sources": ["moh.gov.sg (Age Well SG press release, Ong Ye Kung speeches, MPQ answers)", "mnd.gov.sg (Age Well SG progress)", "aic.sg (Age Well Kakis, AAC pages, site conversion)", "annals.edu.sg (AAC 2.0 model review, Dec 2025)", "touch.org.sg annual reports 2021-2025 + press releases", "werkdone.com (AAC IT Grant terms, verified Jul 2026)", "nhg.gov.sg Community Health Post lists"]
+}

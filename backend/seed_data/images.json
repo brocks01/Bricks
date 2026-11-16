@@ -1,0 +1,1103 @@
+{
+  "_about": "Image URLs for the seed; every URL checked HTTP 200 on 16 Nov 2026. Wikimedia Commons images are free-licensed (credit kept as author); Unsplash images are under the Unsplash License. Both hotlink fine. Swap for your own uploads via POST /v1/media/upload (Cloudinary) any time. seed_demo.py IDs verified separately.",
+  "by_category": {
+    "seed_demo_unsplash_existing": [
+      {
+        "url": "https://images.unsplash.com/photo-1648365304143-9aa30adbf8e4?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1648365304143-9aa30adbf8e4"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1648365306256-7892c24362d6?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1648365306256-7892c24362d6"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1700553856089-1ea9261143a7?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1700553856089-1ea9261143a7"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1779719762208-f3d2f100445b?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1779719762208-f3d2f100445b"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1642413140777-0a3bf5ff39e5?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1642413140777-0a3bf5ff39e5"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1604940293595-be295d67ad9e?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1604940293595-be295d67ad9e"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1591688342010-d71fbf89b4c3?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1591688342010-d71fbf89b4c3"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1782150924537-7a4fe94d837f?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1782150924537-7a4fe94d837f"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1624730088819-01a310dbc10b?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1624730088819-01a310dbc10b"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1763901682710-a18f6a7d9531?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1763901682710-a18f6a7d9531"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1770184428372-ad4d28b9aef4?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1770184428372-ad4d28b9aef4"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1757585267523-f689c297fa2d?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1757585267523-f689c297fa2d"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1621460248083-6271cc4437a8?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1621460248083-6271cc4437a8"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1611843467160-25afb8df1074?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1611843467160-25afb8df1074"
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1597868165956-03a6827955b1?w=900&q=70&auto=format&fit=crop",
+        "credit": "Unsplash",
+        "license": "Unsplash License",
+        "source": "Unsplash (used by seed_demo.py)",
+        "page": "https://unsplash.com/photos/1597868165956-03a6827955b1"
+      }
+    ],
+    "singapore_place": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1a/Block_21_HDB_Holland%2C_Singapore_%28Unsplash%29.jpg/960px-Block_21_HDB_Holland%2C_Singapore_%28Unsplash%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "chuttersnap chuttersnap",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Block_21_HDB_Holland,_Singapore_(Unsplash).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/eb/HDB_Blocks_at_497_Tampines_St_45%2C_Singapore_8.jpg/960px-HDB_Blocks_at_497_Tampines_St_45%2C_Singapore_8.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Yuqiao",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:HDB_Blocks_at_497_Tampines_St_45,_Singapore_8.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/66/HDB_blocks_in_Dover.jpg/960px-HDB_blocks_in_Dover.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Deoma12",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:HDB_blocks_in_Dover.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Singapore_HDB_Apartment_Block_506_Bishan_%281%29.jpg/960px-Singapore_HDB_Apartment_Block_506_Bishan_%281%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "MapStaringEnthusiast",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Singapore_HDB_Apartment_Block_506_Bishan_(1).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Singapore_HDB_Apartment_Block_506_Bishan_%282%29.jpg/960px-Singapore_HDB_Apartment_Block_506_Bishan_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "MapStaringEnthusiast",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Singapore_HDB_Apartment_Block_506_Bishan_(2).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Ang_Mo_Kio_Avenue_8.jpg/960px-Ang_Mo_Kio_Avenue_8.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "BenTanXiaoMing",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Ang_Mo_Kio_Avenue_8.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c6/Block_201_Ang_Mo_Kio_Avenue_3.jpg/960px-Block_201_Ang_Mo_Kio_Avenue_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wzhkevin",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Block_201_Ang_Mo_Kio_Avenue_3.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/6/64/Thevani_Store%2C_Ang_Mo_Kio_Avenue_8%2C_Singapore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Peifen at en.wikipedia.",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Thevani_Store,_Ang_Mo_Kio_Avenue_8,_Singapore.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/View_of_Nanyang_Polytechnic_along_Ang_Mo_Kio_Avenue_8_202411.jpg/960px-View_of_Nanyang_Polytechnic_along_Ang_Mo_Kio_Avenue_8_202411.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Fanz226",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:View_of_Nanyang_Polytechnic_along_Ang_Mo_Kio_Avenue_8_202411.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e8/A_street_in_Toa_Payoh.jpg/960px-A_street_in_Toa_Payoh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ZKang123",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:A_street_in_Toa_Payoh.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/NS19_Toa_Payoh_MRT_Platform_A_20261031_224405.jpg/960px-NS19_Toa_Payoh_MRT_Platform_A_20261031_224405.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ZKang123",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:NS19_Toa_Payoh_MRT_Platform_A_20261031_224405.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/NS19_Toa_Payoh_MRT_Platforms_20261031_224419.jpg/960px-NS19_Toa_Payoh_MRT_Platforms_20261031_224419.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ZKang123",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:NS19_Toa_Payoh_MRT_Platforms_20261031_224419.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Original_%22Toa_Payoh_Dragon_Playground%22%2C_Singapore_%282025%29_-_img_05.jpg/960px-Original_%22Toa_Payoh_Dragon_Playground%22%2C_Singapore_%282025%29_-_img_05.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Chainwit.",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Original_\"Toa_Payoh_Dragon_Playground\",_Singapore_(2025)_-_img_05.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Outdoor_shopping_mall_in_Toa_Payoh_Central_-_2022-04-16.jpg/960px-Outdoor_shopping_mall_in_Toa_Payoh_Central_-_2022-04-16.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wzhkevin",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Outdoor_shopping_mall_in_Toa_Payoh_Central_-_2022-04-16.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Carved_double_door_with_two_wooden_reliefs_of_standing_women%2C_Chinatown%2C_Singapore.jpg/960px-Carved_double_door_with_two_wooden_reliefs_of_standing_women%2C_Chinatown%2C_Singapore.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Basile Morin",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Carved_double_door_with_two_wooden_reliefs_of_standing_women,_Chinatown,_Singapore.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Singapore_%28SG%29%2C_China_Town%2C_Pagoda_Street_--_2019_--_4505.jpg/960px-Singapore_%28SG%29%2C_China_Town%2C_Pagoda_Street_--_2019_--_4505.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Dietmar Rabich",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Singapore_(SG),_China_Town,_Pagoda_Street_--_2019_--_4505.jpg"
+      }
+    ],
+    "festival": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bf/Chingay_Parade_08_Singapore_%282269057331%29.jpg/960px-Chingay_Parade_08_Singapore_%282269057331%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "William Cho",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chingay_Parade_08_Singapore_(2269057331).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/92/Chingay_Performer.jpg/960px-Chingay_Performer.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Fortresseconomist",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chingay_Performer.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/69/Chingay_Performers_at_Parade.jpg/960px-Chingay_Performers_at_Parade.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Fortresseconomist",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chingay_Performers_at_Parade.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Chingay_Performers_pose_for_a_photo.jpg/960px-Chingay_Performers_pose_for_a_photo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Fortresseconomist",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chingay_Performers_pose_for_a_photo.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5b/Chingay_in_George_Town_2024.jpg/960px-Chingay_in_George_Town_2024.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "HundenvonPenang",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chingay_in_George_Town_2024.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0834_2929.jpg/960px-Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0834_2929.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jakub Hałun",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chinese_New_Year_decorations_in_Chinatown,_Singapore,_20240122_0834_2929.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3e/Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0851_2960.jpg/960px-Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0851_2960.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jakub Hałun",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chinese_New_Year_decorations_in_Chinatown,_Singapore,_20240122_0851_2960.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0852_2963.jpg/960px-Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0852_2963.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jakub Hałun",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chinese_New_Year_decorations_in_Chinatown,_Singapore,_20240122_0852_2963.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0852_2965.jpg/960px-Chinese_New_Year_decorations_in_Chinatown%2C_Singapore%2C_20240122_0852_2965.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jakub Hałun",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chinese_New_Year_decorations_in_Chinatown,_Singapore,_20240122_0852_2965.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/25/South_Bridge_Road%2C_Singapore%2C_20240122_0832_2926.jpg/960px-South_Bridge_Road%2C_Singapore%2C_20240122_0832_2926.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jakub Hałun",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:South_Bridge_Road,_Singapore,_20240122_0832_2926.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5d/Deepavali_on_Serangoon_Road.jpg/960px-Deepavali_on_Serangoon_Road.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Cpgfella",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Deepavali_on_Serangoon_Road.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/37/Geylang_Serai%2C_Singapore%2C_illuminated_for_Hari_Raya_Aidilfitri_-_20090816.jpg/960px-Geylang_Serai%2C_Singapore%2C_illuminated_for_Hari_Raya_Aidilfitri_-_20090816.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "William Cho.",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Geylang_Serai,_Singapore,_illuminated_for_Hari_Raya_Aidilfitri_-_20090816.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Geylang_Serai_Hari_Raya_Light-Up_2026.jpg/960px-Geylang_Serai_Hari_Raya_Light-Up_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ScribblingGeek",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Geylang_Serai_Hari_Raya_Light-Up_2026.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ea/Geylang_Serai_Hari_raya_Bazaar.jpg/960px-Geylang_Serai_Hari_raya_Bazaar.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Alexisthie",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Geylang_Serai_Hari_raya_Bazaar.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/6c/Geylang_Serai_light_up.jpg/960px-Geylang_Serai_light_up.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jnzl's Photos",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Geylang_Serai_light_up.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8d/Selamat_Hari_Raya_Aidilfitri_at_Geylang_Serai_Geylang.jpg/960px-Selamat_Hari_Raya_Aidilfitri_at_Geylang_Serai_Geylang.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "WONG CHEK POH",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Selamat_Hari_Raya_Aidilfitri_at_Geylang_Serai_Geylang.jpg"
+      }
+    ],
+    "activity_exercise": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f1/An_elderly_Chinese_man_practices_Tai_Chi%2C_Jardin_du_Luxembourg%2C_Paris_November_2009.jpg/960px-An_elderly_Chinese_man_practices_Tai_Chi%2C_Jardin_du_Luxembourg%2C_Paris_November_2009.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "InSapphoWeTrust from Los Angeles, California, USA",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:An_elderly_Chinese_man_practices_Tai_Chi,_Jardin_du_Luxembourg,_Paris_November_2009.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f7/Cos%27%C3%A8_il_Tai_Chi.jpg/960px-Cos%27%C3%A8_il_Tai_Chi.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Aquila antica",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Cos'è_il_Tai_Chi.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/72/Handan_International_Taijiquan_Sports_Conference_%282024%29.jpg/960px-Handan_International_Taijiquan_Sports_Conference_%282024%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ShorelineTaiji",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Handan_International_Taijiquan_Sports_Conference_(2024).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e0/Tai-Chi-posture-Sensei_sandeep_desai.jpg/960px-Tai-Chi-posture-Sensei_sandeep_desai.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Sensei sandeep",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Tai-Chi-posture-Sensei_sandeep_desai.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/09/TaiCHI.jpg/960px-TaiCHI.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jalalkhalkhali",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:TaiCHI.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/34/Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_01.jpg/960px-Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Kritzolina",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Tulpe_\"Dance_Line\"_im_botanschen_Garten_München_01.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/07/Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_02.jpg/960px-Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Kritzolina",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Tulpe_\"Dance_Line\"_im_botanschen_Garten_München_02.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_03.jpg/960px-Tulpe_%22Dance_Line%22_im_botanschen_Garten_M%C3%BCnchen_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Kritzolina",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Tulpe_\"Dance_Line\"_im_botanschen_Garten_München_03.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1f/Tulpe_%27Dance_Line%27_im_botanischen_Garten_in_M%C3%BCnchen_04.jpg/960px-Tulpe_%27Dance_Line%27_im_botanischen_Garten_in_M%C3%BCnchen_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Kritzolina",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Tulpe_'Dance_Line'_im_botanischen_Garten_in_München_04.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/Buckley_Zumba_session.JPG/960px-Buckley_Zumba_session.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Air Force photo by Airman 1st Class Phillip Houk",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Buckley_Zumba_session.JPG"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/38/US_Army_52862_Zumba_adds_Latin_dance_to_fitness_routine.jpg/960px-US_Army_52862_Zumba_adds_Latin_dance_to_fitness_routine.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Brittany Carlson (USAG Stuttgart)",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:US_Army_52862_Zumba_adds_Latin_dance_to_fitness_routine.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Zumba_%288158431916%29.jpg/960px-Zumba_%288158431916%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "roanokecollege",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Zumba_(8158431916).jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/4/49/Zumba_at_Meridian_Hill_Park.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "National Park Service",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Zumba_at_Meridian_Hill_Park.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9a/Zumba_instructor_Honey_Cushman_and_equal_opportunity_advisor_Gunnery_Sgt._Curtis_Bradley_yell_encouragement_toward_the_end_of_the_special_Hispanic_Heritage_Zumba_class%2C_on_Marine_Corps_Base_Hawaii%2C_Hawaii%2C_Oct_121004-M-NM356-053.jpg/960px-thumbnail.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Rochelle Smolinski",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Zumba_instructor_Honey_Cushman_and_equal_opportunity_advisor_Gunnery_Sgt._Curtis_Bradley_yell_encouragement_toward_the_end_of_the_special_Hispanic_Heritage_Zumba_class,_on_Marine_Corps_Base_Hawaii,_Hawaii,_Oct_121004-M-NM356-053.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Senior_woman_exercises_with_dumbbells_on_mat_in_living_room.jpg/960px-Senior_woman_exercises_with_dumbbells_on_mat_in_living_room.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Senior_woman_exercises_with_dumbbells_on_mat_in_living_room.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Silvera_for_Seniors_breaks_Guiness_World_Record.jpg/960px-Silvera_for_Seniors_breaks_Guiness_World_Record.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Silvera for Seniors (via QUOI Media Group)",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Silvera_for_Seniors_breaks_Guiness_World_Record.jpg"
+      }
+    ],
+    "activity_social": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d4/Mahjong_Game_in_Chengdu.jpg/960px-Mahjong_Game_in_Chengdu.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Luca Gamberini",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mahjong_Game_in_Chengdu.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c5/Mahjong_game.jpg/960px-Mahjong_game.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "yui*",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mahjong_game.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/93/Mahjong_%E5%8A%A8%E7%89%A9%E7%89%8C-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Wenlongtian",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mahjong_动物牌-1.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Mahjong_%E8%B5%A4%E7%89%8C1.jpg/960px-Mahjong_%E8%B5%A4%E7%89%8C1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wenlongtian",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mahjong_赤牌1.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/41/Mahjong_%E8%B5%A4%E7%89%8C3.jpg/960px-Mahjong_%E8%B5%A4%E7%89%8C3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wenlongtian",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mahjong_赤牌3.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/a/af/Cornelis_de_Man_-_The_Chess_Players_-_WGA13904.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Cornelis de Man",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Cornelis_de_Man_-_The_Chess_Players_-_WGA13904.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/30/The_Chess_Players_%28Dec_2022%29.jpg/960px-The_Chess_Players_%28Dec_2022%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Gnupratchett",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:The_Chess_Players_(Dec_2022).jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/e/e0/The_Chess_Players_811b654.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Cornelis de Man",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:The_Chess_Players_811b654.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b7/The_Chess_Players_Cornelis_de_Man.jpg/960px-The_Chess_Players_Cornelis_de_Man.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Cornelis de Man",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:The_Chess_Players_Cornelis_de_Man.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/Village_Chess_Players_in_Sindh%2C_Pakistan.png/960px-Village_Chess_Players_in_Sindh%2C_Pakistan.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "RehmanAliMagsi",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Village_Chess_Players_in_Sindh,_Pakistan.png"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4f/2427Pagala_Baliuag%2C_Bulacan_03.jpg/960px-2427Pagala_Baliuag%2C_Bulacan_03.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Judgefloro",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:2427Pagala_Baliuag,_Bulacan_03.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/90/2427Pagala_Baliuag%2C_Bulacan_17.jpg/960px-2427Pagala_Baliuag%2C_Bulacan_17.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Judgefloro",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:2427Pagala_Baliuag,_Bulacan_17.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f6/2427Pagala_Baliuag%2C_Bulacan_18.jpg/960px-2427Pagala_Baliuag%2C_Bulacan_18.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Judgefloro",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:2427Pagala_Baliuag,_Bulacan_18.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/85/Karaoke_Star%21_%284917447111%29.jpg/960px-Karaoke_Star%21_%284917447111%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Derek Gavey from Medicine Hat, Canada",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Karaoke_Star!_(4917447111).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Karaoke_night_at_Cuna_de_Artistas%2C_Loja.jpg/960px-Karaoke_night_at_Cuna_de_Artistas%2C_Loja.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Martín Vasco",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Karaoke_night_at_Cuna_de_Artistas,_Loja.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/93/Classic_BINGO_game_%286679739315%29_%282%29.jpg/960px-Classic_BINGO_game_%286679739315%29_%282%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "OEIL DE VAUTOUR",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Classic_BINGO_game_(6679739315)_(2).jpg"
+      }
+    ],
+    "activity_cooking": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/African_American_and_white_women_learning_to_can_food_in_cooking_class_kitchen_09716v.jpg/960px-African_American_and_white_women_learning_to_can_food_in_cooking_class_kitchen_09716v.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Extension Service photograph.",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:African_American_and_white_women_learning_to_can_food_in_cooking_class_kitchen_09716v.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Cooking_class_%285104746791%29.jpg/960px-Cooking_class_%285104746791%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "krebsmaus07",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Cooking_class_(5104746791).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/Hands_press_lemon_in_kitchen_at_cooking_class_for_children_in_summer.jpg/960px-Hands_press_lemon_in_kitchen_at_cooking_class_for_children_in_summer.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Hands_press_lemon_in_kitchen_at_cooking_class_for_children_in_summer.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/1c/Preparing_Sushi_with_Chef_Eviatar_Churi_in_4Chef_Culinary_School_kitchen%2C_Israel.jpg/960px-Preparing_Sushi_with_Chef_Eviatar_Churi_in_4Chef_Culinary_School_kitchen%2C_Israel.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "בר",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Preparing_Sushi_with_Chef_Eviatar_Churi_in_4Chef_Culinary_School_kitchen,_Israel.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/f5/StateLibQld_2_151395_Cooking_class_at_a_Queensland_State_School%2C_1937.jpg/960px-StateLibQld_2_151395_Cooking_class_at_a_Queensland_State_School%2C_1937.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Contributor(s): Queensland. Dept. of Public Instruction",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:StateLibQld_2_151395_Cooking_class_at_a_Queensland_State_School,_1937.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b2/Assorted_Teochew_kueh.jpg/960px-Assorted_Teochew_kueh.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Jpatokal",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Assorted_Teochew_kueh.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Nonya_kueh_2.jpg/960px-Nonya_kueh_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ProjectManhattan",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Nonya_kueh_2.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/03/Nonya_kueh_3.jpg/960px-Nonya_kueh_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ProjectManhattan",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Nonya_kueh_3.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/79/Nonya_kueh_4.jpg/960px-Nonya_kueh_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ProjectManhattan",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Nonya_kueh_4.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Rainbow_kueh_lapis.jpg/960px-Rainbow_kueh_lapis.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "ProjectManhattan",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Rainbow_kueh_lapis.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Toepfe_%28fcm%29.jpg/960px-Toepfe_%28fcm%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Photograph:  Frank C. Müller, Baden-Baden",
+        "license": "CC BY-SA 2.5",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Toepfe_(fcm).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Vintage_brass_cooking_pot%2C_3.jpg/960px-Vintage_brass_cooking_pot%2C_3.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Rajani Gairshail",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vintage_brass_cooking_pot,_3.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/65/Vintage_brass_cooking_pot%2C_4.jpg/960px-Vintage_brass_cooking_pot%2C_4.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Rajani Gairshail",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vintage_brass_cooking_pot,_4.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/24/Vintage_brass_cooking_pot_%2C2.jpg/960px-Vintage_brass_cooking_pot_%2C2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Rajani Gairshail",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vintage_brass_cooking_pot_,2.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e3/Buster_Brown_Bread_%281907%29_%28ADVERT_450%29.jpeg/960px-Buster_Brown_Bread_%281907%29_%28ADVERT_450%29.jpeg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Golden West Baking Company",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Buster_Brown_Bread_(1907)_(ADVERT_450).jpeg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/02/Chef_prepares_fresh_ingredients_by_chopping_red_vegetables.jpg/960px-Chef_prepares_fresh_ingredients_by_chopping_red_vegetables.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Chef_prepares_fresh_ingredients_by_chopping_red_vegetables.jpg"
+      }
+    ],
+    "elders": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Elderly_woman_with_curly_blonde_hair_putting_her_glasses_on_and_smiling_while_looking_at_the_laptop_screen.jpg/960px-Elderly_woman_with_curly_blonde_hair_putting_her_glasses_on_and_smiling_while_looking_at_the_laptop_screen.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Elderly_woman_with_curly_blonde_hair_putting_her_glasses_on_and_smiling_while_looking_at_the_laptop_screen.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/74/Elderly_woman_with_curly_blonde_hair_smiling_while_eating_a_donut_with_pink_frosting.jpg/960px-Elderly_woman_with_curly_blonde_hair_smiling_while_eating_a_donut_with_pink_frosting.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Elderly_woman_with_curly_blonde_hair_smiling_while_eating_a_donut_with_pink_frosting.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Elderly_woman_with_curly_hair_sitting_in_an_armchair_with_a_laptop_on_her_lap_and_smiling_while_working_on_her_laptop.jpg/960px-Elderly_woman_with_curly_hair_sitting_in_an_armchair_with_a_laptop_on_her_lap_and_smiling_while_working_on_her_laptop.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Elderly_woman_with_curly_hair_sitting_in_an_armchair_with_a_laptop_on_her_lap_and_smiling_while_working_on_her_laptop.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/f/fb/Matthias_Gr%C3%BCnewald_-_Smiling_Woman_-_WGA10822.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Matthias Grünewald",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Matthias_Grünewald_-_Smiling_Woman_-_WGA10822.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cd/Portrait_of_a_smiling%2C_elderly_Chinese_woman_%2816728673425%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "simpleinsomnia",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Portrait_of_a_smiling,_elderly_Chinese_woman_(16728673425).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/39/An_elderly_man_sits_relaxed%2C_smoking_a_cigarette_and_smiling_while_surrounded_by_vibrant_cups_outdoors.jpg/960px-An_elderly_man_sits_relaxed%2C_smoking_a_cigarette_and_smiling_while_surrounded_by_vibrant_cups_outdoors.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:An_elderly_man_sits_relaxed,_smoking_a_cigarette_and_smiling_while_surrounded_by_vibrant_cups_outdoors.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7b/Marines%2C_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-003.jpg/960px-Marines%2C_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-003.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wikimedia Commons",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Marines,_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-003.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Marines%2C_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-005.jpg/960px-Marines%2C_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-005.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wikimedia Commons",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Marines,_senior_citizens_celebrate_holiday_season_141214-M-ZZ999-005.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Grandmother_and_Grandchild.jpg/960px-Grandmother_and_Grandchild.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Sinchalak Musulmon",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandmother_and_Grandchild.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/87/Grandmother_and_grandchild.jpg/960px-Grandmother_and_grandchild.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Sophiestolle",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandmother_and_grandchild.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e5/Grandmother_and_grandchild_%CC%A0_1.jpg/960px-Grandmother_and_grandchild_%CC%A0_1.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Kwameghana",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandmother_and_grandchild_̠_1.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/89/Grandmother_with_Grandchild.JPG/960px-Grandmother_with_Grandchild.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Bigroger27509",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandmother_with_Grandchild.JPG"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Bratan_Bali_Indonesia_Grandfather-and-grandson-after-Puja-01.jpg/960px-Bratan_Bali_Indonesia_Grandfather-and-grandson-after-Puja-01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "CEphoto, Uwe Aranas",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Bratan_Bali_Indonesia_Grandfather-and-grandson-after-Puja-01.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/df/Grandfather_and_grandson_at_the_table.jpg/960px-Grandfather_and_grandson_at_the_table.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Marie-Sophie Mejan",
+        "license": "CC BY 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandfather_and_grandson_at_the_table.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/50/Grandfather_with_grandson_on_lawn_-_garden_fence_01.jpg/960px-Grandfather_with_grandson_on_lawn_-_garden_fence_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "FBenjr123",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandfather_with_grandson_on_lawn_-_garden_fence_01.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/58/Grandfather_with_grandson_on_lawn_-_garden_fence_02.jpg/960px-Grandfather_with_grandson_on_lawn_-_garden_fence_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "FBenjr123",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Grandfather_with_grandson_on_lawn_-_garden_fence_02.jpg"
+      }
+    ],
+    "volunteer": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Flickr_-_Government_Press_Office_%28GPO%29_-_IDF_OFFICER_HELPING_ELDERLY_ETHIOPIANS_OUT_OF_THE_HERCULES_AIRPLANE.jpg/960px-Flickr_-_Government_Press_Office_%28GPO%29_-_IDF_OFFICER_HELPING_ELDERLY_ETHIOPIANS_OUT_OF_THE_HERCULES_AIRPLANE.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Tsvika Israeli",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Flickr_-_Government_Press_Office_(GPO)_-_IDF_OFFICER_HELPING_ELDERLY_ETHIOPIANS_OUT_OF_THE_HERCULES_AIRPLANE.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/12/Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959044826%29.jpg/960px-Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959044826%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Embassy Kyiv Ukraine",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest,_Sept-Nov,_2013_(10959044826).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/96/Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959126534%29.jpg/960px-Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959126534%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Embassy Kyiv Ukraine",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest,_Sept-Nov,_2013_(10959126534).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/56/Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959030576%29.jpg/960px-Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959030576%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Embassy Kyiv Ukraine",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest,_Sept-Nov,_2013_(10959030576).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2c/Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959044026%29.jpg/960px-Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959044026%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Embassy Kyiv Ukraine",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest,_Sept-Nov,_2013_(10959044026).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/47/Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959156203%29.jpg/960px-Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest%2C_Sept-Nov%2C_2013_%2810959156203%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "U.S. Embassy Kyiv Ukraine",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest_Volunteerism_and_Community_Service_in_Ukraine_Photo_Contest,_Sept-Nov,_2013_(10959156203).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/aa/Mount_Hermon_Conference_memorial_-_DSC01535.jpg/960px-Mount_Hermon_Conference_memorial_-_DSC01535.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Daderot",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Mount_Hermon_Conference_memorial_-_DSC01535.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9d/Student_Volunteer_Movement_plaque_-_Northfield_Mount_Hermon_School_-_DSC07507.JPG/960px-Student_Volunteer_Movement_plaque_-_Northfield_Mount_Hermon_School_-_DSC07507.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Daderot",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Student_Volunteer_Movement_plaque_-_Northfield_Mount_Hermon_School_-_DSC07507.JPG"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Student_Volunteers.jpg/960px-Student_Volunteers.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Gayatree Tripathy",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Student_Volunteers.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/Training_for_Wikimedia_for_Illiterate_Igbo_Persons_-_Small_group_work_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Chris Prince Udochukwu Njoku",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Training_for_Wikimedia_for_Illiterate_Igbo_Persons_-_Small_group_work_2.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/%ED%94%BC%EC%96%B4%EC%84%A0_%EB%B0%95%EC%82%AC_%EB%B6%80%EB%B6%80%EB%8F%99%EC%83%81.jpg/960px-%ED%94%BC%EC%96%B4%EC%84%A0_%EB%B0%95%EC%82%AC_%EB%B6%80%EB%B6%80%EB%8F%99%EC%83%81.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "칼빈500",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:피어선_박사_부부동상.jpg"
+      }
+    ],
+    "market": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a1/Elderly_Woman_at_Flea_Market_Stall_-_Odessa_-_Ukraine_%2826822588471%29.jpg/960px-Elderly_Woman_at_Flea_Market_Stall_-_Odessa_-_Ukraine_%2826822588471%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Adam Jones from Kelowna, BC, Canada",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Elderly_Woman_at_Flea_Market_Stall_-_Odessa_-_Ukraine_(26822588471).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c4/French_Market_Flea_Stall_93.jpg/960px-French_Market_Flea_Stall_93.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Infrogmation of New Orleans",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:French_Market_Flea_Stall_93.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2b/Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_01.jpg/960px-Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Acabashi",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_01.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_02.jpg/960px-Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_02.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Acabashi",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Market_stall_Sclater_Street_Brick_Lane_Market_Shoreditch_London_England_02.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cf/Sa%C3%BAde_flea_market%2C_S%C3%A3o_Paulo%2C_Brazil_04.jpg/960px-Sa%C3%BAde_flea_market%2C_S%C3%A3o_Paulo%2C_Brazil_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wilfredor",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Saúde_flea_market,_São_Paulo,_Brazil_04.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/c/cf/A_stall_at_Kelso_Farmers_Market_-_geograph.org.uk_-_1465764.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Walter Baxter",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:A_stall_at_Kelso_Farmers_Market_-_geograph.org.uk_-_1465764.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/67/Fruit_and_vegetable_stall_at_Southside_Farmers_Market_November_2025.jpg/960px-Fruit_and_vegetable_stall_at_Southside_Farmers_Market_November_2025.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Nick-D",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Fruit_and_vegetable_stall_at_Southside_Farmers_Market_November_2025.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Leicestershire_Meat_stall_Chiswick_Farmers%27_Market.jpg/960px-Leicestershire_Meat_stall_Chiswick_Farmers%27_Market.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Ian Alexander",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Leicestershire_Meat_stall_Chiswick_Farmers'_Market.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/63/Plant_stall_at_the_Southside_Farmers_Market_July_2026.jpg/960px-Plant_stall_at_the_Southside_Farmers_Market_July_2026.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Nick-D",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Plant_stall_at_the_Southside_Farmers_Market_July_2026.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/92/Stall_at_Tunbridge_Wells_Farmers_Market_-_geograph.org.uk_-_2082142.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Oast House Archive",
+        "license": "CC BY-SA 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Stall_at_Tunbridge_Wells_Farmers_Market_-_geograph.org.uk_-_2082142.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/97/Child_working_selling_vegetables_in_downtown_Maracaibo.jpg/960px-Child_working_selling_vegetables_in_downtown_Maracaibo.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Wilfredor",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Child_working_selling_vegetables_in_downtown_Maracaibo.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8e/NYC_Mulberry_Street_3g04637u.jpg/960px-NYC_Mulberry_Street_3g04637u.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Detroit Publishing Co.(w), publisher.",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:NYC_Mulberry_Street_3g04637u.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/64/Root_vegetables_%22Malanga%22_at_Cuban_street_market.jpg/960px-Root_vegetables_%22Malanga%22_at_Cuban_street_market.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "sarang",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Root_vegetables_\"Malanga\"_at_Cuban_street_market.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/9/98/Vegetables_Market_in_Northern_Ghana.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Ibn Shiraz",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vegetables_Market_in_Northern_Ghana.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8a/Vegetables_for_sale_in_a_market_in_France.jpg/960px-Vegetables_for_sale_in_a_market_in_France.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "FrogsLegs71",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vegetables_for_sale_in_a_market_in_France.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0a/2008_Oliver_community_garden_BaltimoreMD_PhotoBy_SusanReimer_BaltimoreSun_3926429108.jpg/960px-2008_Oliver_community_garden_BaltimoreMD_PhotoBy_SusanReimer_BaltimoreSun_3926429108.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Susan Reimer from Annapolis, USA",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:2008_Oliver_community_garden_BaltimoreMD_PhotoBy_SusanReimer_BaltimoreSun_3926429108.jpg"
+      }
+    ],
+    "wisdom_share": [
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bc/Vesta_sewing_machine_IMGP0718.jpg/960px-Vesta_sewing_machine_IMGP0718.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Nikodem Nijaki",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Vesta_sewing_machine_IMGP0718.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/82/Woman_sewing_a_face_mask_with_a_Singer_machine_06.jpg/960px-Woman_sewing_a_face_mask_with_a_Singer_machine_06.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Tadeáš Bednarz",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Woman_sewing_a_face_mask_with_a_Singer_machine_06.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/Woman_sewing_a_face_mask_with_a_Singer_machine_08.jpg/960px-Woman_sewing_a_face_mask_with_a_Singer_machine_08.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Tadeáš Bednarz",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Woman_sewing_a_face_mask_with_a_Singer_machine_08.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/49/Woman_sewing_a_face_mask_with_a_Singer_machine_09.jpg/960px-Woman_sewing_a_face_mask_with_a_Singer_machine_09.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Tadeáš Bednarz",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Woman_sewing_a_face_mask_with_a_Singer_machine_09.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/5f/Woman_sewing_a_face_mask_with_a_Singer_machine_14.jpg/960px-Woman_sewing_a_face_mask_with_a_Singer_machine_14.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Tadeáš Bednarz",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Woman_sewing_a_face_mask_with_a_Singer_machine_14.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/2d/Guitar_scale_blank.png/960px-Guitar_scale_blank.png?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "NickPenguin at English Wikibooks",
+        "license": "CC BY-SA 3.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Guitar_scale_blank.png"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/29/Rob_Ickes_teaching_Jazz_Standards_-_ResoSummit_2012_%282012-11-09_15.22.30_by_brad_bechtel%29.jpg/960px-Rob_Ickes_teaching_Jazz_Standards_-_ResoSummit_2012_%282012-11-09_15.22.30_by_brad_bechtel%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "brad_bechtel",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Rob_Ickes_teaching_Jazz_Standards_-_ResoSummit_2012_(2012-11-09_15.22.30_by_brad_bechtel).jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/ee/Craftsman_operating_a_cutting_machine_in_a_wooden_workshop_during_daylight_hours.jpg/960px-Craftsman_operating_a_cutting_machine_in_a_wooden_workshop_during_daylight_hours.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Craftsman_operating_a_cutting_machine_in_a_wooden_workshop_during_daylight_hours.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d6/Craftsman_shaping_wood_at_a_workshop_with_precision_and_skill_during_the_daytime.jpg/960px-Craftsman_shaping_wood_at_a_workshop_with_precision_and_skill_during_the_daytime.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Craftsman_shaping_wood_at_a_workshop_with_precision_and_skill_during_the_daytime.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/40/Craftsman_shaping_wood_in_a_workshop_during_daylight_hours_with_focus_on_precision_and_detail_in_woodworking.jpg/960px-Craftsman_shaping_wood_in_a_workshop_during_daylight_hours_with_focus_on_precision_and_detail_in_woodworking.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Craftsman_shaping_wood_in_a_workshop_during_daylight_hours_with_focus_on_precision_and_detail_in_woodworking.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/99/Craftsman_working_on_a_white_surface_with_tools_in_a_workshop.jpg/960px-Craftsman_working_on_a_white_surface_with_tools_in_a_workshop.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Craftsman_working_on_a_white_surface_with_tools_in_a_workshop.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d3/Elderly_craftsman_working_diligently_in_his_workshop_with_tools_and_materials_around_him.jpg/960px-Elderly_craftsman_working_diligently_in_his_workshop_with_tools_and_materials_around_him.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Shixart1985",
+        "license": "CC BY 2.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Elderly_craftsman_working_diligently_in_his_workshop_with_tools_and_materials_around_him.jpg"
+      },
+      {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/3/33/A_professional_artist_painting.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+        "credit": "Yufifalato722",
+        "license": "CC BY-SA 4.0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:A_professional_artist_painting.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7e/Auguste_Renoir%2C_Child_with_Toys_-_Gabrielle_and_the_Artist%27s_Son%2C_Jean%2C_1895-1896%2C_NGA_66434.jpg/960px-Auguste_Renoir%2C_Child_with_Toys_-_Gabrielle_and_the_Artist%27s_Son%2C_Jean%2C_1895-1896%2C_NGA_66434.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Pierre-Auguste Renoir",
+        "license": "CC0",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Auguste_Renoir,_Child_with_Toys_-_Gabrielle_and_the_Artist's_Son,_Jean,_1895-1896,_NGA_66434.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/16/Serebriakova_portrait-of-e-solntseva-sister-of-artist-1914.jpg/960px-Serebriakova_portrait-of-e-solntseva-sister-of-artist-1914.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Zinaida Serebryakova",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Serebriakova_portrait-of-e-solntseva-sister-of-artist-1914.jpg"
+      },
+      {
+        "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c9/Unknown_artist_-_Mary_Davis_%28b.c.1594%29%2C_Aged_74_-_Painting.10_-_British_Museum.jpg/960px-Unknown_artist_-_Mary_Davis_%28b.c.1594%29%2C_Aged_74_-_Painting.10_-_British_Museum.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+        "credit": "Unidentified painter",
+        "license": "Public domain",
+        "source": "Wikimedia Commons",
+        "page": "https://commons.wikimedia.org/wiki/File:Unknown_artist_-_Mary_Davis_(b.c.1594),_Aged_74_-_Painting.10_-_British_Museum.jpg"
+      }
+    ]
+  }
+}
