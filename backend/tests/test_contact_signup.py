@@ -55,7 +55,7 @@ def test_a_new_whatsapp_number_gets_an_account_with_the_number_and_a_welcome():
 
 def test_a_new_telegram_chat_gets_an_account_without_a_phone():
     c = chat()
-    assert "I'm Interchange" in core.handle("telegram", c, "/start")[0]
+    assert "I'm Ken" in core.handle("telegram", c, "/start")[0]
     uid = core.who("telegram", c)
     assert row(uid).phone is None and core.who("phone", c) is None
 

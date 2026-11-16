@@ -40,21 +40,21 @@ STUCK_MIN = 30         # a queued attempt that could never be placed becomes fai
 
 # The call's opening line, in the person's language. The agent may never give medical advice.
 BRIEFS = {
-    "en": ("Hello {name}, this is Interchange. It is time for {title}. Have you done it? "
+    "en": ("Hello {name}, this is Ken from Interchange. It is time for {title}. Have you done it? "
            "Say yes if you have done it, later if you will do it after some time, and help if you need someone. "
            "I never give medical advice - about medicines, ask your doctor."),
-    "hi": ("नमस्ते {name}, मैं Interchange बोल रहा हूँ। {title} का समय हो गया है। क्या आपने कर लिया? "
+    "hi": ("नमस्ते {name}, मैं Ken बोल रहा हूँ। {title} का समय हो गया है। क्या आपने कर लिया? "
            "हाँ बोलिए अगर कर लिया; बाद में अगर थोड़ी देर में करेंगे; मदद अगर किसी की चाहिए। "
            "मैं दवा की सलाह नहीं देती - दवा के बारे में अपने डॉक्टर से पूछें।"),
-    "bn": ("নমস্কার {name}, আমি Interchange থেকে বলছি। {title}-এর সময় হয়ে গেছে। আপনি কি করেছেন? "
+    "bn": ("নমস্কার {name}, আমি Ken বলছি। {title}-এর সময় হয়ে গেছে। আপনি কি করেছেন? "
            "হ্যাঁ বলুন যদি করে থাকেন; পরে বলুন যদি একটু পরে করবেন; সাহায্য বলুন যদি কারও দরকার হয়। "
            "আমি ওষুধের পরামর্শ দিই না - ওষুধের বিষয়ে ডাক্তারকে জিজ্ঞাসা করুন।"),
-    "ta": ("வணக்கம் {name}, நான் Interchange சொல்கிறேன். {title} க்கான நேரம் ஆகிவிட்டது. நீங்கள் செய்தீர்களா? "
+    "ta": ("வணக்கம் {name}, நான் Ken சொல்கிறேன். {title} க்கான நேரம் ஆகிவிட்டது. நீங்கள் செய்தீர்களா? "
            "செய்திருந்தால் ஆம் என்று சொல்லுங்கள்; பிறகு செய்வீர்கள் என்றால் பிறகு என்று சொல்லுங்கள்; "
            "உதவி வேண்டுமானால் உதவி என்று சொல்லுங்கள். மருந்து பற்றி நான் ஆலோசனை சொல்வதில்லை - உங்கள் மருத்துவரிடம் கேளுங்கள்."),
-    "zh": ("您好{name}，我是 Interchange。到{title}的时间了。您做了吗？做完了请说“做了”；稍后做请说“稍后”；需要人说请说“帮忙”。"
+    "zh": ("您好{name}，我是 Ken。到{title}的时间了。您做了吗？做完了请说“做了”；稍后做请说“稍后”；需要人说请说“帮忙”。"
            "我不提供用药建议——关于药物，请问您的医生。"),
-    "ms": ("Halo {name}, saya dari Interchange. Sudah masanya untuk {title}. Sudah buat? "
+    "ms": ("Halo {name}, saya Ken dari Interchange. Sudah masanya untuk {title}. Sudah buat? "
            "Kata ya jika sudah, nanti jika akan buat selepas ini, dan tolong jika perlukan seseorang. "
            "Saya tidak memberi nasihat perubatan - tentang ubat, tanya doktor anda."),
 }

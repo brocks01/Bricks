@@ -15,7 +15,7 @@ from . import agent, guard
 CODE_TTL = timedelta(minutes=15)
 ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789"  # no 0/O/1/I/L: read aloud or typed by someone who is not used to it
 
-HELP = ("I'm Interchange. Ask me anything in your own words, for example “what's on today?”, “I walked this morning”, “I'm going to the kopi morning”.\n\n"
+HELP = ("I'm Ken. Ask me anything in your own words, for example “what's on today?”, “I walked this morning”, “I'm going to the kopi morning”.\n\n"
         "Quick words: /today · /tree · /markets · /help")
 def not_linked(channel: str) -> str:
     return f"I don't know who you are yet. Open Interchange, go to Profile → Connect {channel.capitalize()}, and send me the code you see there."
@@ -200,7 +200,7 @@ def handle(channel: str, external_id: str, body: str) -> list[str]:
         return ["Something went wrong on my side. Please try again in a moment."]
 
 
-WELCOME = ("Hello, I'm Interchange. I'm a friend who can help you stay active and connected, and help you pass on what you know. "
+WELCOME = ("Hello, I'm Ken. I'm a friend who can help you stay active and connected, and help you pass on what you know. "
            "You can talk to me here any time, in your own words. First, what should I call you?")
 
 

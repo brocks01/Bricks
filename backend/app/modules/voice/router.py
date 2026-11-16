@@ -59,8 +59,8 @@ async def twilio_voice(request: Request):
     return Response(proto.twiml(stream_url, {"callId": rec["call_id"], "token": rec["_token"]}), media_type="text/xml")
 
 
-UNKNOWN_CALLER = "Hello, this is Interchange. I do not know this number yet. Please open the Interchange app, go to Profile, and connect your phone. Goodbye."
-BUSY = "Hello, this is Interchange. I am helping someone else right now. Please call again in a few minutes. Goodbye."
+UNKNOWN_CALLER = "Hello, this is Ken from Interchange. I do not know this number yet. Please open the Interchange app, go to Profile, and connect your phone. Goodbye."
+BUSY = "Hello, this is Ken from Interchange. I am helping someone else right now. Please call again in a few minutes. Goodbye."
 
 
 def _say_and_hang_up(words: str) -> Response:

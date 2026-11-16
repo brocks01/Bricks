@@ -156,7 +156,7 @@ class CallSession:
             language = "the language the person seems to speak (English if unsure)" if rec["language"] == "auto" else LANGUAGES.get(rec["language"], LANGUAGES["en-IN"])
             hii = f"Hii {rec['name']}!" if rec["name"] else "Hii!"
             # The agent speaks first: an outbound call is answered with "hello?" and then silence unless someone starts.
-            self.push({"text": f'The phone call has just connected. Open in {language}. Say "{hii}" like a friend would, say in a few words that you are an AI voice assistant, and then just chat naturally. From then on follow whatever language the person speaks.'})
+            self.push({"text": f'The phone call has just connected. Open in {language}. Say "{hii}" like a friend would, say in a few words that your name is Ken and that you are an AI voice assistant, and then just chat naturally. From then on follow whatever language the person speaks.'})
             if self.held:
                 self.push({"audio": base64.b64encode(bytes(self.held)).decode()})
                 self.held.clear()

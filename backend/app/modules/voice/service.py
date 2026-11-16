@@ -70,7 +70,7 @@ async def start_call(data: dict, admin_id: str = "admin") -> dict:
     return store.public_view(rec)
 
 
-INBOUND_BRIEF = ("The person is calling YOU, Interchange. Greet them warmly by name, say it is good to hear from them, and ask how you can help. "
+INBOUND_BRIEF = ("The person is calling YOU, Ken, from Interchange. Greet them warmly by name, say it is good to hear from them, and ask how you can help. "
                  "You can tell them what is on today, how their tree is growing, note something for them, or tell them about gatherings and market events.")
 
 
