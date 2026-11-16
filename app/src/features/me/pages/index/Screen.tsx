@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { Linking, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../../api/communities';
 import { getCard, type HealthCard } from '../../../../api/health';
-import { Row, Screen, Field, Button } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Row, Field, Button } from '../../../../components/ui';
 import { ChipRow } from '../../../../components/blocks';
 import { getOnboarding, putOnboarding } from '../../../../api/wisdom';
 import { api } from '../../../../api/client';
@@ -58,7 +59,7 @@ export default function Me() {
   const initials = (user?.display_name ?? user?.email ?? '?').trim().split(/\s+/).slice(0, 2).map((p) => p.charAt(0).toUpperCase()).join('');
 
   return (
-    <Screen title={w('heading')} subtitle={t('common.onlyYou')} back>
+    <BackScreen title={w('heading')} subtitle={t('common.onlyYou')}>
       <View style={{ alignItems: 'center', gap: 6, paddingVertical: space.md }}>
         <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.navySoft, borderWidth: 1, borderColor: '#CBD3E0', alignItems: 'center', justifyContent: 'center' }}>
           <Text style={{ fontSize: 30, fontWeight: '600', color: '#15202E' }}>{initials}</Text>
@@ -177,7 +178,7 @@ export default function Me() {
         </View>
       ) : null}
       <El page={page} id="chooseLanguage"><View /></El>
-    </Screen>
+    </BackScreen>
   );
 }
 

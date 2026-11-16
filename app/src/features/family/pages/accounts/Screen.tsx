@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
 import { familyApi, type AccessLevel, type Delegation } from '../../../../api/family';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText } from '../../../../components/ui';
 import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { sessionStore, setActiveProfile } from '../../../../session/store';
@@ -85,10 +86,10 @@ export default function Accounts() {
 
   if (failed) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <ErrorText>{w('failed')}</ErrorText>
         <Button label={w('tryAgain')} onPress={load} />
-      </Screen>
+      </BackScreen>
     );
   }
 
@@ -103,7 +104,7 @@ export default function Accounts() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       {session.activeProfile ? (
         <View style={{ backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.md, marginBottom: space.md }}>
           <El page={page} id="acting">
@@ -167,6 +168,6 @@ export default function Accounts() {
       <El page={page} id="history">
         <Button label={w('history')} icon="document-text-outline" onPress={() => go('family.history')} kind="plain" />
       </El>
-    </Screen>
+    </BackScreen>
   );
 }

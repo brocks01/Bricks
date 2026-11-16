@@ -5,7 +5,8 @@ import { type CommunityKind } from '../../../../api/communities';
 import { ApiError } from '../../../../api/client';
 import { createFromRequest, getExperience, getMyRequests, requestCommunity, type Audience, type Circle, type CommunityRequest, type Experience } from '../../../../api/communityRules';
 import { Bar, Notice, Panel, Pill, Section } from '../../../../components/blocks';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -93,7 +94,7 @@ export default function CreateCommunity() {
   const stWord = (s: CommunityRequest['status']) => w(`st_${s}`);
 
   return (
-    <Screen title={w('createTitle')} subtitle={w('createIntro')} back>
+    <BackScreen title={w('createTitle')} subtitle={w('createIntro')}>
       <ErrorText>{error}</ErrorText>
       {note ? <Notice text={note} /> : null}
 
@@ -141,6 +142,6 @@ export default function CreateCommunity() {
           <El page={page} id="reviewLink"><Button label={w('review_link')} kind="plain" icon="shield-checkmark-outline" onPress={() => go('connect.review')} /></El>
         </View>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

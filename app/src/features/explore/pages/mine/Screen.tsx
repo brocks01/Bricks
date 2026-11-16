@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { getExploreMine, type ExploreItem, type ExploreMine } from '../../../../api/explore';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -75,7 +76,7 @@ export default function ExploreMineScreen() {
       ]
     : [];
   return (
-    <Screen title={w('mine')} back>
+    <BackScreen title={w('mine')}>
       <El page={page} id="heading"><Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w('milestones')}</Text></El>
       {failed ? (
         <>
@@ -113,6 +114,6 @@ export default function ExploreMineScreen() {
           )}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

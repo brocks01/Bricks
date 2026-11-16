@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { CATEGORIES, createListing, getGuide, TIERS, type Guide, type MarketCategory, type MarketTier } from '../../../api/wisdom';
 import { Notice } from '../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { wisdomServiceOffer as page } from '../pages';
@@ -66,7 +67,7 @@ export default function ServiceOfferScreen() {
   useAction(page, 'publish', publish);
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <ErrorText>{error}</ErrorText>
       <El page={page} id="title"><Field label={w('f_title')} value={title} onChangeText={setTitle} maxLength={80} /></El>
       <El page={page} id="category">
@@ -83,6 +84,6 @@ export default function ServiceOfferScreen() {
       <El page={page} id="area"><Field label={w('f_area')} value={area} onChangeText={setArea} maxLength={120} /></El>
       <Notice text={w('adviceNote')} icon="information-circle-outline" />
       <El page={page} id="publish"><Button label={w('save_listing')} icon="checkmark" disabled={busy} onPress={publish} /></El>
-    </Screen>
+    </BackScreen>
   );
 }

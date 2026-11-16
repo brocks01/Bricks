@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../../components/ui';
 import { useT } from '../../../../i18n';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -54,7 +55,7 @@ export default function Claim() {
   });
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <View style={{ gap: space.md }}>
         <Text style={[type.body, { color: colors.muted }]}>{w('intro')}</Text>
         <El page={page} id="code">
@@ -68,6 +69,6 @@ export default function Claim() {
           <Button label={w('claim')} onPress={() => void claim()} disabled={busy} />
         </El>
       </View>
-    </Screen>
+    </BackScreen>
   );
 }

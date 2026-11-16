@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { getExploreInterests, putExploreInterests, type ExploreCategoryId } from '../../../../api/explore';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
@@ -50,7 +51,7 @@ export default function ExploreInterests() {
   );
 
   return (
-    <Screen title={w('interests')} subtitle={w('interestsQ')} back>
+    <BackScreen title={w('interests')} subtitle={w('interestsQ')}>
       {chosen === null ? (
         <SkeletonList count={4} />
       ) : (
@@ -73,6 +74,6 @@ export default function ExploreInterests() {
           {saved ? <Text style={[type.small, { color: colors.accent, textAlign: 'center', marginTop: space.sm }]}>{w('interestsSaved')}</Text> : null}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

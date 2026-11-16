@@ -2,11 +2,12 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { exploreCommunities, recommendedCommunities, type CommunityCard as Card } from '../../../../api/communityRules';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useT } from '../../../../i18n';
 import { El, useAction, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
+import { useRouter } from 'expo-router';
+import { BackHeroScreen } from '../../BackHero';
 import { sessionStore } from '../../../../session/store';
 import { colors, radius, space } from '../../../../theme/tokens';
 import { CommunityCard } from '../../CommunityCard';
@@ -22,6 +23,8 @@ export default function Pick() {
   const w = usePageWords(page);
   const t = useT();
   const go = useNavigate();
+  const router = useRouter(); // read only: was the picker opened from somewhere, or as an onboarding step?
+  const [canBack] = useState(() => router.canGoBack());
   const { status } = useStore(sessionStore);
   const [list, setList] = useState<Card[] | null>(null);
   const [room, setRoom] = useState(3);
@@ -70,7 +73,7 @@ export default function Pick() {
   useAction(page, 'pickSkip', home);
 
   return (
-    <Screen title={w('heading')} hero={
+    <BackHeroScreen back={canBack} title={w('heading')} hero={
       <View style={{ marginBottom: space.lg }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.md, flexWrap: 'wrap' }}>
           <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink }}>{room > 0 && room < 3 ? t('rv.pick_up_to', { n: room }) : w('heading')}</Text>
@@ -116,6 +119,6 @@ export default function Pick() {
           </Pressable>
         </El>
       ) : null}
-    </Screen>
+    </BackHeroScreen>
   );
 }

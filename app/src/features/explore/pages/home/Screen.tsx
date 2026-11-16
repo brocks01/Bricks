@@ -3,7 +3,8 @@ import { Pressable, Text, View } from 'react-native';
 import { getExploreHome, type ExploreHome as ExploreHomeData } from '../../../../api/explore';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -50,7 +51,7 @@ export default function ExploreHome() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <El page={page} id="heading">
         <Text style={{ fontSize: 24, lineHeight: 29, fontWeight: '800', color: '#12691F' }}>{w('intro')}</Text>
       </El>
@@ -90,6 +91,6 @@ export default function ExploreHome() {
           </View>
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

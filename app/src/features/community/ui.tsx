@@ -4,6 +4,7 @@ import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { Image, Pressable, Text, View } from 'react-native';
 import { SkeletonPage } from '../../components/Skeleton';
 import { Button, Screen } from '../../components/ui';
+import { BackScreen } from '../../components/BackButton';
 import { useStore } from '../../core/store';
 import { useLanguage } from '../../i18n';
 import { sessionStore } from '../../session/store';
@@ -53,22 +54,23 @@ export function useWhen() {
 
 /** Shows the skeleton while loading, the retry line when it failed, else the children with the data. */
 export function Gate<T>({ title, back = true, data, failed, reload, notFound, tryAgain, children }: { title: string; back?: boolean; data: T | null; failed: boolean; reload: () => void; notFound: string; tryAgain: string; children: (d: T) => ReactNode }) {
+  const Frame = back ? BackScreen : Screen; // a sub-screen gets the one floating Back button
   if (failed && !data) {
     return (
-      <Screen title={title} back={back}>
+      <Frame title={title}>
         <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{notFound}</Text>
         <Button label={tryAgain} onPress={reload} />
-      </Screen>
+      </Frame>
     );
   }
   if (!data) {
     return (
-      <Screen title={title} back={back}>
+      <Frame title={title}>
         <SkeletonPage cards={3} />
-      </Screen>
+      </Frame>
     );
   }
-  return <Screen title={title} back={back}>{children(data)}</Screen>;
+  return <Frame title={title}>{children(data)}</Frame>;
 }
 
 /** The pill tabs under a title: Upcoming / My Events / Past. */

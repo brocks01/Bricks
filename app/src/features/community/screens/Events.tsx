@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { communityAbout, type AboutEvent, type CommunityCard } from '../../../api/communityRules';
 import { SkeletonList } from '../../../components/Skeleton';
-import { Button, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { useT } from '../../../i18n';
 import { El, usePageData, usePageWords } from '../../../kit';
@@ -40,7 +41,7 @@ export default function Events() {
   } : null);
 
   return (
-    <Screen title={card ? `${w('events')} · ${card.name}` : w('events')} back>
+    <BackScreen title={card ? `${w('events')} · ${card.name}` : w('events')}>
       {failed ? (
         <View style={{ gap: space.md }}>
           <Text style={{ fontSize: 18, color: colors.ink }}>{t('rv.failed')}</Text>
@@ -57,6 +58,6 @@ export default function Events() {
           <EventList cid={cid} member={card.is_member} preview={preview} eventsUrl={card.events_url} />
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

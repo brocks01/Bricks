@@ -2,7 +2,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { createInitiative } from '../../../api/communities';
-import { Button, ErrorText, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useGoBack } from '../../../navigation';
 import { communityNewInitiative as page } from '../pages';
@@ -40,12 +41,12 @@ export default function NewInitiative() {
   useAction(page, 'save', save);
 
   return (
-    <Screen title={w('newInitiative')} back>
+    <BackScreen title={w('newInitiative')}>
       <El page={page} id="fTitle"><Field label={w('fTitle')} value={title} onChangeText={setTitle} maxLength={80} autoCapitalize="words" /></El>
       <El page={page} id="fSummary"><Field label={w('fSummary')} value={summary} onChangeText={setSummary} maxLength={200} autoCapitalize="sentences" /></El>
       <El page={page} id="fPlan"><Field label={w('fPlan')} value={plan} onChangeText={setPlan} maxLength={300} autoCapitalize="sentences" /></El>
       <ErrorText>{error}</ErrorText>
       <El page={page} id="save"><Button label={w('save')} onPress={() => void save()} disabled={busy} /></El>
-    </Screen>
+    </BackScreen>
   );
 }

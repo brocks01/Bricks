@@ -4,7 +4,8 @@ import { ApiError } from '../../../../api/client';
 import { joinCommunity } from '../../../../api/communities';
 import { putOnboarding } from '../../../../api/wisdom';
 import { Notice } from '../../../../components/blocks';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, space, type } from '../../../../theme/tokens';
@@ -66,7 +67,7 @@ export default function JoinCommunity() {
   useAction(page, 'goCreate', () => { go('connect.create'); });
 
   return (
-    <Screen title={w('joinTitle')} subtitle={w('joinIntro')} back>
+    <BackScreen title={w('joinTitle')} subtitle={w('joinIntro')}>
       <El page={page} id="code"><Field label={w('code')} value={code} onChangeText={(v) => setCode(v.toUpperCase())} placeholder="ABCD-2345" autoCapitalize="none" maxLength={20} /></El>
       <ErrorText>{error}</ErrorText>
       {note ? <Notice text={note} /> : null}
@@ -74,6 +75,6 @@ export default function JoinCommunity() {
       <El page={page} id="joinButton"><Button label={w('joinButton')} onPress={() => void join()} disabled={busy || answering || code.trim().length < 4} icon="enter-outline" /></El>
       <Text style={[type.body, { color: colors.muted, textAlign: 'center', marginVertical: space.lg }]}>{w('orCreate')}</Text>
       <El page={page} id="goCreate"><Button label={w('goCreate')} onPress={() => go('connect.create')} kind="plain" icon="add" /></El>
-    </Screen>
+    </BackScreen>
   );
 }

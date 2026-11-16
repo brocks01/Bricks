@@ -7,7 +7,8 @@ import {
   setOfferStatus, shareCapsule, type Capsule, type Connection, type Listing, type Offer, type Request, type WisdomStats,
 } from '../../../api/wisdom';
 import { ChipRow, Empty, Figure, ListRow, Notice, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Body, Button, Card, Field } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
@@ -149,7 +150,7 @@ export default function WisdomIndex() {
   const shown = library === null ? null : library.filter((c) => kind === 'all' || c.kind === kind);
 
   return (
-    <Screen title={w('heading')} subtitle={profile?.focus === 'serve' ? w('introServe') : w('intro')}>
+    <BackScreen title={w('heading')} subtitle={profile?.focus === 'serve' ? w('introServe') : w('intro')}>
       <View style={{ flexDirection: 'row', gap: space.md, marginBottom: space.md }}>
         <Figure n={stats?.calls ?? 0} label={w('calls')} icon="call-outline" />
         <Figure n={stats?.people_helped ?? 0} label={w('helped')} icon="heart-outline" />
@@ -329,6 +330,6 @@ export default function WisdomIndex() {
           ))}
         </>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

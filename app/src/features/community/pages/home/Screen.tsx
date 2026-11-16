@@ -9,7 +9,8 @@ import { fileReport, type ReportReason } from '../../../../api/safety';
 import { Pill } from '../../../../components/blocks';
 import { MapCard } from '../../../../components/MapCard';
 import { SkeletonPage } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
 import { El, useAction, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
@@ -217,17 +218,17 @@ export default function CommunityHome() {
 
   if (failed) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('notFound')}</Text>
         <Button label={w('tryAgain')} onPress={load} />
-      </Screen>
+      </BackScreen>
     );
   }
   if (!card) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <SkeletonPage banner tiles cards={3} />
-      </Screen>
+      </BackScreen>
     );
   }
   const c = card;
@@ -235,7 +236,7 @@ export default function CommunityHome() {
   const box = { backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.sm } as const;
 
   return (
-    <Screen title={c.name} back>
+    <BackScreen title={c.name}>
       {/* the picture identifies the place, so it earns its space */}
       <Image source={communityPhoto(c)} accessibilityIgnoresInvertColors style={{ width: '100%', height: 190, borderRadius: radius.card, backgroundColor: colors.accentSoft }} resizeMode="cover" />
 
@@ -403,6 +404,6 @@ export default function CommunityHome() {
           </View>
         </View>
       </Modal>
-    </Screen>
+    </BackScreen>
   );
 }

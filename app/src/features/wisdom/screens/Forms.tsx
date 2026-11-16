@@ -3,7 +3,8 @@ import { View } from 'react-native';
 import { ApiError } from '../../../api/client';
 import { CAPSULE_KINDS, createOffer, createRequest, keepCapsule, OFFER_KINDS, OFFER_MODES, putOnboarding, type CapsuleKind, type OfferKind, type OfferMode } from '../../../api/wisdom';
 import { Notice } from '../../../components/blocks';
-import { Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { space } from '../../../theme/tokens';
@@ -32,7 +33,7 @@ export function StoryScreen() {
   };
   useAction(page, 'save', save);
   return (
-    <Screen title={w('heading')} subtitle={w('intro')} back>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       <Card>
         <El page={page} id="title"><Field label={w('title')} value={title} onChangeText={setTitle} maxLength={120} /></El>
         <El page={page} id="body"><Field label={w('body')} value={body} onChangeText={setBody} big maxLength={6000} /></El>
@@ -41,7 +42,7 @@ export function StoryScreen() {
         <ErrorText>{error}</ErrorText>
         <El page={page} id="save"><Button label={w('save')} onPress={save} disabled={title.trim().length < 2 || body.trim().length < 10} /></El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }
 
@@ -71,7 +72,7 @@ export function OfferScreen() {
   };
   useAction(page, 'save', save);
   return (
-    <Screen title={w('heading')} subtitle={w('intro')} back>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       <Card>
         <El page={page} id="title"><Field label={w('title')} value={title} onChangeText={setTitle} maxLength={120} /></El>
         <El page={page} id="about"><Field label={w('about')} value={about} onChangeText={setAbout} big maxLength={1000} /></El>
@@ -83,7 +84,7 @@ export function OfferScreen() {
         <ErrorText>{error}</ErrorText>
         <El page={page} id="save"><Button label={w('save')} onPress={save} disabled={title.trim().length < 2} /></El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }
 
@@ -118,7 +119,7 @@ export function AskScreen() {
   };
   useAction(page, 'save', post);
   return (
-    <Screen title={w('heading')} subtitle={w('intro')} back>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       <Card>
         <El page={page} id="topic"><Field label={w('topic')} value={topic} onChangeText={setTopic} maxLength={120} /></El>
         <El page={page} id="about"><Field label={w('about')} value={about} onChangeText={setAbout} big maxLength={1000} /></El>
@@ -127,7 +128,7 @@ export function AskScreen() {
         <View style={{ height: space.sm }} />
         <El page={page} id="save"><Button label={needAge ? w('iAm15') : w('save')} onPress={needAge ? confirmAge : post} disabled={topic.trim().length < 2} /></El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }
 
@@ -151,7 +152,7 @@ export function SupportScreen() {
   };
   useAction(page, 'save', post);
   return (
-    <Screen title={w('heading')} subtitle={w('intro')} back>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       <Card>
         <El page={page} id="topic"><Field label={w('topic')} value={topic} onChangeText={setTopic} maxLength={120} /></El>
         <El page={page} id="about"><Field label={w('about')} value={about} onChangeText={setAbout} big maxLength={1000} /></El>
@@ -159,6 +160,6 @@ export function SupportScreen() {
         <View style={{ height: space.sm }} />
         <El page={page} id="save"><Button label={w('save')} onPress={() => void post()} disabled={topic.trim().length < 2} /></El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }

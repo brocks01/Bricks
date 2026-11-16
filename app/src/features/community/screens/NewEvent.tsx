@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { ApiError } from '../../../api/client';
 import { createActivity } from '../../../api/communities';
 import { Notice } from '../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useGoBack } from '../../../navigation';
 import { communityNewEvent as page } from '../pages';
@@ -57,7 +58,7 @@ export default function NewEvent() {
   useAction(page, 'save', save);
 
   return (
-    <Screen title={w('newEvent')} back>
+    <BackScreen title={w('newEvent')}>
       <El page={page} id="fTitle"><Field label={w('fTitle')} value={title} onChangeText={setTitle} maxLength={120} autoCapitalize="words" /></El>
       <El page={page} id="fDate"><Field label={w('fDate')} value={date} onChangeText={setDate} placeholder="2026-11-16" keyboardType="numbers-and-punctuation" maxLength={10} /></El>
       <El page={page} id="fTime"><Field label={w('fTime')} value={time} onChangeText={setTime} placeholder="06:00" keyboardType="numbers-and-punctuation" maxLength={5} /></El>
@@ -70,6 +71,6 @@ export default function NewEvent() {
       {repeat !== 'none' ? <Notice text={w('repeatNote')} icon="repeat-outline" /> : null}
       <ErrorText>{error}</ErrorText>
       <El page={page} id="save"><Button label={w('save')} onPress={() => void save()} disabled={busy} /></El>
-    </Screen>
+    </BackScreen>
   );
 }
