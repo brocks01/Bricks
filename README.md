@@ -7,7 +7,7 @@ Built for the Singapore–India Hackathon 2026 (raiSE, Social Innovation and Inc
 - **Three tabs:** Wisdom (the round centre button: experience shared in the person's own words), Communities (people near you, events that repeat, a reason to show up) and Marketplace (what experience and craft can earn, market days).
 - **One agent** on a phone call, Telegram, WhatsApp, SMS and the app, with one memory and one set of abilities.
 
-## Folders
+## Folder
 | Folder | What it holds |'
 
 
