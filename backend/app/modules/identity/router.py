@@ -81,6 +81,12 @@ def singpass_demo(request: Request, conn: Connection = Depends(get_conn)):
     return service.singpass_demo(conn, request.headers.get("user-agent", ""))
 
 
+@router.post("/auth/lim-demo", response_model=SessionOut)
+def lim_demo(request: Request, conn: Connection = Depends(get_conn)):
+    """Prototype: "Demo: skip onboarding". Returns a session for Mr Lim, the presentation's default person, already set up."""
+    return service.lim_demo(conn, request.headers.get("user-agent", ""))
+
+
 @router.get("/auth/demo-profiles")
 def demo_profiles(conn: Connection = Depends(get_conn)):
     """Prototype: the demo people the mock Singpass screen offers."""

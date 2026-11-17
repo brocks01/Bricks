@@ -7,6 +7,8 @@ import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { ApiError } from '../../../api/client';
 import { askOffer, getConnections, getOffers, getSessions, type Connection, type Offer, type WisdomSession } from '../../../api/wisdom';
 import { SkeletonList } from '../../../components/Skeleton';
+import { useStore } from '../../../core/store';
+import { sessionStore } from '../../../session/store';
 import { useT } from '../../../i18n';
 import { El, useField, usePageData } from '../../../kit';
 import type { PageDataAction } from '../../../kit';
@@ -85,6 +87,8 @@ export function LearnHub({ extra = [] }: { extra?: PageDataAction[] }) {
   const [failed, setFailed] = useState(false);
   const [tick, setTick] = useState(0);
   const key = keyOf(q, chip);
+  const { user } = useStore(sessionStore);
+  const likes = (user?.interests ?? []).join(',');
 
   useFocusEffect(useCallback(() => {
     let live = true; // read again on every visit, and when `tick` asks for it
@@ -98,12 +102,13 @@ export function LearnHub({ extra = [] }: { extra?: PageDataAction[] }) {
   useEffect(() => {
     let live = true;
     const h = setTimeout(() => {
-      getOffers(q.trim(), undefined, chip ? { topic: CHIPS[chip].join(',') } : undefined)
+      // no search and no chip: only the elders who teach one of the person's own interests (from onboarding); with none chosen, everyone
+      getOffers(q.trim(), undefined, chip ? { topic: CHIPS[chip].join(',') } : !q.trim() && likes ? { topic: likes } : undefined)
         .then((offers) => { if (live) { setFound({ key, offers: offers.filter((o) => !o.mine) }); setFailed(false); } })
         .catch(() => { if (live) setFailed(true); });
     }, q.trim() ? 300 : 0);
     return () => { live = false; clearTimeout(h); };
-  }, [q, chip, key, tick]);
+  }, [q, chip, key, tick, likes]);
 
   const offers = found?.key === key ? found.offers : null;
   const askedOffers = new Set(conns.filter((c) => c.i_am === 'learner' && c.status !== 'declined').map((c) => c.offer_id).filter(Boolean));

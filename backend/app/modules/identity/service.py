@@ -231,6 +231,17 @@ def singpass_demo(conn: Connection, user_agent: str = "") -> dict:
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False, "singpass": UNCLE_TAN}
 
 
+def lim_demo(conn: Connection, user_agent: str = "") -> dict:
+    """PROTOTYPE ONLY: "Demo: skip onboarding" on the first screen. Signs in Mr Lim, the presentation's default person (a retired finance manager in
+    Tampines, already set up, with his groups, learners and events), so the app opens straight on Home."""
+    from ...seed_lim import ensure_lim
+
+    user = ensure_lim(conn)
+    user = conn.execute(text("select * from users where id = :u"), {"u": user.id}).one()
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="demo")
+    return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False}
+
+
 DEMO_DOMAINS = ("@seed.wisdom.test", "@demo.wisdom.test")
 
 

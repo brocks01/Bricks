@@ -8,7 +8,7 @@ import { AppLoading } from '../../../components/AppLoading';
 import { usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
 import { useStore } from '../../../core/store';
-import { sessionStore } from '../../../session/store';
+import { reloadUser, sessionStore } from '../../../session/store';
 import { colors, space, type } from '../../../theme/tokens';
 import { loadProfile } from '../state';
 import { onboardingIndex as page } from '../pages';
@@ -31,6 +31,7 @@ export default function OnboardingScreen() {
   // After the welcome screen: a parent set up for the family goes to the family page; otherwise to the communities worth joining (once, while there is room), then Home.
   const finish = useCallback(async () => {
     await loadProfile();
+    await reloadUser().catch(() => undefined); // the interests just chosen, so every recommendation follows them at once
     if (whoStore.get().who === 'family') { go('family.create', {}, { replace: true }); return; }
     try {
       const r = await exploreCommunities('');

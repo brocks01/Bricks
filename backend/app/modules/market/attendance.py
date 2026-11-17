@@ -69,6 +69,8 @@ def recommended(conn: Connection, me: str, q: str | None = None, limit: int = 20
     now = datetime.now(timezone.utc)
     scored = []
     for r in rows:
+        if mine and not (q or "").strip() and not intent and not (set(r.interests or []) & mine):
+            continue  # someone who chose interests sees only events that share one (a search or an intent filter looks at everything)
         s, km, reasons = _score(conn, r, mine, home, my_area, now)
         scored.append((-s, r.starts_at, str(r.id), r, km, reasons, s))
     scored.sort(key=lambda x: x[:3])

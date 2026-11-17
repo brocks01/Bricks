@@ -174,6 +174,13 @@ export async function startDemo(): Promise<void> {
   await updateProfile({ language: languageStore.get().code });
 }
 
+/** Prototype: "Demo: skip onboarding". Signs in Mr Lim, the presentation's default person, already set up, so the app opens on Home. */
+export async function startLimDemo(): Promise<void> {
+  const t = await api<Tokens>('POST', '/v1/auth/lim-demo', {}, { auth: false });
+  await accept(t);
+  await updateProfile({ language: languageStore.get().code });
+}
+
 /** Prototype: the mock Singpass login. It always signs in Uncle Tan, who is already set up, so the app goes straight to Home. */
 export async function startSingpass(): Promise<void> {
   const t = await api<Tokens>('POST', '/v1/auth/singpass-demo', {}, { auth: false });

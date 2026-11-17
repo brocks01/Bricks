@@ -122,7 +122,8 @@ def cards(conn: Connection, me: str, where: str = "true", params: dict | None = 
 
 def recommend(conn: Connection, me: str, q: str = "", limit: int = 10) -> dict:
     """Open communities the person is not in, best first. Men-only and women-only circles that do not match a declared gender are left out
-    (an undeclared gender keeps them: the join asks)."""
+    (an undeclared gender keeps them: the join asks). A person who chose interests in onboarding is shown only communities that share one of them
+    (unless they search: a search looks at everything); a person with no interests sees them all."""
     p = _person(conn, me)
     mine = list(p.interests)
     g = _gender(conn, me)
@@ -133,6 +134,8 @@ def recommend(conn: Connection, me: str, q: str = "", limit: int = 10) -> dict:
                  "and c.audience <> :skip and (not :hasq or lower(c.name) like :q or lower(coalesce(c.area_name, '')) like :q or lower(coalesce(c.address, '')) like :q "
                  "or lower(coalesce(c.description, '')) like :q or lower(coalesce(h.name, '')) like :q)",
                  {"skip": skip, "q": like, "hasq": bool(q.strip())})
+    if mine and not q.strip():
+        rows = [c for c in rows if set(c.interests or []) & set(mine)]
     places = _Places(conn)
     here = places.get(p.area_name)
     # rank cheaply first (interests, same area, size), then look places up only for the best part of the list

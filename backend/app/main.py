@@ -83,9 +83,13 @@ async def _boot(tasks: list) -> None:
             def _sync() -> None:
                 with engine().begin() as conn:
                     identity_service.ensure_uncle_tan(conn)
+                with engine().begin() as conn:
+                    from .seed_lim import ensure_lim
+
+                    ensure_lim(conn)  # the presentation's default person, and something to recommend for every interest
 
             await asyncio.to_thread(_sync)
-            print("demo data in step: Uncle Tan")
+            print("demo data in step: Uncle Tan and Mr Lim")
         except Exception as e:  # noqa: BLE001 - the server works without it
             print("demo data not synced:", str(e).splitlines()[0][:180])
     # The ONE background thing in the app: the reminder loop (calls, retries, reconciliation).

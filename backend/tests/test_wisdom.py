@@ -119,7 +119,7 @@ def test_the_whole_exchange_works_by_voice_skills_with_a_yes_before_anything_is_
     assert skill(learner, "my_introductions")["introductions"][0]["status"] == "accepted"
     assert skill(mentor, "who_wants_to_learn", search="grandmother")["requests"][0]["by"] == "Ben"
     assert skill(mentor, "pause_offer", title="tamil cooking")["stopped"] == "Teach Tamil cooking"
-    assert skill(learner, "find_a_mentor", search="cooking")["offers"] == []
+    assert all(o["title"] != "Teach Tamil cooking" for o in skill(learner, "find_a_mentor", search="cooking")["offers"])  # the paused offer is gone (other elders may teach cooking)
 
 
 def test_a_young_learner_must_say_they_are_15_or_older_before_asking_anyone():

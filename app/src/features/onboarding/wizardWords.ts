@@ -3,6 +3,9 @@ import { type WordTable } from '../../i18n/words';
 // Words for the short, step-by-step onboarding. Order: English, Hindi, Bengali, Tamil, Chinese, Malay. First drafts; native-speaker review needed for hi, bn, ta, zh, ms.
 export const WIZARD: WordTable = {
   o_lang_t: ['Choose your language', 'अपनी भाषा चुनें', 'আপনার ভাষা বেছে নিন', 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', '请选择语言', 'Pilih bahasa anda'],
+  o_demo_skip: ['Demo: skip onboarding', 'डेमो: शुरुआती सवाल छोड़ें', 'ডেমো: শুরুর প্রশ্ন বাদ দিন', 'டெமோ: தொடக்கக் கேள்விகளைத் தவிர்', '演示：跳过引导', 'Demo: langkau pengenalan'],
+  o_demo_wait: ['Opening the demo…', 'डेमो खुल रहा है…', 'ডেমো খুলছে…', 'டெமோ திறக்கிறது…', '正在打开演示…', 'Membuka demo…'],
+  o_demo_failed: ['The demo could not open. Please try again.', 'डेमो नहीं खुल सका। फिर कोशिश करें।', 'ডেমো খোলা গেল না। আবার চেষ্টা করুন।', 'டெமோ திறக்கவில்லை. மீண்டும் முயற்சிக்கவும்.', '演示无法打开，请重试。', 'Demo tidak dapat dibuka. Sila cuba lagi.'],
   o_chosen: ['Chosen', 'चुना गया', 'বেছে নেওয়া', 'தேர்ந்தெடுக்கப்பட்டது', '已选择', 'Dipilih'],
   o_soon: ['Coming soon', 'जल्द आ रहा है', 'শীঘ্রই আসছে', 'விரைவில்', '即将推出', 'Akan datang'],
   o_back: ['Back', 'वापस', 'পিছনে', 'பின்செல்', '返回', 'Kembali'],
