@@ -9,6 +9,8 @@ import { getHomeSummary, type HomeSummary } from '../../../api/home';
 import { sendCheckin } from '../../../api/health';
 import { Figure, ListRow, Notice, Panel, Section } from '../../../components/blocks';
 import { Button, ErrorText, Screen } from '../../../components/ui';
+import { SkeletonList } from '../../../components/Skeleton';
+import { useCached } from '../../../core/useCached';
 import { useStore } from '../../../core/store';
 import { useLanguage, useT } from '../../../i18n';
 import { El, useAction, usePageData, usePageWords } from '../../../kit';
@@ -32,27 +34,39 @@ export default function HomeIndex() {
   const navigate = useNavigate();
   const { status, user } = useStore(sessionStore);
   const { readAloud } = useStore(prefs);
-  const [occs, setOccs] = useState<Occurrence[] | null>(null);
-  const [sum, setSum] = useState<HomeSummary | null>(null);
   const [now, setNow] = useState(() => new Date());
   const [error, setError] = useState<string | null>(null);
-  const [act, setAct] = useState<Upcoming | null>(null);
-  const [answer, setAnswer] = useState<Answer>(null);
-  const [monthOccs, setMonthOccs] = useState<Occurrence[]>([]);
+  const [chosen, setAnswer] = useState<Answer | undefined>(undefined); // what the person picked here; until then the server's answer shows
   const [picked, setPicked] = useState(() => new Date().getDate());
 
-  const load = useCallback(() => {
+  // What the screen shows is kept (core/cache.ts): leaving Home and coming back, or switching the app, shows the last copy at once and refreshes it quietly.
+  // The live link refreshes it the moment something changes anywhere (a call, a chat, the other device). Only the very first time is there a skeleton.
+  const on = status === 'in';
+  const today = new Date();
+  const dayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const dayRes = useCached<Occurrence[]>(`/v1/calendar/occurrences?day=${dayKey}`, () => {
     const from = new Date();
     from.setHours(0, 0, 0, 0);
-    const to = new Date(from.getTime() + 2 * 86_400_000);
-    calendarApi.occurrences(undefined, from.toISOString(), to.toISOString()).then((r) => { setOccs(r.occurrences); setError(null); }).catch(() => setError(w('failed')));
-    getHomeSummary().then(setSum).catch(() => undefined);
-    getUpcoming(1).then((l) => { setAct(l[0] ?? null); setAnswer((a) => (l[0]?.i_going ? 'yes' : l[0] && a === 'no' ? 'no' : null)); }).catch(() => undefined);
-    const m0 = new Date(from.getFullYear(), from.getMonth(), 1);
-    const m1 = new Date(from.getFullYear(), from.getMonth() + 1, 1);
-    calendarApi.occurrences(undefined, m0.toISOString(), m1.toISOString()).then((r) => setMonthOccs(r.occurrences)).catch(() => undefined);
+    return calendarApi.occurrences(undefined, from.toISOString(), new Date(from.getTime() + 2 * 86_400_000).toISOString()).then((r) => r.occurrences);
+  }, { enabled: on });
+  const sumRes = useCached<HomeSummary>('/v1/home/summary', getHomeSummary, { enabled: on });
+  const actRes = useCached<Upcoming | null>('/v1/communities/upcoming?limit=1', () => getUpcoming(1).then((l) => l[0] ?? null), { enabled: on });
+  const monthRes = useCached<Occurrence[]>(`/v1/calendar/occurrences?month=${dayKey.slice(0, 7)}`, () => {
+    const d = new Date();
+    return calendarApi.occurrences(undefined, new Date(d.getFullYear(), d.getMonth(), 1).toISOString(), new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString()).then((r) => r.occurrences);
+  }, { enabled: on });
+  const occs = dayRes.data ?? null;
+  const sum = sumRes.data ?? null;
+  const act = actRes.data ?? null;
+  const monthOccs = monthRes.data ?? [];
+  const { set: setAct } = actRes;
+  const answer: Answer = chosen !== undefined ? chosen : act?.i_going ? 'yes' : null;
+  const refreshDay = dayRes.refresh, refreshSum = sumRes.refresh, refreshAct = actRes.refresh, refreshMonth = monthRes.refresh;
+  const load = useCallback(() => {
+    void Promise.all([refreshDay(), refreshSum(), refreshAct(), refreshMonth()]);
     setNow(new Date());
-  }, [w]);
+  }, [refreshDay, refreshSum, refreshAct, refreshMonth]);
+  const shownError = error ?? (dayRes.failed && !occs ? w('failed') : null);
   useFocusEffect(
     useCallback(() => {
       if (status === 'in') load();
@@ -90,7 +104,7 @@ export default function HomeIndex() {
     } catch {
       setError(w('failed'));
     }
-  }, [act, load, w]);
+  }, [act, load, w, setAct]);
 
   const checkin = useCallback(async (moved: boolean) => {
     try {
@@ -151,7 +165,8 @@ export default function HomeIndex() {
 
   return (
     <Screen title={greeting} subtitle={now.toLocaleDateString(lang, { weekday: 'long', day: 'numeric', month: 'long' })}>
-      <ErrorText>{error}</ErrorText>
+      <ErrorText>{shownError}</ErrorText>
+      {dayRes.loading ? <SkeletonList count={3} /> : null}
 
       {sum && sum.help_alerts > 0 ? (
         <El page={page} id="openHelp">

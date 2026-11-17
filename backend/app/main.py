@@ -12,6 +12,7 @@ from sqlalchemy import text
 from . import migrate
 from .core.db import engine
 from .modules.identity.router import router as identity_router
+from .modules.live.router import after_write as live_after_write, router as live_router
 from .modules.agent.router import router as agent_router
 from .modules.communities.router import router as communities_router
 from .modules.communities.rules_router import router as community_rules_router
@@ -119,7 +120,9 @@ app = FastAPI(title="Interchange API", version="0.1.0", lifespan=lifespan)
 # cookie-theft door; the tokens still decide who is who.
 _extra = [o.strip().rstrip("/") for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
 app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])  # prototype: any website may call the API (the API uses Authorization tokens, not cookies)
+app.middleware("http")(live_after_write)  # after any successful write, the person's open screens are told what to refresh (modules/live)
 app.include_router(identity_router)
+app.include_router(live_router)
 app.include_router(voice_router)
 app.include_router(agent_router)
 app.include_router(community_rules_router)  # before communities_router: that one has /{community_id}

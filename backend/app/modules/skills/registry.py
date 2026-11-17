@@ -315,10 +315,17 @@ def run_for_user(user_id: str, name: str, args: dict | None) -> dict:
     from ...core.db import engine
 
     with engine().begin() as conn:
-        return run(conn, user_id, name, args)
+        result = run(conn, user_id, name, args)
+    s = get(name)
+    if s is not None:  # the change is saved now: tell the person's open screens what to refresh (a call or a chat changed something)
+        from ..live import topics
+
+        topics.skill_done(user_id, name, s.risk, result)
+    return result
 
 
 from . import everyday, onboarding, safety, schedule, wisdom  # noqa: E402,F401  (registers the everyday, onboarding, safety, scheduled-call and Wisdom skills)
+from . import live  # noqa: E402,F401  (registers is_app_open and show_on_screen)
 from . import checkins  # noqa: E402,F401  (registers the daily check-in skills)
 from . import belonging  # noqa: E402,F401  (registers the belonging skills: our days, sending for a day, away, our stories)
 from ..hosts import skill as host_skill  # noqa: E402,F401  (registers the host's own skills)
