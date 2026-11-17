@@ -2,6 +2,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { calendarApi } from '../../api/calendar';
+import { useStore } from '../../core/store';
+import { sessionStore } from '../../session/store';
 import type { HomeEvent } from '../../api/home';
 import { getWisdom, type WisdomEvent } from '../../api/nodes';
 import type { LangCode } from '../../i18n/languages';
@@ -30,13 +32,15 @@ export function useHomeCalendar(upcoming: HomeEvent[] | null, now: Date) {
   const [leaves, setLeaves] = useState<WisdomEvent[]>([]);
   const [leavesFrom, setLeavesFrom] = useState<string | null>(null); // the cursor for older leaves; null when all are loaded
   const [own, setOwn] = useState<DayItem[]>([]);
+  const { status } = useStore(sessionStore); // after a hard reload the saved sign-in loads first; asking before it would be refused
 
   // Leaves: the newest page first, then older pages until the shown month is covered.
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     getWisdom(50).then((r) => { if (live) { setLeaves(r.events); setLeavesFrom(r.next_before); } }).catch(() => undefined);
     return () => { live = false; };
-  }, [upcoming]);
+  }, [upcoming, status]);
   useEffect(() => {
     const oldest = leaves[leaves.length - 1];
     if (!leavesFrom || !oldest || new Date(oldest.at) < new Date(shown.year, shown.month0, 1)) return;
@@ -46,6 +50,7 @@ export function useHomeCalendar(upcoming: HomeEvent[] | null, now: Date) {
   }, [leaves, leavesFrom, shown]);
   // The person's own calendar for the shown month: appointments and events (daily reminders such as medicine would put a flag on every day).
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     const from = new Date(shown.year, shown.month0, 1);
     const to = new Date(shown.year, shown.month0 + 1, 1);
@@ -59,7 +64,7 @@ export function useHomeCalendar(upcoming: HomeEvent[] | null, now: Date) {
       })
       .catch(() => { if (live) setOwn([]); });
     return () => { live = false; };
-  }, [shown, upcoming]);
+  }, [shown, upcoming, status]);
 
   const days = useMemo(() => byDay([...(upcoming ?? []).map(fromUpcoming), ...leaves.map(fromLeaf), ...own]), [upcoming, leaves, own]);
   const cells = useMemo(() => monthCells(shown.year, shown.month0, now, days), [shown, now, days]);
