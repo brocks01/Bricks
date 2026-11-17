@@ -47,6 +47,12 @@ def user_dict(row) -> dict:
     }
 
 
+def signed_in_with(conn: Connection, user_id: str) -> str | None:
+    """How the person last started a session (email, google, singpass, demo), or None for sessions from before this was kept."""
+    row = conn.execute(text("select method from refresh_tokens where user_id = :u and method is not null order by created_at desc limit 1"), {"u": user_id}).first()
+    return row.method if row else None
+
+
 def request_code(conn: Connection, email: str) -> tuple[str, int]:
     email = clean_email(email)
     s = get_settings()
@@ -76,13 +82,14 @@ def request_code(conn: Connection, email: str) -> tuple[str, int]:
     return code, s.code_minutes * 60
 
 
-def _issue_session(conn: Connection, user_id: str, user_agent: str, session_id: str | None = None) -> tuple[str, str]:
-    """A new refresh token (kept as a hash) and an access token. A refresh keeps the SAME session id, so one sign-out ends the whole session."""
+def _issue_session(conn: Connection, user_id: str, user_agent: str, session_id: str | None = None, method: str | None = None) -> tuple[str, str]:
+    """A new refresh token (kept as a hash) and an access token. A refresh keeps the SAME session id, so one sign-out ends the whole session.
+    `method` is how the session was started (email, google, singpass, demo); a refresh carries it on."""
     s = get_settings()
     refresh = security.new_refresh_token()
     row = conn.execute(
-        text("insert into refresh_tokens (user_id, token_hash, expires_at, user_agent, session_id) values (:u, :h, :x, :ua, coalesce(cast(:sid as uuid), gen_random_uuid())) returning session_id"),
-        {"u": user_id, "h": security.hash_token(refresh), "x": _now() + timedelta(days=s.refresh_days), "ua": user_agent[:200], "sid": session_id},
+        text("insert into refresh_tokens (user_id, token_hash, expires_at, user_agent, session_id, method) values (:u, :h, :x, :ua, coalesce(cast(:sid as uuid), gen_random_uuid()), :m) returning session_id"),
+        {"u": user_id, "h": security.hash_token(refresh), "x": _now() + timedelta(days=s.refresh_days), "ua": user_agent[:200], "sid": session_id, "m": method},
     ).one()
     return security.make_access_token(user_id, str(row.session_id)), refresh
 
@@ -106,7 +113,7 @@ def verify_code(conn: Connection, email: str, code: str, user_agent: str = "") -
     is_new = user is None
     if is_new:
         user = conn.execute(text("insert into users (email) values (:e) returning *"), {"e": email}).one()
-    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="email")
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": is_new}
 
 
@@ -164,7 +171,7 @@ def demo_sign_in(conn: Connection, user_agent: str = "") -> dict:
     email = f"demo-{secrets.token_hex(4)}@demo.wisdom.test"
     name = _demo_name()
     user = conn.execute(text("insert into users (email, display_name) values (:e, :n) returning *"), {"e": email, "n": name}).one()
-    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="demo")
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": True}
 
 
@@ -220,7 +227,7 @@ def singpass_demo(conn: Connection, user_agent: str = "") -> dict:
     """PROTOTYPE ONLY: the mock Singpass login. Singpass always signs in the same person, Uncle Tan, so he lands straight on the dashboard. The questions the app
     would otherwise ask are left for the agent to ask later, in conversation."""
     user = ensure_uncle_tan(conn)
-    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="singpass")
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False, "singpass": UNCLE_TAN}
 
 
@@ -271,7 +278,7 @@ def demo_sign_in_as(conn: Connection, user_id: str, user_agent: str = "") -> dic
     user = conn.execute(text("select * from users where id = cast(:i as uuid)"), {"i": user_id}).first()
     if user is None or not any(str(user.email).endswith(d) for d in DEMO_DOMAINS) or user.status != "active":
         raise AuthError("unauthorized", 401)
-    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="demo")
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False}
 
 
@@ -285,7 +292,7 @@ def google_sign_in(conn: Connection, id_token: str, user_agent: str = "") -> dic
         user = conn.execute(text("insert into users (email, display_name) values (:e, :n) returning *"), {"e": email, "n": name}).one()
     elif user.status != "active":
         raise AuthError("unauthorized", 401)
-    access, refresh = _issue_session(conn, str(user.id), user_agent)
+    access, refresh = _issue_session(conn, str(user.id), user_agent, method="google")
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": is_new}
 
 
@@ -296,7 +303,7 @@ def providers() -> dict:
 
 def refresh_session(conn: Connection, token: str, user_agent: str = "") -> dict:
     row = conn.execute(
-        text("select id, user_id, session_id from refresh_tokens where token_hash = :h and revoked_at is null and expires_at > now() for update"),
+        text("select id, user_id, session_id, method from refresh_tokens where token_hash = :h and revoked_at is null and expires_at > now() for update"),
         {"h": security.hash_token(token)},
     ).first()
     if row is None:
@@ -305,7 +312,7 @@ def refresh_session(conn: Connection, token: str, user_agent: str = "") -> dict:
     user = conn.execute(text("select * from users where id = :u and status = 'active'"), {"u": row.user_id}).first()
     if user is None:
         raise AuthError("unauthorized", 401)
-    access, refresh = _issue_session(conn, str(user.id), user_agent, str(row.session_id))
+    access, refresh = _issue_session(conn, str(user.id), user_agent, str(row.session_id), row.method)
     return {"access_token": access, "refresh_token": refresh, "user": user_dict(user), "is_new": False}
 
 

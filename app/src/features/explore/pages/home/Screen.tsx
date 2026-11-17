@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { getExploreHome, type ExploreHome as ExploreHomeData } from '../../../../api/explore';

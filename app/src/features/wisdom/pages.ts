@@ -12,7 +12,7 @@ export const wisdomIndex = definePage({
   ...base,
   key: 'wisdom.index',
   route: '/wisdom',
-  tab: 2,
+  tab: 3,
   icon: 'leaf',
   summary: 'Wisdom: where experience is passed between generations. Read shared stories, find a mentor, see what people want to learn, book a paid session or offer your own, and manage your own stories, offers, requests, services and introductions.',
   keywords: ['wisdom', 'stories', 'mentor', 'learn', 'teach', 'advice', 'experience', 'generations', 'paid', 'session', 'service'],

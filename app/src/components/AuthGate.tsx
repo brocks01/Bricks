@@ -33,11 +33,12 @@ export function AuthGate({ children }: { children: ReactNode }) {
     if (status === 'in' && complete && !prof.loaded) return; // signed in, but we do not know yet if onboarding is done: wait, so the app never flashes before it
     if (status === 'out') {
       if (current.requiresAuth) go('auth.welcome', {}, { replace: true });
-    } else if (!complete) {
+    } else if (!complete || (onboardingLocal.walk && !onboardingLocal.done)) {
+      // not set up yet, or just signed in with Singpass: the onboarding pages first
       if (current.module !== 'onboarding') go('onboarding.index', {}, { replace: true });
     } else if (prof.profile && !prof.profile.onboarded && !onboardingLocal.done && current.module !== 'onboarding') {
       go('onboarding.index', {}, { replace: true });
-    } else if (current.module === 'auth') {
+    } else if (current.module === 'auth' || (current.key === 'onboarding.index' && prof.profile?.onboarded && !onboardingLocal.done)) {
       go(firstTab(prof.profile), {}, { replace: true });
     }
   }, [status, complete, current, go, prof.profile, prof.loaded]);

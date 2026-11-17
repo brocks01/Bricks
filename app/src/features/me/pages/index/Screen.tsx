@@ -1,26 +1,28 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
-import { useEffect, useState } from 'react';
-import { Linking, Pressable, Text, View } from 'react-native';
+import { useEffect, useState, type ReactNode } from 'react';
+import { Image, Linking, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../../api/communities';
 import { getCard, type HealthCard } from '../../../../api/health';
+import { getMyHosts } from '../../../../api/hosts';
 import { BackScreen } from '../../../../components/BackButton';
 import { Row, Field, Button } from '../../../../components/ui';
 import { ChipRow } from '../../../../components/blocks';
-import { getOnboarding, putOnboarding } from '../../../../api/wisdom';
+import { getOnboarding, getTeachingProfile, putOnboarding } from '../../../../api/wisdom';
 import { api } from '../../../../api/client';
 import { useStore } from '../../../../core/store';
 import { LANGUAGES, useLanguage, useT } from '../../../../i18n';
-import { El, useAction, usePageWords } from '../../../../kit';
+import { El, useAction, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
-import { prefs, setPref, type TextSize } from '../../../../prefs/store';
-import { sessionStore, signOut } from '../../../../session/store';
+import { prefs, setPref } from '../../../../prefs/store';
+import { reloadUser, sessionStore, signOut } from '../../../../session/store';
 import { colors, space } from '../../../../theme/tokens';
 import '../../moreWords'; // registers the words of the More list
-import '../../profileWords'; // registers the words of the tabs
+import '../../profileWords'; // registers the words of the More sections
+import '../../detailWords'; // registers the words of the profile page (pf.*)
 import { meIndex as page } from './page';
 
-type Tab = 'me' | 'health' | 'numbers' | 'settings';
+type More = 'communities' | 'health' | 'numbers' | 'settings';
 const box = { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: 16 } as const;
 const LINE = '#EDE6DA';
 
@@ -30,162 +32,238 @@ const NUMBERS: { group: 'prof.sg' | 'prof.in_'; items: { word: string; tel: stri
   { group: 'prof.in_', items: [{ word: 'prof.n_in_all', tel: '112' }, { word: 'prof.n_in_amb', tel: '108' }, { word: 'prof.n_police', tel: '100' }, { word: 'prof.n_elderline', tel: '14567' }] },
 ];
 
-// Me = the person's own details, health, important numbers and settings, in four tabs like the owner's design. Everything shown comes from their account.
+// The profile page (revamp v2, A3): one simple column. The profile card (photo or initials, the name, how they signed in); Your details, one big row
+// per thing onboarding asks, each showing the saved value in words and opening its own edit screen (me.field), then the older details; Sign out,
+// which asks first; and More (the same things as before: communities, health, emergency numbers, messages and check-in, and the other pages).
 export default function Me() {
   const w = usePageWords(page);
   const t = useT();
   const go = useNavigate();
   const code = useLanguage();
-  const { user: own, actingUser } = useStore(sessionStore);
+  const { user: own, actingUser, status } = useStore(sessionStore);
   const user = actingUser ?? own; // while helping a family member, their details are shown
-  const [tab, setTab] = useState<Tab>('me');
+  const { textSize } = useStore(prefs);
+  const [open, setOpen] = useState<More | null>(null);
+  const [asking, setAsking] = useState(false);
   const [communities, setCommunities] = useState<MyCommunity[] | null>(null);
   const [card, setCard] = useState<HealthCard | null>(null);
-  const current = LANGUAGES.find((l) => l.code === code);
+  const [remind, setRemind] = useState<string | null>(null);
+  const [shareLine, setShareLine] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState(false);
   const notSet = t('common.notSet');
-  useAction(page, 'editProfile', () => go('me.edit'));
-  useAction(page, 'chooseLanguage', () => go('language.pick'));
-  useAction(page, 'signOut', signOut);
+  const ob = (k: string) => t(`onboarding.index.${k}`);
+
   const liveEpoch = useLiveEpoch();
   useEffect(() => {
-    getMyCommunities().then(setCommunities).catch(() => setCommunities([]));
-    getCard().then(setCard).catch(() => setCard(null));
-  }, [liveEpoch]);
+    if (status !== 'in') return; // after a reload the saved sign-in loads first
+    let live = true;
+    void reloadUser().catch(() => undefined); // the latest details, and how they signed in
+    getMyCommunities().then((c) => { if (live) setCommunities(c); }).catch(() => { if (live) setCommunities([]); });
+    getCard().then((c) => { if (live) setCard(c); }).catch(() => { if (live) setCard(null); });
+    getOnboarding().then((st) => {
+      const a = st.sections.find((x) => x.id === 'channels')?.questions.find((q) => q.key === 'preferred_channel')?.answer;
+      if (live) setRemind(typeof a === 'string' ? a : null);
+    }).catch(() => undefined);
+    getTeachingProfile().then((p) => { if (live) setShareLine(p.expertise || null); }).catch(() => undefined);
+    getMyHosts().then((h) => { if (live) setIsHost(h.length > 0); }).catch(() => undefined); // host members and platform admins only
+    return () => { live = false; };
+  }, [status, liveEpoch]);
 
-  const tabs: { id: Tab; label: string }[] = [
-    { id: 'me', label: t('prof.tab_me') },
-    { id: 'health', label: t('prof.tab_health') },
-    { id: 'numbers', label: t('prof.tab_numbers') },
-    { id: 'settings', label: t('prof.tab_settings') },
-  ];
+  const askOut = () => setAsking(true);
+  const out = async () => { setAsking(false); await signOut(); go('auth.welcome', {}, { replace: true }); };
+  useAction(page, 'signOut', askOut);
+  useAction(page, 'signOutYes', () => void out());
+  useAction(page, 'editProfile', () => go('me.field', { field: 'name' }));
+  useAction(page, 'chooseLanguage', () => go('me.field', { field: 'language' }));
+
   const initials = (user?.display_name ?? user?.email ?? '?').trim().split(/\s+/).slice(0, 2).map((p) => p.charAt(0).toUpperCase()).join('');
+  const via = own?.signed_in_with;
+  const sizeWord = textSize === 'normal' ? ob('o_size_small') : textSize === 'larger' ? ob('o_size_large') : ob('o_size_normal');
+  const remindWord = remind === 'app' ? ob('o_rem_app') : remind === 'call' ? ob('o_rem_call') : remind === 'whatsapp' ? ob('o_rem_wa') : remind ? remind : notSet;
+  const likes = (user?.interests ?? []).map((k) => ob(`interest_${k}`)).join(', ');
+  type Detail = { id: string; field?: string; icon: keyof typeof Ionicons.glyphMap; label: string; value: string; to?: () => void };
+  const details: Detail[] = [
+    { id: 'language', field: 'language', icon: 'language-outline', label: t('pf.language'), value: LANGUAGES.find((l) => l.code === code)?.native ?? code },
+    { id: 'textSize', field: 'textSize', icon: 'text-outline', label: t('pf.text_size'), value: sizeWord },
+    { id: 'name', field: 'name', icon: 'person-outline', label: t('pf.name'), value: user?.display_name || notSet },
+    { id: 'area', field: 'area', icon: 'location-outline', label: t('pf.area'), value: user?.area_name || notSet },
+    { id: 'enjoy', field: 'enjoy', icon: 'heart-outline', label: t('pf.enjoy'), value: likes || notSet },
+    { id: 'voice', field: 'voice', icon: 'mic-outline', label: t('pf.voice'), value: user?.voice_intro_url ? t('pf.voice_yes') : t('pf.voice_no') },
+    { id: 'reminders', field: 'reminders', icon: 'notifications-outline', label: t('pf.reminders'), value: remindWord },
+    { id: 'share', icon: 'school-outline', label: t('pf.share'), value: shareLine || notSet, to: () => go('wisdom.teachProfile') },
+  ];
+  const older: Detail[] = [
+    { id: 'age', field: 'age', icon: 'people-outline', label: t('pf.age'), value: user?.age_band ? t(`pf.age_${user.age_band}`) : notSet },
+    { id: 'phone', field: 'phone', icon: 'call-outline', label: t('pf.phone'), value: user?.phone || notSet },
+    { id: 'spoken', icon: 'chatbubbles-outline', label: t('pf.spoken'), value: (user?.spoken_languages ?? []).map((c) => LANGUAGES.find((l) => l.code === c)?.native ?? c).join(', ') || notSet, to: () => go('language.spoken') },
+  ];
+  const openRow = (d: Detail): void => { if (d.to) d.to(); else go('me.field', { field: d.field ?? 'name' }); };
+  usePageData(page, {
+    values: [...details, ...older].map((d) => ({ label: d.label, value: d.value })).concat(user?.email ? [{ label: t('pf.email'), value: user.email }] : []),
+    images: [],
+    lists: [],
+    actions: [...details, ...older].map((d) => ({ id: `open${d.id.charAt(0).toUpperCase()}${d.id.slice(1)}`, label: `${d.label}: ${d.value}`, run: () => openRow(d) })),
+  });
+
+  const row = (d: Detail) => (
+    <Pressable key={d.id} onPress={() => openRow(d)} accessibilityRole="button" accessibilityLabel={`${d.label}: ${d.value}`}
+      style={({ pressed }) => ({ minHeight: 76, flexDirection: 'row', alignItems: 'center', gap: space.md, paddingHorizontal: space.md, paddingVertical: space.sm, borderRadius: 16, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, opacity: pressed ? 0.85 : 1 })}>
+      <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: colors.navySoft, alignItems: 'center', justifyContent: 'center' }}>
+        <Ionicons name={d.icon} size={22} color={colors.ink} accessible={false} />
+      </View>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: 16, color: '#4A5361' }}>{d.label}</Text>
+        <Text style={{ fontSize: 19, fontWeight: '700', color: colors.ink }}>{d.value}</Text>
+      </View>
+      <Ionicons name="chevron-forward" size={24} color="#6B7280" accessible={false} />
+    </Pressable>
+  );
+  const section = (id: More, label: string, icon: keyof typeof Ionicons.glyphMap, body: ReactNode) => (
+    <View key={id}>
+      <Pressable onPress={() => setOpen((o) => (o === id ? null : id))} accessibilityRole="button" accessibilityState={{ expanded: open === id }}
+        style={{ minHeight: 64, flexDirection: 'row', alignItems: 'center', gap: space.md, paddingHorizontal: space.md, borderRadius: 16, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
+        <Ionicons name={icon} size={22} color={colors.ink} accessible={false} />
+        <Text style={{ flex: 1, fontSize: 18, fontWeight: '700', color: colors.ink }}>{label}</Text>
+        <Ionicons name={open === id ? 'chevron-up' : 'chevron-down'} size={22} color="#6B7280" accessible={false} />
+      </Pressable>
+      {open === id ? <View style={{ paddingTop: space.md }}>{body}</View> : null}
+    </View>
+  );
 
   return (
     <BackScreen title={w('heading')} subtitle={t('common.onlyYou')}>
-      <View style={{ alignItems: 'center', gap: 6, paddingVertical: space.md }}>
-        <View style={{ width: 84, height: 84, borderRadius: 42, backgroundColor: colors.navySoft, borderWidth: 1, borderColor: '#CBD3E0', alignItems: 'center', justifyContent: 'center' }}>
-          <Text style={{ fontSize: 30, fontWeight: '600', color: '#15202E' }}>{initials}</Text>
+      <View style={{ alignItems: 'center', gap: 6, paddingVertical: space.lg, paddingHorizontal: space.md, marginBottom: space.lg, borderRadius: 20, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
+        <View style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: colors.navySoft, borderWidth: 1, borderColor: '#CBD3E0', alignItems: 'center', justifyContent: 'center' }}>
+          <Text style={{ fontSize: 40, fontWeight: '700', color: '#15202E' }}>{initials}</Text>
         </View>
-        <Text style={{ fontSize: 22, fontWeight: '600', color: colors.ink, marginTop: 6 }}>{user?.display_name}</Text>
-        <Text style={{ fontSize: 16, color: '#4A5361' }}>{[user?.age_band ? t(`common.ageBand.${user.age_band}`) : null, user?.area_name].filter(Boolean).join(' · ')}</Text>
+        <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink, marginTop: 6, textAlign: 'center' }}>{user?.display_name}</Text>
+        {via ? (
+          <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
+            <Text style={{ fontSize: 17, color: '#4A5361' }}>{t(`pf.via_${via}`)}</Text>
+            {via === 'singpass' ? <Image source={require('../../../../../assets/brand/singpass.png')} accessibilityLabel="Singpass" resizeMode="contain" style={{ width: 84, height: 15 }} /> : null}
+          </View>
+        ) : null}
+        {user?.email && via !== 'singpass' && via !== 'demo' ? <Text style={{ fontSize: 16, color: '#4A5361' }}>{user.email}</Text> : null}
       </View>
 
-      <View accessibilityRole="tablist" style={{ flexDirection: 'row', borderBottomWidth: 1, borderColor: colors.line, marginBottom: space.lg }}>
-        {tabs.map((x) => (
-          <Pressable key={x.id} onPress={() => setTab(x.id)} accessibilityRole="tab" accessibilityState={{ selected: tab === x.id }} style={{ flex: 1, minHeight: 48, alignItems: 'center', justifyContent: 'center', borderBottomWidth: 2, borderColor: tab === x.id ? colors.accent : 'transparent' }}>
-            <Text style={{ fontSize: 15, fontWeight: '600', color: tab === x.id ? colors.accent : '#4A5361' }}>{x.label}</Text>
-          </Pressable>
+      <Text accessibilityRole="header" style={{ fontSize: 22, fontWeight: '800', color: colors.ink }}>{t('pf.details')}</Text>
+      <Text style={{ fontSize: 16, color: '#4A5361', marginBottom: space.sm }}>{t('pf.details_h')}</Text>
+      <View style={{ gap: space.sm }}>{details.map(row)}</View>
+      <Text accessibilityRole="header" style={{ fontSize: 19, fontWeight: '800', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }}>{t('pf.older')}</Text>
+      <View style={{ gap: space.sm }}>{older.map(row)}</View>
+
+      <View style={{ marginTop: space.xl, gap: space.sm }}>
+        {asking ? (
+          <View accessibilityLiveRegion="polite" style={{ padding: space.md, borderRadius: 16, borderWidth: 2, borderColor: colors.danger, backgroundColor: colors.card, gap: space.sm }}>
+            <Text style={{ fontSize: 20, fontWeight: '800', color: colors.ink }}>{t('pf.sign_out_q')}</Text>
+            <View style={{ flexDirection: 'row', gap: space.sm }}>
+              <Pressable onPress={() => setAsking(false)} accessibilityRole="button" style={{ flex: 1, minHeight: 56, borderRadius: 14, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center' }}>
+                <Text style={{ fontSize: 18, fontWeight: '800', color: colors.ink }}>{t('pf.no')}</Text>
+              </Pressable>
+              <View style={{ flex: 1 }}>
+                <El page={page} id="signOutYes">
+                  <Pressable onPress={() => void out()} accessibilityRole="button" style={{ minHeight: 56, borderRadius: 14, backgroundColor: colors.danger, alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{ fontSize: 18, fontWeight: '800', color: '#FFFFFF' }}>{t('pf.yes_out')}</Text>
+                  </Pressable>
+                </El>
+              </View>
+            </View>
+          </View>
+        ) : (
+          <El page={page} id="signOut">
+            <Pressable onPress={askOut} accessibilityRole="button" style={{ minHeight: 60, borderRadius: 16, borderWidth: 2, borderColor: colors.danger, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 }}>
+              <Ionicons name="log-out-outline" size={22} color={colors.danger} accessible={false} />
+              <Text style={{ fontSize: 18, fontWeight: '800', color: colors.danger }}>{t('pf.sign_out')}</Text>
+            </Pressable>
+          </El>
+        )}
+        <Text style={{ fontSize: 15, color: '#5A6472', textAlign: 'center' }}>{t('prof.sign_out_note')}</Text>
+      </View>
+
+      <Text accessibilityRole="header" style={{ fontSize: 22, fontWeight: '800', color: colors.ink, marginTop: space.xl, marginBottom: space.sm }}>{t('pf.more')}</Text>
+      <View style={{ gap: space.sm, marginBottom: space.xl }}>
+        {section('communities', t('pf.communities'), 'people-outline', (
+          <View style={{ gap: space.sm }}>
+            <View style={box}>
+              {communities && communities.length === 0 ? <Text style={{ paddingVertical: 16, fontSize: 16, color: '#4A5361' }}>{t('prof.none_yet')}</Text> : null}
+              {(communities ?? []).map((c, i, all) => (
+                <View key={c.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: LINE }}>
+                  <Text style={{ flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink }}>{c.name}</Text>
+                  <View style={{ backgroundColor: c.my_role === 'Member' ? colors.navySoft : '#FEF3C7', borderRadius: 6, paddingVertical: 4, paddingHorizontal: 8 }}>
+                    <Text style={{ fontSize: 13, fontWeight: '600', color: c.my_role === 'Member' ? '#15202E' : '#92400E' }}>{c.my_role}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+            <View style={box}>
+              <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderColor: LINE }}>
+                <Text style={{ fontWeight: '600', color: colors.ink }}>{t('prof.role_member')}</Text>
+                <Text style={{ fontSize: 15, color: '#4A5361' }}>{t('prof.role_member_d')}</Text>
+              </View>
+              <View style={{ paddingVertical: 12 }}>
+                <Text style={{ fontWeight: '600', color: colors.ink }}>{t('prof.role_lead')}</Text>
+                <Text style={{ fontSize: 15, color: '#4A5361' }}>{t('prof.role_lead_d')}</Text>
+              </View>
+            </View>
+          </View>
         ))}
-      </View>
-
-      {tab === 'me' ? (
-        <View style={{ gap: space.md }}>
-          <El page={page} id="email"><Row icon="mail-outline" label={w('email')} value={user?.email ?? notSet} /></El>
-          <El page={page} id="phone"><Row icon="call-outline" label={w('phone')} value={user?.phone ?? notSet} /></El>
-          <El page={page} id="ageBand"><Row icon="people-outline" label={w('ageBand')} value={user?.age_band ? t(`common.ageBand.${user.age_band}`) : notSet} /></El>
-          <El page={page} id="area"><Row icon="location-outline" label={w('area')} value={user?.area_name ?? notSet} /></El>
-          <El page={page} id="editProfile"><Row icon="create-outline" label="" value={w('editProfile')} onPress={() => go('me.edit')} /></El>
-
-          <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.md }} accessibilityRole="header">{t('prof.roles')}</Text>
-          <View style={box}>
-            {communities && communities.length === 0 ? <Text style={{ paddingVertical: 16, fontSize: 16, color: '#4A5361' }}>{t('prof.none_yet')}</Text> : null}
-            {(communities ?? []).map((c, i, all) => (
-              <View key={c.id} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 10, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: LINE }}>
-                <Text style={{ flex: 1, fontSize: 17, fontWeight: '600', color: colors.ink }}>{c.name}</Text>
-                <View style={{ backgroundColor: c.my_role === 'Member' ? colors.navySoft : '#FEF3C7', borderRadius: 6, paddingVertical: 4, paddingHorizontal: 8 }}>
-                  <Text style={{ fontSize: 13, fontWeight: '600', color: c.my_role === 'Member' ? '#15202E' : '#92400E' }}>{c.my_role}</Text>
+        {section('health', t('pf.health'), 'fitness-outline', (
+          <View style={{ gap: 10 }}>
+            <View style={{ flexDirection: 'row', gap: 10 }}>
+              <Tile label={t('prof.blood')} value={card?.blood_group ?? notSet} big />
+              <Tile label={t('prof.allergies')} value={card?.allergies || notSet} />
+            </View>
+            <View style={box}>
+              <Line k={t('prof.conditions')} v={card?.conditions || notSet} border />
+              <Line k={t('prof.medicines')} v={card?.medicines || notSet} />
+            </View>
+            <Wide label={t('prof.edit_info')} onPress={() => go('health.card')} />
+            <Text style={{ fontSize: 15, color: '#5A6472' }}>{t('prof.only_you')}</Text>
+            <View style={box}>
+              <Link label={t('prof.checkin_walks')} onPress={() => go('health.index')} line />
+              <Link label={t('prof.walk_history')} onPress={() => go('health.history')} line />
+              <Link label={t('prof.get_help')} onPress={() => go('health.help')} />
+            </View>
+          </View>
+        ))}
+        {section('numbers', t('pf.numbers'), 'call-outline', (
+          <View style={{ gap: 12 }}>
+            {card?.contact_phone ? (
+              <>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('prof.my_contact')}</Text>
+                <View style={box}><NumberRow name={card.contact_name || card.contact_phone} tel={card.contact_phone} call={t('prof.call')} /></View>
+              </>
+            ) : null}
+            {NUMBERS.map((g) => (
+              <View key={g.group} style={{ gap: 8 }}>
+                <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t(g.group)}</Text>
+                <View style={box}>
+                  {g.items.map((n, i) => <NumberRow key={n.word + n.tel} name={t(n.word)} tel={n.tel} call={t('prof.call')} border={i < g.items.length - 1} />)}
                 </View>
               </View>
             ))}
+            <Text style={{ fontSize: 15, color: '#5A6472' }}>{t('prof.dialler')}</Text>
           </View>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, marginTop: space.sm }} accessibilityRole="header">{t('prof.how_roles')}</Text>
-          <View style={box}>
-            <View style={{ paddingVertical: 12, borderBottomWidth: 1, borderColor: LINE }}>
-              <Text style={{ fontWeight: '600', color: colors.ink }}>{t('prof.role_member')}</Text>
-              <Text style={{ fontSize: 15, color: '#4A5361' }}>{t('prof.role_member_d')}</Text>
-            </View>
-            <View style={{ paddingVertical: 12 }}>
-              <Text style={{ fontWeight: '600', color: colors.ink }}>{t('prof.role_lead')}</Text>
-              <Text style={{ fontSize: 15, color: '#4A5361' }}>{t('prof.role_lead_d')}</Text>
-            </View>
-          </View>
-
-          <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.md }} accessibilityRole="header">{t('menu.more')}</Text>
-          <Row icon="today-outline" label="" value={t('home.index.tab')} onPress={() => go('home.index')} />
-          <Row icon="notifications-outline" label="" value={t('channels.notices.heading')} onPress={() => go('channels.notices')} />
-          <Row icon="chatbubbles-outline" label="" value={t('channels.chats.heading')} onPress={() => go('channels.chats')} />
-          <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
-          <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
-          <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />
-          <Row icon="hand-left-outline" label="" value={t('menu.contributions')} onPress={() => go('grow.contributions')} />
-          <Row icon="fitness-outline" label="" value={t('menu.activity')} onPress={() => go('grow.activity')} />
-          <Row icon="compass-outline" label="" value={t('menu.library')} onPress={() => go('explore.home')} />
-          {__DEV__ ? <Row icon="code-slash" label="" value="Agent test console (developer)" onPress={() => go('dev.console')} /> : null}
-        </View>
-      ) : null}
-
-      {tab === 'health' ? (
-        <View style={{ gap: 10 }}>
-          <View style={{ flexDirection: 'row', gap: 10 }}>
-            <Tile label={t('prof.blood')} value={card?.blood_group ?? notSet} big />
-            <Tile label={t('prof.allergies')} value={card?.allergies || notSet} />
-          </View>
-          <View style={box}>
-            <Line k={t('prof.conditions')} v={card?.conditions || notSet} border />
-            <Line k={t('prof.medicines')} v={card?.medicines || notSet} />
-          </View>
-          <Wide label={t('prof.edit_info')} onPress={() => go('health.card')} />
-          <Text style={{ fontSize: 15, color: '#5A6472' }}>{t('prof.only_you')}</Text>
-          <View style={[box, { marginTop: space.sm }]}>
-            <Link label={t('prof.checkin_walks')} onPress={() => go('health.index')} line />
-            <Link label={t('prof.walk_history')} onPress={() => go('health.history')} line />
-            <Link label={t('prof.get_help')} onPress={() => go('health.help')} />
-          </View>
-        </View>
-      ) : null}
-
-      {tab === 'numbers' ? (
-        <View style={{ gap: 12 }}>
-          {card?.contact_phone ? (
-            <>
-              <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('prof.my_contact')}</Text>
-              <View style={box}><NumberRow name={card.contact_name || card.contact_phone} tel={card.contact_phone} call={t('prof.call')} /></View>
-            </>
-          ) : null}
-          {NUMBERS.map((g) => (
-            <View key={g.group} style={{ gap: 8 }}>
-              <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t(g.group)}</Text>
-              <View style={box}>
-                {g.items.map((n, i) => (
-                  <NumberRow key={n.word + n.tel} name={t(n.word)} tel={n.tel} call={t('prof.call')} border={i < g.items.length - 1} />
-                ))}
-              </View>
-            </View>
-          ))}
-          <Text style={{ fontSize: 15, color: '#5A6472' }}>{t('prof.dialler')}</Text>
-        </View>
-      ) : null}
-
-      {tab === 'settings' ? <Settings t={t} go={go} language={current?.native ?? ''} /> : null}
-
-      {tab === 'me' || tab === 'settings' ? (
-        <View style={{ marginTop: space.lg, gap: 6 }}>
-          <El page={page} id="signOut">
-            <Pressable onPress={() => void signOut()} accessibilityRole="button" style={{ minHeight: 52, borderRadius: 12, borderWidth: 1, borderColor: colors.danger, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', gap: 8 }}>
-              <Ionicons name="log-out-outline" size={20} color={colors.danger} />
-              <Text style={{ fontSize: 16, fontWeight: '600', color: colors.danger }}>{w('signOut')}</Text>
-            </Pressable>
-          </El>
-          <Text style={{ fontSize: 14, color: '#5A6472', textAlign: 'center' }}>{t('prof.sign_out_note')}</Text>
-        </View>
-      ) : null}
-      <El page={page} id="chooseLanguage"><View /></El>
+        ))}
+        {section('settings', t('pf.settings'), 'settings-outline', <Settings t={t} go={go} />)}
+        <Row icon="today-outline" label="" value={t('home.index.tab')} onPress={() => go('home.index')} />
+        <Row icon="notifications-outline" label="" value={t('channels.notices.heading')} onPress={() => go('channels.notices')} />
+        <Row icon="chatbubbles-outline" label="" value={t('channels.chats.heading')} onPress={() => go('channels.chats')} />
+        <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
+        {isHost ? <Row icon="storefront-outline" label="" value={t('host.home.heading')} onPress={() => go('host.home')} /> : null}
+        <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
+        <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />
+        <Row icon="hand-left-outline" label="" value={t('menu.contributions')} onPress={() => go('grow.contributions')} />
+        <Row icon="fitness-outline" label="" value={t('menu.activity')} onPress={() => go('grow.activity')} />
+        <Row icon="compass-outline" label="" value={t('menu.library')} onPress={() => go('explore.home')} />
+        {__DEV__ ? <Row icon="code-slash" label="" value="Agent test console (developer)" onPress={() => go('dev.console')} /> : null}
+      </View>
     </BackScreen>
   );
 }
 
-function Settings({ t, go, language }: { t: (k: string) => string; go: (k: string) => void; language: string }) {
-  const { textSize, readAloud } = useStore(prefs);
+function Settings({ t, go }: { t: (k: string) => string; go: (k: string) => void }) {
+  const { readAloud } = useStore(prefs);
   const [reachChannel, setReachChannel] = useState<string | null>(null);
   const [quietFrom, setQuietFrom] = useState('');
   const [quietTo, setQuietTo] = useState('');
@@ -233,11 +311,6 @@ function Settings({ t, go, language }: { t: (k: string) => string; go: (k: strin
       }
     } catch { setCheckinMsg(w('checkinFailed') || 'Could not save'); }
   };
-  const sizes2: { id: TextSize; label: string; fs: number }[] = [
-    { id: 'normal', label: 'Small', fs: 15 },
-    { id: 'large', label: 'Normal', fs: 17 },
-    { id: 'larger', label: 'Large', fs: 20 },
-  ];
   return (
     <View style={{ gap: 12 }}>
       <View style={box}>
@@ -277,20 +350,8 @@ function Settings({ t, go, language }: { t: (k: string) => string; go: (k: strin
           ) : null}
           {checkinMsg ? <Text style={{ fontSize: 14, color: colors.danger, marginTop: 4 }}>{checkinMsg}</Text> : null}
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE }}></View>
       </View>
       <View style={box}>
-        <View style={{ paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE, gap: 10 }}>
-          <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{t('prof.text_size')}</Text>
-          <View accessibilityRole="radiogroup" style={{ flexDirection: 'row', gap: 8 }}>
-            {sizes2.map((s) => (
-              <Pressable key={s.id} onPress={() => setPref({ textSize: s.id })} accessibilityRole="radio" accessibilityState={{ checked: textSize === s.id }} style={{ flex: 1, minHeight: 46, borderRadius: 10, alignItems: 'center', justifyContent: 'center', backgroundColor: textSize === s.id ? colors.navy : '#FFFFFF', borderWidth: 1, borderColor: textSize === s.id ? colors.navy : '#CFC6B6' }}>
-                <Text style={{ fontSize: s.fs, fontWeight: '600', color: textSize === s.id ? '#FFFFFF' : colors.ink }}>{s.label}</Text>
-              </Pressable>
-            ))}
-          </View>
-          <Text style={{ fontSize: 14, color: '#5A6472' }}>{t('prof.size_note')}</Text>
-        </View>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 14, borderBottomWidth: 1, borderColor: LINE }}>
           <View style={{ flex: 1 }}>
             <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{t('prof.read_aloud')}</Text>
@@ -300,12 +361,7 @@ function Settings({ t, go, language }: { t: (k: string) => string; go: (k: strin
             <View style={{ width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFFFFF' }} />
           </Pressable>
         </View>
-        <Link label={t('prof.reminder_calls')} sub={t('prof.reminder_calls_d')} onPress={() => go('calendar.calls')} line />
-        <Link label={t('prof.languages_i_speak')} onPress={() => go('language.spoken')} line />
-        <Pressable onPress={() => go('language.pick')} accessibilityRole="button" style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', minHeight: 64 }}>
-          <Text style={{ fontWeight: '600', color: colors.ink, fontSize: 16 }}>{t('me.index.language')}</Text>
-          <Text style={{ color: '#4A5361', fontSize: 16 }}>{language}</Text>
-        </Pressable>
+        <Link label={t('prof.reminder_calls')} sub={t('prof.reminder_calls_d')} onPress={() => go('calendar.calls')} />
       </View>
       <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('prof.privacy')}</Text>
       <Text style={{ fontSize: 15, color: '#4A5361' }}>{t('prof.privacy_note')}</Text>

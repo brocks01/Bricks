@@ -8,6 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { completeSession, getConnectionMessages, getSessions, rescheduleSession, sendConnectionMessage, type WisdomMessage, type WisdomSession } from '../../../api/wisdom';
 import { BackScreen } from '../../../components/BackButton';
+import { refreshWisdom } from '../../grow/wisdomStore';
 import { SkeletonList } from '../../../components/Skeleton';
 import { useLanguage, useT } from '../../../i18n';
 import { El, useAction, useField } from '../../../kit';
@@ -77,7 +78,7 @@ export default function SessionScreen() {
   const markDone = async () => {
     if (!s) return;
     setBusy('done');
-    try { setS(await completeSession(s.id)); setNote({ ok: true, text: t('wt.done_msg') }); } catch { setNote({ ok: false, text: t('wt.save_failed') }); } finally { setBusy(null); }
+    try { setS(await completeSession(s.id)); setNote({ ok: true, text: t('wt.done_msg') }); void refreshWisdom(); } catch { setNote({ ok: false, text: t('wt.save_failed') }); } finally { setBusy(null); }
   };
   const send = async () => {
     if (!s || !text.trim()) return;

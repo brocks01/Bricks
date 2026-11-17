@@ -1,11 +1,9 @@
 // The building blocks of the onboarding screens, laid out like the reference: a Back pill (with the title beside it, or the step label and a big title below),
-// white cards and pill chips, one "Say it instead" pill inside the screen, and one wide button at the bottom. Our own colours and icons.
+// white cards and pill chips, and one wide button at the bottom. Our own colours and icons.
 import { Ionicons } from '@expo/vector-icons';
 import { ReactNode } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { audioAvailable } from '../../agent/audio';
-import { startTalk } from '../../agent/live';
 import { colors, radius, space, tints, type } from '../../theme/tokens';
 
 export type Icon = keyof typeof Ionicons.glyphMap;
@@ -106,16 +104,6 @@ export function Interest({ icon, label, on, onPress }: { icon: Icon; label: stri
         <Ionicons name={icon} size={22} color={on ? colors.card : colors.ink} accessible={false} />
       </View>
       <Text style={{ flex: 1, fontSize: 18, fontWeight: '700', color: colors.ink }}>{label}</Text>
-    </Pressable>
-  );
-}
-
-/** "Say it instead": starts a talk with the agent, so the answer can be spoken in any language. It sits inside the screen, under the question. */
-export function SayIt({ label }: { label: string }) {
-  return (
-    <Pressable onPress={() => void startTalk({ mic: audioAvailable() })} accessibilityRole="button" accessibilityLabel={label} style={[PILL, { minHeight: 58, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: space.md }]}>
-      <Ionicons name="mic-outline" size={22} color={colors.ink} accessible={false} />
-      <Text style={{ fontSize: 19, fontWeight: '800', color: colors.ink }}>{label}</Text>
     </Pressable>
   );
 }

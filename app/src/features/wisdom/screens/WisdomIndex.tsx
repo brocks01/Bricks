@@ -17,7 +17,6 @@ import { colors, space, type } from '../../../theme/tokens';
 import { profileStore } from '../../onboarding/state';
 import { wisdomIndex as page } from '../pages';
 import { CATEGORY_ICON, categoryWord, money, tierWord } from '../serviceUi';
-import { Conversation } from './Conversation';
 
 type Part = 'stories' | 'mentors' | 'learners' | 'mine' | 'paid';
 type Target = { kind: 'offer' | 'request'; id: string; name: string } | null;
@@ -52,7 +51,6 @@ export default function WisdomIndex() {
   const [mentorTopic, setMentorTopic] = useState('');
   const [mentorLanguage, setMentorLanguage] = useState('');
   const [mentorNear, setMentorNear] = useState('anywhere');
-  const [openThread, setOpenThread] = useState<Connection | null>(null);
   const myArea = (user?.area_name ?? '').trim();
 
   const load = useCallback(() => {

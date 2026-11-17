@@ -14,7 +14,7 @@ export async function loadProfile(): Promise<void> {
   }
 }
 
-export const clearProfile = () => { onboardingLocal.done = false; profileStore.set({ loaded: false, profile: null }); };
+export const clearProfile = () => { onboardingLocal.done = false; onboardingLocal.walk = false; profileStore.set({ loaded: false, profile: null }); };
 
 /** Does the profile show this part of Wisdom? Before the profile is known, the original three tabs show. */
 export function shows(state: ProfileState, surface: Surface): boolean {
@@ -22,16 +22,14 @@ export function shows(state: ProfileState, surface: Surface): boolean {
   return state.profile.surfaces.includes(surface);
 }
 
-/** The first tab this person sees: Wisdom (the heart of the product), else Communities, else the Marketplace, else their profile. */
-export function firstTab(p: Profile | null): string {
-  if (!p) return 'connect.index';
-  if (p.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help')) return 'wisdom.index';
-  if (p.surfaces.includes('community')) return 'connect.index';
-  if (p.surfaces.includes('markets') || p.surfaces.includes('freelance')) return 'market.index';
-  return 'me.index';
+/** Where a signed-in person who has finished onboarding lands: Home, for everyone (revamp v2: Home shows what is coming up across the app). */
+export function firstTab(_p: Profile | null): string {
+  return 'home.index';
 }
 
-export const showsWisdom = (state: ProfileState): boolean => !!state.profile && state.profile.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help');
+/** Does this person see the Wisdom tab? Anyone who shares, learns or helps, and anyone whose Wisdom parts include paid sessions (so a person who came only to connect can still book one). */
+export const showsWisdom = (state: ProfileState): boolean => !!state.profile && (state.profile.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help') || (state.profile.wisdom?.parts ?? []).includes('paid'));
 
 /** Set when the person has walked through the welcome screens in this session, so the app never sends them back even if the server has not flagged them yet (an older server, a slow save). */
-export const onboardingLocal = { done: false };
+/** `walk`: set by the Singpass sign-in, so the person goes through every onboarding page (prefilled with what the account already has) even when the account is already set up. */
+export const onboardingLocal = { done: false, walk: false };

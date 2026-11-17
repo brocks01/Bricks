@@ -82,6 +82,7 @@ class UserOut(BaseModel):
     area_name: str | None
     login_kind: str = "own"  # "assisted" = a family profile set up by someone else, no own login yet
     profile_complete: bool
+    signed_in_with: str | None = None  # GET /v1/me only: how the person last signed in (email, google, singpass, demo)
 
 
 class SessionOut(BaseModel):
