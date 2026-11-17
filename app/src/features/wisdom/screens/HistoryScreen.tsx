@@ -7,6 +7,8 @@ import { BackScreen } from '../../../components/BackButton';
 import { SkeletonList } from '../../../components/Skeleton';
 import { useLanguage, useT } from '../../../i18n';
 import { El, useAction, useField } from '../../../kit';
+import { useStore } from '../../../core/store';
+import { sessionStore } from '../../../session/store';
 import { colors, radius, space } from '../../../theme/tokens';
 import { dayHeading, type Lang } from '../../community/when';
 import { wisdomHistory as page } from '../pages';
@@ -59,13 +61,15 @@ export default function HistoryScreen() {
   const [list, setList] = useState<WisdomSession[] | null>(null);
   const [failed, setFailed] = useState(false);
 
+  const { status } = useStore(sessionStore);
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     getSessions()
       .then((all) => { if (live) setList(all.filter((s) => s.status === 'completed').sort((a, b) => b.starts_at.localeCompare(a.starts_at))); })
       .catch(() => { if (live) setFailed(true); });
     return () => { live = false; };
-  }, []);
+  }, [status]);
 
   const firstToReview = list?.find((s) => s.can_review)?.id;
   const replace = (next: WisdomSession) => setList((l) => (l ?? []).map((x) => (x.id === next.id ? next : x)));

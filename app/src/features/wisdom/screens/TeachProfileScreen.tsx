@@ -51,7 +51,7 @@ function TimePicker({ label, value, onChange }: { label: string; value: string; 
 
 export default function TeachProfileScreen() {
   const t = useT();
-  const { user } = useStore(sessionStore);
+  const { user, status } = useStore(sessionStore);
   const [ready, setReady] = useState(false);
   const [expertise, setExpertise] = useState('');
   const [bio, setBio] = useState('');
@@ -62,6 +62,7 @@ export default function TeachProfileScreen() {
   const [note, setNote] = useState<{ ok: boolean; text: string } | null>(null);
 
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     getTeachingProfile().then((p) => {
       if (!live) return;
@@ -72,7 +73,7 @@ export default function TeachProfileScreen() {
       setReady(true);
     }).catch(() => { if (live) setReady(true); });
     return () => { live = false; };
-  }, []);
+  }, [status]);
 
   const save = async () => {
     setNote(null);

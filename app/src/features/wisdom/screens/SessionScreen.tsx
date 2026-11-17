@@ -10,6 +10,8 @@ import { BackScreen } from '../../../components/BackButton';
 import { SkeletonList } from '../../../components/Skeleton';
 import { useLanguage, useT } from '../../../i18n';
 import { El, useAction, useField } from '../../../kit';
+import { useStore } from '../../../core/store';
+import { sessionStore } from '../../../session/store';
 import { colors, radius, space } from '../../../theme/tokens';
 import { clock, dayWord, whenWords, type Lang } from '../../community/when';
 import { wisdomSession as page } from '../pages';
@@ -46,11 +48,13 @@ export default function SessionScreen() {
   const [time, setTime] = useState('10:00');
   const [busy, setBusy] = useState<string | null>(null);
 
+  const { status } = useStore(sessionStore);
   useEffect(() => {
+    if (status !== 'in') return;
     let live = true;
     getSessions().then((all) => { if (live) setS(all.find((x) => x.id === id) ?? null); }).catch(() => { if (live) setS(null); });
     return () => { live = false; };
-  }, [id]);
+  }, [id, status]);
   const readChat = useCallback((cid: string) => getConnectionMessages(cid).then(setMsgs).catch(() => setMsgs([])), []);
   const cid = s?.connection_id;
   useEffect(() => { if (cid) void readChat(cid); }, [cid, readChat]);

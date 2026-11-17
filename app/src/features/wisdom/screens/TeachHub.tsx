@@ -136,6 +136,7 @@ export function TeachHub({ extra = [] }: { extra?: PageDataAction[] }) {
         return (
           <View key={c.id} style={[card, { marginBottom: space.md, borderColor: result ? colors.line : '#C9D6EE' }]}>
             {result ? <Result ok={result === 'accepted'} text={t(result === 'accepted' ? 'wt.accepted_msg' : 'wt.declined_msg', { name: who(c) })} /> : (
+              <View style={{ gap: space.md }}>
               <View style={{ flexDirection: 'row', gap: space.md, alignItems: 'center' }}>
                 <Avatar name={who(c)} group={!!c.group_name} />
                 <View style={{ flex: 1, gap: 2 }}>
@@ -143,9 +144,10 @@ export function TeachHub({ extra = [] }: { extra?: PageDataAction[] }) {
                   {c.group_name ? <Text style={{ fontSize: 16, fontWeight: '700', color: '#5B3FB8' }}>{t('wt.learners_n', { n: c.learner_count ?? 0 })}</Text> : null}
                   <Text style={{ fontSize: 17, lineHeight: 23, color: colors.ink }}>{c.group_name ? t('wt.group_wants', { topic: c.topic ?? '' }) : t('wt.wants', { topics: c.topic ?? '' })}</Text>
                 </View>
-                <View style={{ gap: space.sm, width: 132 }}>
-                  <El page={page} id={`decline${k + 1}`}><BigButton kind="outline" tone={colors.ink} icon="close" label={t('wt.decline')} busy={busy === c.id} onPress={() => decide(c, false)} /></El>
-                  <El page={page} id={`accept${k + 1}`}><BigButton icon="checkmark" label={t('wt.accept')} disabled={busy === c.id} onPress={() => decide(c, true)} /></El>
+              </View>
+                <View style={{ flexDirection: 'row', gap: space.sm }}>
+                  <View style={{ flex: 1 }}><El page={page} id={`decline${k + 1}`}><BigButton kind="outline" tone={colors.ink} icon="close" label={t('wt.decline')} busy={busy === c.id} onPress={() => decide(c, false)} /></El></View>
+                  <View style={{ flex: 1 }}><El page={page} id={`accept${k + 1}`}><BigButton icon="checkmark" label={t('wt.accept')} disabled={busy === c.id} onPress={() => decide(c, true)} /></El></View>
                 </View>
               </View>
             )}

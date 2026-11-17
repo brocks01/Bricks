@@ -40,7 +40,7 @@ function MentorCard({ o, asked, onAsk }: { o: Offer; asked: boolean; onAsk: (not
     setBusy(true);
     onAsk(note.trim()).then((r) => { setResult(r); if (r === 'sent') setAsking(false); }).finally(() => setBusy(false));
   };
-  const line = [o.proof_years && o.proof_field ? t('wt.years_in', { n: o.proof_years, field: o.proof_field }) : o.proof_field, o.languages.length ? t('wt.speaks', { langs: o.languages.join(', ') }) : null].filter(Boolean);
+  const line = [o.proof_years && o.proof_field ? t('wt.years_in', { n: o.proof_years, field: o.proof_field }) : o.proof_field, o.languages.length ? t('wt.speaks', { langs: o.languages.map((l) => l.charAt(0).toUpperCase() + l.slice(1)).join(', ') }) : null].filter(Boolean);
   return (
     <View style={[card, { marginBottom: space.md, padding: space.lg }]}>
       <Pressable onPress={() => setOpen((v) => !v)} accessibilityRole="button" accessibilityState={{ expanded: open }} style={{ flexDirection: 'row', gap: space.md }}>
