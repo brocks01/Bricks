@@ -3,11 +3,8 @@
 // Every step also publishes what it shows to the agent (usePageData / useField), so the floating mic can read the page, fill the name, pick an option
 // and press Next in any language, on the front end only, exactly as a person's own taps would.
 import { Ionicons } from '@expo/vector-icons';
-import { AudioModule, RecordingPresets, useAudioPlayer, useAudioRecorder } from 'expo-audio';
 import { useEffect, useState } from 'react';
-import { Animated, Pressable, Text, TextInput, View } from 'react-native';
-import { api } from '../../api/client';
-import { uploadVoiceIntro } from '../../api/media';
+import { Animated, Pressable, Text, View } from 'react-native';
 import { createOffer, putOnboarding, skipOnboarding, type CapsuleKind, type OnboardingState } from '../../api/wisdom';
 import { useStore } from '../../core/store';
 import { useField, usePageData, usePageWords } from '../../kit';
@@ -15,16 +12,12 @@ import type { PageDataAction } from '../../kit';
 import { useNavigate } from '../../navigation';
 import { sessionStore, signOut } from '../../session/store';
 import { colors, radius, space, tints, type } from '../../theme/tokens';
-import { Bar, Chip, Frame, Interest, ListCard, grid, type Icon } from './kit';
+import { EnjoyBody, INTERESTS, NameBody, RemindBody, TOWNS, VoiceBody, WhereBody, useVoice } from './bodies';
+import { Frame, ListCard } from './kit';
 import { onboardingIndex as page } from './pages';
 import { onboardingLocal } from './state';
 import { whoStore } from './who';
 
-const TOWNS = ['Bishan', 'Toa Payoh', 'Ang Mo Kio', 'Tampines', 'Jurong West', 'Woodlands'];
-const INTERESTS: { key: string; icon: Icon }[] = [
-  { key: 'walking', icon: 'walk-outline' }, { key: 'taichi', icon: 'body-outline' }, { key: 'cooking', icon: 'restaurant-outline' }, { key: 'chess', icon: 'extension-puzzle-outline' },
-  { key: 'music', icon: 'musical-notes-outline' }, { key: 'gardening', icon: 'leaf-outline' }, { key: 'teaching', icon: 'school-outline' }, { key: 'tech', icon: 'laptop-outline' },
-];
 type StepId = 'name' | 'where' | 'enjoy' | 'teach' | 'skills' | 'voice' | 'reminders' | 'welcome';
 const ORDER: StepId[] = ['name', 'where', 'enjoy', 'teach', 'skills', 'voice', 'reminders', 'welcome'];
 type Level = 'basic' | 'skilled' | 'expert';
@@ -144,9 +137,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   if (step === 'name') {
     return (
       <Frame {...common} step={w('o_step3', { n: 1 })} title={w('o_name_t')} primary={{ label: w('o_next'), onPress: () => void saveName(), disabled: busy || !name.trim() }}>
-        <Text style={{ fontSize: 17, fontWeight: '700', color: colors.ink, marginBottom: space.sm }}>{w('o_name_f')}</Text>
-        <TextInput value={name} onChangeText={setName} onSubmitEditing={() => name.trim() && void saveName()} accessibilityLabel={w('o_name_f')} autoCapitalize="words"
-          style={{ minHeight: 60, fontSize: 22, fontWeight: '600', color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
+        <NameBody w={w} value={name} onChange={setName} onSubmit={() => name.trim() && void saveName()} />
         {err}
       </Frame>
     );
@@ -154,14 +145,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   if (step === 'where') {
     return (
       <Frame {...common} step={w('o_step3', { n: 2 })} title={w('o_where_t')} primary={{ label: w('o_next'), onPress: () => void saveWhere(), disabled: busy }}>
-        <View style={grid}>
-          {TOWNS.map((t) => <Chip key={t} label={t} on={area === t && !typed} onPress={() => { setArea(t); setTyped(false); }} />)}
-          <Chip full label={w('o_other')} on={typed} onPress={() => { setTyped(true); setArea(''); }} />
-        </View>
-        {typed ? (
-          <TextInput value={area} onChangeText={setArea} placeholder={w('o_town_f')} placeholderTextColor={colors.muted} accessibilityLabel={w('o_town_f')} autoFocus
-            style={{ marginTop: space.md, minHeight: 60, fontSize: 19, color: colors.ink, paddingHorizontal: space.lg, borderRadius: radius.pill, backgroundColor: colors.card, borderWidth: 2, borderColor: colors.accent, outlineStyle: 'none' } as never} />
-        ) : null}
+        <WhereBody w={w} area={area} typed={typed} onPick={(t) => { setArea(t); setTyped(false); }} onType={(v, open) => { setArea(v); if (open) setTyped(true); }} />
         {err}
       </Frame>
     );
@@ -170,7 +154,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
     return (
       <Frame {...common} step={w('o_step3', { n: 3 })} title={w('o_enjoy_t')} hint={w('o_pick_many')}
         primary={likes.length ? { label: w('o_next'), onPress: () => void saveLikes(), disabled: busy } : undefined} secondary={likes.length ? undefined : { label: w('o_skip'), onPress: () => void skipLikes() }}>
-        <View style={grid}>{INTERESTS.map((x) => <Interest key={x.key} icon={x.icon} label={w(`interest_${x.key}`)} on={likes.includes(x.key)} onPress={() => toggleLike(x.key)} />)}</View>
+        <EnjoyBody w={w} likes={likes} onToggle={toggleLike} />
         {err}
       </Frame>
     );
@@ -221,9 +205,7 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   if (step === 'reminders') {
     return (
       <Frame {...common} title={w('o_rem_t')} secondary={{ label: w('o_later'), onPress: () => void laterRemind() }}>
-        <ListCard icon="notifications-outline" title={w('o_rem_app')} line={w('o_rem_app_l')} onPress={() => void pickRemind('app')} />
-        <ListCard icon="logo-whatsapp" title={w('o_rem_wa')} line={w('o_rem_wa_l')} note={w('o_soon')} disabled onPress={() => undefined} />
-        <ListCard icon="call-outline" title={w('o_rem_call')} line={w('o_rem_call_l')} onPress={() => void pickRemind('call')} />
+        <RemindBody w={w} onPick={(c) => void pickRemind(c)} />
         {err}
       </Frame>
     );
@@ -234,74 +216,21 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
 // ---------- your voice: record up to ten seconds, or skip ----------
 function Voice({ common, onDone }: { common: { onBack?: () => void; backLabel: string }; onDone: () => void }) {
   const w = usePageWords(page);
-  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
-  const [uri, setUri] = useState<string | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [seconds, setSeconds] = useState(0);
-  const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const player = useAudioPlayer(uri);
-  const start = async () => {
-    setMessage(null);
-    try {
-      const status = await AudioModule.requestRecordingPermissionsAsync();
-      if (!status.granted) { setMessage(w('voice_permission')); return; }
-      await AudioModule.setAudioModeAsync({ playsInSilentMode: true, allowsRecording: true });
-      await recorder.prepareToRecordAsync();
-      recorder.record({ forDuration: 10 });
-      setUri(null);
-      setSeconds(0);
-      setRecording(true);
-    } catch { setMessage(w('voice_permission')); }
-  };
-  const stop = async () => {
-    try { await recorder.stop(); } catch { /* already stopped */ }
-    setUri(recorder.uri ?? null);
-    setRecording(false);
-  };
-  // While recording: count the seconds, and stop by itself at ten.
-  useEffect(() => {
-    if (!recording) return;
-    const t = setInterval(() => setSeconds((x) => x + 1), 1000);
-    const end = setTimeout(() => void stop(), 10000);
-    return () => { clearInterval(t); clearTimeout(end); };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [recording]);
-  const save = async () => {
-    if (uri && !saving) {
-      setSaving(true);
-      try {
-        const res = await uploadVoiceIntro(uri);
-        await api('PATCH', '/v1/me', { voice_intro_url: res.url } as never);
-      } catch { setMessage(w('voice_not_saved')); } finally { setSaving(false); }
-    }
-    onDone();
-  };
+  const v = useVoice(w);
+  const save = async () => { await v.save(); onDone(); };
   usePageData(page, {
-    values: [{ label: w('o_voice_t'), value: recording ? String(10 - seconds) : uri ? w('voice_recorded') : '' }],
+    values: [{ label: w('o_voice_t'), value: v.recording ? String(10 - v.seconds) : v.uri ? w('voice_recorded') : '' }],
     images: [],
     lists: [],
     actions: [
-      { id: 'record', label: recording ? w('voice_stop') : uri ? w('voice_again') : w('voice_record'), run: () => void (recording ? stop() : start()) },
-      uri && !recording ? { id: 'next', label: w('o_next'), run: () => void save() } : { id: 'skip', label: w('o_skip'), run: onDone },
+      { id: 'record', label: v.recording ? w('voice_stop') : v.uri ? w('voice_again') : w('voice_record'), run: v.toggle },
+      v.uri && !v.recording ? { id: 'next', label: w('o_next'), run: () => void save() } : { id: 'skip', label: w('o_skip'), run: onDone },
       ...(common.onBack ? [{ id: 'back', label: w('o_back'), run: common.onBack }] : []),
     ],
   });
   return (
-    <Frame {...common} inlineTitle title={w('o_voice_t')} primary={uri && !recording ? { label: saving ? w('voice_saving') : w('o_next'), onPress: () => void save(), disabled: saving } : undefined} secondary={uri && !recording ? undefined : { label: w('o_skip'), onPress: onDone }}>
-      <View style={{ padding: space.lg, borderRadius: radius.card, backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line }}>
-        <Text style={{ fontSize: 22, fontWeight: '800', color: colors.ink }}>{w('o_voice_card')}</Text>
-        <Text style={[type.body, { color: colors.muted, marginTop: space.sm }]}>{w('o_voice_ex')}</Text>
-      </View>
-      <View style={{ height: space.md }} />
-      <Bar icon={recording ? 'stop' : 'mic-outline'} label={recording ? `${w('voice_stop')}  ${10 - seconds}` : uri ? w('voice_again') : w('voice_record')} onPress={() => void (recording ? stop() : start())} />
-      {uri && !recording ? (
-        <Pressable onPress={() => { player.seekTo(0); player.play(); }} accessibilityRole="button" style={{ minHeight: 52, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: space.sm }}>
-          <Ionicons name="play" size={22} color={colors.accent} accessible={false} />
-          <Text style={{ fontSize: 18, fontWeight: '800', color: colors.accent }}>{w('voice_play')}</Text>
-        </Pressable>
-      ) : null}
-      <Text style={[type.body, { color: colors.muted, marginTop: space.md }]}>{message ?? w('o_voice_note')}</Text>
+    <Frame {...common} inlineTitle title={w('o_voice_t')} primary={v.uri && !v.recording ? { label: v.saving ? w('voice_saving') : w('o_next'), onPress: () => void save(), disabled: v.saving } : undefined} secondary={v.uri && !v.recording ? undefined : { label: w('o_skip'), onPress: onDone }}>
+      <VoiceBody w={w} v={v} />
     </Frame>
   );
 }

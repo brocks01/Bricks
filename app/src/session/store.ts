@@ -19,6 +19,9 @@ export interface User {
   comm_language?: string | null; // the one they prefer to talk in
   login_kind: 'own' | 'assisted'; // 'assisted' = a family member is helping set this account up
   profile_complete: boolean;
+  interests?: string[]; // the fixed interest keys chosen in onboarding (walking, taichi, ...)
+  voice_intro_url?: string | null; // their ten-second "about me" clip
+  signed_in_with?: 'email' | 'google' | 'singpass' | 'demo' | null; // GET /v1/me only: how they last signed in
 }
 
 interface SessionState {
@@ -209,6 +212,13 @@ export async function updateProfile(patch: ProfilePatch): Promise<User> {
   const user = await api<User>('PATCH', '/v1/me', patch);
   // While acting on behalf of someone else the answer is THEIR profile; my session stays mine.
   sessionStore.set((s) => (user.id === s.user?.id ? { ...s, user } : user.id === s.actingUser?.id ? { ...s, actingUser: user } : s));
+  return user;
+}
+
+/** Reads my own account again (after something saved it elsewhere, such as an onboarding answer) and keeps it in the session. */
+export async function reloadUser(): Promise<User> {
+  const user = await api<User>('GET', '/v1/me');
+  sessionStore.set((s) => (user.id === s.user?.id ? { ...s, user } : s));
   return user;
 }
 

@@ -5,7 +5,8 @@ import { languageStore, setLanguage } from '../../../../i18n/store';
 import { usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { colors, space, type } from '../../../../theme/tokens';
-import { Chip, Collage, Frame, grid } from '../../../onboarding/kit';
+import { LanguageBody } from '../../../onboarding/bodies';
+import { Collage, Frame } from '../../../onboarding/kit';
 import { authWelcome as page } from './page';
 
 const LINES = ['Choose your language', 'अपनी भाषा चुनें', 'আপনার ভাষা বেছে নিন', 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', '请选择语言', 'Pilih bahasa anda'];
@@ -30,9 +31,7 @@ export default function Welcome() {
       <View style={{ marginTop: space.md, marginBottom: space.md, gap: 2 }}>
         {LINES.map((t, i) => <Text key={t} style={[type.body, { color: colors.ink, fontWeight: LANGUAGES[i].code === code ? '800' : '500' }]}>{t}</Text>)}
       </View>
-      <View style={grid}>
-        {LANGUAGES.map((l) => <Chip key={l.code} label={l.native} on={code === l.code} onPress={() => void setLanguage(l.code)} />)}
-      </View>
+      <LanguageBody code={code} onPick={(c) => void setLanguage(c)} />
     </Frame>
   );
 }

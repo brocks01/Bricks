@@ -1,14 +1,15 @@
 import { defineModule } from '../../navigation/registry';
 import { sessionStore } from '../../session/store';
 import { meEdit } from './pages/edit/page';
+import { meField } from './pages/field/page';
 import { meIndex } from './pages/index/page';
 
 defineModule({
   id: 'me',
   title: 'Me',
-  summary: 'Your own page: your details, profile editing, language and sign out.',
+  summary: 'Your own page: every detail from onboarding (each opens its own edit screen), sign out, and more (health, family, emergency numbers, reminder calls).',
   keywords: ['me', 'profile', 'account', 'settings', 'privacy'],
-  pages: [meIndex, meEdit],
+  pages: [meIndex, meEdit, meField],
   skills: [
     {
       name: 'summary',

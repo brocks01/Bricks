@@ -45,11 +45,12 @@ check('the plan page takes an id and needs sign-in', (() => { const p = allPages
 check('profile is opened from the avatar, not a tab', !tabPages().some((p) => p.key === 'me.index') && pageForPath('/me')?.key === 'me.index');
 check('root lists modules', !!childrenOf('')?.some((n) => n.path === 'auth' && n.kind === 'module'));
 check('module lists pages and skills', (() => { const k = childrenOf('auth') ?? []; return k.some((n) => n.path === 'auth.signIn' && n.kind === 'page') && k.some((n) => n.path === 'auth/signOut' && n.kind === 'skill'); })());
-check('page lists elements', (childrenOf('me.edit') ?? []).map((n) => n.path).join(',') === 'me.edit.heading,me.edit.displayName,me.edit.ageBand,me.edit.phone,me.edit.area,me.edit.spoken,me.edit.commLanguage,me.edit.save', (childrenOf('me.edit') ?? []).map((n) => n.path).join(','));
-check('element parses', parsePath('me.edit.displayName')?.level === 'element');
+check('page lists elements', (childrenOf('me.field') ?? []).map((n) => n.path).join(',') === 'me.field.heading,me.field.answer,me.field.record,me.field.save', (childrenOf('me.field') ?? []).map((n) => n.path).join(','));
+check('element parses', parsePath('me.index.quietFrom')?.level === 'element');
 check('unknown path is null', childrenOf('me.nope') === null && childrenOf('nope') === null);
-check('describe element', (describe('me.edit.displayName') ?? '').includes('required') && (describe('me.edit') ?? '').includes('me.edit.save'));
-check('describe has no code or routes', !(describe('me.edit') ?? '').includes('/profile/edit'));
+check('describe element', (describe('me.field.answer') ?? '').includes('comma list') && (describe('me.field') ?? '').includes('me.field.save'));
+check('describe has no code or routes', !(describe('me.field') ?? '').includes('/profile/[field]'));
+check('profile sign out asks first, and only Yes needs approval', (() => { const e = allPages().find((p) => p.key === 'me.index')?.elements; return e?.signOut?.agent === undefined && e?.signOutYes?.agent === 'confirm'; })());
 check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForPath('/')?.key === 'onboarding.start' && pageForPath('/today')?.key === 'home.index' && pageForPath('/communities')?.key === 'connect.index' && pageForPath('/market')?.key === 'market.index' && pageForPath('/health')?.key === 'health.index' && pageForPath('/health-records')?.key === 'grow.health' && pageForPath('/grow')?.key === 'grow.index' && pageForPath('/profile/edit')?.key === 'me.edit' && pageForPath('/sign-in')?.key === 'auth.signIn');
 check('private pages need sign-in', (() => { const d = resolvePage('me.edit', {}, signedOut); return !d.ok && d.reason === 'denied'; })());
 check('sign-in pages open without sign-in', resolvePage('auth.signIn', {}, signedOut).ok && resolvePage('language.pick', {}, signedOut).ok);
@@ -92,11 +93,11 @@ registerControl({ key: 'zz.test.pin', page: 'zz.test', id: 'pin', kind: 'field',
 registerControl({ key: 'zz.test.danger', page: 'zz.test', id: 'danger', kind: 'action', label: 'Danger', run: () => { dangerRan++; } });
 registerControl({ key: 'zz.test.forbidden', page: 'zz.test', id: 'forbidden', kind: 'action', label: 'Forbidden', run: () => { dangerRan += 100; } });
 
-// the profile form, simulated (the screen registers these for real)
-const form: Record<string, string> = { displayName: '', phone: '', area: '' };
+// the profile's quiet hours, simulated (the screen registers these for real)
+const form: Record<string, string> = { quietFrom: '', quietTo: '' };
 let saved = 0;
-for (const id of Object.keys(form)) registerControl({ key: `me.edit.${id}`, page: 'me.edit', id, kind: 'field', label: id, type: 'string', get: () => form[id], set: (v) => { form[id] = String(v); } });
-registerControl({ key: 'me.edit.save', page: 'me.edit', id: 'save', kind: 'action', label: 'Save', run: () => { if (form.displayName.trim()) saved++; } });
+for (const id of Object.keys(form)) registerControl({ key: `me.index.${id}`, page: 'me.index', id, kind: 'field', label: id, type: 'string', get: () => form[id], set: (v) => { form[id] = String(v); } });
+registerControl({ key: 'me.index.reachSave', page: 'me.index', id: 'reachSave', kind: 'action', label: 'Save', run: () => { if (form.quietFrom.trim()) saved++; } });
 registerControl({ key: 'language.pick.language', page: 'language.pick', id: 'language', kind: 'field', label: 'Language', options: ['en', 'hi', 'bn', 'ta', 'zh', 'ms'], get: () => languageStore.get().code, set: (v) => { languageStore.set({ code: v as 'en', ready: true }); } });
 
 let current: string | undefined = 'connect.index';
@@ -118,19 +119,19 @@ const agent = createAgentTools({
 
   // fill opens the page first, then glows, then fills
   current = 'connect.index';
-  const f = (await agent.call('fill', { path: 'me.edit.displayName', value: 'Test Person' })) as { ok?: boolean };
-  check('fill opens the page and fills the field', f.ok === true && current === 'me.edit' && form.displayName === 'Test Person', JSON.stringify(f));
-  check('the element glows while the agent acts', glowStore.get().key === 'me.edit.displayName' && glowStore.get().caption.length > 0, JSON.stringify(glowStore.get()));
-  const pr = (await agent.call('press', { path: 'me.edit.save' })) as { ok?: boolean };
+  const f = (await agent.call('fill', { path: 'me.index.quietFrom', value: '21:00' })) as { ok?: boolean };
+  check('fill opens the page and fills the field', f.ok === true && current === 'me.index' && form.quietFrom === '21:00', JSON.stringify(f));
+  check('the element glows while the agent acts', glowStore.get().key === 'me.index.quietFrom' && glowStore.get().caption.length > 0, JSON.stringify(glowStore.get()));
+  const pr = (await agent.call('press', { path: 'me.index.reachSave' })) as { ok?: boolean };
   check('press saves the profile', pr.ok === true && saved === 1);
-  check('fill on a button is refused', 'error' in ((await agent.call('fill', { path: 'me.edit.save', value: 'x' })) as object));
-  check('press on a field is refused', 'error' in ((await agent.call('press', { path: 'me.edit.displayName' })) as object));
-  check('fill on an unknown element', 'error' in ((await agent.call('fill', { path: 'me.edit.nope', value: 'x' })) as object));
+  check('fill on a button is refused', 'error' in ((await agent.call('fill', { path: 'me.index.reachSave', value: 'x' })) as object));
+  check('press on a field is refused', 'error' in ((await agent.call('press', { path: 'me.index.quietFrom' })) as object));
+  check('fill on an unknown element', 'error' in ((await agent.call('fill', { path: 'me.index.nope', value: 'x' })) as object));
 
   // read
-  current = 'me.edit';
+  current = 'me.index';
   const read = (await agent.call('read', {})) as { elements: { path: string; value?: unknown }[] };
-  check('read lists elements with values', read.elements.some((e) => e.path === 'me.edit.displayName' && e.value === 'Test Person'));
+  check('read lists elements with values', read.elements.some((e) => e.path === 'me.index.quietFrom' && e.value === '21:00'));
 
   // what a screen publishes about itself (usePageData -> publishPageData), so read can describe it
   current = 'connect.index';
@@ -169,7 +170,7 @@ const agent = createAgentTools({
   check('page data clears when the screen unmounts', pageDataOf('connect.index') === null);
   const gone = (await agent.call('read', {})) as { data?: unknown };
   check('read has no data once the screen has gone', !('data' in gone), JSON.stringify(gone.data));
-  current = 'me.edit';
+  current = 'me.index';
 
   // policy tiers per element
   const fh = (await agent.call('press', { path: 'zz.test.forbidden' })) as { refused?: string };

@@ -145,7 +145,7 @@ def get_me(acting: tuple[str, str] = Depends(acting_user), conn: Connection = De
     row = service.get_user(conn, acting[1])
     if row is None:
         raise HTTPException(status_code=401, detail={"code": "unauthorized"})
-    return service.user_dict(row)
+    return {**service.user_dict(row), "signed_in_with": service.signed_in_with(conn, acting[1])}
 
 
 @router.patch("/me", response_model=UserOut)

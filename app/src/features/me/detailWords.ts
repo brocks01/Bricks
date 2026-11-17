@@ -1,0 +1,46 @@
+import { registerStrings } from '../../i18n/tables';
+import { pageWords, type WordTable } from '../../i18n/words';
+
+// Words of the profile page and its edit screens (revamp v2, A3). Used as t('pf.<key>'). Order of the six: English, Hindi, Bengali, Tamil,
+// Chinese, Malay. First drafts: native-speaker review needed for hi, bn, ta, zh, ms.
+export const PF: WordTable = {
+  via_singpass: ['Signed in with Singpass', 'Singpass से साइन इन', 'Singpass দিয়ে সাইন ইন', 'Singpass மூலம் உள்நுழைந்தீர்கள்', '已通过 Singpass 登录', 'Log masuk dengan Singpass'],
+  via_email: ['Signed in with email', 'ईमेल से साइन इन', 'ইমেল দিয়ে সাইন ইন', 'மின்னஞ்சல் மூலம் உள்நுழைந்தீர்கள்', '已通过电子邮件登录', 'Log masuk dengan e-mel'],
+  via_google: ['Signed in with Google', 'Google से साइन इन', 'Google দিয়ে সাইন ইন', 'Google மூலம் உள்நுழைந்தீர்கள்', '已通过 Google 登录', 'Log masuk dengan Google'],
+  via_demo: ['A demo account', 'एक डेमो खाता', 'একটি ডেমো অ্যাকাউন্ট', 'ஒரு டெமோ கணக்கு', '演示账户', 'Akaun demo'],
+  details: ['Your details', 'आपकी जानकारी', 'আপনার তথ্য', 'உங்கள் விவரங்கள்', '你的资料', 'Butiran anda'],
+  details_h: ['Tap a row to change it.', 'बदलने के लिए किसी पंक्ति पर टैप करें।', 'বদলাতে একটি সারিতে চাপুন।', 'மாற்ற ஒரு வரியைத் தட்டவும்.', '点按一行即可更改。', 'Ketik satu baris untuk menukarnya.'],
+  language: ['Language', 'भाषा', 'ভাষা', 'மொழி', '语言', 'Bahasa'],
+  text_size: ['Text size', 'अक्षरों का आकार', 'লেখার আকার', 'எழுத்தின் அளவு', '文字大小', 'Saiz tulisan'],
+  name: ['Name', 'नाम', 'নাম', 'பெயர்', '姓名', 'Nama'],
+  area: ['Where you live', 'आप कहाँ रहते हैं', 'আপনি কোথায় থাকেন', 'நீங்கள் வசிக்கும் இடம்', '你住在哪里', 'Tempat tinggal anda'],
+  enjoy: ['What you enjoy', 'आपको क्या पसंद है', 'আপনি কী ভালোবাসেন', 'நீங்கள் விரும்புவது', '你喜欢什么', 'Apa yang anda gemari'],
+  voice: ['Your voice', 'आपकी आवाज़', 'আপনার কণ্ঠ', 'உங்கள் குரல்', '你的声音', 'Suara anda'],
+  voice_yes: ['Recorded', 'रिकॉर्ड किया गया', 'রেকর্ড করা হয়েছে', 'பதிவு செய்யப்பட்டது', '已录制', 'Sudah dirakam'],
+  voice_no: ['Not recorded yet', 'अभी रिकॉर्ड नहीं किया', 'এখনও রেকর্ড করা হয়নি', 'இன்னும் பதிவு செய்யவில்லை', '尚未录制', 'Belum dirakam'],
+  reminders: ['Reminders', 'याद दिलाना', 'মনে করানো', 'நினைவூட்டல்கள்', '提醒', 'Peringatan'],
+  share: ['What you can share', 'आप क्या साझा कर सकते हैं', 'আপনি কী ভাগ করতে পারেন', 'நீங்கள் பகிரக்கூடியது', '你能分享什么', 'Apa yang anda boleh kongsi'],
+  age: ['Age group', 'आयु वर्ग', 'বয়সের গোষ্ঠী', 'வயது பிரிவு', '年龄段', 'Kumpulan umur'],
+  phone: ['Phone', 'फ़ोन', 'ফোন', 'தொலைபேசி', '电话', 'Telefon'],
+  email: ['Email', 'ईमेल', 'ইমেল', 'மின்னஞ்சல்', '电子邮件', 'E-mel'],
+  spoken: ['Languages you speak', 'आप कौन सी भाषाएँ बोलते हैं', 'আপনি যে ভাষায় কথা বলেন', 'நீங்கள் பேசும் மொழிகள்', '你会说的语言', 'Bahasa yang anda tuturkan'],
+  older: ['Also on your account', 'आपके खाते में यह भी है', 'আপনার অ্যাকাউন্টে এগুলিও আছে', 'உங்கள் கணக்கில் இவையும் உள்ளன', '你的账户里还有', 'Juga dalam akaun anda'],
+  sign_out: ['Sign out', 'साइन आउट', 'সাইন আউট', 'வெளியேறு', '退出登录', 'Log keluar'],
+  sign_out_q: ['Sign out of Interchange on this phone?', 'इस फ़ोन पर Interchange से साइन आउट करें?', 'এই ফোনে Interchange থেকে সাইন আউট করবেন?', 'இந்தத் தொலைபேசியில் Interchange இலிருந்து வெளியேறவா?', '要在这部手机上退出 Interchange 吗？', 'Log keluar daripada Interchange pada telefon ini?'],
+  yes_out: ['Yes, sign out', 'हाँ, साइन आउट करें', 'হ্যাঁ, সাইন আউট করুন', 'ஆம், வெளியேறு', '是，退出', 'Ya, log keluar'],
+  no: ['No', 'नहीं', 'না', 'இல்லை', '不', 'Tidak'],
+  more: ['More', 'और', 'আরও', 'மேலும்', '更多', 'Lagi'],
+  health: ['Health', 'स्वास्थ्य', 'স্বাস্থ্য', 'உடல்நலம்', '健康', 'Kesihatan'],
+  numbers: ['Emergency numbers', 'आपातकालीन नंबर', 'জরুরি নম্বর', 'அவசர எண்கள்', '紧急电话', 'Nombor kecemasan'],
+  settings: ['Messages, quiet hours and check-in', 'संदेश, शांत समय और जाँच', 'বার্তা, নীরব সময় ও চেক-ইন', 'செய்திகள், அமைதி நேரம், சரிபார்ப்பு', '消息、安静时间和签到', 'Mesej, waktu senyap dan semakan'],
+  communities: ['Your communities', 'आपके समुदाय', 'আপনার কমিউনিটি', 'உங்கள் சமூகங்கள்', '你的社区', 'Komuniti anda'],
+  save: ['Save', 'सहेजें', 'সংরক্ষণ করুন', 'சேமி', '保存', 'Simpan'],
+  saved: ['Saved', 'सहेज लिया', 'সংরক্ষিত', 'சேமிக்கப்பட்டது', '已保存', 'Disimpan'],
+  failed: ['That did not save. Please try again.', 'यह सहेजा नहीं गया। फिर कोशिश करें।', 'এটি সংরক্ষণ হয়নি। আবার চেষ্টা করুন।', 'இது சேமிக்கப்படவில்லை. மீண்டும் முயற்சிக்கவும்.', '没有保存成功，请重试。', 'Ia tidak disimpan. Sila cuba lagi.'],
+  phone_f: ['Your phone number', 'आपका फ़ोन नंबर', 'আপনার ফোন নম্বর', 'உங்கள் தொலைபேசி எண்', '你的电话号码', 'Nombor telefon anda'],
+  age_under40: ['Under 40', '40 से कम', '৪০-এর কম', '40க்குக் கீழ்', '40 岁以下', 'Bawah 40'],
+  age_40to59: ['40 to 59', '40 से 59', '৪০ থেকে ৫৯', '40 முதல் 59', '40 至 59 岁', '40 hingga 59'],
+  age_60plus: ['60 and over', '60 और ऊपर', '৬০ এবং তার বেশি', '60 மற்றும் மேல்', '60 岁及以上', '60 dan ke atas'],
+};
+
+registerStrings('pf', pageWords(PF));
