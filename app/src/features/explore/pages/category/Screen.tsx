@@ -4,7 +4,8 @@ import { Text } from 'react-native';
 import { getExploreItems, type ExploreItem } from '../../../../api/explore';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -52,7 +53,7 @@ export default function ExploreCategory() {
   );
 
   return (
-    <Screen title={name} back>
+    <BackScreen title={name}>
       <El page={page} id="heading">
         <Hero source={categoryPic[id as keyof typeof categoryPic] ?? categoryPic.digital_skills} title={name} subtitle={w(String(id) + '_line')} height={130} light />
       </El>
@@ -67,6 +68,6 @@ export default function ExploreCategory() {
       ) : (
         items.map((i, n) => <ItemRow key={i.id} item={i} i={n} meta={meta(i)} onOpen={() => navigate('explore.item', { id: i.id })} onSave={() => void toggleSave(i)} saveLabel={i.saved ? w('unsave') : w('save')} />)
       )}
-    </Screen>
+    </BackScreen>
   );
 }

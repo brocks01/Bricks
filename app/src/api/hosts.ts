@@ -26,6 +26,7 @@ export interface HostEventBody {
   title: string; description?: string; venue_name: string; venue_kind?: 'mall' | 'community_centre' | 'other';
   address?: string; area_name?: string; starts_at: string; ends_at?: string; stalls_total?: number;
   repeat?: 'none' | 'weekly' | 'monthly'; kind: OpportunityKind; intents: Intent[]; external_url?: string;
+  interests?: ('walking' | 'taichi' | 'cooking' | 'chess' | 'music' | 'gardening' | 'teaching' | 'tech')[]; // what it is about: used to recommend it
 }
 export const createHostEvent = (hostId: string, b: HostEventBody) => api<{ id?: string; created?: boolean; made?: number }>('POST', `/v1/hosts/${hostId}/events`, b);
 export const cancelHostEvent = (hostId: string, eventId: string) => api<{ cancelled: boolean }>('POST', `/v1/hosts/${hostId}/events/${eventId}/cancel`);

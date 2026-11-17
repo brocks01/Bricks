@@ -4,7 +4,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getExploreItem, saveExploreItem, setExploreProgress, type ExploreItemDetail } from '../../../../api/explore';
 import { SkeletonPage } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
@@ -87,22 +88,22 @@ export default function ExploreItemScreen() {
 
   if (failed) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('notFound')}</Text>
         <Button label={w('tryAgain')} onPress={load} />
-      </Screen>
+      </BackScreen>
     );
   }
   if (!item) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <SkeletonPage banner cards={2} />
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={item.title} back>
+    <BackScreen title={item.title}>
       <El page={page} id="heading">
         <View style={{ height: 180, borderRadius: radius.card, backgroundColor: colors.accentSoft, borderWidth: 1, borderColor: colors.accentLine, alignItems: 'center', justifyContent: 'center', overflow: 'hidden', marginBottom: space.md }}>
           {item.image_url ? <Image source={{ uri: item.image_url }} accessibilityIgnoresInvertColors style={{ position: 'absolute', width: '100%', height: '100%' }} resizeMode="cover" /> : <Ionicons name={FORMAT_ICON[item.format]} size={64} color={colors.accent} />}
@@ -155,6 +156,6 @@ export default function ExploreItemScreen() {
         </El>
       </View>
       <Text style={[type.small, { color: colors.muted, marginTop: space.lg }]}>{w('source')}: {item.source}. {w('draftNote')}</Text>
-    </Screen>
+    </BackScreen>
   );
 }

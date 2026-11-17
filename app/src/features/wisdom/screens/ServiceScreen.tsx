@@ -1,10 +1,12 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useLiveEpoch } from '../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../api/communities';
 import { archiveListing, bookListing, endorseListing, getListing, updateListing, type ListingDetail } from '../../../api/wisdom';
 import { Empty, Notice, Panel, Pill, Section } from '../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
@@ -41,11 +43,12 @@ export default function ServiceScreen() {
     if (!id) return;
     getListing(id).then(setL).catch(() => setLost(true));
   }, [id]);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status !== 'in') return;
     load();
     getMyCommunities().then((all) => setLeads(all.filter((c) => c.my_role !== 'Member'))).catch(() => setLeads([]));
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
 
   const send = async () => {
     if (!l) return;
@@ -113,11 +116,11 @@ export default function ServiceScreen() {
         }
   );
 
-  if (lost) return <Screen back title={w('heading')}><Empty text={w('not_found')} /></Screen>;
-  if (!l) return <Screen back title={w('heading')}><Text style={[type.body, { color: colors.muted }]}> </Text></Screen>;
+  if (lost) return <BackScreen title={w('heading')}><Empty text={w('not_found')} /></BackScreen>;
+  if (!l) return <BackScreen title={w('heading')}><Text style={[type.body, { color: colors.muted }]}> </Text></BackScreen>;
 
   return (
-    <Screen back title={l.title}>
+    <BackScreen title={l.title}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.md }}>
         <Pill text={w(categoryWord(l.category))} tone="quiet" />
         <Pill text={w(tierWord(l.tier))} />
@@ -185,6 +188,6 @@ export default function ServiceScreen() {
           ) : null}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

@@ -1,5 +1,6 @@
 import { definePage } from '../../kit/page';
-import { pageWords } from '../../i18n/words';
+import { mergeStrings, pageWords } from '../../i18n/words';
+import { MKT } from '../market/revampWords';
 import { ALIASES, HOST } from './words';
 
 const base = { module: 'host', requiresAuth: true } as const;
@@ -24,5 +25,5 @@ export const hostHome = definePage({
     link: { kind: 'field', type: 'string', summary: "The host's own page for it (optional)." },
     add: { kind: 'action', agent: 'confirm', summary: 'Add the opportunity so people can see it and say they are going. It tells other people, so it needs approval.' },
   },
-  strings: pageWords(HOST, ALIASES),
+  strings: mergeStrings(pageWords(HOST, ALIASES), pageWords(MKT)), // MKT: the eight interests, named as in the Marketplace
 });

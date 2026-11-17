@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Screen } from '../../../../components/ui';
+import { BackHeroScreen } from '../../BackHero';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
 import { El, usePageData, usePageWords } from '../../../../kit';
@@ -25,6 +26,7 @@ export default function ConnectIndex() {
   const { status, user } = useStore(sessionStore);
   const [mine, setMine] = useState<MyCommunity[] | null>(null);
   const [soon, setSoon] = useState<Upcoming[]>([]);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status !== 'in') return; // wait until the saved sign-in has been checked, so the requests carry a token
     getMyCommunities().then(setMine).catch(() => setMine([]));
@@ -33,7 +35,7 @@ export default function ConnectIndex() {
         setSoon(l);
       })
       .catch(() => setSoon([]));
-  }, [status]);
+  }, [status, liveEpoch]);
 
   const toggle = useCallback(async (e: Upcoming) => {
     const next = !e.i_going;
@@ -96,7 +98,7 @@ export default function ConnectIndex() {
   const sectionTitle = { fontSize: 27, fontWeight: '700' as const, color: colors.ink };
 
   return (
-    <Screen
+    <BackHeroScreen
       title={w('heading')}
       hero={<View style={{ paddingBottom: space.lg }}><Text style={{ fontSize: 32, lineHeight: 39, fontWeight: '700', color: colors.navy }} accessibilityRole="header">{firstName ? `${greeting}, ${firstName}` : greeting}</Text><Text style={{ fontSize: 20, color: colors.muted, marginTop: 2 }}>{w('heading')}</Text></View>}
     >
@@ -167,6 +169,6 @@ export default function ConnectIndex() {
         <El page={page} id="joinOrCreate"><ListEntry title={w('joinOrCreate')} onPress={() => navigate('connect.join')} line /></El>
         <El page={page} id="askStart"><ListEntry title={w('askStart')} onPress={() => navigate('connect.create')} /></El>
       </View>
-    </Screen>
+    </BackHeroScreen>
   );
 }

@@ -46,7 +46,7 @@ def _card(conn: Connection, me: str, r, mine: dict[str, str]) -> dict:
     rep = conn.execute(text("select repeat, week_of_month from recurrences where id = :s"), {"s": r.series_id}).first() if r.series_id else None
     host = conn.execute(text("select name, kind from hosts where id = :h"), {"h": r.host_id}).first() if r.host_id else None
     return {
-        "kind": r.kind, "intents": list(r.intents or []), "source": r.source, "external_url": r.external_url, "host": host.name if host else None, "host_kind": host.kind if host else None,
+        "kind": r.kind, "intents": list(r.intents or []), "interests": list(getattr(r, "interests", None) or []), "source": r.source, "external_url": r.external_url, "host": host.name if host else None, "host_kind": host.kind if host else None,
         "repeat": rep.repeat if rep else None, "week_of_month": rep.week_of_month if rep else None,
         "id": str(r.id), "title": r.title, "description": r.description, "venue_name": r.venue_name, "venue_kind": r.venue_kind, "address": r.address, "area_name": r.area_name,
         "starts_at": _iso(r.starts_at), "ends_at": _iso(r.ends_at), "cover_url": r.cover_url, "stalls_total": r.stalls_total, "stalls_taken": taken, "stalls_left": max(0, r.stalls_total - taken),
@@ -55,13 +55,15 @@ def _card(conn: Connection, me: str, r, mine: dict[str, str]) -> dict:
     }
 
 
-def list_events(conn: Connection, me: str, limit: int = 10, intent: str | None = None, area: str | None = None, kind: str | None = None) -> list[dict]:
+def list_events(conn: Connection, me: str, limit: int = 10, intent: str | None = None, area: str | None = None, kind: str | None = None, q: str | None = None) -> list[dict]:
     """What is happening near a person, soonest first: events and opportunities hosted by Active Ageing Centres, malls and others (and our own market days). Filter by what they want to do
     there (earn, contribute, volunteer, enjoy), by area and by kind. Each says which of the person's communities are going."""
     mine = _my_communities(conn, me)
-    rows = conn.execute(text("select * from market_events where status = 'scheduled' and coalesce(ends_at, starts_at + interval '4 hours') >= now() "
-                             "and (:i = '' or :i = any(intents)) and (:k = '' or kind = :k) and (not :ha or lower(coalesce(area_name, '')) like :a) order by starts_at limit :n"),
-                        {"i": intent or "", "k": kind or "", "ha": bool((area or "").strip()), "a": f"%{(area or '').strip().lower()}%", "n": max(1, min(limit, 30))}).all()
+    # `q` searches the title, the description, the venue, the area, the address and the host's name.
+    rows = conn.execute(text("select e.* from market_events e left join hosts h on h.id = e.host_id where e.status = 'scheduled' and coalesce(e.ends_at, e.starts_at + interval '4 hours') >= now() "
+                             "and (:i = '' or :i = any(e.intents)) and (:k = '' or e.kind = :k) and (not :ha or lower(coalesce(e.area_name, '')) like :a) "
+                             "and (:q = '' or lower(concat_ws(' ', e.title, e.description, e.venue_name, e.area_name, e.address, h.name)) like :ql) order by e.starts_at limit :n"),
+                        {"i": intent or "", "k": kind or "", "ha": bool((area or "").strip()), "a": f"%{(area or '').strip().lower()}%", "q": (q or "").strip(), "ql": f"%{(q or '').strip().lower()}%", "n": max(1, min(limit, 30))}).all()
     return [_card(conn, me, r, mine) for r in rows]
 
 
@@ -71,6 +73,7 @@ def get_event(conn: Connection, me: str, eid: str) -> dict:
     stalls = conn.execute(text(
         "select s.id, s.selling, s.kind, s.helper_name, s.slot, s.seller_id, coalesce(u.display_name, '') as seller, c.name as community "
         "from market_event_stalls s join users u on u.id = s.seller_id left join communities c on c.id = s.community_id where s.event_id = :e and s.status = 'reserved' order by s.created_at"), {"e": r.id}).all()
+    out["attended"] = conn.execute(text("select attended from market_event_attendance where event_id = :e and user_id = :u"), {"e": r.id, "u": me}).scalar()  # "I went" / "I didn't go", or None
     out["stalls"] = [{"id": str(s.id), "selling": s.selling, "kind": s.kind, "helper_name": s.helper_name, "slot": s.slot, "seller": s.seller, "community": s.community, "mine": str(s.seller_id) == me} for s in stalls]
     return out
 
@@ -172,6 +175,9 @@ def make_event(conn: Connection, me: str, data: dict) -> dict:
     intents = list(dict.fromkeys(data.get("intents") or ["earn", "enjoy"]))
     if kind not in EVENT_KINDS or not intents or any(i not in INTENTS for i in intents):
         raise MarketError("validation", 422)
+    from .attendance import clean_interests
+
+    interests = clean_interests(data.get("interests"))  # what it is about: only the eight interest keys a person can pick
     host = data.get("host_id") or None
     if host and conn.execute(text("select 1 from hosts where id = :h"), {"h": host}).first() is None:
         raise MarketError("no_such_host", 404)
@@ -186,19 +192,20 @@ def make_event(conn: Connection, me: str, data: dict) -> dict:
             made = recurrence.create(conn, "market", me, data["repeat"], data["starts_at"], data.get("ends_at"), template, data.get("repeat_days"), data.get("week_of_month"), data.get("until"))
         except recurrence.RepeatError as e:
             raise MarketError(e.code, e.status) from None
+        conn.execute(text("update market_events set interests = :it where series_id = :s"), {"it": interests, "s": made["series_id"]})  # the days made so far
         first = conn.execute(text("select id from market_events where series_id = :s order by starts_at limit 1"), {"s": made["series_id"]}).scalar()
         return {"id": str(first) if first else None, "series_id": made["series_id"], "made": made["made"]}
     params = {"t": template["title"], "d": template["description"], "v": template["venue_name"], "vk": template["venue_kind"] or "mall", "a": template["address"], "ar": template["area_name"],
               "s": data["starts_at"], "e": data.get("ends_at"), "n": template["stalls_total"], "cv": template["cover_url"], "h": host, "k": kind, "i": intents, "src": source,
-              "u": template["external_url"], "ref": ref}
+              "u": template["external_url"], "ref": ref, "it": interests}
     if host and ref:
         row = conn.execute(text("select id from market_events where host_id = :h and external_ref = :ref"), {"h": host, "ref": ref}).first()
         if row:
             conn.execute(text("update market_events set title = :t, description = :d, venue_name = :v, venue_kind = :vk, address = :a, area_name = :ar, starts_at = :s, ends_at = :e, "
-                              "stalls_total = :n, kind = :k, intents = :i, source = :src, external_url = :u where id = :id"), {**params, "id": row.id})
+                              "stalls_total = :n, kind = :k, intents = :i, interests = :it, source = :src, external_url = :u where id = :id"), {**params, "id": row.id})
             return {"id": str(row.id), "created": False}
-    r = conn.execute(text("insert into market_events (title, description, venue_name, venue_kind, address, area_name, starts_at, ends_at, stalls_total, cover_url, host_id, kind, intents, source, external_url, external_ref) "
-                          "values (:t, :d, :v, :vk, :a, :ar, :s, :e, :n, :cv, :h, :k, :i, :src, :u, :ref) returning id"), params).one()
+    r = conn.execute(text("insert into market_events (title, description, venue_name, venue_kind, address, area_name, starts_at, ends_at, stalls_total, cover_url, host_id, kind, intents, interests, source, external_url, external_ref) "
+                          "values (:t, :d, :v, :vk, :a, :ar, :s, :e, :n, :cv, :h, :k, :i, :it, :src, :u, :ref) returning id"), params).one()
     return {"id": str(r.id), "created": True}
 
 

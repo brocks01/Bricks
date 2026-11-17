@@ -1,3 +1,4 @@
+import { RV } from '../../../connect/revampWords';
 import { definePage } from '../../../../kit/page';
 import { mergeStrings, pageWords } from '../../../../i18n/words';
 import { EXTRA } from '../../extraWords';
@@ -21,6 +22,11 @@ export const communityHome = definePage({
     initiatives: { kind: 'action', summary: 'Open the initiatives of this community.' },
     happening: { kind: 'text', summary: 'The next events and activities in this community.' },
     updates: { kind: 'text', summary: 'The latest updates posted in this community.' },
+    join: { kind: 'action', agent: 'confirm', summary: 'Join this community (a person can be in three at most).' },
+    whatsapp: { kind: 'action', summary: "Open this community's WhatsApp group (members only, when the leader has saved a link)." },
+    more: { kind: 'action', summary: 'More: share the invite, report the group, or leave it.' },
+    leave: { kind: 'action', agent: 'confirm', summary: 'Leave this community. Asks first.' },
+    comingUp: { kind: 'text', summary: 'The gatherings of this community, upcoming or past, each with I am going or I am here.' },
   },
-  strings: mergeStrings(strings, pageWords(EXTRA)),
+  strings: mergeStrings(mergeStrings(strings, pageWords(EXTRA)), pageWords(RV, { join: 'join', whatsapp: 'whatsapp', more: 'more', leave: 'leave', comingUp: 'coming_up' })),
 });

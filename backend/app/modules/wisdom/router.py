@@ -5,7 +5,7 @@ from sqlalchemy import Connection
 
 from ...core.db import get_conn
 from ..identity.router import current_user_id
-from . import service
+from . import service, teach
 
 router = APIRouter(prefix="/v1/wisdom")
 
@@ -53,6 +53,9 @@ class RequestIn(BaseModel):
 
 class AskIn(BaseModel):
     message: str | None = None
+    group_name: str | None = None
+    learner_count: int | None = None
+    topic: str | None = None
 
 
 class DecideIn(BaseModel):
@@ -61,6 +64,30 @@ class DecideIn(BaseModel):
 
 class SessionIn(BaseModel):
     minutes: int
+
+
+class TeachingProfileIn(BaseModel):
+    expertise: str | None = None
+    bio: str | None = None
+    days: str | None = None
+    start_time: str | None = None
+    end_time: str | None = None
+
+
+class ScheduleIn(BaseModel):
+    title: str
+    starts_at: str
+    minutes: int = 60
+    place: str | None = None
+
+
+class RescheduleIn(BaseModel):
+    starts_at: str
+
+
+class ReviewIn(BaseModel):
+    score: int
+    note: str | None = None
 
 
 def _go(fn, *a):
@@ -134,7 +161,7 @@ def set_offer(offer_id: str, body: StatusIn, user_id: str = Depends(current_user
 
 @router.post("/offers/{offer_id}/ask", status_code=201)
 def ask(offer_id: str, body: AskIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
-    return _go(service.ask_offer, conn, user_id, offer_id, body.message)
+    return _go(service.ask_offer, conn, user_id, offer_id, body.message, body.group_name, body.learner_count, body.topic)
 
 
 # ---- requests ----
@@ -196,6 +223,52 @@ def send(connection_id: str, body: MessageIn, user_id: str = Depends(current_use
 def log_session(connection_id: str, body: SessionIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     """Either side says they talked (minutes). It adds up to 'calls this month, people helped'."""
     return _go(service.log_session, conn, user_id, connection_id, body.minutes)
+
+
+# ---- Teach: the teaching profile, sessions and reviews ----
+@router.get("/teaching-profile")
+def get_teaching_profile(user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return teach.teaching_profile(conn, user_id)
+
+
+@router.patch("/teaching-profile")
+def patch_teaching_profile(body: TeachingProfileIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Saves only the fields that are sent; an empty one is cleared. Times as 09:00."""
+    return _go(teach.save_teaching_profile, conn, user_id, body.model_dump(exclude_unset=True))
+
+
+@router.get("/sessions")
+def sessions(connection_id: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """Every session of the person's accepted introductions: coming up first, then the past ones with their reviews."""
+    return {"sessions": teach.sessions(conn, user_id, connection_id)}
+
+
+@router.post("/connections/{connection_id}/schedule", status_code=201)
+def schedule(connection_id: str, body: ScheduleIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return _go(teach.schedule, conn, user_id, connection_id, body.model_dump())
+
+
+@router.post("/sessions/{session_id}/reschedule")
+def reschedule(session_id: str, body: RescheduleIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """A new time; both people are told."""
+    return _go(teach.reschedule, conn, user_id, session_id, body.starts_at)
+
+
+@router.post("/sessions/{session_id}/complete")
+def complete(session_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The session happened: it is logged and each person gets one leaf."""
+    return _go(teach.complete, conn, user_id, session_id)
+
+
+@router.post("/sessions/{session_id}/cancel")
+def cancel(session_id: str, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    return _go(teach.cancel, conn, user_id, session_id)
+
+
+@router.post("/sessions/{session_id}/review", status_code=201)
+def review(session_id: str, body: ReviewIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The learner's score from 1 to 5 and a short note, once, after a completed session."""
+    return _go(teach.review, conn, user_id, session_id, body.score, body.note)
 
 
 @router.get("/stats")

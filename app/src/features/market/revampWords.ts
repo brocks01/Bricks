@@ -1,0 +1,43 @@
+import { type WordTable } from '../../i18n/words';
+
+// The words of the revamped Marketplace: search, "Your market days", "I went" / "I didn't go", "Recommended for you".
+// Order of the six: English, Hindi, Bengali, Tamil, Chinese, Malay. First drafts: native-speaker review needed.
+export const MKT: WordTable = {
+  search: ['Search events', 'कार्यक्रम खोजें', 'অনুষ্ঠান খুঁজুন', 'நிகழ்வுகளைத் தேடு', '搜索活动', 'Cari acara'],
+  clear: ['Clear the search', 'खोज मिटाएँ', 'খোঁজ মুছুন', 'தேடலை அழி', '清除搜索', 'Kosongkan carian'],
+  no_match: ["No events match '{q}'", "'{q}' से कोई कार्यक्रम नहीं मिला", "'{q}'-এর সঙ্গে মেলে এমন কোনো অনুষ্ঠান নেই", "'{q}' உடன் பொருந்தும் நிகழ்வு இல்லை", "没有与“{q}”相符的活动", "Tiada acara sepadan dengan '{q}'"],
+  show_all: ['Show all', 'सब दिखाएँ', 'সব দেখুন', 'அனைத்தும் காட்டு', '显示全部', 'Tunjuk semua'],
+  your_days: ['Your market days', 'आपके बाज़ार के दिन', 'আপনার বাজারের দিন', 'உங்கள் சந்தை நாட்கள்', '你的市集日', 'Hari pasar anda'],
+  no_days: ["You haven't joined a market day yet.", 'आप अभी तक किसी बाज़ार दिवस में शामिल नहीं हुए हैं।', 'আপনি এখনও কোনো বাজারের দিনে যোগ দেননি।', 'நீங்கள் இன்னும் எந்தச் சந்தை நாளிலும் சேரவில்லை.', '你还没有参加任何市集日。', 'Anda belum menyertai mana-mana hari pasar.'],
+  pill_going: ['Going', 'जा रहे हैं', 'যাচ্ছেন', 'போகிறீர்கள்', '会去', 'Akan pergi'],
+  pill_ask: ['Did you go?', 'क्या आप गए?', 'আপনি কি গিয়েছিলেন?', 'நீங்கள் போனீர்களா?', '你去了吗？', 'Adakah anda pergi?'],
+  pill_went: ['You went', 'आप गए', 'আপনি গিয়েছিলেন', 'நீங்கள் போனீர்கள்', '你去了', 'Anda pergi'],
+  pill_didnt: ["You didn't go", 'आप नहीं गए', 'আপনি যাননি', 'நீங்கள் போகவில்லை', '你没去', 'Anda tidak pergi'],
+  i_went: ['I went', 'मैं गया/गई', 'আমি গিয়েছিলাম', 'நான் போனேன்', '我去了', 'Saya pergi'],
+  i_didnt: ["I didn't go", 'मैं नहीं गया/गई', 'আমি যাইনি', 'நான் போகவில்லை', '我没去', 'Saya tidak pergi'],
+  i_went_on: ['I went: {title}', 'मैं गया/गई: {title}', 'আমি গিয়েছিলাম: {title}', 'நான் போனேன்: {title}', '我去了：{title}', 'Saya pergi: {title}'],
+  i_didnt_on: ["I didn't go: {title}", 'मैं नहीं गया/गई: {title}', 'আমি যাইনি: {title}', 'நான் போகவில்லை: {title}', '我没去：{title}', 'Saya tidak pergi: {title}'],
+  change: ['Change', 'बदलें', 'বদলান', 'மாற்று', '更改', 'Ubah'],
+  change_on: ['Change my answer: {title}', 'मेरा जवाब बदलें: {title}', 'আমার উত্তর বদলান: {title}', 'என் பதிலை மாற்று: {title}', '更改我的回答：{title}', 'Ubah jawapan saya: {title}'],
+  noted: ['Thank you, noted.', 'धन्यवाद, दर्ज कर लिया।', 'ধন্যবাদ, লিখে রাখা হলো।', 'நன்றி, குறித்துக்கொண்டோம்.', '谢谢，已记下。', 'Terima kasih, sudah dicatat.'],
+  not_saved: ['Could not save. Please try again.', 'सहेजा नहीं जा सका। फिर कोशिश करें।', 'সংরক্ষণ করা যায়নি। আবার চেষ্টা করুন।', 'சேமிக்க முடியவில்லை. மீண்டும் முயலவும்.', '无法保存，请重试。', 'Tidak dapat disimpan. Sila cuba lagi.'],
+  recommended: ['Recommended for you', 'आपके लिए सुझाव', 'আপনার জন্য প্রস্তাবিত', 'உங்களுக்குப் பரிந்துரைக்கப்பட்டவை', '为你推荐', 'Disyorkan untuk anda'],
+  no_recommended: ['Nothing new near you yet. New events are added every week.', 'अभी आपके पास कुछ नया नहीं है। हर हफ़्ते नए कार्यक्रम जुड़ते हैं।', 'এখনও আপনার কাছে নতুন কিছু নেই। প্রতি সপ্তাহে নতুন অনুষ্ঠান যোগ হয়।', 'இன்னும் உங்கள் அருகில் புதிதாக எதுவும் இல்லை. ஒவ்வொரு வாரமும் புதிய நிகழ்வுகள் சேர்க்கப்படுகின்றன.', '你附近暂时没有新活动。每周都会添加新活动。', 'Belum ada yang baharu berhampiran anda. Acara baharu ditambah setiap minggu.'],
+  km: ['{n} km', '{n} किमी', '{n} কিমি', '{n} கி.மீ.', '{n} 公里', '{n} km'],
+  by_host: ['By {name}', '{name} द्वारा', '{name}-এর আয়োজনে', '{name} நடத்துகிறது', '由{name}举办', 'Oleh {name}'],
+  load_failed: ['Could not load, try again', 'लोड नहीं हो सका, फिर कोशिश करें', 'লোড করা যায়নি, আবার চেষ্টা করুন', 'ஏற்ற முடியவில்லை, மீண்டும் முயலவும்', '无法加载，请重试', 'Tidak dapat dimuatkan, cuba lagi'],
+  try_again: ['Try again', 'फिर कोशिश करें', 'আবার চেষ্টা করুন', 'மீண்டும் முயல்', '重试', 'Cuba lagi'],
+  open_event: ['Open {title}', '{title} खोलें', '{title} খুলুন', '{title} திற', '打开{title}', 'Buka {title}'],
+  // why an event is recommended
+  r_near: ['Near you', 'आपके पास', 'আপনার কাছে', 'உங்கள் அருகில்', '在你附近', 'Berhampiran anda'],
+  r_soon: ['This week', 'इस हफ़्ते', 'এই সপ্তাহে', 'இந்த வாரம்', '本周', 'Minggu ini'],
+  r_walking: ['Walking', 'सैर', 'হাঁটা', 'நடைப்பயிற்சி', '散步', 'Berjalan'],
+  r_taichi: ['Tai chi', 'ताई ची', 'তাই চি', 'தாய் சி', '太极', 'Tai chi'],
+  r_cooking: ['Cooking', 'खाना बनाना', 'রান্না', 'சமையல்', '烹饪', 'Memasak'],
+  r_chess: ['Chess', 'शतरंज', 'দাবা', 'சதுரங்கம்', '象棋', 'Catur'],
+  r_music: ['Music', 'संगीत', 'সংগীত', 'இசை', '音乐', 'Muzik'],
+  r_gardening: ['Gardening', 'बागवानी', 'বাগান করা', 'தோட்டக்கலை', '园艺', 'Berkebun'],
+  r_teaching: ['Teaching', 'पढ़ाना', 'শেখানো', 'கற்பித்தல்', '教学', 'Mengajar'],
+  r_tech: ['Phones and computers', 'फ़ोन और कंप्यूटर', 'ফোন ও কম্পিউটার', 'தொலைபேசிகளும் கணினிகளும்', '手机和电脑', 'Telefon dan komputer'],
+  interests_label: ['What it is about', 'यह किस बारे में है', 'এটি কী নিয়ে', 'இது எதைப் பற்றியது', '活动内容', 'Tentang apa'],
+};

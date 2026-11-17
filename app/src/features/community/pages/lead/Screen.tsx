@@ -4,7 +4,7 @@ import { Text, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
 import { checkIn, getLeadView, type LeadView } from '../../../../api/lead';
 import { SkeletonPage } from '../../../../components/Skeleton';
-import { Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage, useT } from '../../../../i18n';
 import { usePageData, usePageWords } from '../../../../kit';
@@ -39,16 +39,16 @@ export default function Lead() {
 
   if (refused) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <Text style={{ fontSize: 16, color: colors.muted }}>{t('lead.not_a_lead')}</Text>
-      </Screen>
+      </BackScreen>
     );
   }
   if (!data) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <SkeletonPage cards={3} />
-      </Screen>
+      </BackScreen>
     );
   }
   const time = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', hour: 'numeric', minute: '2-digit' });
@@ -62,7 +62,7 @@ export default function Lead() {
     load();
   };
   return (
-    <Screen title={w('heading')} subtitle={t('lead.lead_only', { name: data.community.name })} back>
+    <BackScreen title={w('heading')} subtitle={t('lead.lead_only', { name: data.community.name })}>
       {error ? <Text style={{ fontSize: 14, color: colors.danger, fontWeight: '600', marginBottom: space.sm }}>{error}</Text> : null}
       <View style={{ gap: space.lg }}>
         <View style={[box, { paddingVertical: 16, gap: 8 }]}>
@@ -97,6 +97,6 @@ export default function Lead() {
 
         <RotaCard cid={data.community.id} lead t={t} lang={lang} />
       </View>
-    </Screen>
+    </BackScreen>
   );
 }

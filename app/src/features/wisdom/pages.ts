@@ -1,6 +1,7 @@
 import { pageWords } from '../../i18n/words';
 import { definePage } from '../../kit/page';
 import { HOME } from './homeWords';
+import { WT } from './teachWords';
 import { ASK, INDEX, OFFER, SERVICES, STORY, SUPPORT } from './words';
 
 const base = { module: 'wisdom', requiresAuth: true } as const;
@@ -17,9 +18,12 @@ export const wisdomIndex = definePage({
   keywords: ['wisdom', 'stories', 'mentor', 'learn', 'teach', 'advice', 'experience', 'generations', 'paid', 'session', 'service'],
   elements: {
     heading: { kind: 'text', summary: 'Wisdom.' },
-    search: { kind: 'field', type: 'string', summary: 'Type to search: invitations under Teach, people who can teach you under Learn.' },
-    learnTab: { kind: 'action', summary: 'Show the Learn side: who can teach you.' },
-    teachTab: { kind: 'action', summary: 'Show the Teach side: your profile and the invitations waiting for you.' },
+    search: { kind: 'field', type: 'string', summary: 'Under Learn: type to search people who can teach you, by name, skill or bio.' },
+    learnTab: { kind: 'action', summary: 'Show the Learn side: search for someone who can teach you.' },
+    teachTab: { kind: 'action', summary: 'Show the Teach side: your teaching profile, the invitations waiting for you, and your mentorships and sessions.' },
+    editProfile: { kind: 'action', summary: 'Open Mentor Profile Editing: expertise, bio and when you are free.' },
+    showHistory: { kind: 'action', summary: 'Open the history of completed sessions with their scores and notes.' },
+    topic: { kind: 'choice', type: 'string', options: ['all', 'career', 'technology', 'language', 'hobbies'], summary: 'Under Learn, one topic at a time: career, technology, language or hobbies (or all).' },
     edit: { kind: 'action', summary: 'Edit what you teach (Teach) or what you want to learn (Learn).' },
     shareProfile: { kind: 'action', summary: 'Share your teaching profile with your circle.' },
     section: { kind: 'choice', type: 'string', options: ['stories', 'mentors', 'learners', 'mine', 'paid'], summary: 'Which part of Wisdom is open: stories, mentors, people who want to learn, mine, or paid sessions.' },
@@ -40,8 +44,8 @@ export const wisdomIndex = definePage({
     endorseNote: { kind: 'field', type: 'string', summary: 'A few kind words for the mentor, after a session.' },
     endorse: { kind: 'action', summary: 'Thank the mentor for this offer (only after a logged session, once).' },
   },
-  strings: pageWords({ ...INDEX, ...HOME }, {
-    search: 'h_search', learnTab: 'h_learn', teachTab: 'h_teach', edit: 'h_edit', shareProfile: 'h_share',
+  strings: pageWords({ ...INDEX, ...HOME, ...WT }, {
+    search: 'search', learnTab: 'learn', teachTab: 'teach', edit: 'h_edit', shareProfile: 'h_share', editProfile: 'edit', showHistory: 'show_all', topic: 'topic',
     serviceSearch: 'searchServices', serviceKind: 'kindOfService', offerService: 'offer_service', myServices: 'my_market',
     mentorSearch: 'searchMentors', mentorMode: 'modeLabel', mentorTopic: 'topicLabel', mentorLanguage: 'languageLabel', mentorNear: 'whereLabel',
     threadMessage: 'messagePlaceholder', sendThread: 'send', endorseNote: 'thankNote', endorse: 'thankYou',
@@ -181,4 +185,59 @@ export const wisdomMyServices = definePage({
   keywords: ['bookings', 'requests', 'my services', 'accept', 'decline', 'paid'],
   elements: { heading: { kind: 'text', summary: 'My services and bookings.' } },
   strings: serviceWords('h_mine', {}),
+});
+
+// ---- Teach (revamp v2): the elder's own pages ----
+export const wisdomTeachProfile = definePage({
+  ...base,
+  key: 'wisdom.teachProfile',
+  route: '/wisdom/teaching-profile',
+  summary: 'Mentor Profile Editing: what the person teaches (expertise), a short bio, and when they are free (days, a start and an end time).',
+  keywords: ['profile', 'mentor', 'expertise', 'bio', 'availability', 'edit', 'teach'],
+  elements: {
+    heading: { kind: 'text', summary: 'Mentor Profile Editing.' },
+    expertise: { kind: 'field', type: 'string', summary: 'What the person teaches, a few words separated by commas, for example "AI, OS, Business".' },
+    bio: { kind: 'field', type: 'string', summary: 'A few lines about their life and work (up to 1000 characters).' },
+    days: { kind: 'choice', type: 'string', options: ['Mon-Fri', 'Mon-Sat', 'Weekends', 'Every day'], summary: 'Which days they are free.' },
+    startTime: { kind: 'field', type: 'string', summary: 'From what time, as 09:00.' },
+    endTime: { kind: 'field', type: 'string', summary: 'Until what time, as 17:00 (after the start).' },
+    save: { kind: 'action', summary: 'Save the changes.' },
+  },
+  strings: pageWords(WT, { heading: 'edit_title', startTime: 'start_time', endTime: 'end_time', save: 'save_changes' }),
+});
+
+export const wisdomSession = definePage({
+  ...base,
+  key: 'wisdom.session',
+  route: '/wisdom/session/[id]',
+  params: ['id'],
+  summary: 'Session Details: who the session is with and its topic, when and where, Start Video Call (coming soon), Reschedule Session, marking it done, and the chat with the other person.',
+  keywords: ['session', 'mentoring', 'reschedule', 'chat', 'message', 'video'],
+  elements: {
+    heading: { kind: 'text', summary: 'Session Details.' },
+    video: { kind: 'action', summary: 'Start a video call. Not ready yet: it says "Coming soon".' },
+    reschedule: { kind: 'action', summary: 'Open the choice of a new day and time.' },
+    newDay: { kind: 'field', type: 'string', summary: 'The new day, as 2026-11-20.' },
+    newTime: { kind: 'field', type: 'string', summary: 'The new start time, as 10:30.' },
+    moveIt: { kind: 'action', agent: 'confirm', summary: 'Move the session to the chosen day and time. Both people are told. Needs approval.' },
+    markDone: { kind: 'action', agent: 'confirm', summary: 'Say the session happened. Both people get a leaf on their tree. Needs approval.' },
+    message: { kind: 'field', type: 'string', summary: 'A short message to the other person (up to 500 characters).' },
+    send: { kind: 'action', agent: 'confirm', summary: 'Send the message. Needs approval.' },
+  },
+  strings: pageWords(WT, { heading: 'session_title', newDay: 'pick_day', newTime: 'pick_time', moveIt: 'reschedule', markDone: 'mark_done' }),
+});
+
+export const wisdomHistory = definePage({
+  ...base,
+  key: 'wisdom.history',
+  route: '/wisdom/history',
+  summary: 'Session History and Completed Reviews: every completed session with its score out of 5 and the note the learner left; a learner can review a session they had.',
+  keywords: ['history', 'sessions', 'reviews', 'score', 'feedback', 'completed'],
+  elements: {
+    heading: { kind: 'text', summary: 'Session History and Completed Reviews.' },
+    reviewScore: { kind: 'choice', type: 'string', options: ['1', '2', '3', '4', '5'], summary: 'As the learner, the score for the first session waiting for a review, from 1 to 5.' },
+    reviewNote: { kind: 'field', type: 'string', summary: 'A short note for the mentor (optional, up to 500 characters).' },
+    sendReview: { kind: 'action', agent: 'confirm', summary: 'Send the review. Needs approval.' },
+  },
+  strings: pageWords(WT, { heading: 'history_title', reviewScore: 'rate', reviewNote: 'review_note', sendReview: 'send_review' }),
 });

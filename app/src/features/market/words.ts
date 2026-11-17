@@ -3,7 +3,7 @@ import { type WordTable } from '../../i18n/words';
 // The words of the Marketplace tab and its pages. Order of the six: English, Hindi, Bengali, Tamil, Chinese, Malay.
 // Money rule: the platform never holds money. People pay each other directly; a rate is only what the two sides agreed.
 export const W: WordTable = {
-  h_market: ['Market', 'बाज़ार', 'বাজার', 'சந்தை', '集市', 'Pasar'],
+  h_market: ['Marketplace', 'बाज़ार', 'বাজার', 'சந்தை', '集市', 'Pasar'],
   intro: ['Skills and experience from people near you.', 'आपके आस-पास के लोगों के हुनर और अनुभव।', 'আপনার কাছের মানুষের দক্ষতা ও অভিজ্ঞতা।', 'உங்கள் அருகிலுள்ளவர்களின் திறமையும் அனுபவமும்.', '来自你身边的人的技能与经验。', 'Kemahiran dan pengalaman daripada orang berhampiran anda.'],
   noEvents: ['Nothing planned near you yet.', 'अभी आपके आस-पास कुछ भी तय नहीं है।', 'আপনার আশেপাশে এখনও কিছু পরিকল্পনা করা হয়নি।', 'உங்கள் அருகில்இன்னும் எதுவும் திட்டமிடப்படவில்லை.', '你附近暂时还没有安排。', 'Belum ada apa-apa yang dirancang berhampiran anda.'],
   // errors from the server (the stall screens)

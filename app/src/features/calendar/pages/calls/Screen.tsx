@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { calendarApi, type CallConsent } from '../../../../api/calendar';
 import { ApiError } from '../../../../api/client';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useLocalSearchParams } from 'expo-router';
@@ -130,7 +131,7 @@ export default function CalendarCalls() {
   };
 
   return (
-    <Screen title={w('callsHeading')} subtitle={w('callsIntro')} back>
+    <BackScreen title={w('callsHeading')} subtitle={w('callsIntro')}>
       {!loading && consent ? (
         <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.md }}>
           <Text style={{ fontSize: 16, fontWeight: '700', color: consent.agreed ? colors.accent : colors.ink }}>{statusLine()}</Text>
@@ -186,7 +187,7 @@ export default function CalendarCalls() {
           </El>
         ) : null}
       </View>
-    </Screen>
+    </BackScreen>
   );
 }
 

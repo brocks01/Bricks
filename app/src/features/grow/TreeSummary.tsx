@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { getTree, type Tree } from '../../api/nodes';
 import { useT } from '../../i18n';
@@ -13,9 +14,10 @@ import { TreeView } from './TreeView';
 export function TreeSummary({ onOpen, refreshKey }: { onOpen: () => void; refreshKey?: number }) {
   const t = useT();
   const [tree, setTree] = useState<Tree | null>(null);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     getTree().then(setTree).catch(() => setTree(null));
-  }, [refreshKey]);
+  }, [refreshKey, liveEpoch]);
   if (!tree) return null;
   const into = tree.leaves % 10;
   return (

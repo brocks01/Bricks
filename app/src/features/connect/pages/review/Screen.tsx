@@ -3,7 +3,8 @@ import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { decideRequest, getReviewQueue, type ReviewRequest } from '../../../../api/communityRules';
 import { Empty, Panel } from '../../../../components/blocks';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
@@ -61,7 +62,7 @@ export default function Review() {
   );
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <ErrorText>{error}</ErrorText>
       {rows && rows.length === 0 ? <Empty text={w('no_requests')} /> : null}
       {(rows ?? []).map((r) => (
@@ -77,6 +78,6 @@ export default function Review() {
           </View>
         </Panel>
       ))}
-    </Screen>
+    </BackScreen>
   );
 }

@@ -1,38 +1,43 @@
-import { Ionicons } from '@expo/vector-icons';
+import { useCallback, useEffect, useState } from 'react';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
-import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { getProgress, type ProgressData } from '../../../../api/grow';
-import { getTree, type Tree } from '../../../../api/nodes';
+import Svg, { Path } from 'react-native-svg';
+import { getWisdom, type WisdomEvent } from '../../../../api/nodes';
+import { BackScreen } from '../../../../components/BackButton';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Screen } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
-import { useT } from '../../../../i18n';
-import { usePageData, usePageWords } from '../../../../kit';
-import { useNavigate } from '../../../../navigation';
+import { useLanguage } from '../../../../i18n';
+import { El, usePageData, usePageWords } from '../../../../kit';
 import { sessionStore } from '../../../../session/store';
-import { colors, space, type } from '../../../../theme/tokens';
-import { WeekBars } from '../../ui';
-import '../../treeWords'; // registers the words of the tree
-import { MyGoals, MyHabits } from '../../GoalsHabits';
-import { TreeView } from '../../TreeView';
+import { colors, radius, space } from '../../../../theme/tokens';
+import { TREE_COLOURS, WisdomTree } from '../../WisdomTreeView';
+import { LEAF_LENGTH, LEAF_PATH } from '../../wisdomTree';
+import { wisdomStore } from '../../wisdomStore';
 import { growProgress as page } from './page';
 
-// My Progress (sample 11, screen 7): a kind overview of what the person has done in Grow, counts and totals only. It never says "behind" and never gives a score.
-export default function Progress() {
+const LOCALE: Record<string, string> = { en: 'en-SG', hi: 'hi-IN', bn: 'bn-IN', ta: 'ta-SG', zh: 'zh-SG', ms: 'ms-SG' };
+const PAGE = 5; // the history shows five, then five more each time "Show more" is pressed
+
+// The Tree of Wisdom: the person's tree (bare branches at first, one leaf for every event they showed up to), the number of leaves,
+// and the history of those events. Nothing here can be edited: a leaf is earned only by showing up.
+export default function TreeOfWisdom() {
   const w = usePageWords(page);
-  const t = useT();
-  const navigate = useNavigate();
-  const [tree, setTree] = useState<Tree | null>(null);
+  const lang = useLanguage();
   const { status } = useStore(sessionStore);
-  const [d, setD] = useState<ProgressData | null>(null);
+  const [leaves, setLeaves] = useState<number | null>(null);
+  const [events, setEvents] = useState<WisdomEvent[]>([]);
+  const [next, setNext] = useState<string | null>(null);
   const [failed, setFailed] = useState(false);
+  const [busy, setBusy] = useState(false);
+
   const load = useCallback(() => {
-    getTree().then(setTree).catch(() => undefined);
-    getProgress()
-      .then((x) => {
+    getWisdom(PAGE)
+      .then((r) => {
+        setLeaves(r.leaves);
+        setEvents(r.events);
+        setNext(r.next_before);
         setFailed(false);
-        setD(x);
+        wisdomStore.set({ leaves: r.leaves }); // the little tree in the header shows the same number
       })
       .catch(() => setFailed(true));
   }, []);
@@ -41,99 +46,101 @@ export default function Progress() {
     if (status === 'in') load();
   }, [status, load, liveEpoch]);
 
-  const rows = d
-    ? [
-        { icon: 'walk-outline' as const, text: w('p_activity', { n: d.activity.week_minutes }), to: 'grow.activity' as const },
-        { icon: 'heart-outline' as const, text: w('p_health', { n: d.health.readings_this_month }), to: 'grow.health' as const },
-        { icon: 'flag-outline' as const, text: w('p_aspirations', { done: d.aspirations.done, total: d.aspirations.total }), to: 'grow.aspirations' as const },
-        { icon: 'compass-outline' as const, text: w('p_explore', { started: d.explore.started, completed: d.explore.completed }), to: 'explore.mine' as const },
-        { icon: 'people-outline' as const, text: w('p_contributions', { n: d.contributions.count, h: d.contributions.hours }), to: 'grow.contributions' as const },
-      ]
-    : [];
+  const more = useCallback(async () => {
+    if (!next || busy) return;
+    setBusy(true);
+    try {
+      const r = await getWisdom(PAGE, next);
+      setEvents((l) => [...l, ...r.events.filter((e) => !l.some((x) => x.id === e.id))]);
+      setNext(r.next_before);
+      setLeaves(r.leaves);
+    } catch {
+      /* the button stays: pressing it again tries again */
+    } finally {
+      setBusy(false);
+    }
+  }, [next, busy]);
+
+  const thisYear = new Date().getFullYear();
+  const day = (iso: string) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString(LOCALE[lang] ?? 'en-SG', { weekday: 'long', day: 'numeric', month: 'long', ...(d.getFullYear() === thisYear ? null : { year: 'numeric' }) });
+  };
+  const from = (e: WisdomEvent) =>
+    e.source === 'wisdom' ? (e.source_name ? w('session_with', { name: e.source_name }) : w('session'))
+    : e.source_name ? w('from_name', { name: e.source_name })
+    : e.source === 'market' ? w('from_market') : w('from_community');
+  const countWords = (n: number) => (n === 1 ? w('leaves_one') : w('leaves_n', { n }));
 
   usePageData(
     page,
-    d === null
-      ? null
+    leaves === null
+      ? failed ? { values: [{ label: w('heading'), value: w('failed') }], images: [], lists: [], actions: [{ id: 'retry', label: w('retry'), run: () => load() }] } : null
       : {
-          values: rows.map((r) => ({ label: r.text, value: '' })),
+          values: [{ label: w('heading'), value: `${countWords(leaves)}. ${leaves ? w('every') : w('first')}` }],
           images: [],
-          lists: [],
-          actions: rows.map((r, i) => ({ id: `open${i + 1}`, label: r.text, run: () => { navigate(r.to); } })),
+          lists: [{ label: w('history'), items: events.map((e) => ({ label: e.title, detail: `${day(e.at)} · ${from(e)}` })) }],
+          actions: next ? [{ id: 'showMore', label: w('showMore'), run: () => more() }] : [],
         }
   );
 
   return (
-    <Screen title={w('heading')} back>
-      {tree ? <TreeCard tree={tree} reload={load} /> : null}
-      <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink, marginTop: space.lg, marginBottom: space.sm }} accessibilityRole="header">{t('tree.more')}</Text>
-      {failed ? (
-        <>
-          <Text style={[type.body, { color: colors.muted, marginVertical: space.md }]}>{w('notFound')}</Text>
-          <Button label={w('tryAgain')} onPress={load} />
-        </>
-      ) : d === null ? (
-        <SkeletonList count={4} />
+    <BackScreen title={w('heading')}>
+      {leaves === null ? (
+        failed ? (
+          <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, padding: space.lg, gap: space.md }}>
+            <Text style={{ fontSize: 19, lineHeight: 26, fontWeight: '600', color: colors.ink }}>{w('failed')}</Text>
+            <El page={page} id="retry"><Wide label={w('retry')} onPress={load} /></El>
+          </View>
+        ) : (
+          <SkeletonList count={4} />
+        )
       ) : (
         <>
-          <WeekBars days={d.activity.days} />
-          {rows.map((r) => (
-            <Pressable key={r.to} onPress={() => navigate(r.to)} accessibilityRole="button" style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, backgroundColor: colors.card, borderRadius: 16, borderWidth: 1, borderColor: colors.line, padding: space.md, marginBottom: space.sm }}>
-              <Ionicons name={r.icon} size={24} color={colors.accent} />
-              <Text style={{ flex: 1, fontSize: 16, color: colors.ink }}>{r.text}</Text>
-              <Ionicons name="chevron-forward" size={20} color={colors.muted} />
-            </Pressable>
-          ))}
-          <Text style={[type.small, { color: colors.accent, textAlign: 'center', marginTop: space.md }]}>{w('keepGoing')}</Text>
+          <WisdomTree leaves={leaves} label={w('picture', { n: leaves })} />
+          <El page={page} id="count">
+            <View style={{ alignItems: 'center', paddingVertical: space.lg, gap: 4 }}>
+              <Text accessibilityRole="header" style={{ fontSize: 36, lineHeight: 44, fontWeight: '800', color: colors.ink }}>{countWords(leaves)}</Text>
+              <Text style={{ fontSize: 19, lineHeight: 27, color: colors.ink, textAlign: 'center' }}>{leaves ? w('every') : w('first')}</Text>
+            </View>
+          </El>
+
+          {events.length ? (
+            <View>
+              <El page={page} id="history"><Text accessibilityRole="header" style={{ fontSize: 26, lineHeight: 32, fontWeight: '800', color: colors.ink, marginBottom: space.sm }}>{w('history')}</Text></El>
+              <View style={{ backgroundColor: colors.card, borderRadius: radius.card, borderWidth: 1, borderColor: colors.line, paddingHorizontal: space.lg }}>
+                {events.map((e, i) => (
+                  <View key={e.id} accessible accessibilityLabel={`${e.title}. ${day(e.at)}. ${from(e)}. ${w('one_leaf')}`} style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, paddingVertical: 14, borderTopWidth: i ? 1 : 0, borderColor: colors.line }}>
+                    <View style={{ flex: 1, gap: 2 }}>
+                      <Text style={{ fontSize: 20, lineHeight: 26, fontWeight: '700', color: colors.ink }}>{e.title}</Text>
+                      <Text style={{ fontSize: 18, lineHeight: 24, color: colors.ink }}>{day(e.at)}</Text>
+                      <Text style={{ fontSize: 18, lineHeight: 24, fontWeight: '600', color: colors.navy }}>{from(e)}</Text>
+                    </View>
+                    <View style={{ alignItems: 'center', flexDirection: 'row', gap: 4 }}>
+                      <Svg width={26} height={20} viewBox={`-1 -9 ${LEAF_LENGTH + 2} 18`}><Path d={LEAF_PATH} fill={TREE_COLOURS.greens[0]} /></Svg>
+                      <Text style={{ fontSize: 20, fontWeight: '800', color: TREE_COLOURS.greens[2] }}>+1</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+              {next ? (
+                <View style={{ marginTop: space.md }}>
+                  <El page={page} id="showMore"><Wide label={w('showMore')} onPress={() => void more()} disabled={busy} /></El>
+                </View>
+              ) : null}
+            </View>
+          ) : null}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }
 
-const AREA_WORD: Record<string, string> = { move: 'tree.area_move', community: 'tree.area_community', give: 'tree.area_give', goals: 'tree.goals', habits: 'tree.habits', care: 'tree.area_care', aspire: 'tree.area_aspire' };
-
-// The tree, the count of leaves with the way to the next level, a line for each branch, and how leaves are earned. Everything comes from the person's real nodes.
-function TreeCard({ tree, reload }: { tree: Tree; reload: () => void }) {
-  const t = useT();
-  const areas = tree.nodes.filter((n) => n.type === 'area' && n.parent_id === 'R1');
-  const into = tree.leaves % 10;
-  const card = { backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 16, padding: space.lg, gap: space.md } as const;
+/** A full-width button, 56 high, with a word on it. */
+function Wide({ label, onPress, disabled }: { label: string; onPress: () => void; disabled?: boolean }) {
   return (
-    <View style={{ gap: space.lg }}>
-      <View style={card}>
-        <TreeView nodes={tree.nodes} label={t('tree.tree_label', { n: tree.leaves })} level={tree.level} roots={tree.roots.strength} />
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <Text style={{ fontSize: 24, fontWeight: '600', color: colors.ink }}>{tree.leaves} <Text style={{ fontSize: 16, fontWeight: '500', color: colors.muted }}>{t(tree.leaves === 1 ? 'tree.leaf' : 'tree.leaves')}</Text></Text>
-          <Text style={{ fontSize: 15, color: colors.muted }}>{t('tree.to_next', { n: 10 - into })}</Text>
-        </View>
-        <View accessibilityRole="progressbar" accessibilityValue={{ min: 0, max: 10, now: into }} style={{ height: 8, borderRadius: 999, backgroundColor: '#EDE6DA', overflow: 'hidden' }}>
-          <View style={{ height: 8, borderRadius: 999, backgroundColor: colors.leaf, width: `${into * 10}%` }} />
-        </View>
-        <Text style={{ fontSize: 15, color: colors.muted }}>{tree.leaves === 0 && tree.growing === 0 ? t('tree.empty') : tree.growing > 0 ? `${t('tree.every')} ${t('tree.growing', { n: tree.growing })}` : t('tree.every')}</Text>
-        <Text style={{ fontSize: 14, color: '#5A6472' }}>{t('tree.next_level')}</Text>
-      </View>
-      <Text style={{ fontSize: 15, color: colors.muted, marginTop: -space.sm, marginHorizontal: 4 }}>{t('tree.roots_line', { days: tree.roots.moved_days, walks: tree.roots.walks })}</Text>
-      <MyHabits tree={tree} t={t} reload={reload} />
-      <MyGoals tree={tree} t={t} reload={reload} />
-      {areas.length ? (
-        <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
-          {areas.map((a, i) => (
-            <View key={a.nid} style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 14, borderBottomWidth: i < areas.length - 1 ? 1 : 0, borderColor: '#EDE6DA' }}>
-              <Text style={{ fontSize: 17, fontWeight: '600', color: colors.ink }}>{AREA_WORD[a.key] ? t(AREA_WORD[a.key]) : a.title}</Text>
-              <Text style={{ fontSize: 15, color: colors.muted }}>{a.counts.closed ?? 0} {t(a.counts.closed === 1 ? 'tree.leaf' : 'tree.leaves')}</Text>
-            </View>
-          ))}
-        </View>
-      ) : null}
-      <View style={{ gap: space.sm }}>
-        <Text style={{ fontSize: 19, fontWeight: '600', color: colors.ink }} accessibilityRole="header">{t('tree.how')}</Text>
-        <View style={{ backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: 14, paddingHorizontal: space.lg }}>
-          {['tree.how_walk', 'tree.how_move', 'tree.how_here', 'tree.how_care', 'tree.how_give'].map((k, i, all) => (
-            <Text key={k} style={{ fontSize: 16, color: colors.ink, paddingVertical: 14, borderBottomWidth: i < all.length - 1 ? 1 : 0, borderColor: '#EDE6DA' }}>{t(k)}</Text>
-          ))}
-        </View>
-      </View>
-    </View>
+    <Pressable onPress={onPress} disabled={disabled} accessibilityRole="button" accessibilityState={{ disabled: !!disabled }} style={({ pressed }) => ({ minHeight: 56, borderRadius: radius.button, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.lg, backgroundColor: colors.accent, opacity: disabled ? 0.5 : pressed ? 0.85 : 1 })}>
+      <Text style={{ fontSize: 19, fontWeight: '800', color: colors.card }}>{label}</Text>
+    </Pressable>
   );
 }

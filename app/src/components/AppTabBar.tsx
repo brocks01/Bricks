@@ -12,22 +12,20 @@ import { colors } from '../theme/tokens';
 import { AgentOrb } from './AgentOrb';
 
 /**
- * The bottom bar: a soft floating pill. Market is on the left, Wisdom on the right, and Communities is the raised round button in the middle
- * (people near you, a reason to show up). Which of the three a person sees is decided by the server's profile, never hard-coded here.
- * Today, health, family, notifications and chats are reached from the profile (the round avatar at the top right).
- * The agent is one small round button floating just above this bar (AgentOrb). It shows on every screen, signed in or not, including setup and onboarding.
+ * The bottom bar: four equal tabs, Home, Communities, Marketplace, Wisdom, each an icon and a word.
+ * The lit one is told apart three ways (a filled icon, the accent colour and a bar above it), never by colour alone.
+ * It shows ONLY on the four tab pages: every other page is a sub-screen with the floating Back button and no bar.
+ * Home and Communities always show; the server's profile may hide the Marketplace or Wisdom for a person who said no to them.
+ * The agent is one small round button floating just above this bar (AgentOrb). It shows on every screen, signed in or not.
  */
-const COMMUNITIES = 'connect.index';
-const WISDOM = 'wisdom.index';
-const MARKET = 'market.index';
-const BLUE = '#1B3FC9';
-const SLATE = '#3E4E68';
-// Which tab a page belongs to, so the pages behind a tab keep it lit. Profile pages (me, health, family, language, today) light none.
-const TAB_OF_MODULE: Record<string, string> = {
-  connect: COMMUNITIES, community: COMMUNITIES, explore: COMMUNITIES,
-  wisdom: WISDOM,
-  market: MARKET,
-};
+type IconName = keyof typeof Ionicons.glyphMap;
+const TABS: { key: string; on: IconName; off: IconName }[] = [
+  { key: 'home.index', on: 'home', off: 'home-outline' },
+  { key: 'connect.index', on: 'people', off: 'people-outline' },
+  { key: 'market.index', on: 'storefront', off: 'storefront-outline' },
+  { key: 'wisdom.index', on: 'book', off: 'book-outline' },
+];
+const BAR_HEIGHT = 68;
 
 export function AppTabBar() {
   const t = useT();
@@ -40,8 +38,10 @@ export function AppTabBar() {
   useEffect(() => {
     if (status === 'in') void loadFamilies().catch(() => undefined);
   }, [status]);
-  // Signed out, the agent button stays: someone who cannot follow the sign-in can still ask for help (before sign-in the agent can only SEE and explain).
-  if (status !== 'in') {
+  const onTab = TABS.some((x) => x.key === current?.key);
+  // Signed out, in setup or onboarding, and on every sub-screen there are no tabs, but the agent stays:
+  // someone who cannot follow a page can still ask for help (before sign-in the agent can only SEE and explain).
+  if (status !== 'in' || !user?.profile_complete || !onTab) {
     return (
       <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
         <View style={{ paddingBottom: insets.bottom }} />
@@ -49,49 +49,26 @@ export function AppTabBar() {
       </View>
     );
   }
-  // Setup, onboarding and full-screen pages have no tabs, but the agent stays: a person can talk their way through getting started, in their own language.
-  if (!user?.profile_complete || current?.bare) {
-    return (
-      <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5 }}>
-        <View style={{ paddingBottom: insets.bottom }} />
-        <AgentOrb />
-      </View>
-    );
-  }
-  const lit = TAB_OF_MODULE[current?.module ?? ''] ?? (current?.tab ? current.key : '');
-  const right = !prof.profile || showsWisdom(prof); // Wisdom appears when the person said yes to teaching or sharing; until the server has answered, show all three
-  const centre = !prof.profile || shows(prof, 'community');
-  const left = !prof.profile || shows(prof, 'markets') || shows(prof, 'freelance');
-  const side = (key: string, icon: keyof typeof Ionicons.glyphMap) => {
-    const on = lit === key;
-    return (
-      <Pressable onPress={() => go(key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ height: 66, alignItems: 'center', justifyContent: 'center', gap: 4 }}>
-        <Ionicons name={icon} size={26} color={on ? BLUE : SLATE} />
-        <Text style={{ fontSize: 14, fontWeight: '700', color: on ? BLUE : SLATE }}>{t(`${key}.tab`)}</Text>
-      </Pressable>
-    );
-  };
-  const communitiesOn = lit === COMMUNITIES;
+  // Until the server has answered, show all four.
+  const visible = (key: string) =>
+    key === 'market.index' ? !prof.profile || shows(prof, 'markets') || shows(prof, 'freelance')
+    : key === 'wisdom.index' ? !prof.profile || showsWisdom(prof)
+    : true;
   return (
-    <View style={{ backgroundColor: colors.bg, position: 'relative', zIndex: 5, paddingTop: 22 }}>
-      <View style={{ marginHorizontal: 14, marginBottom: 8, height: 72, borderRadius: 36, backgroundColor: '#F1F1F3', flexDirection: 'row', alignItems: 'center', shadowColor: '#000', shadowOpacity: 0.12, shadowRadius: 14, shadowOffset: { width: 0, height: 6 }, elevation: 6 }}>
-        <View style={{ flex: 1 }}>{left ? side(MARKET, 'storefront-outline') : null}</View>
-        <View style={{ width: centre ? 120 : 0, height: 72 }}>
-          {centre ? (
-            <Pressable
-              onPress={() => go(COMMUNITIES)}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: communitiesOn }}
-              style={{ position: 'absolute', left: 6, top: -30, width: 108, height: 108, borderRadius: 54, backgroundColor: '#F4F4F6', alignItems: 'center', justifyContent: 'center', gap: 4, shadowColor: '#000', shadowOpacity: 0.18, shadowRadius: 14, shadowOffset: { width: 0, height: 5 }, elevation: 8 }}
-            >
-              <Ionicons name="people" size={34} color={communitiesOn ? BLUE : SLATE} />
-              <Text numberOfLines={1} style={{ fontSize: 13, fontWeight: '800', color: communitiesOn ? BLUE : SLATE }}>{t(`${COMMUNITIES}.tab`)}</Text>
+    <View style={{ backgroundColor: colors.card, position: 'relative', zIndex: 5, borderTopWidth: 1, borderColor: colors.line }}>
+      <View accessibilityRole="tablist" style={{ flexDirection: 'row', minHeight: BAR_HEIGHT }}>
+        {TABS.filter((x) => visible(x.key)).map((x) => {
+          const on = current?.key === x.key;
+          return (
+            <Pressable key={x.key} onPress={() => go(x.key)} accessibilityRole="tab" accessibilityState={{ selected: on }} style={{ flex: 1, minHeight: BAR_HEIGHT, alignItems: 'center', justifyContent: 'center', gap: 3, paddingHorizontal: 2, paddingBottom: 6 }}>
+              <View style={{ position: 'absolute', top: 0, width: 44, height: 4, borderBottomLeftRadius: 4, borderBottomRightRadius: 4, backgroundColor: on ? colors.accent : 'transparent' }} />
+              <Ionicons name={on ? x.on : x.off} size={27} color={on ? colors.accent : colors.muted} accessible={false} />
+              <Text numberOfLines={2} style={{ fontSize: 14, lineHeight: 17, fontWeight: on ? '800' : '600', color: on ? colors.accentDark : colors.muted, textAlign: 'center' }}>{t(`${x.key}.tab`)}</Text>
             </Pressable>
-          ) : null}
-        </View>
-        <View style={{ flex: 1 }}>{right ? side(WISDOM, 'book-outline') : null}</View>
+          );
+        })}
       </View>
-      <View style={{ height: insets.bottom, backgroundColor: colors.bg }} />
+      <View style={{ height: insets.bottom }} />
       <AgentOrb />
     </View>
   );

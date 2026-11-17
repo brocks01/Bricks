@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Text } from 'react-native';
 import { familyApi } from '../../../../api/family';
 import { ApiError } from '../../../../api/client';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../../components/ui';
 import { useT } from '../../../../i18n';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -44,7 +45,7 @@ export default function FamilyJoin() {
   useAction(page, 'join', () => void join());
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('intro')}</Text>
       <El page={page} id="code">
         <Field label={w('code')} value={code} onChangeText={setCode} icon="key-outline" keyboardType="number-pad" maxLength={6} big />
@@ -53,6 +54,6 @@ export default function FamilyJoin() {
       <El page={page} id="join">
         <Button label={w('join')} onPress={() => void join()} disabled={busy} />
       </El>
-    </Screen>
+    </BackScreen>
   );
 }

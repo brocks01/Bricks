@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../core/useFocusLive';
 import { Text, View } from 'react-native';
 import { getStanding, type Standing } from '../../api/communities';
 import { Pill } from '../../components/blocks';
@@ -9,9 +10,10 @@ import { colors, radius, space, type } from '../../theme/tokens';
 export function StandingCard({ communityId }: { communityId: string }) {
   const t = useT();
   const [s, setS] = useState<Standing | null>(null);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     getStanding(communityId).then(setS).catch(() => setS(null));
-  }, [communityId]);
+  }, [communityId, liveEpoch]);
   if (!s || s.total === 0) return null;
   const w = (k: string, vars?: Record<string, string | number>) => t(`community.home.${k}`, vars);
   return (

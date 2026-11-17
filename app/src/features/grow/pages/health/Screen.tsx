@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { addReading, getHealth, removeReading, type HealthData, type HealthKind } from '../../../../api/grow';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Field, Screen } from '../../../../components/ui';
+import { Button, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, usePageData, usePageWords } from '../../../../kit';
@@ -102,7 +103,7 @@ export default function Health() {
 
   if (TRAINER_COMING_SOON) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <View style={{ alignItems: 'center', paddingTop: space.xl, gap: space.md }}>
           <View style={{ width: 112, height: 112, borderRadius: 56, backgroundColor: colors.accentSoft, alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="fitness" size={52} color={colors.accent} />
@@ -113,12 +114,12 @@ export default function Health() {
           <Text accessibilityRole="header" style={{ fontSize: 24, fontWeight: '800', color: colors.ink, textAlign: 'center' }}>{w('soonTitle')}</Text>
           <Text style={[type.body, { color: colors.muted, textAlign: 'center', maxWidth: 320 }]}>{w('soonBody')}</Text>
         </View>
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w('health_intro')}</Text>
       <View style={{ flexDirection: 'row', gap: space.sm, marginBottom: space.md }}>
         {(['overview', 'records'] as const).map((t) => (
@@ -186,6 +187,6 @@ export default function Health() {
       ) : (
         <Text style={[type.body, { color: colors.muted }]}>{w('empty')}</Text>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

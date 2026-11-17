@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Text } from 'react-native';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../../components/ui';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
 import { errorWords } from '../../../../session/errors';
@@ -38,7 +39,7 @@ export default function FamilyCreate() {
   useAction(page, 'create', () => void create());
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('intro')}</Text>
       <El page={page} id="name">
         <Field label={w('name')} value={name} onChangeText={setName} placeholder={w('namePlaceholder')} icon="home-outline" maxLength={80} />
@@ -47,6 +48,6 @@ export default function FamilyCreate() {
       <El page={page} id="create">
         <Button label={w('create')} onPress={() => void create()} disabled={busy} />
       </El>
-    </Screen>
+    </BackScreen>
   );
 }

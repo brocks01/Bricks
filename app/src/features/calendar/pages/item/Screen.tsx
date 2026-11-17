@@ -1,11 +1,12 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { calendarApi, type CalendarItem, type Occurrence } from '../../../../api/calendar';
 import { ApiError } from '../../../../api/client';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { Button, ErrorText } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, useAction, usePageWords } from '../../../../kit';
@@ -84,7 +85,7 @@ export default function CalendarItemScreen() {
   const untilWords = item?.until_date ? ' Â· ' + w('untilDay', { date: item.until_date }) : '';
 
   return (
-    <Screen title={w('itemHeading')} back>
+    <BackScreen title={w('itemHeading')}>
       {item === null && !failed ? null : item ? (
         <>
           <El page={page} id="when">
@@ -151,7 +152,7 @@ export default function CalendarItemScreen() {
         </>
       ) : null}
       {failed ? <ErrorText>{failed}</ErrorText> : null}
-    </Screen>
+    </BackScreen>
   );
 }
 

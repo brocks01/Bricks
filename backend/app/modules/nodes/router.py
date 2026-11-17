@@ -64,6 +64,12 @@ def tree(user_id: str = Depends(current_user_id), conn: Connection = Depends(get
     return service.tree(conn, user_id)
 
 
+@router.get("/wisdom")
+def wisdom(limit: int = 20, before: str | None = None, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+    """The Tree of Wisdom: the count of leaves and the events behind them, newest first, paged."""
+    return service.wisdom(conn, user_id, limit, before)
+
+
 @router.post("")
 def attach(body: AttachIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     return _run(service.attach, conn, user_id, body.type, body.title, body.parent_id, body.kind, body.description, body.requires, body.badge)

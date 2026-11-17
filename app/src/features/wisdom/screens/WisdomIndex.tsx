@@ -7,7 +7,8 @@ import {
   setOfferStatus, shareCapsule, type Capsule, type Connection, type Listing, type Offer, type Request, type WisdomStats,
 } from '../../../api/wisdom';
 import { ChipRow, Empty, Figure, ListRow, Notice, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, Field, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Body, Button, Card, Field } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
@@ -68,7 +69,7 @@ export default function WisdomIndex() {
   // mentors are searched only while that part is open, with the filters the person chose (a topic, a language, their own area)
   useEffect(() => {
     if (part !== 'mentors') return;
-    if (mentorNear === 'near_me' && !myArea) { setOffers([]); return; }
+    if (mentorNear === 'near_me' && !myArea) return; // nobody is near a person whose area is not known: see `shownOffers`
     let live = true;
     getOffers(mentorQ, undefined, {
       mode: mentorMode === 'all' ? undefined : mentorMode,
@@ -80,6 +81,8 @@ export default function WisdomIndex() {
       .catch(() => { if (live) setOffers([]); });
     return () => { live = false; };
   }, [part, mentorQ, mentorMode, mentorTopic, mentorLanguage, mentorNear, myArea]);
+
+  const shownOffers = mentorNear === 'near_me' && !myArea ? [] : offers;
 
   // paid sessions are searched only while that part is open, so opening Wisdom costs nothing extra
   useEffect(() => {
@@ -147,7 +150,7 @@ export default function WisdomIndex() {
   const shown = library === null ? null : library.filter((c) => kind === 'all' || c.kind === kind);
 
   return (
-    <Screen title={w('heading')} subtitle={profile?.focus === 'serve' ? w('introServe') : w('intro')}>
+    <BackScreen title={w('heading')} subtitle={profile?.focus === 'serve' ? w('introServe') : w('intro')}>
       <View style={{ flexDirection: 'row', gap: space.md, marginBottom: space.md }}>
         <Figure n={stats?.calls ?? 0} label={w('calls')} icon="call-outline" />
         <Figure n={stats?.people_helped ?? 0} label={w('helped')} icon="heart-outline" />
@@ -194,7 +197,7 @@ export default function WisdomIndex() {
           </El>
           {mentorNear === 'near_me' && !myArea ? <Notice text={w('needArea')} /> : null}
           <View style={{ height: space.md }} />
-          {offers === null ? null : offers.length === 0 ? <Empty text={w('noMentors')} /> : offers.map((o) => (
+          {shownOffers === null ? null : shownOffers.length === 0 ? <Empty text={w('noMentors')} /> : shownOffers.map((o) => (
             <Card key={o.id} title={o.title}>
               <Body>{`${o.by} · ${w(o.kind)} · ${modeWord(o.mode)}${o.price_note ? ' · ' + o.price_note : ''}${o.availability ? ' · ' + o.availability : ''}`}</Body>
               {o.proof_field || o.proof_years != null || o.proof_where ? (
@@ -327,6 +330,6 @@ export default function WisdomIndex() {
           ))}
         </>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

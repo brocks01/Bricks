@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { familyApi, type PermissionEvent } from '../../../../api/family';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { usePageData, usePageWords, type PageDataInput } from '../../../../kit';
@@ -38,15 +39,15 @@ export default function PermissionHistory() {
 
   if (failed) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <ErrorText>{w('failed')}</ErrorText>
         <Button label={w('tryAgain')} onPress={load} />
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={w('heading')} subtitle={w('intro')} back>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       {(events ?? []).length === 0 ? (
         <Text style={[type.body, { color: colors.muted }]}>{w('empty')}</Text>
       ) : (
@@ -57,6 +58,6 @@ export default function PermissionHistory() {
           </View>
         ))
       )}
-    </Screen>
+    </BackScreen>
   );
 }

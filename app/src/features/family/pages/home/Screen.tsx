@@ -1,8 +1,9 @@
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
-import { Button, ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { El, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -29,7 +30,7 @@ export default function FamilyTab() {
   const role = (r: string) => w(`role${r[0].toUpperCase()}${r.slice(1)}`);
 
   return (
-    <Screen title={w('heading')} subtitle={w('intro')}>
+    <BackScreen title={w('heading')} subtitle={w('intro')}>
       {families === null && !failed ? null : (
         <>
           {(families?.length ?? 0) === 0 ? (
@@ -76,6 +77,6 @@ export default function FamilyTab() {
           </View>
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

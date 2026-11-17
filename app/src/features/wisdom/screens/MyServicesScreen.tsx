@@ -3,7 +3,8 @@ import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { cancelBooking, completeBooking, decideBooking, getBookings, getListings, type Booking, type Listing } from '../../../api/wisdom';
 import { Empty, ListRow, Panel, Pill, Section } from '../../../components/blocks';
-import { Button, ErrorText, Screen } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { Button, ErrorText } from '../../../components/ui';
 import { useStore } from '../../../core/store';
 import { useLanguage } from '../../../i18n';
 import { usePageData, usePageWords } from '../../../kit';
@@ -100,7 +101,7 @@ export default function MyServicesScreen() {
   );
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <ErrorText>{error}</ErrorText>
       <Section title={w('requests_for_me')}>
         {incoming.length === 0 ? <Empty text={w('no_bookings')} /> : incoming.map(bookingCard)}
@@ -114,6 +115,6 @@ export default function MyServicesScreen() {
           <ListRow key={l.id} icon={CATEGORY_ICON[l.category]} i={i} title={l.title} sub={l.status === 'paused' ? w('unpause_listing') : `${w('years_exp', { n: l.experience_years })}`} onPress={() => navigate('wisdom.service', { id: l.id })} />
         ))}
       </Section>
-    </Screen>
+    </BackScreen>
   );
 }

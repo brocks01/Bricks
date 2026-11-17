@@ -5,8 +5,10 @@ import {
   cancelHostEvent, createHostEvent, endHostSeries, getHostEvents, getMyHosts, INTENTS, OPPORTUNITY_KINDS, REPEATS,
   type HostEvent, type HostEventBody, type Intent, type MyHost, type OpportunityKind,
 } from '../../../api/hosts';
+import { INTERESTS, type Interest } from '../../../api/market';
 import { Empty, ListRow, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { Body, Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { El, useAction, useField, usePageWords } from '../../../kit';
 import { colors, radius, space, type } from '../../../theme/tokens';
 import { hostHome as page } from '../pages';
@@ -31,6 +33,7 @@ export default function HostHome() {
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<OpportunityKind>('market_day');
   const [intents, setIntents] = useState<Intent[]>(DEFAULT_INTENTS.market_day);
+  const [interests, setInterests] = useState<Interest[]>([]); // what it is about: the Marketplace recommends it to people who enjoy these
   const [venue, setVenue] = useState('');
   const [address, setAddress] = useState('');
   const [date, setDate] = useState('');
@@ -60,6 +63,7 @@ export default function HostHome() {
 
   const choose = (h: MyHost) => { setActive(h); loadEvents(h); };
   const pickKind = (k: OpportunityKind) => { setKind(k); setIntents(DEFAULT_INTENTS[k]); };
+  const toggleInterest = (i: Interest) => setInterests((cur) => (cur.includes(i) ? cur.filter((x) => x !== i) : [...cur, i]));
   const toggleIntent = (i: Intent) => setIntents((cur) => (cur.includes(i) ? (cur.length > 1 ? cur.filter((x) => x !== i) : cur) : [...cur, i]));
 
   const add = async () => {
@@ -75,6 +79,7 @@ export default function HostHome() {
         title: title.trim(),
         kind,
         intents,
+        interests,
         venue_name: venue.trim(),
         address: address.trim() || undefined,
         starts_at: starts.toISOString(),
@@ -86,6 +91,7 @@ export default function HostHome() {
       setError(null);
       setTitle(''); setVenue(''); setAddress(''); setDate(''); setTime(''); setStalls(''); setLink(''); setRepeat('none');
       setIntents(DEFAULT_INTENTS[kind]);
+      setInterests([]);
       loadEvents(active);
     } catch {
       setError(w('failed'));
@@ -114,27 +120,27 @@ export default function HostHome() {
   useField(page, 'link', link, (v) => setLink(String(v)));
   useAction(page, 'add', add);
 
-  if (hosts === null) return <Screen title={w('h_host')} back><Body muted>…</Body></Screen>;
+  if (hosts === null) return <BackScreen title={w('h_host')}><Body muted>…</Body></BackScreen>;
   if (hosts.length === 0) {
     return (
-      <Screen title={w('h_host')} back>
+      <BackScreen title={w('h_host')}>
         <Empty text={w('host_none')} />
         <Body muted>{w('host_none_d')}</Body>
-      </Screen>
+      </BackScreen>
     );
   }
   if (!active) {
     return (
-      <Screen title={w('h_host')} subtitle={w('choose_host')} back>
+      <BackScreen title={w('h_host')} subtitle={w('choose_host')}>
         {hosts.map((h) => (
           <ListRow key={h.id} icon="business-outline" title={h.name} sub={h.area_name ?? ''} onPress={() => choose(h)} />
         ))}
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={w('h_host')} subtitle={`${active.name} · ${w(`role_${active.role}`)}`} back>
+    <BackScreen title={w('h_host')} subtitle={`${active.name} · ${w(`role_${active.role}`)}`}>
       <Section title={w('coming_up')}>
         {events.length === 0 ? <Empty text={w('no_events')} /> : null}
         {events.map((e) => (
@@ -175,6 +181,18 @@ export default function HostHome() {
             );
           })}
         </View>
+        <Text style={[type.small, { color: colors.ink, fontWeight: '700', marginBottom: space.xs }]}>{w('interests_label')}</Text>
+        <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.md }}>
+          {INTERESTS.map((i) => {
+            const on = interests.includes(i);
+            return (
+              <Pressable key={i} onPress={() => toggleInterest(i)} accessibilityRole="checkbox" accessibilityState={{ checked: on }}
+                style={{ minHeight: 48, paddingHorizontal: 18, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: on ? colors.accent : colors.card, borderWidth: 1, borderColor: on ? colors.accent : colors.line }}>
+                <Text style={{ fontSize: 16, fontWeight: '700', color: on ? '#FFFFFF' : colors.ink }}>{w(`r_${i}`)}</Text>
+              </Pressable>
+            );
+          })}
+        </View>
         <El page={page} id="venue"><Field label={w('f_venue')} value={venue} onChangeText={setVenue} maxLength={120} /></El>
         <El page={page} id="address"><Field label={w('f_address')} value={address} onChangeText={setAddress} maxLength={200} /></El>
         <El page={page} id="date"><Field label={w('f_date')} value={date} onChangeText={setDate} placeholder={w('hint_date')} keyboardType="numbers-and-punctuation" maxLength={10} /></El>
@@ -188,6 +206,6 @@ export default function HostHome() {
           <Button label={w('add')} icon="add" disabled={busy} onPress={() => void add()} />
         </El>
       </Card>
-    </Screen>
+    </BackScreen>
   );
 }

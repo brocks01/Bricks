@@ -3,7 +3,8 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, Pressable, Text, View } from 'react-native';
 import { familyApi, type Family, type FamilyMember } from '../../../../api/family';
 import { calendarApi } from '../../../../api/calendar';
-import { Button, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ErrorText, Field } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, usePageData, usePageWords, type PageDataInput } from '../../../../kit';
@@ -128,22 +129,22 @@ export default function FamilyDetail() {
 
   if (failed) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('notFound')}</Text>
         <Button label={w('tryAgain')} onPress={load} />
-      </Screen>
+      </BackScreen>
     );
   }
   if (!data) {
     return (
-      <Screen title={w('heading')} back>
+      <BackScreen title={w('heading')}>
         <View />
-      </Screen>
+      </BackScreen>
     );
   }
 
   return (
-    <Screen title={data.name} back>
+    <BackScreen title={data.name}>
       {claim ? (
         <View style={{ backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.md, marginBottom: space.md }}>
           <Text style={{ fontSize: 17, fontWeight: '800', color: colors.ink }}>{w('claimTitle', { name: claim.name })}</Text>
@@ -261,6 +262,6 @@ export default function FamilyDetail() {
           />
         </El>
       ) : null}
-    </Screen>
+    </BackScreen>
   );
 }

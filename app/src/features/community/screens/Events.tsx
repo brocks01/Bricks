@@ -1,85 +1,63 @@
 import { useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { type ActivityWhen, getActivities, getCommunity, setGoing } from '../../../api/communities';
+import { communityAbout, type AboutEvent, type CommunityCard } from '../../../api/communityRules';
+import { SkeletonList } from '../../../components/Skeleton';
+import { BackScreen } from '../../../components/BackButton';
+import { Button } from '../../../components/ui';
+import { useStore } from '../../../core/store';
+import { useT } from '../../../i18n';
 import { El, usePageData, usePageWords } from '../../../kit';
 import { useNavigate } from '../../../navigation';
-import { colors, space, type } from '../../../theme/tokens';
+import { sessionStore } from '../../../session/store';
+import { colors, space } from '../../../theme/tokens';
+import { EventList } from '../EventList';
 import { communityEvents as page } from '../pages';
-import { Gate, JoinPill, ListRow, PillButton, Tabs, useLoad, useWhen } from '../ui';
+import { PillButton } from '../ui';
 
-// Events (sample 10, screen 3): three tabs and a Create Event button for community leaders.
+// "See events" from a community card: the community's gatherings, Upcoming and Past, grouped by day, each with I'm going and I'm here.
+// Someone not in the community sees what is coming up (titles, times and places), and a leader can create a new event.
 export default function Events() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const cid = String(id);
   const w = usePageWords(page);
+  const t = useT();
   const go = useNavigate();
-  const when = useWhen();
-  const [tab, setTab] = useState<ActivityWhen>('upcoming');
-  const { data, failed, reload } = useLoad(async () => {
-    const [list, c] = await Promise.all([getActivities(cid, tab), getCommunity(cid)]);
-    return { list, canManage: c.can_manage };
-  }, `${cid}:${tab}`);
+  const { status } = useStore(sessionStore);
+  const [card, setCard] = useState<CommunityCard | null>(null);
+  const [preview, setPreview] = useState<AboutEvent[]>([]);
+  const [canManage, setCanManage] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const load = useCallback(() => {
+    communityAbout(cid).then((a) => { setCard(a.community); setPreview(a.events); setCanManage(a.can_manage); setFailed(false); }).catch(() => setFailed(true));
+  }, [cid]);
+  useEffect(() => { if (status === 'in' && id) load(); }, [status, id, load]);
 
-  const toggle = async (activityId: string, going: boolean) => {
-    try {
-      await setGoing(activityId, !going);
-    } finally {
-      reload();
-    }
-  };
-  const tabs = [
-    { key: 'upcoming' as const, label: w('upcoming') },
-    { key: 'mine' as const, label: w('myEvents') },
-    { key: 'past' as const, label: w('past') },
-  ];
-  const empty = tab === 'upcoming' ? w('noUpcoming') : tab === 'mine' ? w('noMine') : w('noPast');
-
-  usePageData(
-    page,
-    data
-      ? {
-          values: [{ label: tabs.find((t) => t.key === tab)?.label ?? '', value: String(data.list.length) }],
-          images: [],
-          lists: [{ label: w('events'), items: data.list.map((a) => ({ label: a.title, detail: [when(a.starts_at), a.location].filter(Boolean).join(' · ') })) }],
-          actions: [
-            { id: 'upcoming', label: w('upcoming'), run: () => setTab('upcoming') },
-            { id: 'myEvents', label: w('myEvents'), run: () => setTab('mine') },
-            { id: 'past', label: w('past'), run: () => setTab('past') },
-            ...(data.canManage ? [{ id: 'createEvent', label: w('createEvent'), run: () => { go('community.newEvent', { id: cid }); } }] : []),
-          ],
-        }
-      : null
-  );
+  usePageData(page, card ? {
+    values: [{ label: w('events'), value: card.name }],
+    images: [],
+    lists: [{ label: w('upcoming'), items: preview.map((a) => ({ label: a.title, detail: a.location ?? '' })) }],
+    actions: canManage ? [{ id: 'createEvent', label: w('createEvent'), run: () => { go('community.newEvent', { id: cid }); } }] : [],
+  } : null);
 
   return (
-    <Gate title={w('events')} data={data} failed={failed} reload={reload} notFound={w('notFound')} tryAgain={w('tryAgain')}>
-      {(d) => (
+    <BackScreen title={card ? `${w('events')} · ${card.name}` : w('events')}>
+      {failed ? (
+        <View style={{ gap: space.md }}>
+          <Text style={{ fontSize: 18, color: colors.ink }}>{t('rv.failed')}</Text>
+          <Button label={t('rv.try_again')} onPress={load} />
+        </View>
+      ) : !card ? <SkeletonList count={3} /> : (
         <>
-          <Tabs tabs={tabs} value={tab} onChange={setTab} />
-          {d.list.length ? (
-            d.list.map((a, i) => (
-              <ListRow
-                key={a.id}
-                uri={a.image_url}
-                icon="calendar"
-                i={i}
-                title={a.title}
-                lines={[when(a.starts_at), a.location, a.repeat ? w(`repeat_${a.repeat}`) : null]}
-                onPress={() => go('community.event', { id: cid, eid: a.id })}
-                right={tab === 'past' ? undefined : <JoinPill on={a.i_going} label={a.i_going ? w('going') : w('join')} onPress={() => void toggle(a.id, a.i_going)} />}
-              />
-            ))
-          ) : (
-            <Text style={[type.body, { color: colors.muted, textAlign: 'center', marginVertical: space.lg }]}>{empty}</Text>
-          )}
-          {d.canManage ? (
-            <View style={{ alignItems: 'center' }}>
+          <Text accessibilityRole="header" style={{ fontSize: 26, fontWeight: '800', color: colors.ink, marginBottom: space.md }}>{card.name}</Text>
+          {canManage ? (
+            <View style={{ alignItems: 'flex-start', marginBottom: space.md }}>
               <El page={page} id="createEvent"><PillButton label={w('createEvent')} onPress={() => go('community.newEvent', { id: cid })} /></El>
             </View>
           ) : null}
+          <EventList cid={cid} member={card.is_member} preview={preview} eventsUrl={card.events_url} />
         </>
       )}
-    </Gate>
+    </BackScreen>
   );
 }

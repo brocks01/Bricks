@@ -1,4 +1,4 @@
-import { Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { usePageWords } from '../../../../kit';
 import { ProfileForm } from '../../ProfileForm';
 import { meEdit as page } from './page';
@@ -6,8 +6,8 @@ import { meEdit as page } from './page';
 export default function EditProfile() {
   const w = usePageWords(page);
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <ProfileForm page={page} destination="me.index" />
-    </Screen>
+    </BackScreen>
   );
 }

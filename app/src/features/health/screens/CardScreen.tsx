@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../../core/useFocusLive';
 import { getCard, putCard } from '../../../api/health';
 import { Notice } from '../../../components/blocks';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../kit';
 import { sessionStore } from '../../../session/store';
@@ -22,6 +24,7 @@ export default function CardScreen() {
   const [note, setNote] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status !== 'in') return;
     getCard()
@@ -35,7 +38,7 @@ export default function CardScreen() {
         setLoaded(true);
       })
       .catch(() => setError(w('failed')));
-  }, [status, w]);
+  }, [status, w, liveEpoch]);
 
   const save = async () => {
     setError(null);
@@ -58,7 +61,7 @@ export default function CardScreen() {
   usePageData(page, loaded ? { values: [{ label: w('blood_group'), value: blood || '—' }, { label: w('medicines'), value: medicines || '—' }, { label: w('contact_name'), value: contactName || '—' }], images: [], lists: [], actions: [] } : null);
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <Notice text={w('private_note')} />
       <ErrorText>{error}</ErrorText>
       <El page={page} id="bloodGroup">
@@ -70,6 +73,6 @@ export default function CardScreen() {
       <El page={page} id="contactName"><Field label={w('contact_name')} value={contactName} onChangeText={setContactName} maxLength={80} /></El>
       <El page={page} id="contactPhone"><Field label={w('contact_phone')} value={contactPhone} onChangeText={setContactPhone} keyboardType="phone-pad" maxLength={30} /></El>
       <El page={page} id="saveCard"><Button label={note ?? w('save')} icon={note ? 'checkmark' : undefined} onPress={save} /></El>
-    </Screen>
+    </BackScreen>
   );
 }

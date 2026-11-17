@@ -2,7 +2,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { familyApi, type Invite } from '../../../../api/family';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../../components/ui';
 import { useT } from '../../../../i18n';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -43,7 +44,7 @@ export default function FamilyInvite() {
   useAction(page, 'send', () => void send());
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('intro')}</Text>
 
       {sent ? (
@@ -78,6 +79,6 @@ export default function FamilyInvite() {
           </El>
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

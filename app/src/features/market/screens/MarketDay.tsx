@@ -1,12 +1,16 @@
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
-import { Linking, Text, View } from 'react-native';
+import { Linking, View } from 'react-native';
 import { ApiError } from '../../../api/client';
-import { cancelMarketStall, getMarketEvent, setMarketGoing, takeMarketStall, type MarketEventDetail } from '../../../api/market';
+import { cancelMarketStall, getMarketEvent, markAttendance, setMarketGoing, takeMarketStall, type MarketEventDetail } from '../../../api/market';
 import { addMilestone, getMilestones, tickMilestone, type Milestone } from '../../../api/marketSteps';
 import { Empty, ListRow, Notice, Pill, Section } from '../../../components/blocks';
-import { Body, Button, Card, ChoiceChips, ErrorText, Field, Screen } from '../../../components/ui';
-import { usePageWords } from '../../../kit';
+import { Body, Button, Card, ChoiceChips, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
+import { MapCard } from '../../../components/MapCard';
+import { refreshWisdom } from '../../grow/wisdomStore';
+import { AnswerButtons, ChangeLink, StatePill, stateOf, Toast, useToast } from '../Answer';
+import { El, useAction, usePageWords } from '../../../kit';
 import { colors, space } from '../../../theme/tokens';
 import { marketDay as page } from '../pages';
 
@@ -27,6 +31,10 @@ export default function MarketDay() {
   const [stepCommunity, setStepCommunity] = useState<string | null>(null);
   const [stepTitle, setStepTitle] = useState('');
   const [stepDue, setStepDue] = useState('');
+  const [opened] = useState(() => Date.now()); // when the page was opened: has the day started?
+  const [changing, setChanging] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [toast, say] = useToast();
 
   const load = useCallback(() => { getMarketEvent(String(id)).then(setE).catch(() => setFailed(true)); }, [id]);
   const loadSteps = useCallback(() => {
@@ -42,6 +50,16 @@ export default function MarketDay() {
     try { await takeMarketStall(String(id), { selling: selling.trim(), slot, kind: 'goods' }); setSelling(''); setError(null); load(); }
     catch (err) { setError(err instanceof ApiError && err.code === 'sellers_are_seniors' ? w('sellersOnly') : w('dayFailed')); }
   };
+  // After the day: "I went" grows a leaf on the Tree of Wisdom; "I didn't go" is counted too. Both can be changed.
+  const answer = async (went: boolean) => {
+    setBusy(true);
+    try { await markAttendance(String(id), went); setChanging(false); say(w('noted')); load(); void refreshWisdom(); }
+    catch { say(w('not_saved')); }
+    finally { setBusy(false); }
+  };
+  useAction(page, 'went', () => answer(true));
+  useAction(page, 'didntGo', () => answer(false));
+  useAction(page, 'change', () => setChanging(true));
   const give = async () => { try { await cancelMarketStall(String(id)); load(); } catch { setError(w('dayFailed')); } };
   // The circle's weekly steps toward its stall: the lead of a circle that planned the visit adds them, every member ticks them.
   const addStep = async () => {
@@ -56,12 +74,17 @@ export default function MarketDay() {
     try { await tickMilestone(String(id), s.id, !s.done); setError(null); loadSteps(); } catch { setError(w('dayFailed')); }
   };
 
-  if (failed) return <Screen title={w('dayHeading')} back><Body muted>{w('dayNotFound')}</Body></Screen>;
-  if (!e) return <Screen title={w('dayHeading')} back><Body muted>…</Body></Screen>;
+  if (failed) return <BackScreen title={w('dayHeading')}><Body muted>{w('dayNotFound')}</Body></BackScreen>;
+  if (!e) return <BackScreen title={w('dayHeading')}><Body muted>…</Body></BackScreen>;
   const mine = e.stalls.find((s) => s.mine);
   const when = new Date(e.starts_at).toLocaleString(undefined, { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+  const startedAt = new Date(e.starts_at).getTime();
+  const answerable = e.i_going && opened >= startedAt && opened <= startedAt + 30 * 86_400_000;
+  const state = answerable ? stateOf(true, true, e.attended) : null;
+  const where = e.address?.trim() || [e.venue_name, e.area_name].filter(Boolean).join(', ');
   return (
-    <Screen title={e.title} subtitle={[when, e.venue_name, e.host ? w('hostedBy', { name: e.host }) : ''].filter(Boolean).join(' · ')} back>
+    <View style={{ flex: 1 }}>
+    <BackScreen title={e.title} subtitle={[when, e.venue_name, e.host ? w('hostedBy', { name: e.host }) : ''].filter(Boolean).join(' · ')}>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginBottom: space.md }}>
         {e.repeat ? <Pill text={w(`dayRepeat_${e.repeat}`)} /> : null}
         {e.intents.map((i) => <Pill key={i} text={w(`intent_${i}`)} />)}
@@ -70,7 +93,15 @@ export default function MarketDay() {
       </View>
       {e.description ? <Body>{e.description}</Body> : null}
       {e.external_url ? <Button kind="plain" label={w('openLink')} onPress={() => { void Linking.openURL(e.external_url as string); }} /> : null}
-      {e.address ? <Text style={{ color: colors.muted, marginVertical: space.sm }}>{e.address}</Text> : null}
+      {state ? (
+        <View style={{ backgroundColor: colors.card, borderRadius: 18, borderWidth: 2, borderColor: state === 'ask' ? '#D9A23A' : colors.line, padding: space.lg, gap: space.md, marginVertical: space.md }}>
+          <StatePill state={state} w={w} />
+          {state === 'ask' || changing ? (
+            <AnswerButtons w={w} busy={busy} onAnswer={(went) => void answer(went)} wrap={(which, n) => <El page={page} id={which === 'went' ? 'went' : 'didntGo'}>{n}</El>} />
+          ) : <El page={page} id="change"><ChangeLink label={w('change')} onPress={() => setChanging(true)} /></El>}
+        </View>
+      ) : null}
+      {where ? <View style={{ marginVertical: space.md }}><MapCard kind="event" id={e.id} address={where} /></View> : null}
       {e.my_communities.length ? <Notice text={`${w('yourCommunities')}: ${e.my_communities.map((c) => c.name).join(', ')}`} icon="people-outline" /> : null}
       <View style={{ height: space.sm }} />
       <Button kind={e.i_going ? 'plain' : 'primary'} label={e.i_going ? w('imNotGoing') : w('imGoing')} onPress={() => void going(!e.i_going)} />
@@ -110,6 +141,8 @@ export default function MarketDay() {
           ) : null}
         </Section>
       ) : null}
-    </Screen>
+    </BackScreen>
+    <Toast msg={toast} />
+    </View>
   );
 }

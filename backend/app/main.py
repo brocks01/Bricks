@@ -38,6 +38,7 @@ from .modules.wisdom.router import router as wisdom_router
 from .modules.insights.router import router as insights_router
 from .modules.hosts.router import router as hosts_router
 from .modules.safety.router import router as safety_router
+from .modules.geo.router import router as geo_router
 
 # Migrations run by themselves at startup: a fresh deploy never waits on a person running SQL by hand.
 # One applier at a time (Postgres advisory lock), so overlapping instances during a Render swap cannot
@@ -149,6 +150,7 @@ app.include_router(wisdom_router)
 app.include_router(insights_router)
 app.include_router(hosts_router)
 app.include_router(safety_router)
+app.include_router(geo_router)
 app.include_router(profile_router)
 
 

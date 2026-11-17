@@ -4,7 +4,8 @@ import { Linking, Text, View } from 'react-native';
 import { closeHelp, getHelpInbox, sendHelp, type HelpAlert } from '../../../api/health';
 import { ApiError } from '../../../api/client';
 import { Empty, Notice, Panel, Section } from '../../../components/blocks';
-import { Button, ErrorText, Field, Screen } from '../../../components/ui';
+import { Button, ErrorText, Field } from '../../../components/ui';
+import { BackScreen } from '../../../components/BackButton';
 import { useStore } from '../../../core/store';
 import { El, useAction, useField, usePageData, usePageWords } from '../../../kit';
 import { sessionStore } from '../../../session/store';
@@ -58,7 +59,7 @@ export default function HelpScreen() {
   });
 
   return (
-    <Screen back title={w('heading')}>
+    <BackScreen title={w('heading')}>
       <Text style={[type.body, { color: colors.ink, marginBottom: space.md }]}>{w('help_body')}</Text>
       <ErrorText>{error}</ErrorText>
       <View style={{ gap: space.md }}>
@@ -84,6 +85,6 @@ export default function HelpScreen() {
           </Panel>
         ))}
       </Section>
-    </Screen>
+    </BackScreen>
   );
 }

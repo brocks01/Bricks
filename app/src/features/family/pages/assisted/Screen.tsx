@@ -2,7 +2,8 @@ import { useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 import { familyApi } from '../../../../api/family';
-import { Button, ChoiceChips, ErrorText, Field, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { Button, ChoiceChips, ErrorText, Field } from '../../../../components/ui';
 import { LANGUAGES, useT } from '../../../../i18n';
 import { El, useAction, useField, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
@@ -48,7 +49,7 @@ export default function FamilyAssisted() {
   useAction(page, 'create', () => void create());
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Text style={[type.body, { color: colors.muted, marginBottom: space.md }]}>{w('intro')}</Text>
       <El page={page} id="name">
         <Field label={w('name')} value={name} onChangeText={setName} placeholder={w('namePlaceholder')} icon="person-outline" maxLength={80} />
@@ -66,6 +67,6 @@ export default function FamilyAssisted() {
       <El page={page} id="create">
         <Button label={w('create')} onPress={() => void create()} disabled={busy} />
       </El>
-    </Screen>
+    </BackScreen>
   );
 }

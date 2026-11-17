@@ -1,11 +1,18 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../core/useFocusLive';
 import { useEffect, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { getInbox } from '../api/wisdom';
 import { useStore } from '../core/store';
+import '../features/home/shellWords'; // registers the shell's words
+import { MiniTree } from '../features/grow/MiniTree';
+import { wisdomStore } from '../features/grow/wisdomStore';
+import { useT } from '../i18n';
 import { useGoBack, useNavigate } from '../navigation';
 import { sessionStore } from '../session/store';
-import { colors, space, type } from '../theme/tokens';
+import { colors, space, tints, type } from '../theme/tokens';
+
+const TREE_RING = '#2F7D4F'; // the green of a leaf, for the Tree of Wisdom button
 
 /**
  * The Interchange mark: a green leaf. Rasterised to PNG (`assets/brand/mark.png`) and used at any size, so one file updates every header and the welcome screen together.
@@ -34,31 +41,41 @@ export function Avatar({ name, size = 40, dot }: { name: string; size?: number; 
   );
 }
 
-/** Top of every main page, as in the design: a white bar with the mark and name on the left and the person's round profile button (navy, initials, gold ring) on the right. */
+/**
+ * Top of the four tab pages: a white bar with the round Tree of Wisdom button on the left (it opens the tree page), the mark and name
+ * in the centre, and on the right the bell and the person's round profile button (navy, initials, gold ring). Both round buttons are the same size.
+ */
+const ROUND = 48;
 export function AppHeader() {
   const go = useNavigate();
+  const t = useT();
   const { user } = useStore(sessionStore);
+  const { leaves } = useStore(wisdomStore);
   const [unread, setUnread] = useState(0);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     getInbox().then((r) => setUnread(r.unread)).catch(() => undefined);
-  }, []);
+  }, [liveEpoch]);
   const name = (user?.display_name ?? user?.email ?? '').trim();
   const words = name.split(/\s+/).filter(Boolean);
   const initials = ((words[0]?.charAt(0) ?? '?') + (words.length > 1 ? words[words.length - 1].charAt(0) : '')).toUpperCase();
   return (
-    <View style={{ height: 64, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
-        <Logo size={34} />
-        <Text style={{ fontSize: 18, fontWeight: '600', color: colors.ink, letterSpacing: -0.2 }}>Interchange</Text>
+    <View style={{ height: 68, paddingHorizontal: space.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.card, borderBottomWidth: 1, borderColor: colors.line }}>
+      <View style={{ pointerEvents: 'none', position: 'absolute', left: 0, right: 0, top: 0, bottom: 0, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+        <Logo size={30} />
+        <Text style={{ fontSize: 18, fontWeight: '700', color: colors.ink, letterSpacing: -0.2 }}>Interchange</Text>
       </View>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Notifications" onPress={() => go('channels.notices')} hitSlop={8}>
-          <Ionicons name="notifications-outline" size={26} color={colors.ink} accessible={false} />
-          {unread > 0 ? <View style={{ position: 'absolute', right: -1, top: -1, width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.card }} /> : null}
-        </Pressable>
-      <Pressable accessibilityRole="button" accessibilityLabel="Profile" onPress={() => go('me.index')} hitSlop={6} style={{ width: 42, height: 42, borderRadius: 21, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.gold }}>
-        <Text style={{ fontSize: 16, fontWeight: '600', color: '#FFFFFF' }}>{initials}</Text>
+      <Pressable accessibilityRole="button" accessibilityLabel={leaves === null ? t('shell.tree') : leaves === 1 ? t('shell.tree_one') : t('shell.tree_n', { n: leaves })} onPress={() => go('grow.progress')} hitSlop={4} style={{ width: ROUND, height: ROUND, borderRadius: ROUND / 2, backgroundColor: tints.green, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: TREE_RING }}>
+        <MiniTree size={38} />
       </Pressable>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('shell.notices')} onPress={() => go('channels.notices')} hitSlop={8} style={{ width: 40, height: ROUND, alignItems: 'center', justifyContent: 'center' }}>
+          <Ionicons name="notifications-outline" size={26} color={colors.ink} accessible={false} />
+          {unread > 0 ? <View style={{ position: 'absolute', right: 5, top: 9, width: 11, height: 11, borderRadius: 6, backgroundColor: colors.accent, borderWidth: 2, borderColor: colors.card }} /> : null}
+        </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel={t('shell.profile')} onPress={() => go('me.index')} hitSlop={4} style={{ width: ROUND, height: ROUND, borderRadius: ROUND / 2, backgroundColor: colors.navy, alignItems: 'center', justifyContent: 'center', borderWidth: 2, borderColor: colors.gold }}>
+          <Text style={{ fontSize: 17, fontWeight: '700', color: colors.card }}>{initials}</Text>
+        </Pressable>
       </View>
     </View>
   );

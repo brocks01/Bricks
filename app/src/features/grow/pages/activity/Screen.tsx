@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { addActivity, getActivity, removeActivity, type ActivityData, type ActivityKind } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
 import { SkeletonList } from '../../../../components/Skeleton';
-import { Button, Field, Screen } from '../../../../components/ui';
+import { Button, Field } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
 import { useStore } from '../../../../core/store';
 import { useLanguage } from '../../../../i18n';
 import { El, useField, usePageData, usePageWords } from '../../../../kit';
@@ -80,7 +81,7 @@ export default function Activity() {
   );
 
   return (
-    <Screen title={w('heading')} back>
+    <BackScreen title={w('heading')}>
       <Hero source={require('../../../../../assets/images/activity.jpg')} height={150} light={false} />
       <Text style={[type.small, { color: colors.muted, marginBottom: space.md }]}>{w('act_intro')}</Text>
       {failed ? (
@@ -125,6 +126,6 @@ export default function Activity() {
           ))}
         </>
       )}
-    </Screen>
+    </BackScreen>
   );
 }

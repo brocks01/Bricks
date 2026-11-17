@@ -6,7 +6,8 @@ import { ApiError } from '../../../../api/client';
 import { exploreCommunities, joinOpenCommunity, leaveCommunity, type ExploreCommunity, type Limits } from '../../../../api/communityRules';
 import { putOnboarding } from '../../../../api/wisdom';
 import { Empty, Notice } from '../../../../components/blocks';
-import { ErrorText, Screen } from '../../../../components/ui';
+import { BackScreen } from '../../../../components/BackButton';
+import { ErrorText } from '../../../../components/ui';
 import { useStore } from '../../../../core/store';
 import { useT } from '../../../../i18n';
 import { El, useField, usePageData, usePageWords } from '../../../../kit';
@@ -123,7 +124,7 @@ export default function Explore() {
   const full = !!limits && limits.left === 0;
   const why = ask ? (ask.audience === 'women' ? w('gender_why_women', { name: ask.name }) : ask.audience === 'men' ? w('gender_why_men', { name: ask.name }) : w('gender_why_any')) : '';
   return (
-    <Screen back title={w('heading')} subtitle={w('intro_explore')}>
+    <BackScreen title={w('heading')} subtitle={w('intro_explore')}>
       <View style={{ flexDirection: 'row', alignItems: 'center', backgroundColor: colors.card, borderWidth: 1, borderColor: colors.line, borderRadius: radius.button, paddingHorizontal: space.md, marginBottom: space.md }}>
         <Ionicons name="search-outline" size={size.icon.md} color={colors.muted} style={{ marginRight: space.sm }} />
         <El page={page} id="search">
@@ -153,6 +154,6 @@ export default function Explore() {
           onLeave={() => void leave(c)}
         />
       ))}
-    </Screen>
+    </BackScreen>
   );
 }
