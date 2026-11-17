@@ -29,6 +29,7 @@ const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const over = (st: OnboardingState, sec: string) => { const x = st.sections.find((s) => s.id === sec); return !!x && (x.done || x.skipped); };
 function resumeAt(st: OnboardingState): StepId {
+  if (onboardingLocal.walk) return 'name'; // just signed in with Singpass: every page, from the first
   if (over(st, 'channels')) return 'welcome';
   if (over(st, 'interests')) return 'teach';
   if (ans(st, 'basics', 'country') != null) return 'enjoy';
@@ -44,11 +45,13 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [name, setName] = useState(String(ans(state, 'basics', 'display_name') ?? user?.display_name ?? ''));
-  const [area, setArea] = useState(String(ans(state, 'basics', 'area_name') ?? ''));
-  const [typed, setTyped] = useState(false);
+  const [area, setArea] = useState(String(ans(state, 'basics', 'area_name') ?? user?.area_name ?? ''));
+  const [typed, setTyped] = useState(() => !!area && !TOWNS.includes(area));
   const [share, setShare] = useState<boolean | null>(null); // would you like to teach or share? yes opens the Wisdom tab, no keeps it communities-only
   const [skills, setSkills] = useState<Record<string, Level>>({});
-  const [likes, setLikes] = useState<string[]>(Array.isArray(ans(state, 'interests', 'interests')) ? (ans(state, 'interests', 'interests') as string[]) : []);
+  const [likes, setLikes] = useState<string[]>(Array.isArray(ans(state, 'interests', 'interests')) ? (ans(state, 'interests', 'interests') as string[]) : user?.interests ?? []);
+  // Someone who already shares what they know (Uncle Tan after Singpass) is not asked again: their offers are already there.
+  const sharing = state.roles?.includes('share') ?? false;
 
   // What the person is here for is set quietly from "who is setting up" (the first screens), so no screen has to ask it.
   useEffect(() => {
@@ -59,10 +62,10 @@ export function Wizard({ state, onState, finish }: { state: OnboardingState; onS
   }, []);
 
   const step = ORDER[i];
-  const next = () => { setError(null); setI((x) => Math.min(x + 1, ORDER.length - 1)); };
+  const next = () => { setError(null); setI((x) => (ORDER[x] === 'enjoy' && sharing ? ORDER.indexOf('voice') : Math.min(x + 1, ORDER.length - 1))); };
   // Back inside onboarding goes to the step before; on the very first step it cancels the sign-up and returns to sign-in.
   const cancel = () => { void signOut().then(() => { go('auth.signIn', {}, { replace: true }); }).catch(() => undefined); };
-  const back = step === 'welcome' ? undefined : i > 0 ? () => { setError(null); setI((x) => (ORDER[x] === 'voice' && share === false ? ORDER.indexOf('teach') : x - 1)); } : cancel;
+  const back = step === 'welcome' ? undefined : i > 0 ? () => { setError(null); setI((x) => (ORDER[x] === 'voice' && sharing ? ORDER.indexOf('enjoy') : ORDER[x] === 'voice' && share === false ? ORDER.indexOf('teach') : x - 1)); } : cancel;
   const run = async (fn: () => Promise<OnboardingState | void>) => {
     setBusy(true); setError(null);
     try { const s = await fn(); if (s) onState(s); next(); } catch { setError(w('failed')); } finally { setBusy(false); }
