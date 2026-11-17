@@ -196,11 +196,11 @@ def review(conn: Connection, me: str, session_id: str, score, note: str | None =
 
 
 def upcoming_sessions(conn: Connection, user_id: str, until: datetime) -> list[dict]:
-    """For Home (contract point 5): the person's scheduled sessions from now until `until`, soonest first."""
+    """For Home (contract point 5): the person's scheduled sessions from now until `until`, soonest first. Each carries the page that opens it."""
     rows = conn.execute(text(_MEET + "where m.status = 'scheduled' and c.status = 'accepted' and (c.mentor_id = :u or c.learner_id = :u) "
                              "and m.starts_at >= now() - interval '1 hour' and m.starts_at <= :until order by m.starts_at limit 50"), {"u": user_id, "until": until}).all()
     out = []
     for r in rows:
         s = _session(conn, r, user_id)
-        out.append({k: s[k] for k in ("id", "title", "starts_at", "place", "with_name", "role")})
+        out.append({**{k: s[k] for k in ("id", "title", "starts_at", "place", "with_name", "role")}, "open_key": "wisdom.session", "open_params": {"id": s["id"]}})
     return out

@@ -12,7 +12,7 @@ export const marketIndex = definePage({
   ...base,
   key: 'market.index',
   route: '/market',
-  tab: 1.5, // third in the bar: after Communities (1), before Wisdom (2)
+  tab: 2, // third in the bar: after Communities (1), before Wisdom (3)
   icon: 'storefront',
   summary: 'Marketplace: events near you. A search bar; "Your market days" (the ones you said you are going to, and after the day "Did you go?" with I went or I did not go); then "Recommended for you", grouped by day and ranked by your interests and how near they are, with a filter for what you want to do there. Paid sessions (services by the hour) live in Wisdom.',
   keywords: ['marketplace', 'market day', 'opportunity', 'event', 'volunteer', 'nearby', 'stall', 'search', 'i went', 'recommended'],

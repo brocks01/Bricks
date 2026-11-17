@@ -27,7 +27,8 @@ export function firstTab(_p: Profile | null): string {
   return 'home.index';
 }
 
-export const showsWisdom = (state: ProfileState): boolean => !!state.profile && state.profile.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help');
+/** Does this person see the Wisdom tab? Anyone who shares, learns or helps, and anyone whose Wisdom parts include paid sessions (so a person who came only to connect can still book one). */
+export const showsWisdom = (state: ProfileState): boolean => !!state.profile && (state.profile.surfaces.some((s) => s === 'wisdom_share' || s === 'wisdom_learn' || s === 'wisdom_help') || (state.profile.wisdom?.parts ?? []).includes('paid'));
 
 /** Set when the person has walked through the welcome screens in this session, so the app never sends them back even if the server has not flagged them yet (an older server, a slow save). */
 export const onboardingLocal = { done: false };

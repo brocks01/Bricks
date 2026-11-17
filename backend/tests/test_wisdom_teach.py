@@ -148,7 +148,8 @@ def test_upcoming_sessions_has_its_shape_and_never_shows_another_persons():
         mine = wisdom.upcoming_sessions(conn, learner["id"], datetime.now(timezone.utc) + timedelta(days=7))
         theirs = wisdom.upcoming_sessions(conn, stranger["id"], datetime.now(timezone.utc) + timedelta(days=30))
     assert [s["id"] for s in mine] == [soon["id"]] and far["id"] not in str(mine)
-    assert set(mine[0]) == {"id", "title", "starts_at", "place", "with_name", "role"}
+    assert set(mine[0]) == {"id", "title", "starts_at", "place", "with_name", "role", "open_key", "open_params"}
+    assert mine[0]["open_key"] == "wisdom.session" and mine[0]["open_params"] == {"id": soon["id"]}
     assert mine[0]["role"] == "learner" and mine[0]["with_name"] == "Tan" and mine[0]["place"] == "Tampines Hub"
     assert theirs == []
     assert client.get("/v1/wisdom/sessions", headers=stranger["h"]).json()["sessions"] == []
@@ -169,3 +170,15 @@ def test_learn_search_finds_an_elder_by_name_skill_or_language_and_a_chip_finds_
     assert oid not in found(topic="career,gardening")
     o = next(x for x in client.get("/v1/wisdom/offers", params={"q": "watanabe"}, headers=learner["h"]).json()["offers"] if x["id"] == oid)
     assert o["name"] == "Kenji W." and o["by"] == "Kenji" and "Watanabe" not in o["name"]
+
+
+def test_home_upcoming_shows_the_session_and_opens_its_page():
+    """A3 close-out: Wisdom sessions reach Home (GET /v1/home/upcoming) for both people, and open on the session page."""
+    elder, learner, cid = pair()
+    soon = plan(elder, cid, "AI & OS Mentoring", 2)
+    for p in (elder, learner):
+        r = client.get("/v1/home/upcoming", headers=p["h"])
+        assert r.status_code == 200, r.text
+        items = [i for i in r.json()["events"] if i["source"] == "wisdom"]
+        assert [i["id"] for i in items] == [soon["id"]]
+        assert items[0]["open_key"] == "wisdom.session" and items[0]["open_params"] == {"id": soon["id"]} and items[0]["title"] == "AI & OS Mentoring"

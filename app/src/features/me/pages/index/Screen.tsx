@@ -3,6 +3,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { Image, Linking, Pressable, Text, View } from 'react-native';
 import { getMyCommunities, type MyCommunity } from '../../../../api/communities';
 import { getCard, type HealthCard } from '../../../../api/health';
+import { getMyHosts } from '../../../../api/hosts';
 import { BackScreen } from '../../../../components/BackButton';
 import { Row, Field, Button } from '../../../../components/ui';
 import { ChipRow } from '../../../../components/blocks';
@@ -47,6 +48,7 @@ export default function Me() {
   const [card, setCard] = useState<HealthCard | null>(null);
   const [remind, setRemind] = useState<string | null>(null);
   const [shareLine, setShareLine] = useState<string | null>(null);
+  const [isHost, setIsHost] = useState(false);
   const notSet = t('common.notSet');
   const ob = (k: string) => t(`onboarding.index.${k}`);
 
@@ -61,6 +63,7 @@ export default function Me() {
       if (live) setRemind(typeof a === 'string' ? a : null);
     }).catch(() => undefined);
     getTeachingProfile().then((p) => { if (live) setShareLine(p.expertise || null); }).catch(() => undefined);
+    getMyHosts().then((h) => { if (live) setIsHost(h.length > 0); }).catch(() => undefined); // host members and platform admins only
     return () => { live = false; };
   }, [status]);
 
@@ -245,6 +248,7 @@ export default function Me() {
         <Row icon="notifications-outline" label="" value={t('channels.notices.heading')} onPress={() => go('channels.notices')} />
         <Row icon="chatbubbles-outline" label="" value={t('channels.chats.heading')} onPress={() => go('channels.chats')} />
         <Row icon="people-circle-outline" label="" value={t('menu.family')} onPress={() => go('family.home')} />
+        {isHost ? <Row icon="storefront-outline" label="" value={t('host.home.heading')} onPress={() => go('host.home')} /> : null}
         <Row icon="calendar-outline" label="" value={t('menu.calendar')} onPress={() => go('calendar.today')} />
         <Row icon="sparkles-outline" label="" value={t('menu.aspirations')} onPress={() => go('grow.aspirations')} />
         <Row icon="hand-left-outline" label="" value={t('menu.contributions')} onPress={() => go('grow.contributions')} />

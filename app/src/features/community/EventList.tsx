@@ -6,6 +6,7 @@ import { getActivities, setGoing, type CommunityActivity } from '../../api/commu
 import type { AboutEvent } from '../../api/communityRules';
 import { checkIn } from '../../api/lead';
 import { SkeletonList } from '../../components/Skeleton';
+import { refreshWisdom } from '../grow/wisdomStore';
 import { useLanguage, useT } from '../../i18n';
 import { useNavigate } from '../../navigation';
 import { colors, radius, space } from '../../theme/tokens';
@@ -59,6 +60,7 @@ export function EventCard({ e, member, now, onOpen, onChanged }: { e: Ev; member
     try {
       await checkIn(ev.id);
       change({ ...ev, i_attended: true, i_going: false });
+      void refreshWisdom(); // the new leaf shows at once on the header tree and Home's calendar
     } catch (x) {
       setError(x instanceof ApiError && x.code === 'not_open_yet' ? t('rv.here_later') : t('rules.err_failed'));
     }

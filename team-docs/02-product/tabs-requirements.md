@@ -3,7 +3,7 @@
 Root: `../01-philosophy/philosophy.md`. Updated 16 Nov 2026 from the owner's direction. If another page disagrees with this one about the tabs, this page wins.
 
 ## The model in one table
-Wisdom is three products, each solving a different pain, linked but distinct. The bottom bar puts **Wisdom in the round raised centre button**, **Communities on its left** and **Marketplace on its right** (the server's profile decides which a person sees). Communities is the heart of the system.
+Wisdom is three products, each solving a different pain, linked but distinct. The bottom bar has **four tabs: Home, Communities, Marketplace and Wisdom** (the server's profile decides whether the last two show). Communities is the heart of the system.
 
 | | Communities | Wisdom | Marketplace |
 |---|---|---|---|
@@ -27,6 +27,14 @@ Noticed, needed, expected, remembered (see the philosophy page). A feature that 
 4. No platform fee at first; payment is always direct between people; we never hold money.
 5. Trust comes from the person's own proof (field, years, where), **endorsements and counted conversations**; the system never gives medical, legal or financial advice.
 6. Build the backend and the philosophy first; add the doors (phone, WhatsApp, SMS, Telegram, app) one by one. The app is one door.
+
+## Status (17 Nov 2026, after the revamp)
+- **Home** (`home.index`, the first tab): what is coming up from all three products (community gatherings the person is going to, market days, Wisdom sessions), with Show all and a month calendar; the Tree of Wisdom grows a leaf each time the person shows up. Everyone who has finished onboarding lands here.
+- **Communities**: search, "Your communities n of 3", "Picked for you", the community page with I'm going and I'm here (see `communities.md`).
+- **Marketplace**: events near the person, search, Your market days with I went / I didn't go, Recommended for you (see `marketplace.md`).
+- **Wisdom**: LEARN | TEACH, sessions and reviews (see `wisdom.md`).
+- The **profile** opens from the avatar, not a tab (see `people-and-onboarding.md`). Every sub-screen has the same floating Back button.
+- **Not yet:** agent skills for the revamp's new answers (skills were frozen during the revamp), the five other languages checked by native speakers, a check at the largest text size on a real phone.
 
 ## Open questions
 Who is the first community (people far from home, or the street where a retiree lives)? How is taking part from afar done (voice messages to the circle is the simplest)? How are gender and identity declarations kept opt-in and private? See each product's page.
