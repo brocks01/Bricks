@@ -1,4 +1,5 @@
 import { useLocalSearchParams } from 'expo-router';
+import { useLiveEpoch } from '../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Text } from 'react-native';
 import { cancelStall, getStalls, reserveStall, type StallSlot, type Stalls } from '../../../api/market';
@@ -30,9 +31,10 @@ export default function StallScreen() {
   const load = useCallback(() => {
     if (id) getStalls(id).then(setData).catch(() => setLost(true));
   }, [id]);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
 
   const reserve = async () => {
     if (!id) return;

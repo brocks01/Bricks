@@ -1,5 +1,6 @@
 // The Communities tab, kept simple: a greeting, what is next with who is going, the groups you have joined, and one button to start another.
 import { useCallback, useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text, View } from 'react-native';
 import { getMyCommunities, getUpcoming, setGoing, type MyCommunity, type Upcoming } from '../../../../api/communities';
@@ -37,7 +38,10 @@ export default function CommunitiesHome() {
       setFailed(true); // a failed request is not the same as "no groups yet"
     }
   }, []);
-  useEffect(() => { if (status === 'in') void load(); }, [status, load]);
+  const liveEpoch = useLiveEpoch();
+  useEffect(() => {
+    if (status === 'in') void load();
+  }, [status, load, liveEpoch]);
 
   const hour = new Date().getHours();
   const greeting = w(hour < 12 ? 'c_morning' : hour < 18 ? 'c_afternoon' : 'c_evening', { name });

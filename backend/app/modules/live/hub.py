@@ -30,6 +30,7 @@ class Conn:
 
 _conns: dict[str, set[Conn]] = {}
 _rev: dict[str, int] = {}
+_last: dict[tuple[str, str], tuple[int, str]] = {}  # (person, topic) -> (revision, device that made the change): what "changed elsewhere" is judged on
 _lock = threading.Lock()
 
 
@@ -66,16 +67,27 @@ def publish(user_id: str, msg: dict) -> int:
     return sum(1 for c in group if _send(c, msg))
 
 
-def changed(user_id: str, topics: list[str] | set[str]) -> int:
-    """Tells this person's live screens that these things changed. Nothing is stored: a screen that was away refetches everything when it returns."""
+def changed(user_id: str, topics: list[str] | set[str], device: str = "") -> int:
+    """Tells this person's live screens that these things changed. Only the revision and who changed which topic are remembered (so a screen that was
+    away can be told its edit would overwrite something newer); a screen that was away refetches everything when it returns."""
     if not user_id or not topics:
         return 0
     with _lock:
-        if user_id not in _conns:
-            return 0
         _rev[user_id] = _rev.get(user_id, 0) + 1
         rev = _rev[user_id]
+        for t in topics:
+            _last[(user_id, t)] = (rev, device)
     return publish(user_id, {"type": "changed", "topics": sorted(set(topics)), "rev": rev})
+
+
+def changed_elsewhere(user_id: str, topics: list[str] | set[str], seen_rev: int, device: str) -> bool:
+    """True if another device changed any of these topics after the revision this device last knew: its edit would silently overwrite that."""
+    with _lock:
+        for t in topics:
+            rev, who = _last.get((user_id, t), (0, ""))
+            if rev > seen_rev and who != device:
+                return True
+    return False
 
 
 def open_page(user_id: str, page: str, params: dict | None = None) -> int:

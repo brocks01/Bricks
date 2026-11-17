@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { getMarketEvents } from '../../../api/market';
 import { Empty } from '../../../components/blocks';
@@ -16,9 +16,9 @@ import { marketIndex as page } from '../pages';
 export default function MarketIndex() {
   const w = usePageWords(page);
   const { status } = useStore(sessionStore);
-  const [any, setAny] = useState<boolean | null>(null);
+  const [any, setAny] = useSavedState<boolean | null>('market.index.any', null);
 
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status !== 'in') return;
       getMarketEvents()

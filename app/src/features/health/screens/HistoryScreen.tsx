@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { deleteWalk, getWalks, type Walk, type WalkTotals } from '../../../api/health';
@@ -17,13 +17,13 @@ export default function HistoryScreen() {
   const t = useT();
   const lang = useLanguage();
   const { status } = useStore(sessionStore);
-  const [data, setData] = useState<{ walks: Walk[]; this_week: WalkTotals; last_week: WalkTotals } | null>(null);
+  const [data, setData] = useSavedState<{ walks: Walk[]; this_week: WalkTotals; last_week: WalkTotals } | null>('health.history.data', null);
   const [error, setError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     getWalks().then(setData).catch(() => setError(t('error.network')));
   }, [t]);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

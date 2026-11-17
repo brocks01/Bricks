@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { getHealthStatus, getHealthSummary, sendCheckin, type HealthStatus, type HealthSummary } from '../../../api/health';
@@ -19,8 +19,8 @@ export default function HealthIndex() {
   const lang = useLanguage();
   const navigate = useNavigate();
   const { status } = useStore(sessionStore);
-  const [st, setSt] = useState<HealthStatus | null>(null);
-  const [sum, setSum] = useState<HealthSummary | null>(null);
+  const [st, setSt] = useSavedState<HealthStatus | null>('health.st', null);
+  const [sum, setSum] = useSavedState<HealthSummary | null>('health.sum', null);
   const [feeling, setFeeling] = useState('');
   const [error, setError] = useState<string | null>(null);
 
@@ -28,7 +28,7 @@ export default function HealthIndex() {
     getHealthStatus().then(setSt).catch(() => setError(t('error.network')));
     getHealthSummary().then(setSum).catch(() => undefined);
   }, [t]);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load(); // wait until the saved sign-in has been checked, so the requests carry a token
     }, [status, load])

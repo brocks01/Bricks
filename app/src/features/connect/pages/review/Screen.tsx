@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive } from '../../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { decideRequest, getReviewQueue, type ReviewRequest } from '../../../../api/communityRules';
@@ -20,7 +20,7 @@ export default function Review() {
   const load = useCallback(() => {
     getReviewQueue().then(setRows).catch(() => setRows([]));
   }, []);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

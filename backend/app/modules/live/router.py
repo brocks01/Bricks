@@ -12,6 +12,7 @@ import time
 import uuid
 
 from fastapi import APIRouter, Depends, Request, WebSocket
+from fastapi.responses import JSONResponse
 
 from ...core import auth_state, security
 from ..identity.router import current_user_id
@@ -111,9 +112,20 @@ def _user_of(request: Request) -> str | None:
 
 async def after_write(request: Request, call_next):
     """Middleware: after any successful write by a signed-in person, tell their live screens what it touched (any device, including the one that wrote)."""
+    device = _clean(request.headers.get("x-bricks-device"), 40)
+    try:
+        # An edit (PUT/PATCH) from a screen that last synced before another device changed the same thing would overwrite it unseen: refuse, and the screen refetches.
+        seen = request.headers.get("x-bricks-seen-rev")
+        if request.method in ("PUT", "PATCH") and seen is not None and seen.isdigit() and device:
+            who = _user_of(request)
+            names = {t for t in topics.for_path(request.url.path) if t != "home"}
+            if who and names and hub.changed_elsewhere(who, names, int(seen), device):
+                return JSONResponse(status_code=409, content={"detail": {"code": "changed_elsewhere"}})
+    except Exception:  # noqa: BLE001 - the guard is a courtesy: if it fails, the write goes ahead
+        log.exception("live: could not check for a newer change")
     response = await call_next(request)
     try:
-        if request.method in WRITES and response.status_code < 400:
+        if request.method in WRITES and response.status_code < 400 and not getattr(request.state, "live_quiet", False):
             path = request.url.path
             who = _user_of(request)
             if who:
@@ -126,7 +138,7 @@ async def after_write(request: Request, call_next):
                     if behalf:  # a helper changed a family member's data: that person's own screens refresh too
                         targets.add(behalf)
                     for u in targets:
-                        t = threading.Timer(SETTLE_SECONDS, hub.changed, args=(u, names))
+                        t = threading.Timer(SETTLE_SECONDS, hub.changed, args=(u, names, device))
                         t.daemon = True
                         t.start()
     except Exception:  # noqa: BLE001 - never let a notification problem break the real request

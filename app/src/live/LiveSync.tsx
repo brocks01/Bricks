@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { configureLive } from '../api/client';
 import { cacheInvalidate, setCacheOwner } from '../core/cache';
 import { useStore } from '../core/store';
 import { useCurrentPage, useNavigate } from '../navigation';
 import { freshToken, sessionStore } from '../session/store';
-import { liveSetPage, startLive } from './client';
+import { liveHeaders, liveSetPage, startLive } from './client';
 
 /**
  * Mount once, inside the sign-in door. While signed in it (1) keeps the saved copy of server data for THIS account (and erases it on sign-out),
@@ -38,6 +39,11 @@ export function LiveSync() {
       page: () => pageRef.current,
     });
   }, [status]);
+
+  useEffect(() => {
+    configureLive({ headers: liveHeaders, conflict: () => cacheInvalidate(['*']) });
+    return () => configureLive(null);
+  }, []);
 
   useEffect(() => {
     liveSetPage(pageKey);

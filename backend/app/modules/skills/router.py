@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, Field
 from sqlalchemy import Connection
 
@@ -19,6 +19,9 @@ def list_skills(_: str = Depends(current_user_id)):
 
 
 @router.post("/{name}")
-def run_skill(name: str, body: RunIn, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
+def run_skill(name: str, body: RunIn, request: Request, user_id: str = Depends(current_user_id), conn: Connection = Depends(get_conn)):
     """Runs one skill as the signed-in person. A refusal is a normal answer ({"error": code}), not an HTTP error, so every channel treats it the same way."""
-    return registry.run(conn, user_id, name, body.args)
+    result = registry.run(conn, user_id, name, body.args)
+    if isinstance(result, dict) and result.get("error"):
+        request.state.live_quiet = True  # nothing was changed: the live link must not tell anyone to refresh
+    return result

@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive } from '../../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, TextInput, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
@@ -34,7 +34,7 @@ export default function Explore() {
   const load = useCallback(() => {
     exploreCommunities(q).then((r) => { setList(r.communities); setLimits(r.limits); }).catch(() => setError(w('err_failed')));
   }, [q, w]);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

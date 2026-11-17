@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { addContribution, getContributions, type ContributionKind, type ContributionsData } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
@@ -35,9 +36,10 @@ export default function Contributions() {
       setCid((c) => c || x.my_communities[0]?.id || '');
     }).catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
   const when = (iso: string) => new Date(iso).toLocaleDateString(lang, { day: 'numeric', month: 'short', year: 'numeric' });
 
   const save = useCallback(async () => {

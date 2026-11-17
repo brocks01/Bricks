@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { Button, ErrorText, Screen } from '../../../../components/ui';
@@ -20,9 +21,10 @@ export default function FamilyTab() {
   const load = useCallback(() => {
     loadFamilies().then(() => setFailed(false)).catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
 
   const role = (r: string) => w(`role${r[0].toUpperCase()}${r.slice(1)}`);
 

@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { addAspiration, getAspirations, removeAspiration, setAspirationDone, type Aspiration, type AspirationKind } from '../../../../api/grow';
@@ -33,9 +34,10 @@ export default function Aspirations() {
       })
       .catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
 
   const save = useCallback(async () => {
     if (title.trim().length < 2) return;

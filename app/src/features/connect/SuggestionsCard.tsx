@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { getSuggestions, type Suggestion } from '../../api/wisdom';
@@ -11,8 +11,8 @@ import { colors, radius, space, type } from '../../theme/tokens';
 export function SuggestionsCard() {
   const t = useT();
   const go = useNavigate();
-  const [items, setItems] = useState<Suggestion[]>([]);
-  useFocusEffect(useCallback(() => { getSuggestions().then((r) => setItems(r.suggestions)).catch(() => setItems([])); }, []));
+  const [items, setItems] = useSavedState<Suggestion[]>('connect.suggestions.items', []);
+  useFocusLive(useCallback(() => { getSuggestions().then((r) => setItems(r.suggestions)).catch(() => setItems([])); }, []));
   const w = (k: string, vars?: Record<string, string | number>) => t(`community.home.${k}`, vars);
   const joinable = items.flatMap((s) => s.groups.filter((g) => !g.joined && g.can_join).map((g) => ({ interest: s.interest, ...g }))).slice(0, 2);
   const starts = items.filter((s) => s.start_one).slice(0, 1);

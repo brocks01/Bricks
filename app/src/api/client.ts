@@ -39,6 +39,12 @@ export const configureClient = (h: Hooks) => {
   hooks = h;
 };
 
+// The live link (src/live) adds to edits what lets the server notice "this changed on another device since you last looked", and is told when it did.
+let live: { headers: () => Record<string, string>; conflict: () => void } | null = null;
+export const configureLive = (l: typeof live) => {
+  live = l;
+};
+
 async function once(method: string, path: string, body: unknown, auth: boolean): Promise<Response> {
   const headers: Record<string, string> = { 'Content-Type': 'application/json', 'ngrok-skip-browser-warning': '1' }; // skips the tunnel's warning page; ignored by every other server
   const token = auth ? hooks.getToken() : null;
@@ -47,6 +53,7 @@ async function once(method: string, path: string, body: unknown, auth: boolean):
   // helper's own; the server re-checks the live delegation on every request, so ending access takes hold at once.
   const onBehalf = auth ? hooks.getActiveProfile?.() ?? null : null;
   if (onBehalf && onBehalf !== '') headers['X-Bricks-On-Behalf'] = onBehalf;
+  if (auth && live && (method === 'PUT' || method === 'PATCH')) Object.assign(headers, live.headers());
   const send = () => fetch(apiBase() + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
   try {
     return await send();
@@ -74,6 +81,7 @@ export async function api<T>(method: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
     const d = (data as { detail?: unknown }).detail;
     if (res.status === 422) throw new ApiError(422, 'validation', { detail: d });
     const obj = (d && typeof d === 'object' ? d : {}) as { code?: string };
+    if (res.status === 409 && obj.code === 'changed_elsewhere') live?.conflict(); // the screen refetches, so what the person sees is the newer version
     throw new ApiError(res.status, obj.code ?? 'generic', obj as Record<string, unknown>);
   }
   return data as T;

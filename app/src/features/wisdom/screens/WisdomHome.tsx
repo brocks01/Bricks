@@ -1,5 +1,6 @@
 // The Wisdom tab, kept simple: "N people want your advice" with Accept / Not now (Teach), or who can teach you (Learn). Nothing else on the page.
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Share, Text, View } from 'react-native';
 import { askOffer, decideConnection, getConnections, getMyOffers, getMyRequests, getOffers, getWisdomStats, type WisdomStats, type Connection, type Offer, type Request } from '../../../api/wisdom';
@@ -56,7 +57,10 @@ export default function WisdomHome() {
       setFailed(true); // a failed request is not the same as "no invitations yet"
     }
   }, []);
-  useEffect(() => { if (status === 'in') void load(); }, [status, load]);
+  const liveEpoch = useLiveEpoch();
+  useEffect(() => {
+    if (status === 'in') void load();
+  }, [status, load, liveEpoch]);
   useEffect(() => {
     if (tab !== 'learn') return;
     let live = true;

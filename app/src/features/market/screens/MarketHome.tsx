@@ -1,7 +1,7 @@
 // The Market tab, kept very simple: the next market day, a few things near you, and one button to list something.
 // Search and filters live one tap away, on the "More" page.
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Image, ImageBackground, Pressable, ScrollView, Text, View } from 'react-native';
 import { getMarketEvents, type MarketEventCard } from '../../../api/market';
@@ -34,10 +34,10 @@ export default function MarketHome() {
   const [failed, setFailed] = useState(false);
   const [tries, setTries] = useState(0);
   const locale = LOCALE[code] ?? 'en-SG';
-  const [events, setEvents] = useState<MarketEventCard[] | undefined>(undefined); // undefined = loading
+  const [events, setEvents] = useSavedState<MarketEventCard[] | undefined>('market.home.events', undefined); // undefined = loading
 
   // Loads every time the tab comes into view, so what was just added shows without a reload.
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status !== 'in') return;
       let live = true;

@@ -15,6 +15,8 @@ const mem = new Map<string, Entry>();
 let owner: string | null = null;
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 const listeners = new Set<(paths: string[]) => void>();
+let epoch = 0; // goes up every time the server says something changed: screens that load on their own use it to load again
+const epochListeners = new Set<() => void>();
 
 async function plain() {
   try {
@@ -115,3 +117,10 @@ export function cacheSubscribe(fn: (paths: string[]) => void): () => void {
 }
 
 export const cacheOwner = () => owner;
+
+/** How many times the server has said "something changed" since the app opened. Watch it to load again (see useFocusLive). */
+export const cacheEpoch = () => epoch;
+export function epochSubscribe(fn: () => void): () => void {
+  epochListeners.add(fn);
+  return () => epochListeners.delete(fn);
+}

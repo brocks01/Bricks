@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { ApiError } from '../../../../api/client';
 import { familyApi, type AccessLevel, type Delegation } from '../../../../api/family';
@@ -30,9 +31,10 @@ export default function Accounts() {
       })
       .catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (session.status === 'in') load();
-  }, [session.status, load]);
+  }, [session.status, load, liveEpoch]);
 
   const acting = session.activeProfile ? held?.find((d) => d.user_id === session.activeProfile) : null;
   const actingName = acting?.user_name ?? session.user?.display_name ?? '';

@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import {
@@ -25,9 +25,9 @@ const DAY = /^\d{4}-\d{2}-\d{2}$/;
  *  the form to add one, and a way to cancel one. Hidden from everyone who is not a member of a host (the server decides). */
 export default function HostHome() {
   const w = usePageWords(page);
-  const [hosts, setHosts] = useState<MyHost[] | null>(null); // null = still looking
+  const [hosts, setHosts] = useSavedState<MyHost[] | null>('host.hosts', null); // null = still looking
   const [active, setActive] = useState<MyHost | null>(null);
-  const [events, setEvents] = useState<HostEvent[]>([]);
+  const [events, setEvents] = useSavedState<HostEvent[]>('host.events', []);
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<OpportunityKind>('market_day');
   const [intents, setIntents] = useState<Intent[]>(DEFAULT_INTENTS.market_day);
@@ -45,7 +45,7 @@ export default function HostHome() {
     getHostEvents(h.id).then(setEvents).catch(() => setEvents([]));
   }, []);
 
-  useFocusEffect(useCallback(() => {
+  useFocusLive(useCallback(() => {
     let live = true;
     getMyHosts().then((hs) => {
       if (!live) return;

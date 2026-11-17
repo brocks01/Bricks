@@ -20,6 +20,10 @@ const device = Math.random().toString(36).slice(2, 8); // one per open tab or ap
 
 const wsUrl = () => apiBase().replace(/^http/, 'ws') + '/v1/live';
 
+let rev = 0; // the newest change this screen has been told about (and has refetched for)
+/** Sent with every edit so the server can refuse one made from a screen that missed a change on another device. */
+export const liveHeaders = (): Record<string, string> => ({ 'X-Bricks-Device': device, 'X-Bricks-Seen-Rev': String(rev) });
+
 let current: { setPage: (p: string) => void } | null = null;
 export const liveSetPage = (page: string): void => current?.setPage(page);
 
@@ -50,7 +54,7 @@ export function startLive(h: LiveHandlers): () => void {
     ws = sock;
     sock.onopen = () => send({ type: 'auth', token, device, page: h.page() });
     sock.onmessage = (ev) => {
-      let m: { type?: string; topics?: string[]; page?: string; params?: Record<string, string> };
+      let m: { type?: string; topics?: string[]; page?: string; params?: Record<string, string>; rev?: number };
       try {
         m = JSON.parse(String(ev.data));
       } catch {
@@ -58,11 +62,18 @@ export function startLive(h: LiveHandlers): () => void {
       }
       if (m.type === 'ready') {
         pause = 1000;
-        if (seenBefore) h.onChanged(['*']); // we were away: anything may have changed, refresh what is on screen
+        if (seenBefore) {
+          h.onChanged(['*']); // we were away: anything may have changed, refresh what is on screen
+          const known = m.rev ?? 0;
+          setTimeout(() => (rev = Math.max(rev, known)), 5000); // until the refresh has landed, an edit is still judged against what we last knew
+        } else rev = m.rev ?? 0;
         seenBefore = true;
         if (ping) clearInterval(ping);
         ping = setInterval(() => send({ type: 'ping' }), PING_MS);
-      } else if (m.type === 'changed' && Array.isArray(m.topics)) h.onChanged(m.topics);
+      } else if (m.type === 'changed' && Array.isArray(m.topics)) {
+        h.onChanged(m.topics);
+        rev = Math.max(rev, m.rev ?? 0);
+      }
       else if (m.type === 'open' && m.page) h.onOpen(m.page, m.params ?? {});
     };
     sock.onclose = () => {

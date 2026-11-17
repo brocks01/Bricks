@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { cancelBooking, completeBooking, decideBooking, getBookings, getListings, type Booking, type Listing } from '../../../api/wisdom';
@@ -19,8 +19,8 @@ export default function MyServicesScreen() {
   const lang = useLanguage();
   const navigate = useNavigate();
   const { status } = useStore(sessionStore);
-  const [listings, setListings] = useState<Listing[] | null>(null);
-  const [bookings, setBookings] = useState<Booking[] | null>(null);
+  const [listings, setListings] = useSavedState<Listing[] | null>('wisdom.mine.listings', null);
+  const [bookings, setBookings] = useSavedState<Booking[] | null>('wisdom.mine.bookings', null);
   const [error, setError] = useState<string | null>(null);
   const [nowMs] = useState(() => Date.now()); // when the page opened: enough to know whether a booking has already happened
 
@@ -28,7 +28,7 @@ export default function MyServicesScreen() {
     getListings('', undefined, true).then(setListings).catch(() => setListings([]));
     getBookings().then(setBookings).catch(() => setBookings([]));
   }, []);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

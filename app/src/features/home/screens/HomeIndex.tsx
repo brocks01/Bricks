@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive } from '../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { calendarApi, type Occurrence } from '../../../api/calendar';
@@ -67,7 +67,7 @@ export default function HomeIndex() {
     setNow(new Date());
   }, [refreshDay, refreshSum, refreshAct, refreshMonth]);
   const shownError = error ?? (dayRes.failed && !occs ? w('failed') : null);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

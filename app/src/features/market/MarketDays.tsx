@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { getMarketEvents, type MarketEventCard } from '../../api/market';
@@ -18,10 +18,10 @@ export function MarketDays() {
   const w = usePageWords(page);
   const go = useNavigate();
   const [intent, setIntent] = useState<(typeof INTENTS)[number]>('all');
-  const [events, setEvents] = useState<MarketEventCard[]>([]);
-  const [any, setAny] = useState(false);
-  const [myHosts, setMyHosts] = useState<MyHost[]>([]);
-  useFocusEffect(useCallback(() => {
+  const [events, setEvents] = useSavedState<MarketEventCard[]>('market.days.events', []);
+  const [any, setAny] = useSavedState('market.days.any', false);
+  const [myHosts, setMyHosts] = useSavedState<MyHost[]>('market.days.myHosts', []);
+  useFocusLive(useCallback(() => {
     getMyHosts().then(setMyHosts).catch(() => setMyHosts([]));
     getMarketEvents(intent === 'all' ? undefined : intent).then((r) => { setEvents(r); if (intent === 'all') setAny(r.length > 0); }).catch(() => setEvents([]));
   }, [intent]));

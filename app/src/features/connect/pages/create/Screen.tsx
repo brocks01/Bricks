@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive } from '../../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Text, View } from 'react-native';
 import { type CommunityKind } from '../../../../api/communities';
@@ -42,7 +42,7 @@ export default function CreateCommunity() {
     getExperience().then(setExp).catch(() => setExp(null));
     getMyRequests().then(setReqs).catch(() => setReqs([]));
   }, []);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

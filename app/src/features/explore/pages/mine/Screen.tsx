@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { getExploreMine, type ExploreItem, type ExploreMine } from '../../../../api/explore';
@@ -31,9 +32,10 @@ export default function ExploreMineScreen() {
       })
       .catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
   const update = useCallback((fn: (i: ExploreItem) => ExploreItem) => setData((d) => (d ? { ...d, in_progress: d.in_progress.map(fn), completed: d.completed.map(fn), saved: d.saved.map(fn) } : d)), []);
   const toggleSave = useToggleSave(update);
   const meta = (i: ExploreItem) => `${w('min', { n: i.minutes })} · ${w(i.format)}`;

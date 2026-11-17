@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { calendarApi, type CalendarPerson, type MarkStatus, type Occurrence } from '../../../../api/calendar';
@@ -49,9 +50,10 @@ export default function CalendarTab() {
       setFailed(false);
     }).catch(() => setFailed(true));
   }, [who]);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') loadPeople();
-  }, [status, loadPeople]);
+  }, [status, loadPeople, liveEpoch]);
   // While the tab is open: every minute, say "the app is open" (with the phone's own time zone) and
   // refresh the week. This is what the reminder loop later reads as "the app reached this person".
   useEffect(() => {

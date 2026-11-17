@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { closeHelp, getHelpInbox, sendHelp, type HelpAlert } from '../../../api/health';
@@ -21,12 +21,12 @@ export default function HelpScreen() {
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [alerts, setAlerts] = useState<HelpAlert[]>([]);
+  const [alerts, setAlerts] = useSavedState<HelpAlert[]>('health.help.alerts', []);
 
   const load = useCallback(() => {
     getHelpInbox().then(setAlerts).catch(() => undefined);
   }, []);
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status === 'in') load();
     }, [status, load])

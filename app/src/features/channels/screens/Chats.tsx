@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { Linking, Text, View } from 'react-native';
 import { ApiError } from '../../../api/client';
@@ -14,12 +14,12 @@ const KINDS: Kind[] = ['telegram', 'whatsapp', 'sms'];
 
 export default function Chats() {
   const w = usePageWords(page);
-  const [status, setStatus] = useState<ChannelsStatus | null>(null);
+  const [status, setStatus] = useSavedState<ChannelsStatus | null>('chats.status', null);
   const [code, setCode] = useState<(LinkCode & { kind: Kind }) | null>(null);
   const [note, setNote] = useState<string | null>(null);
 
   const load = useCallback(() => { getChannels().then(setStatus).catch(() => setNote(w('failed'))); }, [w]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
+  useFocusLive(useCallback(() => { load(); }, [load]));
 
   const connect = async (kind: Kind) => {
     setNote(null);

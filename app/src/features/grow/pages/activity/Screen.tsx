@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { Pressable, Text, View } from 'react-native';
 import { addActivity, getActivity, removeActivity, type ActivityData, type ActivityKind } from '../../../../api/grow';
 import { Hero } from '../../../../components/Hero';
@@ -33,9 +34,10 @@ export default function Activity() {
       })
       .catch(() => setFailed(true));
   }, []);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
   const when = (iso: string) => new Date(iso + 'T00:00:00').toLocaleDateString(lang, { weekday: 'short', day: 'numeric', month: 'short' });
 
   const remove = useCallback(async (id: string) => {

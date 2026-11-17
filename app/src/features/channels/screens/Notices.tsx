@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useState } from 'react';
 import { View } from 'react-native';
 import { getInbox, readAllNotices, type Notice } from '../../../api/wisdom';
@@ -9,8 +9,8 @@ import { channelsNotices as page } from '../pages';
 
 export default function Notices() {
   const w = usePageWords(page);
-  const [items, setItems] = useState<Notice[] | null>(null);
-  useFocusEffect(
+  const [items, setItems] = useSavedState<Notice[] | null>('notices.items', null);
+  useFocusLive(
     useCallback(() => {
       getInbox().then((r) => {
         setItems(r.notifications);

@@ -1,9 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive } from '../../core/useFocusLive';
 import { type ReactNode, useCallback, useEffect, useRef, useState } from 'react';
 import { Image, Pressable, Text, View } from 'react-native';
 import { SkeletonPage } from '../../components/Skeleton';
 import { Button, Screen } from '../../components/ui';
+import { cachePeek, cachePut } from '../../core/cache';
 import { useStore } from '../../core/store';
 import { useLanguage } from '../../i18n';
 import { sessionStore } from '../../session/store';
@@ -12,17 +13,27 @@ import { Pic } from '../explore/ui';
 
 // Small pieces shared by the community screens. No words of their own: callers pass them in, already in the person's language.
 
+/** A short number that says which piece of code this is (so two screens that use the same key do not share a saved copy). */
+function hashText(t: string): number {
+  let h = 0;
+  for (let i = 0; i < t.length; i++) h = (h * 31 + t.charCodeAt(i)) | 0;
+  return h;
+}
+
 /** Loads something once the sign-in is known, and again every time the screen comes back into view (after a form, say). */
 export function useLoad<T>(fn: () => Promise<T>, key: string) {
   const { status } = useStore(sessionStore);
   const latest = useRef(fn);
-  const [data, setData] = useState<T | null>(null);
+  // What this screen last loaded is kept, so coming back (a tab switch, reopening the app) shows it at once while the new answer is fetched.
+  const [codeId] = useState(() => hashText(fn.toString()));
+  const saveKey = `saved:load:${key}:${codeId}`;
+  const [data, setData] = useState<T | null>(() => cachePeek<T>(saveKey)?.data ?? null);
   const [failed, setFailed] = useState(false);
   const [tick, setTick] = useState(0);
   useEffect(() => {
     latest.current = fn; // kept fresh after every commit; the load below reads it
   });
-  useFocusEffect(
+  useFocusLive(
     useCallback(() => {
       if (status !== 'in') return;
       let live = true;
@@ -32,6 +43,7 @@ export function useLoad<T>(fn: () => Promise<T>, key: string) {
           if (live) {
             setFailed(false);
             setData(x);
+            cachePut(saveKey, x);
           }
         })
         .catch(() => {
@@ -40,7 +52,7 @@ export function useLoad<T>(fn: () => Promise<T>, key: string) {
       return () => {
         live = false;
       };
-    }, [status, key, tick]) // eslint-disable-line react-hooks/exhaustive-deps -- `key` says what to load; the function itself is read from the ref
+    }, [status, key, tick, saveKey]) // eslint-disable-line react-hooks/exhaustive-deps -- `key` says what to load; the function itself is read from the ref
   );
   return { data, setData, failed, reload: () => setTick((t) => t + 1) };
 }

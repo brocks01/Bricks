@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useLiveEpoch } from '../../../../core/useFocusLive';
 import { useLocalSearchParams } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
@@ -46,9 +47,10 @@ export default function CalendarItemScreen() {
       setFailed(e instanceof ApiError && CODE_KEYS[e.code] ? w(CODE_KEYS[e.code]) : w('tryAgain'));
     });
   }, [id, w]);
+  const liveEpoch = useLiveEpoch();
   useEffect(() => {
     if (status === 'in') load();
-  }, [status, load]);
+  }, [status, load, liveEpoch]);
 
   const cancel = useCallback(async () => {
     if (!item || busy) return;

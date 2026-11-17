@@ -166,3 +166,33 @@ def test_topics_follow_the_path_and_the_skill():
     assert topics.for_path("/v1/auth/verify-code") == [] and topics.for_path("/v1/live/presence") == []
     assert topics.for_skill("add_goal") == ["grow", "home"] and topics.for_skill("a_new_skill") == ["*"]
     assert "wisdom" in topics.for_skill("offer_to_teach")
+
+
+def test_a_skill_that_is_refused_over_http_does_not_tell_anyone_to_refresh():
+    _, token = person()
+    h = {"Authorization": f"Bearer {token}"}
+    with dial() as ws:
+        join(ws, token, "phone")
+        r = client.post("/v1/skills/add_goal", headers=h, json={"args": {}})  # the title is missing: nothing is saved
+        assert r.json().get("error") == "missing"
+        assert nothing_more(ws, 1.0)
+        r = client.post("/v1/skills/add_goal", headers=h, json={"args": {"title": "walk daily"}})
+        assert r.json().get("added") == "walk daily"
+        assert recv(ws)["type"] == "changed"
+
+
+def test_an_edit_from_a_screen_that_missed_a_change_on_another_device_is_refused():
+    uid, token = person()
+    base = {"Authorization": f"Bearer {token}"}
+    rev = hub.current_rev(uid)
+    hub.changed(uid, ["me"], device="phone")  # the phone changed the profile (nobody needs to be connected for this to count)
+    newer = hub.current_rev(uid)
+    assert newer > rev
+    laptop_old = {**base, "X-Bricks-Device": "laptop", "X-Bricks-Seen-Rev": str(rev)}
+    r = client.patch("/v1/me", headers=laptop_old, json={"display_name": "Mei Ling"})
+    assert r.status_code == 409 and r.json()["detail"]["code"] == "changed_elsewhere"
+    laptop_current = {**base, "X-Bricks-Device": "laptop", "X-Bricks-Seen-Rev": str(newer)}
+    assert client.patch("/v1/me", headers=laptop_current, json={"display_name": "Mei Ling"}).status_code == 200
+    phone_old = {**base, "X-Bricks-Device": "phone", "X-Bricks-Seen-Rev": "0"}
+    assert client.patch("/v1/me", headers=phone_old, json={"display_name": "Mei Ling Tan"}).status_code == 200  # its own change is never "elsewhere"
+    assert client.patch("/v1/me", headers=base, json={"display_name": "Mei"}).status_code == 200  # a client that sends no headers is not guarded

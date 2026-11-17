@@ -1,4 +1,4 @@
-import { useFocusEffect } from 'expo-router';
+import { useFocusLive, useSavedState } from '../../../core/useFocusLive';
 import { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
 import { ApiError } from '../../../api/client';
@@ -29,14 +29,14 @@ export default function WisdomIndex() {
   const helpOnly = !!profile?.roles.includes('help') && !profile.roles.includes('share'); // the next generation sees who needs a hand; elders see who wants to learn
   const parts: Part[] = (profile?.wisdom.parts as Part[] | undefined) ?? ['stories', 'mentors', 'learners', 'mine'];
   const [part, setPart] = useState<Part>((profile?.wisdom.default as Part | undefined) ?? 'stories');
-  const [library, setLibrary] = useState<Capsule[] | null>(null);
-  const [offers, setOffers] = useState<Offer[] | null>(null);
-  const [requests, setRequests] = useState<Request[] | null>(null);
-  const [mineCaps, setMineCaps] = useState<Capsule[]>([]);
-  const [mineOffers, setMineOffers] = useState<Offer[]>([]);
-  const [mineReqs, setMineReqs] = useState<Request[]>([]);
-  const [conns, setConns] = useState<Connection[]>([]);
-  const [stats, setStats] = useState<WisdomStats | null>(null);
+  const [library, setLibrary] = useSavedState<Capsule[] | null>('wisdom.library', null);
+  const [offers, setOffers] = useSavedState<Offer[] | null>('wisdom.offers', null);
+  const [requests, setRequests] = useSavedState<Request[] | null>('wisdom.requests', null);
+  const [mineCaps, setMineCaps] = useSavedState<Capsule[]>('wisdom.mineCaps', []);
+  const [mineOffers, setMineOffers] = useSavedState<Offer[]>('wisdom.mineOffers', []);
+  const [mineReqs, setMineReqs] = useSavedState<Request[]>('wisdom.mineReqs', []);
+  const [conns, setConns] = useSavedState<Connection[]>('wisdom.conns', []);
+  const [stats, setStats] = useSavedState<WisdomStats | null>('wisdom.stats', null);
   const [target, setTarget] = useState<Target>(null);
   const [message, setMessage] = useState('');
   const [note, setNote] = useState<string | null>(null);
@@ -45,7 +45,7 @@ export default function WisdomIndex() {
   const [kind, setKind] = useState<string>('all');
   const [serviceQ, setServiceQ] = useState('');
   const [serviceKind, setServiceKind] = useState('all');
-  const [listings, setListings] = useState<Listing[] | null>(null);
+  const [listings, setListings] = useSavedState<Listing[] | null>('wisdom.listings', null);
   const [mentorQ, setMentorQ] = useState('');
   const [mentorMode, setMentorMode] = useState('all');
   const [mentorTopic, setMentorTopic] = useState('');
@@ -63,7 +63,7 @@ export default function WisdomIndex() {
     getConnections().then(setConns).catch(() => undefined);
     getWisdomStats().then(setStats).catch(() => undefined);
   }, [helpOnly]);
-  useFocusEffect(useCallback(() => { load(); }, [load]));
+  useFocusLive(useCallback(() => { load(); }, [load]));
 
   // mentors are searched only while that part is open, with the filters the person chose (a topic, a language, their own area)
   useEffect(() => {
