@@ -23,6 +23,29 @@ NOT tested, and the next step. Then two lists, kept up to date:
 **Choices:** no separate offer page (a Learn card opens in place); Start Video Call says "Coming soon"; all four completed sessions are with Sarath so there is one active mentorship, as the design shows.
 **Next:** A3 (onboarding, profile, close-out; also the old Singpass selftest line).
 
+### 17 Nov 2026 · A3 part 1, onboarding as the ten pictures · Claude Code (Opus 5.5)
+**Found:** `main` did not match the pictures. Commit `d504203` (16 Nov) had replaced the ten-screen flow with a different six-screen design (Welcome, Language, Singpass, an assistant chat, Check your profile, All set). The owner chose the ten pictures, so the ten-screen flow came back from git (the files as they were before `d504203`), with the changes below.
+**Comparison** (390 wide, a fresh browser, as a new person):
+
+| Picture | Our screen | Differences, and what was done |
+|---|---|---|
+| 01 language | `auth.welcome` (`/welcome`) | Same: icon collage, app name, "Choose your language" in every language, two-per-row pills, Next. On purpose: six languages (the app has six), our name, no red Help, no "Read it out" (the floating agent mic reads and answers on every screen). |
+| 02 text size | `auth.textSize` | Same structure: Back with the title beside it, the hint, three cards with a round tick, Next. Small, Normal and Large resize the app at once. |
+| 03 who is setting up | `auth.who` | Same three cards; "My community or centre" is shown and disabled with "Coming soon". The picture's extra line under it ("Add many members at once") is not shown. |
+| 04 login layout | `auth.signIn` | Rebuilt like the picture: picture on top, small app name, big title, one line, a dark main button (Continue with Singpass, with the logo), Continue with Email, a third way (Try it as someone new), and the terms line. Singpass is the mock that signs in Uncle Tan; Email sends a code; "someone new" makes a demo account that goes through the questions. |
+| 05 name | step 1 of 3 | Same: Back pill, "Step 1 of 3", the question, "Your name", a round field, Next. No "Say it instead" pill (the floating mic does it; removed on purpose in `af0cea2`). |
+| 06 where you live | step 2 of 3 | Same six towns two per row, "Somewhere else" full width (opens a field), Next. |
+| 07 what you enjoy | step 3 of 3 | Same eight tiles with icons, "Choose as many as you like", "Skip for now" until one is picked, then Next. |
+| (not in the pictures) | teach? and skills | Kept on purpose: the owner added "Would you like to teach or share any of these?" (`3546f65`); Yes chooses skills and levels and turns the Wisdom tab on. |
+| 08 your voice | voice | Same: Back with the title beside it, the card, Record (up to ten seconds, stops by itself), the note, Skip for now; after recording, Play and Next. |
+| 09 reminders | reminders | Same three cards and Later. WhatsApp shows "Coming soon" and cannot be chosen (no WhatsApp reminders yet). |
+| 10 welcome | welcome | Same: a big tick, "Welcome, {name}.", "Every morning we'll ask how you are.", Go to Home. We add one small line that continuing accepts the privacy notice and terms. |
+| (after) | `connect.pick`, then `home.index` | Choose communities once (while there is room), then Home. |
+
+**Also:** `AuthGate` and the front door land a finished person on Home (`home.index`), including when they open a sign-in or onboarding page later; reopening in the middle resumes at the right step (what the server already has decides); the onboarding screen waits for the saved sign-in before loading (a reload showed "That did not save" before); the selftest line "Singpass is person-only" now checks what the screen has (the sign-in code is person-only, the mock Singpass is not); the six-screen files, their words and unused sign-in helpers are removed; `GET /v1/me` already returns `interests` and `area_name` (covered by `test_onboarding_steps.py`).
+**Tested:** in the browser (headless Edge, 390 wide): a new person through every screen to Welcome, communities, Home; a reload at "What do you enjoy?" and at Welcome resumes there; `/onboarding` and `/welcome` after finishing go to Home; the browser's back and forward buttons on the first screens; Continue with Singpass lands Uncle Tan on Home. `tsc` clean, `expo lint` clean (no errors, no warnings), `selftest.ts` all passed.
+**Not tested:** recording a voice (needs a microphone), the email code by real email (the code is shown on screen in development), the six languages on screen, the largest text size, a real phone.
+
 ## Requests for the other person
 - **B1:** `BackButton` and `feed.showed_up` as in the contract; please also export `refreshWisdom()` so A's "I'm here" can call it.
 

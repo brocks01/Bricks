@@ -1,36 +1,38 @@
-import { Ionicons } from '@expo/vector-icons';
-import { Image, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import { useStore } from '../../../../core/store';
+import { LANGUAGES } from '../../../../i18n/languages';
+import { languageStore, setLanguage } from '../../../../i18n/store';
 import { usePageData, usePageWords } from '../../../../kit';
 import { useNavigate } from '../../../../navigation';
-import { Brand, Go, R, RefFrame } from '../../../onboarding/ref';
+import { colors, space, type } from '../../../../theme/tokens';
+import { Chip, Collage, Frame, grid } from '../../../onboarding/kit';
 import { authWelcome as page } from './page';
 
-/** Screen 1: Welcome to Interchange. A big friendly picture, one line about what this is, a note that help is at hand, and Get started. */
+const LINES = ['Choose your language', 'अपनी भाषा चुनें', 'আপনার ভাষা বেছে নিন', 'உங்கள் மொழியைத் தேர்ந்தெடுக்கவும்', '请选择语言', 'Pilih bahasa anda'];
+
+/** Screen 1: the language. The app changes the moment a language is tapped; Next goes on to the text size. */
 export default function Welcome() {
   const w = usePageWords(page);
   const go = useNavigate();
-  const start = () => { go('auth.language'); };
+  const { code } = useStore(languageStore);
   usePageData(page, {
-    values: [{ label: w('x_welcome'), value: w('x_welcome_sub') }, { label: w('x_help_t'), value: w('x_help_b') }],
+    values: [{ label: w('heading'), value: LANGUAGES.find((l) => l.code === code)?.native ?? '' }],
     images: [],
     lists: [],
-    actions: [{ id: 'start', label: w('x_start'), run: start }],
+    actions: [
+      ...LANGUAGES.map((l) => ({ id: `lang${l.code.charAt(0).toUpperCase()}${l.code.slice(1)}`, label: l.native, run: () => { void setLanguage(l.code); } })),
+      { id: 'start', label: w('o_next'), run: () => { go('auth.textSize'); } },
+    ],
   });
   return (
-    <RefFrame at={0} hideBrand bottom={<Go label={w('x_start')} trailing="arrow-forward" onPress={start} />}>
-      <View style={{ alignItems: 'center', marginTop: 8 }}><Brand big /></View>
-      <Text accessibilityRole="header" style={{ fontSize: 38, lineHeight: 44, fontWeight: '800', color: R.ink, marginTop: 14 }}>{w('x_welcome')}</Text>
-      <Text style={{ fontSize: 18, lineHeight: 25, color: R.muted, marginTop: 8 }}>{w('x_welcome_sub')}</Text>
-      <View style={{ marginTop: 18, borderRadius: 22, overflow: 'hidden', backgroundColor: R.card }}>
-        <Image source={require('../../../../../assets/images/singapore-seniors.jpg')} accessibilityLabel="Seniors together at a Singapore community corner" resizeMode="cover" style={{ width: '100%', height: 230 }} />
-        <View style={{ flexDirection: 'row', gap: 12, padding: 16, backgroundColor: R.peach }}>
-          <Ionicons name="people" size={28} color={R.orange} accessible={false} />
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 18, fontWeight: '800', color: R.ink }}>{w('x_help_t')}</Text>
-            <Text style={{ fontSize: 15, lineHeight: 21, color: R.muted, marginTop: 2 }}>{w('x_help_b')}</Text>
-          </View>
-        </View>
+    <Frame top={<Collage />} primary={{ label: w('o_next'), onPress: () => go('auth.textSize') }}>
+      <Text accessibilityRole="header" style={{ fontSize: 36, fontWeight: '800', color: colors.ink }}>Interchange</Text>
+      <View style={{ marginTop: space.md, marginBottom: space.md, gap: 2 }}>
+        {LINES.map((t, i) => <Text key={t} style={[type.body, { color: colors.ink, fontWeight: LANGUAGES[i].code === code ? '800' : '500' }]}>{t}</Text>)}
       </View>
-    </RefFrame>
+      <View style={grid}>
+        {LANGUAGES.map((l) => <Chip key={l.code} label={l.native} on={code === l.code} onPress={() => void setLanguage(l.code)} />)}
+      </View>
+    </Frame>
   );
 }

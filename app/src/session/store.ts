@@ -164,18 +164,6 @@ export async function verifyCode(code: string): Promise<{ isNew: boolean; comple
   return { isNew: t.is_new, complete: sessionStore.get().user?.profile_complete ?? false };
 }
 
-export interface DemoProfile { id: string; name: string; age_band: string | null; area: string | null; language: string; roles: string[]; circles: number; teaches: string | null; wants: string | null }
-/** Prototype: the demo people the mock Singpass screen offers (seeded, with their circles, stories and offers already in place). */
-export async function loadDemoProfiles(): Promise<DemoProfile[]> {
-  const r = await api<{ profiles: DemoProfile[] }>('GET', '/v1/auth/demo-profiles', undefined, { auth: false });
-  return r.profiles;
-}
-/** Prototype: sign in as one of those people. The app keeps the language the visitor chose. */
-export async function signInAsDemo(id: string): Promise<void> {
-  const t = await api<Tokens>('POST', `/v1/auth/demo-profile/${id}`, {}, { auth: false });
-  await accept(t);
-}
-
 /** Prototype: a throwaway account with a random name, signed in at once with no code. The app then walks it through onboarding. */
 export async function startDemo(): Promise<void> {
   const t = await api<Tokens>('POST', '/v1/auth/demo', {}, { auth: false });
@@ -183,14 +171,9 @@ export async function startDemo(): Promise<void> {
   await updateProfile({ language: languageStore.get().code });
 }
 
-/** What the mock Singpass tells us about the person (the real one gives the same kind of facts). */
-export interface SingpassFacts { name: string; area: string; languages: string[]; nric: string }
-export const singpassFacts: { current: SingpassFacts | null } = { current: null };
-
-/** Prototype: the mock Singpass login. The server makes a new account for Uncle Tan with what Singpass would know already set; the app then asks the rest. */
+/** Prototype: the mock Singpass login. It always signs in Uncle Tan, who is already set up, so the app goes straight to Home. */
 export async function startSingpass(): Promise<void> {
-  const t = await api<Tokens & { singpass: SingpassFacts }>('POST', '/v1/auth/singpass-demo', {}, { auth: false });
-  singpassFacts.current = t.singpass;
+  const t = await api<Tokens>('POST', '/v1/auth/singpass-demo', {}, { auth: false });
   await accept(t);
   await updateProfile({ language: languageStore.get().code });
 }

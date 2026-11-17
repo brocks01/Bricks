@@ -54,7 +54,7 @@ check('where am I from path', pageForPath('/me')?.key === 'me.index' && pageForP
 check('private pages need sign-in', (() => { const d = resolvePage('me.edit', {}, signedOut); return !d.ok && d.reason === 'denied'; })());
 check('sign-in pages open without sign-in', resolvePage('auth.signIn', {}, signedOut).ok && resolvePage('language.pick', {}, signedOut).ok);
 check('sign-in pages have no bottom bar', allPages().filter((p) => p.module === 'auth').every((p) => p.bare));
-check('Singpass is person-only', ['singpass'].every((id) => allPages().find((p) => p.key === 'auth.signIn')?.elements[id]?.agent === 'human'));
+check('sign-in code is person-only, mock Singpass is not', (() => { const e = allPages().find((p) => p.key === 'auth.signIn')?.elements; return e?.code?.agent === 'human' && e?.singpass?.kind === 'action' && e.singpass.agent !== 'human'; })());
 check('no sample data in the app', !allPages().some((p) => Object.values(p.strings.en ?? {}).some((w) => /Ankit|Yoga (class|session|club)|Rainwater|Sample/i.test(w))));
 check('search sign in', search('sign in').some((h) => h.path === 'auth.signIn'));
 check('search edit profile', search('edit profile').some((h) => h.path === 'me.edit'));

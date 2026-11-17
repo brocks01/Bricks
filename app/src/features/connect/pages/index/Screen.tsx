@@ -46,8 +46,6 @@ export default function ConnectIndex() {
     }
   }, []);
 
-  const used = mine?.length ?? 0;
-  const full = used >= 3;
   const nextOf = (cid: string) => soon.find((a) => a.community_id === cid);
   const when = (iso: string) => new Date(iso).toLocaleString(lang, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' });
   const empty = { backgroundColor: colors.accentSoft, borderRadius: radius.card, borderWidth: 1, borderColor: colors.accentLine, padding: space.lg, alignItems: 'center', gap: space.sm } as const;
