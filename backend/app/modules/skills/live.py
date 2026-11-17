@@ -8,7 +8,8 @@ SCREENS = {
     "home": ("home.index", "home"), "today": ("calendar.today", "today's plan"), "my day": ("calendar.today", "today's plan"), "calendar": ("calendar.today", "calendar"),
     "communities": ("connect.index", "communities"), "wisdom": ("wisdom.index", "Wisdom"), "stories": ("wisdom.story", "stories"), "market": ("market.index", "the market"),
     "health": ("health.index", "health"), "progress": ("grow.progress", "progress"), "my tree": ("grow.progress", "progress"), "profile": ("me.index", "profile"),
-    "family": ("family.home", "family"), "messages": ("channels.notices", "messages"), "explore": ("explore.home", "Explore"),
+    "family": ("family.home", "family"), "my services": ("wisdom.myServices", "my services"), "wisdom history": ("wisdom.history", "my Wisdom sessions"),
+    "teaching profile": ("wisdom.teachProfile", "my teaching profile"), "host": ("host.home", "my host page"), "messages": ("channels.notices", "messages"), "explore": ("explore.home", "Explore"),
 }
 
 
@@ -19,7 +20,7 @@ def is_app_open(conn, me, args):
 
 
 @skill("show_on_screen", "Show on my screen",
-       "Open a page on the person's own screen, which they have open now: home, today, calendar, communities, wisdom, stories, market, health, progress, profile, family, messages, explore. "
+       "Open a page on the person's own screen, which they have open now: home, today, calendar, communities, wisdom, stories, market, health, progress, profile, family, messages, explore, my services, wisdom history, teaching profile, host. "
        "Use it only when they ask to see something, or you offered and they said yes. It opens the page; it does not press anything.",
        {"screen": S("Which one, in the person's words: home, today, calendar, communities, wisdom, stories, market, health, progress, profile, family, messages or explore")}, ["screen"])
 def show_on_screen(conn, me, args):
